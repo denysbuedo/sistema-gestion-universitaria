@@ -1,0 +1,196 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar Sedes{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    #map { height: 350px; }
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; }
+    .card-luxury .card-header { background:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; border-radius:12px 12px 0 0; }
+    .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .form-group label { font-weight:600; color:#34495e; font-size:0.875rem; }
+    .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+    .config-table thead th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-bottom:2px solid #e2e8f0; text-transform:uppercase; letter-spacing:0.03em; }
+    .config-table tbody td { font-size:0.85rem; vertical-align:middle; }
+    .config-table tbody tr:hover { background:#f8fafc; }
+    .section-divider { border:none; border-top:1px solid #e2e8f0; margin:0; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title"><i class="fas fa-map-marker-alt label-icon"></i>Asignar Sedes</h3>
+    </div>
+
+    {{ include('modules/institucion/institucion/short_details.html.twig', { 'item': institucion }) }}
+
+    {{ form_start(form) }}
+    <div class="card-body px-4 pt-3">
+        <div class="row">
+            <div class="col-md-4 form-group">
+                {{ form_label(form.nombreSede) }}
+                {{ form_widget(form.nombreSede) }}
+                {{ form_errors(form.nombreSede) }}
+            </div>
+            <div class="col-md-4 form-group">
+                {{ form_label(form.direccionSede) }}
+                {{ form_widget(form.direccionSede) }}
+                {{ form_errors(form.direccionSede) }}
+            </div>
+            <div class="col-md-4 form-group">
+                {{ form_label(form.coordenadasSede) }}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-map-marked"></i></span>
+                    </div>
+                    {{ form_widget(form.coordenadasSede) }}
+                    {{ form_errors(form.coordenadasSede) }}
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button class="btn-fs-submit"><i class="fas fa-link"></i> Asociar</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    {# Modal mapa #}
+    <div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetail" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#134679;">
+                    <h5 class="modal-title font-weight-bold text-white">Seleccionar ubicación</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="map"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">
+                        <i class="fas fa-times mr-1"></i>Cerrar
+                    </button>
+                    <button type="button" class="btn btn-sm aceptar" style="background:#134679;color:#fff;">
+                        <i class="fas fa-check mr-1"></i>Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="card-body px-4 pt-3">
+        <table class="table config-table dataTable">
+            <thead>
+            <tr>
+                <th style="width:3%">No.</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Coordenadas</th>
+                <th class="text-center" style="width:10%">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.nombreSede | default('') }}</td>
+                    <td>{{ item.direccionSede | default('') }}</td>
+                    <td>{{ item.coordenadasSede | default('') }}</td>
+                    <td class="text-center">
+                        <button title="Eliminar" class="btn btn-outline-danger btn-sm elementRemove"
+                                data-url="{{ path('app_institucion_eliminar_sede', {'id': item.id}) }}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-3"><i class="fas fa-inbox mr-1"></i>No hay sedes asignadas.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        let mymap = '';
+        let defaultLocation = '22.798971336311112, -82.76412963867189';
+        let defaultZoom = 10;
+        let locationMap = '';
+        let map_current_location = '';
+        let marker = '';
+
+        $('#institucion_sedes_coordenadasSede').click(function () {
+            $('#modalDetail').modal('show');
+            setTimeout(function () {
+                map_current_location = $('#institucion_sedes_coordenadasSede').val() ? $('#institucion_sedes_coordenadasSede').val() : '22.81258, -82.758293';
+                let options = { icon: 'fa-circle', iconColor: '#ffffff', markerColor: 'blue', shape: 'circle', prefix: 'fa' };
+
+                if ($('#institucion_sedes_coordenadasSede').val() !== '' && $('#institucion_sedes_coordenadasSede').val() !== null) {
+                    defaultLocation = $('#institucion_sedes_coordenadasSede').val();
+                    defaultZoom = 10;
+                }
+
+                if (mymap === '') {
+                    mymap = L.map('map').setView(L.latLng(defaultLocation.split(',').map(v => parseFloat(v))), defaultZoom);
+                    initFullScreem();
+                }
+
+                if ($('#institucion_sedes_coordenadasSede').val() !== '' && $('#institucion_sedes_coordenadasSede').val() !== null) {
+                    if (marker === '') {
+                        marker = create_extramarker(L.latLng($('#institucion_sedes_coordenadasSede').val().split(',').map(v => parseFloat(v))), options);
+                    } else {
+                        updateMarker(marker, L.latLng($('#institucion_sedes_coordenadasSede').val().split(',').map(v => parseFloat(v))).lat, L.latLng($('#institucion_sedes_coordenadasSede').val().split(',').map(v => parseFloat(v))).lng);
+                    }
+                } else {
+                    if (marker === '') {
+                        marker = create_extramarker(L.latLng(22.81258, -82.758293), options);
+                    } else {
+                        updateMarker(marker, 22.81258, -82.758293);
+                    }
+                }
+
+                marker.addTo(mymap);
+
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={{ mapbox_token|e('html_attr') }}', {
+                    attribution: '', maxZoom: 18, id: 'mapbox/streets-v11'
+                }).addTo(mymap);
+
+                mymap.addEventListener('click', (e) => {
+                    map_current_location = e.latlng.lat.toString() + ', ' + e.latlng.lng.toString();
+                    locationMap = map_current_location;
+                    updateMarker(marker, e.latlng.lat, e.latlng.lng);
+                });
+
+                function updateMarker(marker, lat, lng) {
+                    marker.setLatLng([lat, lng]).bindPopup(marker.getLatLng().toString()).openPopup();
+                }
+                function create_extramarker(latlng, options) {
+                    let markerIcon = L.ExtraMarkers.icon(options);
+                    return L.marker(latlng, { icon: markerIcon });
+                }
+                function initFullScreem() {
+                    L.control.fullscreen({
+                        position: 'topleft', title: 'Show fullscreen', titleCancel: 'Exit fullscreen',
+                        content: null, forceSeparateButton: true, fullscreenElement: false
+                    }).addTo(mymap);
+                }
+            }, 500);
+        });
+
+        $('.aceptar').click(function () {
+            $('#institucion_sedes_coordenadasSede').val(map_current_location);
+            $('#modalDetail').modal('hide');
+        });
+    });
+</script>
+{% endblock %}

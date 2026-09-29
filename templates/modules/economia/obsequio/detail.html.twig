@@ -1,0 +1,109 @@
+<style>
+    .detail-item { margin-bottom: 1rem; }
+    .detail-label { font-weight: 700; color: #4a5568; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.025em; display: block; margin-bottom: 2px; }
+    .detail-value { font-size: 0.95rem; color: #1a202c; }
+    .detail-icon { color: #134679; margin-right: 8px; opacity: 0.7; }
+    
+    .ms-status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .status-active { background: #d1fae5; color: #065f46; }
+    .status-inactive { background: #fee2e2; color: #991b1b; }
+
+    .detail-section-title {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #134679;
+        text-transform: uppercase;
+        border-bottom: 1px solid #edf2f7;
+        padding-bottom: 5px;
+        margin-bottom: 12px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="p-2">
+    <div class="detail-section-title"><i class="fas fa-info-circle mr-2"></i>Información Principal</div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-tag detail-icon"></i>Nombre</span>
+                <span class="detail-value font-weight-bold text-primary">{{ item.nombre | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-copyright detail-icon"></i>Marca</span>
+                <span class="detail-value">{{ item.marca | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-barcode detail-icon"></i>Modelo</span>
+                <span class="detail-value">{{ item.modelo | default('N/A') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section-title mt-2"><i class="fas fa-palette mr-2"></i>Características y Atributos</div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-fill-drip detail-icon"></i>Color</span>
+                <span class="detail-value">{{ item.color | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-ruler detail-icon"></i>Talla</span>
+                <span class="detail-value">{{ item.talla | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-box detail-icon"></i>Presentación</span>
+                <span class="detail-value">{{ item.presentacion | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-shapes detail-icon"></i>Tipo</span>
+                <span class="detail-value">{{ item.tipo | default('N/A') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-venus-mars detail-icon"></i>Género</span>
+                <span class="detail-value">{{ item.genero | default('N/A') }}</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="detail-item">
+                <span class="detail-label"><i class="fas fa-check-circle detail-icon"></i>Estado</span>
+                {% if '1' == item.activo %}
+                    <span class="ms-status-badge status-active"><i class="fas fa-check"></i> Habilitado</span>
+                {% else %}
+                    <span class="ms-status-badge status-inactive"><i class="fas fa-times"></i> Deshabilitado</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section-title mt-2"><i class="fas fa-align-left mr-2"></i>Descripción Adicional</div>
+    <div class="row">
+        <div class="col-12">
+            <div class="detail-item">
+                <span class="detail-value text-muted">{{ item.descripcion | default('Sin descripción adicional') }}</span>
+            </div>
+        </div>
+    </div>
+</div>

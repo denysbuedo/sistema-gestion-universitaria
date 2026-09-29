@@ -1,0 +1,307 @@
+<style>
+    .detail-info-card { background:#f8fafc; border-radius:10px; padding:16px 20px; margin-bottom:16px; border:1px solid #e2e8f0; }
+    .detail-label { font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+    .detail-value { font-size:0.9rem; font-weight:600; color:#1a2e44; }
+    .detail-section-title { font-size:0.78rem; font-weight:700; color:#134679; text-transform:uppercase; letter-spacing:0.5px; margin:18px 0 10px; display:flex; align-items:center; gap:6px; }
+    .detail-section-title::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+    .detail-table th { background:#f1f5f9; color:#4a5568; font-size:0.78rem; font-weight:700; border-color:#e2e8f0; padding:6px 10px; }
+    .detail-table td { font-size:0.82rem; color:#1a2e44; border-color:#e2e8f0; padding:5px 10px; vertical-align:middle; }
+    .inst-logo-detail { width:90px; height:90px; object-fit:contain; border-radius:10px; border:2px solid #e2e8f0; background:#fff; padding:6px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .inst-logo-fallback-lg { width:90px; height:90px; border-radius:10px; border:2px solid #dbeafe; background:linear-gradient(135deg,#134679,#1e6fb5); display:flex; align-items:center; justify-content:center; color:#fff; font-size:2.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.1); flex-shrink:0; }
+    .badge-cat { font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px; display:inline-block; }
+</style>
+
+{# ── Cabecera: logo + datos principales ── #}
+<div class="d-flex align-items-start mb-3" style="gap:20px;">
+    {% if item.logo != null %}
+    <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.logo }}" target="_blank">
+        <img src="{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.logo }}"
+             class="inst-logo-detail"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.nextElementSibling.style.display='flex';">
+    </a>
+    <div class="inst-logo-fallback-lg" style="display:none;"><i class="fas fa-university"></i></div>
+    {% else %}
+    <div class="inst-logo-fallback-lg"><i class="fas fa-university"></i></div>
+    {% endif %}
+    <div style="flex:1;">
+        <div style="font-size:1.1rem;font-weight:700;color:#1a2e44;margin-bottom:2px;">{{ item.nombre }}</div>
+        <div style="font-family:monospace;font-size:0.82rem;background:#f1f5f9;display:inline-block;padding:2px 8px;border-radius:4px;color:#475569;margin-bottom:6px;">{{ item.siglas }}</div>
+        {% if item.categoriaAcreditacion %}
+            {% set cat_colors = {
+                'A': 'background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;',
+                'B': 'background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;',
+                'C': 'background:#fef3c7;color:#b45309;border:1px solid #fde68a;',
+                'D': 'background:#fce7f3;color:#be185d;border:1px solid #fbcfe8;',
+                'E': 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;'
+            } %}
+            {% set cat_key = item.categoriaAcreditacion.nombre | slice(0,1) | upper %}
+            {% set cat_style = cat_colors[cat_key] | default('background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;') %}
+            <div><span class="badge-cat" style="{{ cat_style }}"><i class="fas fa-award mr-1" style="font-size:0.6rem;"></i>{{ item.categoriaAcreditacion.nombre }}</span></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Tipo de institución</div>
+            <div class="detail-value">{{ item.tipoInstitucion.nombre | default('—') }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Rector / Director</div>
+            <div class="detail-value">{{ item.gradoAcademicoRector.siglas | default('') }} {{ item.rector | default('—') }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Fecha de fundación</div>
+            <div class="detail-value">{{ item.fechaFundacion | date('d/m/Y') }}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Sitio web</div>
+            <div class="detail-value">
+                {% if item.sitioWeb %}
+                    <a href="{{ item.sitioWeb }}" target="_blank" style="color:#134679;">{{ item.sitioWeb }}</a>
+                {% else %}—{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Correo</div>
+            <div class="detail-value">{{ item.correo | default('—') }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="detail-info-card">
+            <div class="detail-label">Campus universitario</div>
+            <div class="detail-value">{{ item.campusUniversitario | default('—') }}</div>
+        </div>
+    </div>
+</div>
+{% if item.lema %}
+<div class="detail-info-card">
+    <div class="detail-label">Lema</div>
+    <div class="detail-value">{{ item.lema }}</div>
+</div>
+{% endif %}
+
+{# ── Sedes ── #}
+<div class="detail-section-title"><i class="fas fa-map-marker-alt"></i> Sedes universitarias</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Dirección</th><th>Coordenadas</th></tr></thead>
+    <tbody>
+    {% for sede in sedes %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ sede.nombreSede | default('') }}</td>
+            <td>{{ sede.direccionSede | default('') }}</td>
+            <td>{{ sede.coordenadasSede | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin sedes registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Facultades ── #}
+<div class="detail-section-title"><i class="fas fa-school"></i> Facultades</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for fac in facultades %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ fac.nombreFacultad | default('') }}</td>
+            <td>{{ fac.descripcionFacultad | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin facultades registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── FUM ── #}
+<div class="detail-section-title"><i class="fas fa-address-book"></i> Filiales universitarias municipales</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for f in fum %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ f.nombreFacultad | default('') }}</td>
+            <td>{{ f.descripcionFacultad | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin filiales registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── CUM ── #}
+<div class="detail-section-title"><i class="fas fa-address-card"></i> Centros universitarios municipales</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for c in cum %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ c.nombreFacultad | default('') }}</td>
+            <td>{{ c.descripcionFacultad | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin CUM registrados</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Centros de estudios ── #}
+<div class="detail-section-title"><i class="fas fa-university"></i> Centros de estudios</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for ce in centrosEstudios %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ ce.nombreCentroEstudio | default('') }}</td>
+            <td>{{ ce.descripcionCentroEstudio | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin centros registrados</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Pregrado ── #}
+<div class="detail-section-title"><i class="fas fa-graduation-cap"></i> Programas de pregrado</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Tipo</th><th>Categoría acreditación</th></tr></thead>
+    <tbody>
+    {% for p in programasPregradoNoCentroRector %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ p.solicitudProgramaAcademico.nombre | default('') }}</td>
+            <td>{{ p.solicitudProgramaAcademico.tipoProgramaAcademico.nombre | default('') }}</td>
+            <td>{{ p.solicitudProgramaAcademico.categoriaAcreditacion.nombre | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin programas registrados</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Posgrado ── #}
+<div class="detail-section-title"><i class="fas fa-user-graduate"></i> Programas de posgrado</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Tipo</th><th>Categoría acreditación</th></tr></thead>
+    <tbody>
+    {% for p in programasPostgrado %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ p.nombre | default('') }}</td>
+            <td>{{ p.tipoPrograma.nombre | default('') }}</td>
+            <td>{{ p.categoriaAcreditacion.nombre | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin programas registrados</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Redes sociales ── #}
+<div class="detail-section-title"><i class="fas fa-network-wired"></i> Redes sociales</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Red social</th><th>Perfil</th></tr></thead>
+    <tbody>
+    {% for rs in redesSociales %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ rs.redSocial.nombre | default('') }}</td>
+            <td>{{ rs.perfil | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin redes sociales</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Redes ── #}
+<div class="detail-section-title"><i class="fas fa-globe"></i> Redes nacionales e internacionales</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Rol</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for r in redes %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ r.nombreRed | default('') }}</td>
+            <td>{{ r.RolRedes.nombre | default('') }}</td>
+            <td>{{ r.descripcionRed | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin redes registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Revistas ── #}
+<div class="detail-section-title"><i class="fas fa-book-open"></i> Revistas científicas</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Visibilidad</th><th>Indexada en</th><th>Dirección electrónica</th></tr></thead>
+    <tbody>
+    {% for rv in revistas %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ rv.nombreRevista | default('') }}</td>
+            <td>{{ rv.visibilidad.nombre | default('') }}</td>
+            <td>{{ rv.indexadaEn | default('') }}</td>
+            <td>{{ rv.direccionElectronicaRevista | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin revistas registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Editoriales ── #}
+<div class="detail-section-title"><i class="fas fa-book"></i> Editoriales</div>
+<table class="table detail-table table-bordered table-striped dataTable">
+    <thead><tr><th>No.</th><th>Nombre</th><th>Dirección electrónica</th><th>Descripción</th></tr></thead>
+    <tbody>
+    {% for ed in editoriales %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ ed.nombreEditorial | default('') }}</td>
+            <td>{{ ed.direccionElectronicaEditorial | default('') }}</td>
+            <td>{{ ed.descripcionEditorial | default('') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3" style="font-size:0.82rem;">Sin editoriales registradas</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{# ── Recursos humanos ── #}
+<div class="detail-section-title"><i class="fas fa-users"></i> Recursos humanos</div>
+<table class="table detail-table table-bordered table-striped dataTable" id="tbl-carrera">
+    <thead><tr><th>No.</th><th>Recurso humano</th><th>Cantidad</th></tr></thead>
+    <tbody>
+    {% for rh in recursosHumanos %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ rh.nombre }}</td>
+            <td width="20%">
+                <input style="width:100%;border-radius:6px;border:1px solid #e2e8f0;padding:4px 8px;font-size:0.85rem;"
+                       type="text" id="rh_{{ rh.id }}" name="rh_{{ rh.id }}"
+                       maxlength="4" minlength="1"
+                       value="{{ recursosHumanosAsignados[rh.id] | default(0) }}">
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

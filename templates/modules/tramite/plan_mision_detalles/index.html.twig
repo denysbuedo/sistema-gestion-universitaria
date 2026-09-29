@@ -1,0 +1,970 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Planes de misión{% endblock %}
+
+{% block body %}
+<style>
+    /* ── Card base ── */
+    .card-lux {
+        border-radius: 14px;
+        border: none;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        border-top: 4px solid #134679;
+        margin-bottom: 20px;
+        background: #fff;
+        overflow: hidden;
+    }
+    .card-lux-header {
+        padding: 14px 22px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .card-lux-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: #eef3fa;
+        display: flex; align-items: center; justify-content: center;
+        color: #134679; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .card-lux-title { font-size: 0.92rem; font-weight: 700; color: #1a2e44; margin: 0; flex: 1; }
+
+    /* ── Selector de plan ── */
+    .plan-selector-wrap {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, #134679 0%, #1a5c9a 100%);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .plan-selector-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 5px;
+    }
+    .plan-selector-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .plan-selector-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.15);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .plan-select-styled {
+        background: rgba(255,255,255,0.12);
+        border: 1.5px solid rgba(255,255,255,0.25);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 8px 36px 8px 14px;
+        min-width: 260px;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+    }
+    .plan-select-styled:focus { outline: none; border-color: rgba(255,255,255,0.6); background-color: rgba(255,255,255,0.2); }
+    .plan-select-styled option { background: #134679; color: #fff; }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid #f1f5f9;
+    }
+    .stat-item {
+        flex: 1;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-right: 1px solid #f1f5f9;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-icon {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; flex-shrink: 0;
+    }
+    .stat-icon.blue  { background: #eef3fa; color: #134679; }
+    .stat-icon.green { background: #dcfce7; color: #15803d; }
+    .stat-icon.amber { background: #fff7ed; color: #c2410c; }
+    .stat-val { font-size: 1.2rem; font-weight: 800; color: #1a2e44; line-height: 1; }
+    .stat-lbl { font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing:.04em; margin-top:2px; }
+
+    /* ── Grid de personas ── */
+    .personas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 14px;
+        padding: 20px 22px;
+    }
+
+    .persona-card {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s, border-color .2s;
+        background: #fff;
+    }
+    .persona-card:hover { box-shadow: 0 4px 16px rgba(19,70,121,0.10); border-color: #93c5fd; }
+
+    .persona-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        background: #f8fafc;
+    }
+    .persona-avatar {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background: #134679;
+        color: #fff;
+        font-size: 0.88rem;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        text-transform: uppercase;
+    }
+    .persona-name { font-size: 0.85rem; font-weight: 700; color: #1a2e44; line-height: 1.3; }
+    .persona-cargo { font-size: 0.72rem; color: #64748b; margin-top: 1px; }
+
+    .persona-card-body {
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 0.8rem;
+    }
+    .detail-row-icon {
+        width: 20px; height: 20px;
+        border-radius: 5px;
+        background: #f1f5f9;
+        display: flex; align-items: center; justify-content: center;
+        color: #134679; font-size: 0.65rem;
+        flex-shrink: 0; margin-top: 1px;
+    }
+    .detail-row-label { color: #94a3b8; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing:.03em; white-space:nowrap; }
+    .detail-row-val   { color: #1a2e44; font-weight: 500; line-height: 1.4; }
+
+    .persona-card-footer {
+        padding: 8px 16px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        gap: 6px;
+        background: #fafbfc;
+    }
+    .tag-pill {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 3px 10px; border-radius: 20px;
+        font-size: 0.7rem; font-weight: 700;
+    }
+    .tag-pill.blue  { background: #eef3fa; color: #134679; }
+    .tag-pill.amber { background: #fff7ed; color: #c2410c; }
+    .tag-pill.green { background: #dcfce7; color: #15803d; }
+
+    /* ── Filtros ── */
+    .filter-bar {
+        padding: 12px 22px;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fff;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .filter-row {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .filter-row-2 { padding-top: 8px; border-top: 1px dashed #e2e8f0; }
+    .filter-group {
+        display: flex; align-items: center; gap: 8px;
+    }
+    .filter-label {
+        font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+        text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+    }
+    .search-input-wrap { position: relative; flex: 2; min-width: 180px; }
+    .search-input-wrap input {
+        width: 100%; padding: 7px 10px 7px 32px;
+        border: 1.5px solid #e2e8f0; border-radius: 8px;
+        font-size: 0.82rem; color: #1a2e44; background: #f8fafc;
+        transition: border-color .2s; box-sizing: border-box;
+    }
+    .search-input-wrap input:focus { border-color: #134679; outline: none; background: #fff; }
+    .search-input-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.78rem; }
+    .filter-select {
+        border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 28px 6px 10px;
+        font-size: 0.8rem; color: #1a2e44; background: #f8fafc
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 8px center;
+        appearance: none; cursor: pointer; min-width: 150px;
+        transition: border-color .2s;
+    }
+    .filter-select:focus { border-color: #134679; outline: none; background-color: #fff; }
+    .filter-select-op {
+        border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 28px 6px 10px;
+        font-size: 0.8rem; color: #1a2e44; background: #f8fafc
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 8px center;
+        appearance: none; cursor: pointer;
+        transition: border-color .2s;
+    }
+    .filter-select-op:focus { border-color: #134679; outline: none; }
+    /* ── Date range picker custom ── */
+    .drp-trigger {
+        display: inline-flex; align-items: center; gap: 8px;
+        border: 1.5px solid #e2e8f0; border-radius: 8px;
+        padding: 6px 12px; font-size: 0.8rem; color: #1a2e44;
+        background: #f8fafc; cursor: pointer; transition: border-color .2s;
+        white-space: nowrap; min-width: 220px; user-select: none;
+    }
+    .drp-trigger:hover, .drp-trigger.active { border-color: #134679; background: #fff; }
+    .drp-trigger .drp-icon { color: #134679; font-size: 0.85rem; }
+    .drp-trigger .drp-text { flex: 1; font-weight: 500; }
+    .drp-trigger .drp-clear { color: #94a3b8; font-size: 0.72rem; padding: 1px 4px; border-radius: 4px; }
+    .drp-trigger .drp-clear:hover { background: #fee2e2; color: #dc2626; }
+
+    /* Panel flotante */
+    #drp-panel {
+        display: none; position: absolute; z-index: 9999;
+        background: #fff; border-radius: 14px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+        overflow: hidden; font-size: 0.82rem; color: #1a2e44;
+        top: calc(100% + 6px); left: 0; min-width: 320px;
+    }
+    #drp-panel.open { display: block; }
+
+    /* Cabecera inputs — solo en modo custom */
+    .drp-header {
+        padding: 14px 18px 10px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex; gap: 10px; align-items: center;
+    }
+    .drp-input-wrap {
+        flex: 1; border: 1.5px solid #e2e8f0; border-radius: 8px;
+        padding: 7px 10px; display: flex; align-items: center; gap: 6px;
+        background: #fafafa; transition: border-color .2s;
+    }
+    .drp-input-wrap.drp-focused { border-color: #134679; background: #fff; }
+    .drp-input-wrap .drp-in-icon { color: #94a3b8; font-size: 0.82rem; }
+    .drp-input-wrap input {
+        border: none; outline: none; background: transparent;
+        font-size: 0.82rem; color: #1a2e44; width: 100%; font-weight: 500;
+    }
+    .drp-input-wrap input::placeholder { color: #94a3b8; font-weight: 400; }
+
+    /* Presets: siempre visibles */
+    .drp-presets {
+        display: grid; grid-template-columns: 1fr 1fr;
+        padding: 8px 12px; gap: 1px;
+    }
+    .drp-preset {
+        padding: 9px 12px; border-radius: 7px; cursor: pointer;
+        font-size: 0.82rem; font-weight: 500; color: #374151;
+        transition: background .12s, color .12s;
+    }
+    .drp-preset:hover { background: #f1f5f9; }
+    .drp-preset.active { color: #134679; font-weight: 700; }
+
+    /* Calendarios — solo en modo custom */
+    .drp-calendars {
+        display: flex; padding: 10px 14px 12px;
+        border-top: 1px solid #f1f5f9; gap: 12px;
+    }
+    .drp-cal { flex: 1; min-width: 0; }
+    .drp-cal + .drp-cal { border-left: 1px solid #f1f5f9; padding-left: 12px; }
+    .drp-cal-nav {
+        display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+    }
+    .drp-cal-nav span { font-size: 0.78rem; font-weight: 700; color: #1a2e44; }
+    .drp-cal-nav button {
+        border: none; background: none; color: #94a3b8;
+        cursor: pointer; padding: 3px 5px; border-radius: 5px; font-size: 0.72rem;
+        transition: background .12s;
+    }
+    .drp-cal-nav button:hover { background: #f1f5f9; color: #134679; }
+    .drp-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
+    .drp-cal-dh { text-align:center; font-size:0.65rem; font-weight:700; color:#94a3b8; padding:2px 0 5px; }
+    .drp-day {
+        text-align:center; padding:5px 1px; border-radius:5px;
+        cursor:pointer; font-size:0.75rem; color:#374151; line-height:1.2;
+        transition: background .1s, color .1s;
+    }
+    .drp-day:hover:not(.drp-day-empty) { background:#f1f5f9; color:#134679; }
+    .drp-day.drp-day-empty { cursor:default; }
+    .drp-day.drp-in-range { background:#eef3fa; color:#134679; border-radius:0; }
+    .drp-day.drp-range-start { background:#134679!important; color:#fff!important; border-radius:5px!important; }
+    .drp-day.drp-range-end   { background:#134679!important; color:#fff!important; border-radius:5px!important; }
+    .drp-day.drp-today:not(.drp-range-start):not(.drp-range-end) { color:#134679; font-weight:700; }
+    .filter-dias-wrap { display: flex; align-items: center; gap: 6px; }
+    .filter-input-num {
+        border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 10px;
+        font-size: 0.8rem; color: #1a2e44; background: #f8fafc; width: 90px;
+        transition: border-color .2s;
+    }
+    .filter-input-num:focus { border-color: #134679; outline: none; background: #fff; }
+    .btn-clear-filters {
+        padding: 5px 12px; border-radius: 8px; border: 1.5px solid #fecaca;
+        background: #fff; color: #dc2626; font-size: 0.75rem; font-weight: 700;
+        cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+        transition: all .15s;
+    }
+    .btn-clear-filters:hover { background: #fee2e2; }
+    .results-info { font-size: 0.75rem; color: #94a3b8; white-space: nowrap; }
+
+    /* ── Paginación ── */
+    .pag-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 22px;
+        border-top: 1px solid #f1f5f9;
+        background: #fafbfc;
+        border-radius: 0 0 14px 14px;
+        flex-wrap: wrap; gap: 8px;
+    }
+    .pag-btn {
+        min-width: 32px; height: 32px; padding: 0 8px;
+        border-radius: 8px; border: 1.5px solid #e2e8f0;
+        background: #fff; color: #64748b;
+        font-size: 0.78rem; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: all .15s;
+    }
+    .pag-btn:hover:not(:disabled) { border-color: #134679; color: #134679; background: #eef3fa; }
+    .pag-btn.active { background: #134679; color: #fff; border-color: #134679; }
+    .pag-btn:disabled { opacity: .38; cursor: not-allowed; }
+    .pag-btns { display: flex; gap: 4px; }
+    .per-page-select {
+        border: 1.5px solid #e2e8f0; border-radius: 8px;
+        padding: 4px 28px 4px 10px; font-size: 0.78rem; color: #64748b;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 8px center;
+        appearance: none; cursor: pointer;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        color: #94a3b8;
+    }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; display: block; opacity: .3; }
+    .empty-state p { font-size: 0.85rem; margin: 0; }
+
+    /* ── Btn ── */
+    .btn-lux-sm {
+        padding: 7px 16px; border-radius: 8px; font-weight: 700; font-size: 0.75rem;
+        border: none; display: inline-flex; align-items: center; gap: 5px;
+        text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+        .plan-selector-wrap { padding: 14px 16px; gap: 12px; }
+        .plan-selector-title { font-size: 0.88rem; }
+        .plan-select-styled { min-width: 0; width: 100%; font-size: 0.82rem; }
+        .plan-selector-wrap > div:last-child { width: 100%; }
+
+        .stats-strip { flex-wrap: wrap; }
+        .stat-item { flex: 1 1 45%; border-right: none; border-bottom: 1px solid #f1f5f9; padding: 10px 14px; }
+        .stat-item:nth-child(odd) { border-right: 1px solid #f1f5f9; }
+        .stat-item:last-child { border-bottom: none; }
+
+        .filter-bar { padding: 10px 14px; }
+        .filter-row { gap: 8px; }
+        .search-input-wrap { flex: 1 1 100%; min-width: 0; }
+        .filter-select { min-width: 0; flex: 1 1 calc(50% - 4px); }
+        .per-page-select { flex: 1 1 calc(50% - 4px); }
+        .filter-group { flex-wrap: wrap; gap: 6px; }
+        .filter-label { width: 100%; }
+        .drp-trigger { width: 100%; }
+        .filter-dias-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-select-op { flex: 1; }
+        .filter-input-num { width: 80px; }
+        .filter-row-2 > div:last-child { width: 100%; justify-content: space-between; margin-left: 0 !important; }
+
+        .personas-grid { grid-template-columns: 1fr; padding: 12px 14px; gap: 10px; }
+
+        #drp-panel { position: fixed; left: 10px; right: 10px; width: auto; top: auto; bottom: 60px; max-height: 80vh; overflow-y: auto; }
+        .drp-calendars { flex-direction: column; gap: 12px; }
+        .drp-cal + .drp-cal { border-left: none; padding-left: 0; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+
+        .pag-bar { padding: 10px 14px; }
+        .card-lux-header { padding: 12px 16px; }
+    }
+
+    @media (max-width: 480px) {
+        .stat-item { flex: 1 1 100%; border-right: none; }
+        .stat-item:nth-child(odd) { border-right: none; }
+        .personas-grid { padding: 10px; }
+        .persona-card-header { padding: 10px 12px; }
+        .persona-card-body { padding: 10px 12px; }
+        .persona-card-footer { padding: 6px 12px; flex-wrap: wrap; }
+    }
+</style>
+
+{% include 'pages/modalDetail.html.twig' %}
+
+{# ── Card principal ── #}
+<div class="card-lux" style="border-top:none; overflow:visible;">
+
+    {# Selector de plan con fondo azul #}
+    <div class="plan-selector-wrap" style="border-radius:14px 14px 0 0;">
+        <div class="plan-selector-icon"><i class="fas fa-map-marked-alt"></i></div>
+        <div style="flex:1; min-width:0;">
+            <div class="plan-selector-label">Módulo</div>
+            <div class="plan-selector-title">Detalles de Plan de Misión</div>
+        </div>
+        <div>
+            <div class="plan-selector-label">Plan seleccionado</div>
+            <select id="planMision" name="planMision" class="plan-select-styled no-select2">
+                <option value="">— Seleccione un plan —</option>
+                {% for item2 in registros %}
+                    <option {% if item2.id == last %}selected{% endif %} value="{{ item2.id }}">{{ item2.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    {# Stats strip #}
+    {% if registrosAsignados | length > 0 %}
+    <div class="stats-strip">
+        <div class="stat-item">
+            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+            <div>
+                <div class="stat-val">{{ registrosAsignados | length }}</div>
+                <div class="stat-lbl">Personas asignadas</div>
+            </div>
+        </div>
+        {% set paises = [] %}
+        {% for item in registrosAsignados %}
+            {% if item.pais is not null and item.pais.nombre not in paises %}
+                {% set paises = paises | merge([item.pais.nombre]) %}
+            {% endif %}
+        {% endfor %}
+        <div class="stat-item">
+            <div class="stat-icon green"><i class="fas fa-globe-americas"></i></div>
+            <div>
+                <div class="stat-val">{{ paises | length }}</div>
+                <div class="stat-lbl">Países destino</div>
+            </div>
+        </div>
+        {% set totalDias = 0 %}
+        {% for item in registrosAsignados %}
+            {% set totalDias = totalDias + (item.duracion | default(0)) %}
+        {% endfor %}
+        <div class="stat-item">
+            <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="stat-val">{{ totalDias }}</div>
+                <div class="stat-lbl">Total días acumulados</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Grid de personas #}
+    {% if registrosAsignados | length > 0 %}
+
+    {# Barra de filtros #}
+    <div class="filter-bar">
+        {# Fila 1: búsqueda texto + país + por página #}
+        <div class="filter-row">
+            <div class="search-input-wrap" style="flex:2; min-width:180px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="grid-search" placeholder="Buscar por nombre, cargo o país...">
+            </div>
+            <select class="filter-select no-select2" id="filter-pais" title="País">
+                <option value="">Todos los países</option>
+                {% set paisesOpts = [] %}
+                {% for item in registrosAsignados %}
+                    {% if item.pais is not null and item.pais.nombre not in paisesOpts %}
+                        {% set paisesOpts = paisesOpts | merge([item.pais.nombre]) %}
+                    {% endif %}
+                {% endfor %}
+                {% for p in paisesOpts | sort %}
+                    <option value="{{ p }}">{{ p }}</option>
+                {% endfor %}
+            </select>
+            <select class="per-page-select no-select2" id="per-page-select">
+                <option value="12">12 por página</option>
+                <option value="24">24 por página</option>
+                <option value="48">48 por página</option>
+            </select>
+        </div>
+        {# Fila 2: filtro fecha + filtro días #}
+        <div class="filter-row filter-row-2">
+            <div class="filter-group">
+                <span class="filter-label"><i class="far fa-calendar-alt"></i> Fecha</span>
+                {# Inputs ocultos — el JS los llena #}
+                <input type="hidden" id="filter-fecha-desde">
+                <input type="hidden" id="filter-fecha-hasta">
+                <div style="position:relative;">
+                    <button type="button" class="drp-trigger" id="drp-btn">
+                        <i class="far fa-calendar-alt drp-icon"></i>
+                        <span class="drp-text" id="drp-label">Seleccione un período</span>
+                        <span class="drp-clear" id="drp-clear" title="Limpiar fecha" style="display:none;"><i class="fas fa-times"></i></span>
+                    </button>
+                    <div id="drp-panel">
+                        {# Título del panel #}
+                        <div style="padding:14px 18px 0; font-size:0.82rem; font-weight:700; color:#1a2e44;">
+                            Seleccione un período
+                        </div>
+                        {# Inputs personalizados — visibles solo en modo custom #}
+                        <div class="drp-header" id="drp-custom-header" style="display:none;">
+                            <div class="drp-input-wrap" id="drp-from-wrap">
+                                <i class="far fa-calendar drp-in-icon"></i>
+                                <input type="text" id="drp-from-input" placeholder="Inicial" readonly>
+                            </div>
+                            <i class="fas fa-arrow-right" style="font-size:0.65rem;color:#cbd5e1;flex-shrink:0;"></i>
+                            <div class="drp-input-wrap" id="drp-to-wrap">
+                                <i class="far fa-calendar drp-in-icon"></i>
+                                <input type="text" id="drp-to-input" placeholder="Final" readonly>
+                            </div>
+                        </div>
+                        {# Presets — siempre visibles #}
+                        <div class="drp-presets" id="drp-presets"></div>
+                        {# Calendarios — solo en modo custom #}
+                        <div class="drp-calendars" id="drp-calendars" style="display:none;">
+                            <div class="drp-cal" id="drp-cal-left"></div>
+                            <div class="drp-cal" id="drp-cal-right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label"><i class="fas fa-clock"></i> Días</span>
+                <div class="filter-dias-wrap">
+                    <select class="filter-select-op no-select2" id="filter-dias-op">
+                        <option value="">Sin filtro</option>
+                        <option value="gt">Mayor que</option>
+                        <option value="lt">Menor que</option>
+                        <option value="eq">Igual a</option>
+                    </select>
+                    <input type="number" class="filter-input-num" id="filter-dias-val" placeholder="Nº días" min="0" style="display:none;">
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+                <span class="results-info" id="grid-info"></span>
+                <button type="button" class="btn-clear-filters" id="btn-clear-filters" style="display:none;">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="personas-grid" id="personas-grid">
+        {% for item in registrosAsignados %}
+        <div class="persona-card"
+             data-pais="{{ item.pais.nombre | default('') }}"
+             data-fecha="{{ item.fecha is not null ? item.fecha | date('Y-m-d') : '' }}"
+             data-dias="{{ item.duracion | default('') }}">
+            <div class="persona-card-header">
+                <div class="persona-avatar">
+                    {{ item.persona.primerNombre | slice(0,1) }}{{ item.persona.primerApellido | slice(0,1) }}
+                </div>
+                <div style="min-width:0;">
+                    <div class="persona-name">
+                        {{ item.persona.primerNombre ~ ' ' ~ (item.persona.segundoNombre ?? '') ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ (item.persona.segundoApellido ?? '') }}
+                    </div>
+                    <div class="persona-cargo">
+                        {{ item.persona.responsabilidad.nombre | default('Sin cargo') }}
+                        {% if item.persona.estructura is not null %}
+                            · {{ item.persona.estructura.nombre }}
+                        {% endif %}
+                    </div>
+                </div>
+                <span style="margin-left:auto; font-size:0.72rem; font-weight:700; color:#94a3b8; flex-shrink:0;">#{{ loop.index }}</span>
+            </div>
+            <div class="persona-card-body">
+                <div class="detail-row">
+                    <div class="detail-row-icon"><i class="fas fa-globe-americas"></i></div>
+                    <div>
+                        <div class="detail-row-label">País destino</div>
+                        <div class="detail-row-val">{{ item.pais.nombre | default('—') }}</div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-row-icon"><i class="fas fa-bullseye"></i></div>
+                    <div>
+                        <div class="detail-row-label">Objetivo</div>
+                        <div class="detail-row-val">{{ item.objetivo | default('—') }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="persona-card-footer">
+                <span class="tag-pill blue">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ item.fecha | date('d/m/Y') }}
+                </span>
+                {% if item.duracion is not null %}
+                <span class="tag-pill amber">
+                    <i class="fas fa-clock"></i>
+                    {{ item.duracion }} días
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Paginador #}
+    <div class="pag-bar">
+        <span id="pag-info" style="font-size:0.75rem; color:#94a3b8;"></span>
+        <div class="pag-btns" id="pag-btns"></div>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-map-marked-alt"></i>
+        <p>
+            {% if last %}
+                No hay personas asignadas a este plan de misión.
+            {% else %}
+                Seleccione un plan de misión para ver sus detalles.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block stylesheets %}{{ parent() }}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+
+            // ── Cambio de plan ──
+            $('#planMision').on('change', function () {
+                var val = $(this).val();
+                if (val !== "") {
+                    HoldOn.open({ theme: "sk-cube-grid", message: 'Cargando...', textColor: "white" });
+                    var url = "{{ path('app_cambio_filtro_plan', {'id': 'idP'}) }}".replace('idP', val);
+                    $.get(url, function () { HoldOn.close(); window.location.reload(); });
+                }
+            });
+
+            // ── Estado de filtros ──
+            var perPage    = 12;
+            var currentPag = 1;
+
+            function hasActiveFilters() {
+                return $('#grid-search').val().trim() !== ''
+                    || $('#filter-pais').val() !== ''
+                    || $('#filter-fecha-desde').val() !== ''
+                    || $('#filter-fecha-hasta').val() !== ''
+                    || ($('#filter-dias-op').val() !== '' && $('#filter-dias-val').val().trim() !== '');
+            }
+
+            function applyFilters() {
+                var q         = $('#grid-search').val().toLowerCase().trim();
+                var pais      = $('#filter-pais').val().toLowerCase().trim();
+                var fechaD    = $('#filter-fecha-desde').val();
+                var fechaH    = $('#filter-fecha-hasta').val();
+                var diasOp    = $('#filter-dias-op').val();
+                var diasVal   = parseInt($('#filter-dias-val').val());
+
+                return $('#personas-grid .persona-card').filter(function() {
+                    var $c = $(this);
+                    if (q && !$c.text().toLowerCase().includes(q)) return false;
+                    if (pais && $c.data('pais').toLowerCase() !== pais) return false;
+                    var cardFecha = $c.data('fecha');
+                    if (fechaD && cardFecha && cardFecha < fechaD) return false;
+                    if (fechaH && cardFecha && cardFecha > fechaH) return false;
+                    if (diasOp && !isNaN(diasVal)) {
+                        var cardDias = parseInt($c.data('dias'));
+                        if (isNaN(cardDias)) return false;
+                        if (diasOp === 'gt' && !(cardDias > diasVal))  return false;
+                        if (diasOp === 'lt' && !(cardDias < diasVal))  return false;
+                        if (diasOp === 'eq' && !(cardDias === diasVal)) return false;
+                    }
+                    return true;
+                }).toArray();
+            }
+
+            function renderGrid() {
+                var all    = applyFilters();
+                var total  = all.length;
+                var totalP = Math.max(1, Math.ceil(total / perPage));
+                if (currentPag > totalP) currentPag = totalP;
+
+                var start = (currentPag - 1) * perPage;
+                var end   = start + perPage;
+
+                $('#personas-grid .persona-card').hide();
+                $(all).slice(start, end).each(function() { $(this).show(); });
+
+                var from = total === 0 ? 0 : start + 1;
+                var to   = Math.min(end, total);
+                $('#grid-info').text(total + ' resultado' + (total !== 1 ? 's' : ''));
+                $('#pag-info').text('Mostrando ' + from + '–' + to + ' de ' + total);
+                $('#btn-clear-filters').toggle(hasActiveFilters());
+
+                var h = '<button class="pag-btn" data-action="prev" ' + (currentPag === 1 ? 'disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+                var s = Math.max(1, currentPag - 2);
+                var e = Math.min(totalP, s + 4);
+                for (var p = s; p <= e; p++) {
+                    h += '<button class="pag-btn ' + (p === currentPag ? 'active' : '') + '" data-action="go" data-page="' + p + '">' + p + '</button>';
+                }
+                h += '<button class="pag-btn" data-action="next" ' + (currentPag >= totalP ? 'disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+                $('#pag-btns').html(h);
+                $('.pag-bar').toggle(total > perPage);
+            }
+
+            function resetPage() { currentPag = 1; renderGrid(); }
+
+            // ── Date Range Picker ──
+            var DRP = (function(){
+                var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                var WEEK   = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+                var start=null, end=null, hover=null, customMode=false;
+                var leftM, rightM;
+
+                function p(n){ return n<10?'0'+n:n; }
+                function fmt(d){ return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear(); }
+                function iso(d){ return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+                function same(a,b){ return a&&b&&a.toDateString()===b.toDateString(); }
+                function clone(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+                function addD(d,n){ var c=clone(d); c.setDate(c.getDate()+n); return c; }
+                function addM(d,n){ return new Date(d.getFullYear(),d.getMonth()+n,1); }
+                function sow(d){ var c=clone(d),w=c.getDay()||7; c.setDate(c.getDate()-w+1); return c; }
+                function eow(d){ var c=sow(d); c.setDate(c.getDate()+6); return c; }
+                function som(d){ return new Date(d.getFullYear(),d.getMonth(),1); }
+                function eom(d){ return new Date(d.getFullYear(),d.getMonth()+1,0); }
+                function soy(d){ return new Date(d.getFullYear(),0,1); }
+                function eoy(d){ return new Date(d.getFullYear(),11,31); }
+
+                var PRESETS = [
+                    {l:'Hoy',           f:function(){ var t=clone(new Date()); return [t,t]; }},
+                    {l:'Ayer',          f:function(){ var y=addD(new Date(),-1); return [y,y]; }},
+                    {l:'Esta semana',   f:function(){ return [sow(new Date()),eow(new Date())]; }},
+                    {l:'Semana pasada', f:function(){ var t=addD(new Date(),-7); return [sow(t),eow(t)]; }},
+                    {l:'Este mes',      f:function(){ return [som(new Date()),eom(new Date())]; }},
+                    {l:'Mes pasado',    f:function(){ var t=addM(new Date(),-1); return [som(t),eom(t)]; }},
+                    {l:'Este año',      f:function(){ return [soy(new Date()),eoy(new Date())]; }},
+                    {l:'El año pasado', f:function(){ var t=addM(new Date(),-12); return [soy(t),eoy(t)]; }}
+                ];
+
+                function activeIdx(){
+                    if(!start||!end) return -1;
+                    for(var i=0;i<PRESETS.length;i++){
+                        var r=PRESETS[i].f();
+                        if(same(start,r[0])&&same(end,r[1])) return i;
+                    }
+                    return -1;
+                }
+
+                function renderPresets(){
+                    var ai=activeIdx();
+                    var h='';
+                    PRESETS.forEach(function(p,i){
+                        h+='<div class="drp-preset'+(i===ai?' active':'')+'" data-pi="'+i+'">'+p.l+'</div>';
+                    });
+                    // Fechas personalizadas — span 2 cols
+                    var isCustom = customMode||(start&&activeIdx()===-1);
+                    h+='<div class="drp-preset drp-custom-btn'+(isCustom?' active':'')+'" style="grid-column:span 2;border-top:1px solid #f1f5f9;margin-top:4px;padding-top:10px;color:#134679;font-weight:600;"><i class="far fa-calendar-alt mr-1"></i>Fechas personalizadas</div>';
+                    $('#drp-presets').html(h);
+                }
+
+                function renderCal(id, mDate){
+                    var y=mDate.getFullYear(),m=mDate.getMonth();
+                    var fd=new Date(y,m,1).getDay()||7;
+                    var dm=new Date(y,m+1,0).getDate();
+                    var today=clone(new Date());
+                    var h='<div class="drp-cal-nav">'
+                        +'<button type="button" class="drp-nav-btn" data-dir="-1" data-cal="'+id+'"><i class="fas fa-chevron-left"></i></button>'
+                        +'<span>'+MONTHS[m]+' '+y+'</span>'
+                        +'<button type="button" class="drp-nav-btn" data-dir="1" data-cal="'+id+'"><i class="fas fa-chevron-right"></i></button>'
+                        +'</div><div class="drp-cal-grid">';
+                    WEEK.forEach(function(w){ h+='<div class="drp-cal-dh">'+w+'</div>'; });
+                    for(var i=1;i<fd;i++) h+='<div class="drp-day drp-day-empty"></div>';
+                    for(var d=1;d<=dm;d++){
+                        var dt=new Date(y,m,d);
+                        var effEnd=end||(start&&hover?hover:null);
+                        var lo=null,hi=null;
+                        if(start&&effEnd){ lo=start<=effEnd?start:effEnd; hi=start<=effEnd?effEnd:start; }
+                        var cls='drp-day';
+                        if(same(dt,today)) cls+=' drp-today';
+                        if(start&&same(dt,start)) cls+=' drp-range-start';
+                        if(end&&same(dt,end)) cls+=' drp-range-end';
+                        if(lo&&hi&&dt>lo&&dt<hi) cls+=' drp-in-range';
+                        h+='<div class="'+cls+'" data-date="'+iso(dt)+'">'+d+'</div>';
+                    }
+                    h+='</div>';
+                    $('#'+id).html(h);
+                }
+
+                function renderCals(){
+                    renderCal('drp-cal-left',leftM);
+                    renderCal('drp-cal-right',rightM);
+                    $('#drp-from-input').val(start?fmt(start):'');
+                    $('#drp-to-input').val(end?fmt(end):'');
+                }
+
+                function setCustom(on){
+                    customMode=on;
+                    $('#drp-custom-header').toggle(on);
+                    $('#drp-calendars').toggle(on);
+                }
+
+                function commit(s,e){
+                    var lo=s<=e?s:e, hi=s<=e?e:s;
+                    start=lo; end=hi;
+                    $('#filter-fecha-desde').val(iso(lo));
+                    $('#filter-fecha-hasta').val(iso(hi));
+                    $('#drp-label').text(fmt(lo)+' — '+fmt(hi));
+                    $('#drp-clear').show();
+                    $('#drp-btn').addClass('active');
+                    $('#drp-panel').removeClass('open');
+                    setCustom(false);
+                    // triggerFilter llamado desde fuera
+                    resetPage();
+                }
+
+                function clear(){
+                    start=end=hover=null;
+                    customMode=false;
+                    $('#filter-fecha-desde,#filter-fecha-hasta').val('');
+                    $('#drp-label').text('Seleccione un período');
+                    $('#drp-clear').hide();
+                    $('#drp-btn').removeClass('active');
+                    setCustom(false);
+                    renderPresets();
+                    resetPage();
+                }
+
+                function open(){
+                    setCustom(false);
+                    renderPresets();
+                    $('#drp-panel').addClass('open');
+                }
+                function close(){ $('#drp-panel').removeClass('open'); }
+                function toggle(){ $('#drp-panel').hasClass('open')?close():open(); }
+
+                // Init meses
+                leftM  = som(new Date());
+                rightM = addM(leftM,1);
+
+                // ── Eventos ──
+                $('#drp-btn').on('click',function(e){ e.stopPropagation(); toggle(); });
+                $(document).on('click',function(e){
+                    if(!$(e.target).closest('#drp-panel,#drp-btn').length) close();
+                });
+                $('#drp-panel').on('click',function(e){ e.stopPropagation(); });
+
+                // Preset normal
+                $('#drp-panel').on('click','.drp-preset[data-pi]',function(){
+                    var i=parseInt($(this).data('pi'));
+                    if(isNaN(i)||i<0||i>=PRESETS.length) return;
+                    var r=PRESETS[i].f();
+                    commit(r[0],r[1]);
+                });
+
+                // Fechas personalizadas
+                $('#drp-panel').on('click','.drp-custom-btn',function(){
+                    start=null; end=null; hover=null;
+                    leftM=som(new Date()); rightM=addM(leftM,1);
+                    setCustom(true);
+                    renderPresets();
+                    renderCals();
+                });
+
+                // Días calendario
+                $('#drp-panel').on('click','.drp-day:not(.drp-day-empty)',function(){
+                    var d=clone(new Date($(this).data('date')+'T12:00:00'));
+                    if(!start||(start&&end)){ start=d; end=null; hover=null; }
+                    else { commit(start,d); return; }
+                    renderCals(); renderPresets();
+                });
+
+                // Hover
+                $('#drp-panel').on('mouseenter','.drp-day:not(.drp-day-empty)',function(){
+                    if(start&&!end){ hover=clone(new Date($(this).data('date')+'T12:00:00')); renderCals(); }
+                });
+                $('#drp-calendars').on('mouseleave',function(){
+                    hover=null; if(start&&!end) renderCals();
+                });
+
+                // Navegación meses
+                $('#drp-panel').on('click','.drp-nav-btn',function(){
+                    var dir=parseInt($(this).data('dir')),cal=$(this).data('cal');
+                    if(cal==='drp-cal-left'){
+                        leftM=addM(leftM,dir);
+                        if(leftM>=rightM) rightM=addM(leftM,1);
+                    } else {
+                        rightM=addM(rightM,dir);
+                        if(rightM<=leftM) leftM=addM(rightM,-1);
+                    }
+                    renderCals();
+                });
+
+                // Limpiar
+                $('#drp-clear').on('click',function(e){ e.stopPropagation(); clear(); });
+
+                return { clear: clear };
+            })();
+
+
+            // ── Eventos de filtro ──
+            $('#grid-search').on('input', resetPage);
+            $('#filter-pais').on('change', resetPage);
+            $('#filter-fecha-desde').on('change', resetPage);
+            $('#filter-fecha-hasta').on('change', resetPage);
+            $('#filter-dias-op').on('change', function() {
+                var op = $(this).val();
+                $('#filter-dias-val').toggle(op !== '').val('');
+                resetPage();
+            });
+            $('#filter-dias-val').on('input', resetPage);
+
+            // ── Limpiar filtros ──
+            $('#btn-clear-filters').on('click', function() {
+                $('#grid-search').val('');
+                $('#filter-pais').val('');
+                DRP.clear();
+                $('#filter-dias-op').val('');
+                $('#filter-dias-val').hide().val('');
+            });
+
+            // ── Por página ──
+            $('#per-page-select').on('change', function() {
+                perPage    = parseInt($(this).val());
+                currentPag = 1;
+                renderGrid();
+            });
+
+            // ── Clicks paginador ──
+            $(document).on('click', '.pag-btn:not(:disabled)', function() {
+                var action = $(this).data('action');
+                if      (action === 'prev') currentPag--;
+                else if (action === 'next') currentPag++;
+                else currentPag = parseInt($(this).data('page'));
+                renderGrid();
+                $('html, body').animate({ scrollTop: $('#personas-grid').offset().top - 80 }, 200);
+            });
+
+            // Render inicial
+            renderGrid();
+        });
+    </script>
+{% endblock %}

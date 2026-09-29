@@ -1,0 +1,391 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar estructura{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% include 'pages/_luxury_form_styles.html.twig' %}
+    <style>
+        #map {
+            height: 350px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<div class="card card-luxury">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-sitemap label-icon"></i>Adicionar Estructura {% if entidad is defined and entidad %}<span class="text-muted font-weight-normal">({{ entidad.siglas|default('') }}) {{ entidad.nombre|default('') }}</span>{% endif %}</h3>
+    </div>
+    <!-- /.card-header -->
+    {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
+    <div class="card-body px-4 pt-3">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-shapes label-icon"></i>Tipo de estructura</label>
+                    {{ form_widget(form.tipoEstructura, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.tipoEstructura) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-id-card label-icon"></i>Nombre</label>
+                    {{ form_widget(form.nombre, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.nombre.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    {% if not form.nombre.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.nombre) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-sitemap label-icon"></i>Subordinado a</label>
+                    {{ form_widget(form.estructura, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.estructura) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-font label-icon"></i>Siglas</label>
+                    {{ form_widget(form.siglas, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.siglas.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    {% if not form.siglas.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.siglas) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-layer-group label-icon"></i>Categoría de estructura</label>
+                    {{ form_widget(form.categoriaEstructura, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.categoriaEstructura) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required">Fecha de activación</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        {{ form_widget(form.fechaActivacion, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.fechaActivacion.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    </div>
+                    {% if not form.fechaActivacion.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.fechaActivacion) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        </div>
+                        {{ form_widget(form.telefono, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    </div>
+                    {{ form_errors(form.telefono) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label>Correo</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    </div>
+                    {{ form_errors(form.email) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required">Dirección</label>
+                    {{ form_widget(form.direccion, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.direccion.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    {% if not form.direccion.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.direccion) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-map-marked-alt label-icon"></i>Provincia</label>
+                    {{ form_widget(form.provincia, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.provincia) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-city label-icon"></i>Municipio</label>
+                    {{ form_widget(form.municipio, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.municipio) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label>Ubicación</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map-marked"></i></span>
+                        </div>
+                        {{ form_widget(form.ubicacion, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    </div>
+                    {{ form_errors(form.ubicacion) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-toggle-on label-icon"></i>Estado Inicial</label>
+                    <input type="checkbox"
+                           id="{{ form.activo.vars.id }}"
+                           name="{{ form.activo.vars.full_name }}"
+                           class="d-none activo-checkbox"
+                           {% if form.activo.vars.data %}checked{% endif %}>
+                    <div class="estado-toggle" data-cb="{{ form.activo.vars.id }}">
+                        <button type="button" class="et-opt et-on{% if form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Habilitado
+                        </button>
+                        <button type="button" class="et-opt et-off{% if not form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Deshabilitado
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {#
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    {{ form_label(form.esEntidad) }}
+                    {{ form_widget(form.esEntidad) }}
+                    {{ form_errors(form.esEntidad) }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="form-group">
+                    {{ form_label(form.centroAutorizadoPosgrado) }}
+                    {{ form_widget(form.centroAutorizadoPosgrado) }}
+                    {{ form_errors(form.centroAutorizadoPosgrado) }}
+                </div>
+            </div>
+            #}
+        </div>
+    </div>
+    <div class="card-footer bg-white px-4 py-3 border-top-0 d-flex justify-content-end" style="gap: 10px;">
+        <button type="button" class="btn-lux-sm btn-lux-outline-danger btn-cancel-confirm">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button id="btn_aceptar" type="submit" class="btn-lux-sm btn-lux-primary">
+            <i class="fas fa-check"></i> Aceptar
+        </button>
+    </div>
+    {{ form_end(form) }}
+</div>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetail"
+     aria-hidden="true">
+    <div class="modal-dialog  modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold" id="modalDetailLabel">Seleccionar ubicación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modalDetailBody">
+                <div id="map"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {% include 'pages/_luxury_form_toggle_js.html.twig' with {
+        cancelUrl: path('app_estructura_index')
+    } %}
+    <script>
+
+        $('#estructura_siglas').on('keydown keypress', function (e) {
+            if (e.key.length === 1) {
+                if ($(this).val().length < 15 /*&& !isNaN(parseFloat(e.key))*/) {
+                    $(this).val($(this).val() + e.key);
+                }
+                return false;
+            }
+        });
+        $('[data-mask]').inputmask();
+
+        $('#estructura_provincia').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var url = "{{ path('app_municipio_dado_provincia', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#estructura_municipio option').remove();
+                    $('#estructura_municipio').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#estructura_municipio').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            } else {
+                $('#estructura_municipio option').remove();
+                $('#estructura_municipio').append(new Option('Seleccione', ""));
+            }
+        });
+
+
+        $(document).ready(function () {
+            let mymap = '';
+            let defaultLocation = '22.798971336311112, -82.76412963867189';
+            let defaultZoom = 10;
+            let locationMap = '';
+            let map_current_location = '';
+            let marker = '';
+            $('#estructura_ubicacion').click(function () {
+                $('#modalDetail').modal('show')
+
+
+                setTimeout(function () {
+
+                    map_current_location = $('#estructura_ubicacion').val() ? $('#estructura_ubicacion').val() : '22.81258, -82.758293'
+
+                    let options = {
+                        icon: 'fa-circle',
+                        iconColor: '#ffffff',
+                        markerColor: 'blue',
+                        shape: 'circle',
+                        prefix: 'fa'
+                    };
+
+
+                    if ($('#estructura_ubicacion').val() !== '' && $('#estructura_ubicacion').val() !== null) {
+                        defaultLocation = $('#estructura_ubicacion').val();
+                        defaultZoom = 10;
+                    }
+
+                    if (mymap === '') {
+
+                        mymap = L.map('map').setView(L.latLng(defaultLocation.split(',').map(v => parseFloat(v))), defaultZoom);
+
+                        initFullScreem();
+                    }
+
+                    if ($('#estructura_ubicacion').val() !== '' && $('#estructura_ubicacion').val() !== null) {
+                        if (marker === '') {
+                            marker = create_extramarker(L.latLng($('#estructura_ubicacion').val().split(',').map(v => parseFloat(v))), options);
+                        } else {
+                            updateMarker(marker, L.latLng($('#estructura_ubicacion').val().split(',').map(v => parseFloat(v))).lat, L.latLng($('#estructura_ubicacion').val().split(',').map(v => parseFloat(v))).lng)
+                        }
+
+
+                    } else {
+                        if (marker === '') {
+                            marker = create_extramarker(L.latLng(22.81258, -82.758293), options);
+                        } else {
+                            updateMarker(marker, 22.81258, -82.758293)
+                        }
+                    }
+
+
+                    marker.addTo(mymap);
+
+
+                    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={{ mapbox_token|e('html_attr') }}', {
+                        attribution: '',
+                        maxZoom: 18,
+                        id: 'mapbox/streets-v11',
+                        // tileSize: 512,
+                        // zoomOffset: -1,
+                        // accessToken: 'your.mapbox.access.token'
+                    }).addTo(mymap);
+
+                    mymap.addEventListener('click', (e) => {
+
+                        map_current_location = e.latlng.lat.toString() + ', ' + e.latlng.lng.toString();
+                        locationMap = e.latlng.lat.toString() + ', ' + e.latlng.lng.toString();
+
+                        // update marker location
+                        updateMarker(marker, e.latlng.lat, e.latlng.lng);
+
+
+                    });
+
+
+                    function updateMarker(marker, lat, lng) {
+                        marker.setLatLng([lat, lng])
+                            .bindPopup(marker.getLatLng().toString())
+                            .openPopup();
+                    }
+
+                    function create_extramarker(latlng, options) {
+                        // Creates a red marker with the coffee icon
+                        let markerIcon = L.ExtraMarkers.icon(
+                            options
+                        );
+
+
+                        return L.marker(latlng, {icon: markerIcon});
+                    }
+
+                    function initFullScreem() {
+                        L.control.fullscreen({
+                            position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
+                            title: 'Show fullscreen', // change the title of the button, default Full Screen
+                            titleCancel: 'Exit fullscreen', // change the title of the button when fullscreen is on, default Exit Full Screen
+                            content: null, // change the content of the button, can be HTML, default null
+                            forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
+                            fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+                        }).addTo(mymap);
+                    }
+                }, 500)
+
+
+            })
+
+            $('.aceptar').click(function () {
+                $('#estructura_ubicacion').val(map_current_location)
+                $('#modalDetail').modal('hide')
+            })
+        })
+        $('#estructura_fechaActivacion').datetimepicker({
+            format: 'DD/MM/YYYY',
+            daysOfWeekDisabled: []
+        });
+        var action = '{{ accion }}';
+
+        $('#btn_aceptar').click(function (e) {
+            e.preventDefault();
+            console.log(action);
+            if ('add-hija' === action) {
+                $('form[name="estructura"]').attr('action', 'registrar-estructura-hija');
+                $('form[name="estructura"]').submit();
+            } else if ('add' === action) {
+                $('form[name="estructura"]').attr('action', 'registrar');
+                $('form[name="estructura"]').submit();
+            }
+        })
+
+        console.log(action);
+    </script>
+{% endblock %}

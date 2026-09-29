@@ -1,0 +1,1315 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Trámites{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+
+    /* Accordion Customization */
+    .search-accordion { margin-bottom: 1rem; }
+    .search-accordion .card { border: none; box-shadow: none; background: transparent; }
+    .search-accordion .card-header { 
+        background: #f8fafc !important; 
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important; 
+        padding: 12px 20px;
+        transition: all 0.3s;
+    }
+    .search-accordion .card-header:hover { background: #f1f5f9 !important; }
+    .search-accordion .card-title a { 
+        color: #134679 !important; 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        text-decoration: none !important;
+    }
+    .filter-container {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 20px;
+        margin-top: -2px;
+    }
+    .filter-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Proteger headers de modales personalizados del override de bootbox */
+    #docSalidaHistoryModal .modal-header,
+    #modalAprobarTramites .modal-header,
+    #modalFechaSalidaRegreso .modal-header {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        padding: 18px 24px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    #docSalidaHistoryModal .modal-header .close,
+    #modalAprobarTramites .modal-header .close,
+    #modalFechaSalidaRegreso .modal-header .close {
+        color: white !important;
+        opacity: .85 !important;
+        font-size: 1.6rem !important;
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        transform: none !important;
+        margin-left: auto !important;
+    }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-file-contract label-icon"></i>Listado de trámites</h3>
+        </div>
+        
+        <div class="px-4 pt-3">
+            <div class="search-accordion" id="accordion">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title w-100">
+                            <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                                <span><i class="fas fa-filter mr-2"></i>Filtrar resultados {{ text_fil }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse" data-parent="#accordion">
+                        <div class="filter-container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="filter-label" for="estadoFicha">Estado del trámite</label>
+                                    <select id="estadoFicha" name="estadoFicha" class="form-control select2" style="width: 100%;">
+                                        <option value="">Todos los estados</option>
+                                        {% for item2 in estados %}
+                                            <option {% if item2.id == fil_estado %} selected {% endif %} value="{{ item2.id }}">{{ item2.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="filter-label" for="clasificacionDoc">Clasificación</label>
+                                    <select id="clasificacionDoc" name="clasificacionDoc" class="form-control" style="width: 100%;">
+                                        <option value="">Todas las clasificaciones</option>
+                                        <option {% if fil_clasificacion == 'Interno' %}selected{% endif %} value="Interno">Interno</option>
+                                        <option {% if fil_clasificacion == 'Externa' %}selected{% endif %} value="Externa">Externa</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre y apellidos</th>
+                    <th>Inst. cubana</th>
+                    <th>Clasificación</th>
+                    <th>País</th>
+                    <th>Fecha salida</th>
+                    <th>Estancia</th>
+                    <th>Estado</th>
+                    <th class="text-center" style="width: 60px;">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.persona.primerNombre ~ ' ' ~ item.persona.segundoNombre ~' '~ item.persona.primerApellido ~ ' ' ~ item.persona.segundoApellido }}</td>
+                        <td>{{ item.institucionCubana.siglas | default('') }}</td>
+                        <td>
+                            {% set clas = item.fichaSalida is not null ? item.fichaSalida.clasificacion | default('') : '' %}
+                            {% if clas == 'Interno' %}
+                                <span class="badge badge-info"><i class="fas fa-building mr-1"></i>Interno</span>
+                            {% elseif clas == 'Externa' %}
+                                <span class="badge badge-warning"><i class="fas fa-globe-americas mr-1"></i>Externa</span>
+                            {% else %}
+                                {{ clas }}
+                            {% endif %}
+                        </td>
+                        <td>{{ item.pais.nombre | default('') }}</td>
+                        <td width="10%">{{ item.fechaSalidaReal | date('d/m/Y') }}</td>
+                        <td>{{ item.tiempoEstancia | default('') }}</td>
+                        <td>
+                            {% set eNom = item.estadoDocumentoSalida.nombre | default('') %}
+                            {% set eId  = item.estadoDocumentoSalida.id | default(0) %}
+                            {% if eId == 4 %}
+                                <span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 7 %}
+                                <span class="badge" style="background:#fef9c3;color:#854d0e;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 8 %}
+                                <span class="badge" style="background:#ede9fe;color:#5b21b6;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 5 %}
+                                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 9 %}
+                                <span class="badge" style="background:#dbeafe;color:#1e40af;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 11 %}
+                                <span class="badge" style="background:#fff7ed;color:#c2410c;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 10 or eId == 6 %}
+                                <span class="badge" style="background:#f1f5f9;color:#475569;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% else %}
+                                <span class="badge" style="background:#f1f5f9;color:#475569;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center" style="white-space: nowrap; width: 60px;">
+                            {% set persona_str = (item.persona.primerNombre ~ ' ' ~ item.persona.segundoNombre ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ item.persona.segundoApellido) | trim %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle-no-caret"
+                                        id="ds-actions-{{ item.id }}"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        title="Opciones"
+                                        style="border-radius: 50%; width: 34px; height: 34px; padding: 0; line-height: 34px; font-size: 1rem;">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="ds-actions-{{ item.id }}" style="min-width: 230px; border-radius: 0.5rem; padding: 8px 0;">
+
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px;">Trámite</h6>
+
+                                    {% if item.estadoDocumentoSalida.id | default('') in [7] %}
+                                        <button class="dropdown-item btn-asignar-tramite"
+                                                data-doc-id="{{ item.id }}"
+                                                data-url="{{ path('app_documento_salida_asignar_tramite', {'id': item.id}) }}"
+                                                data-fetch-url="{{ path('app_documento_salida_datos_asignar_tramite', {'id': item.id}) }}"
+                                                data-persona="{{ persona_str }}"
+                                                data-grado="{{ item.persona.gradoAcademico.nombre | default('') }}"
+                                                data-institucion="{{ item.institucionCubana.siglas | default('') }}"
+                                                data-pais="{{ item.pais.nombre | default('') }}"
+                                                data-fecha="{{ item.fechaSalidaReal | date('d/m/Y') }}"
+                                                data-estancia="{{ item.tiempoEstancia | default('') }}"
+                                                data-estado="{{ item.estadoDocumentoSalida.nombre | default('') }}">
+                                            <i class="fa fa-address-book fa-fw mr-2 text-primary"></i> Asignar trámites
+                                        </button>
+                                        <button class="dropdown-item btn-aprobar-tramite"
+                                                data-doc-id="{{ item.id }}"
+                                                data-fetch-url="{{ path('app_documento_salida_datos_aprobar_tramites', {'id': item.id}) }}"
+                                                data-persona="{{ persona_str }}"
+                                                data-grado="{{ item.persona.gradoAcademico.nombre | default('') }}"
+                                                data-institucion="{{ item.institucionCubana.siglas | default('') }}"
+                                                data-pais="{{ item.pais.nombre | default('') }}"
+                                                data-fecha="{{ item.fechaSalidaReal | date('d/m/Y') }}"
+                                                data-estancia="{{ item.tiempoEstancia | default('') }}"
+                                                data-estado="{{ item.estadoDocumentoSalida.nombre | default('') }}">
+                                            <i class="fa fa-check-circle fa-fw mr-2 text-success"></i> Aprobar trámites
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoDocumentoSalida.id | default('') in [8] %}
+                                        <button class="dropdown-item btn-fecha-salida-regreso"
+                                                data-doc-id="{{ item.id }}"
+                                                data-url="{{ path('app_documento_salida_asignar_fecha_salida_regreso', {'id': item.id}) }}"
+                                                data-persona="{{ persona_str }}"
+                                                data-grado="{{ item.persona.gradoAcademico.nombre | default('') }}"
+                                                data-institucion="{{ item.institucionCubana.siglas | default('') }}"
+                                                data-pais="{{ item.pais.nombre | default('') }}"
+                                                data-fecha-salida="{{ item.fechaSalidaReal is not null ? item.fechaSalidaReal | date('d/m/Y') : '' }}"
+                                                data-fecha-regreso="{{ item.fechaRegresoReal is not null ? item.fechaRegresoReal | date('d/m/Y') : '' }}"
+                                                data-fecha-entrega="{{ item.fechaEntregaPasaporte is not null ? item.fechaEntregaPasaporte | date('d/m/Y') : '' }}"
+                                                data-estancia="{{ item.tiempoEstancia | default('') }}"
+                                                data-estado="{{ item.estadoDocumentoSalida.nombre | default('') }}">
+                                            <i class="fa fa-plane-departure fa-fw mr-2 text-primary"></i> Definir fechas de salida
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoDocumentoSalida.id | default('') in [5] %}
+                                        <button class="dropdown-item elementRemove"
+                                                data-url="{{ path('app_documento_salida_viajando', {'id': item.id}) }}">
+                                            <i class="fa fa-plane fa-fw mr-2 text-primary"></i> Definir como viajando
+                                        </button>
+                                        <button class="dropdown-item btn-fecha-salida-regreso"
+                                                data-doc-id="{{ item.id }}"
+                                                data-url="{{ path('app_documento_salida_asignar_fecha_salida_regreso', {'id': item.id}) }}"
+                                                data-persona="{{ persona_str }}"
+                                                data-grado="{{ item.persona.gradoAcademico.nombre | default('') }}"
+                                                data-institucion="{{ item.institucionCubana.siglas | default('') }}"
+                                                data-pais="{{ item.pais.nombre | default('') }}"
+                                                data-fecha-salida="{{ item.fechaSalidaReal is not null ? item.fechaSalidaReal | date('d/m/Y') : '' }}"
+                                                data-fecha-regreso="{{ item.fechaRegresoReal is not null ? item.fechaRegresoReal | date('d/m/Y') : '' }}"
+                                                data-fecha-entrega="{{ item.fechaEntregaPasaporte is not null ? item.fechaEntregaPasaporte | date('d/m/Y') : '' }}"
+                                                data-estancia="{{ item.tiempoEstancia | default('') }}"
+                                                data-estado="{{ item.estadoDocumentoSalida.nombre | default('') }}">
+                                            <i class="fa fa-calendar-plus fa-fw mr-2 text-warning"></i> Redefinir fechas
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoDocumentoSalida.id | default('') in [9] %}
+                                        <button class="dropdown-item btn-finalizar-salida"
+                                                data-doc-id="{{ item.id }}"
+                                                data-url="{{ path('app_documento_salida_finalizar_salida', {'id': item.id}) }}">
+                                            <i class="fa fa-plane-arrival fa-fw mr-2 text-success"></i> Finalizar salida
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoDocumentoSalida.id | default('') in [11] %}
+                                        <button class="dropdown-item btn-adjuntar-informe"
+                                                data-doc-id="{{ item.id }}"
+                                                data-url="{{ path('app_documento_salida_adjuntar_informe', {'id': item.id}) }}">
+                                            <i class="fa fa-file-alt fa-fw mr-2 text-warning"></i> Adjuntar informe ejecutivo
+                                        </button>
+                                    {% endif %}
+
+                                    <div class="dropdown-divider"></div>
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px;">Documentos</h6>
+                                    <button class="dropdown-item btn-view-doc-history"
+                                            data-id="{{ item.id }}"
+                                            data-url="{{ path('app_documento_salida_historial_documentos', {'id': item.id}) }}">
+                                        <i class="fa fa-folder-open fa-fw mr-2 text-info"></i> Historial de documentos
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modals preserved -->
+    <div class="modal fade" id="docSalidaHistoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header d-flex align-items-center justify-content-between"
+                     style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold mb-0"><i class="fas fa-folder-open mr-2"></i> Historial de Documentos</h5>
+                    <button type="button" class="close mb-0" data-dismiss="modal" aria-label="Close"
+                            style="color: white; opacity: .85; font-size: 1.6rem; line-height: 1; padding: 0; background: none; border: none; cursor: pointer; margin-left: auto;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Tarjeta de persona -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center">
+                            <div id="hist2Avatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                            <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                <div id="hist2PersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                <div id="hist2Grado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                <div id="hist2Institucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                            </div>
+                            <span id="hist2Estado" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                        </div>
+                        <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                <div id="hist2Pais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Fecha Salida</div>
+                                <div id="hist2Fecha" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia</div>
+                                <div id="hist2Estancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                <div id="hist2Embajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Entrega Pasaporte</div>
+                                <div id="hist2FechaEntrega" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Recogida Pasaporte</div>
+                                <div id="hist2FechaRecogida" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:#f1f5f9;border-radius:10px;padding:4px;display:inline-flex;gap:2px;margin-bottom:16px;">
+                        <a class="doc-tab-pill active" id="tab-doc-salida-tab" href="#tab-doc-salida"
+                           style="display:inline-flex;align-items:center;padding:7px 18px;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;background:#134679;color:#fff;box-shadow:0 2px 6px rgba(19,70,121,.25);">
+                            <i class="fas fa-file-contract mr-2"></i> Documento de Salida
+                        </a>
+                        <a class="doc-tab-pill" id="tab-ficha-salida-tab" href="#tab-ficha-salida"
+                           style="display:inline-flex;align-items:center;padding:7px 18px;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;background:transparent;color:#64748b;">
+                            <i class="fas fa-file-invoice mr-2"></i> Ficha de Salida
+                        </a>
+                    </div>
+                    <div class="tab-content" id="docHistoryTabsContent">
+                        <div class="tab-pane fade show active" id="tab-doc-salida" role="tabpanel">
+                            <div style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <div id="loaderDocSalida" class="text-center py-5 d-none">
+                                    <div class="spinner-border" role="status" style="color: #134679; width: 2.5rem; height: 2.5rem;"></div>
+                                </div>
+                                <table class="table mb-0" style="font-size: 0.85rem;">
+                                    <thead>
+                                        <tr style="background: #f1f5f9;">
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Documento específico</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Fecha</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Usuario</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none; text-align: right;">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyDocSalida"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab-ficha-salida" role="tabpanel">
+                            <div style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <table class="table mb-0" style="font-size: 0.85rem;">
+                                    <thead>
+                                        <tr style="background: #f1f5f9;">
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Documento origen</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Fecha</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Usuario</th>
+                                            <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none; text-align: right;">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyFichaSalida"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CERRAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Finalizar Salida (Viajando → Informe Ejecutivo) -->
+    <div class="modal fade" id="modalFinalizarSalida" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-plane-arrival mr-2"></i> Finalizar Salida</h5>
+                </div>
+                <form id="formFinalizarSalida" method="POST">
+                    <div class="modal-body p-4">
+                        <p class="text-muted mb-4" style="font-size:0.88rem;">Registre la fecha en que se recogió el pasaporte al trabajador al retornar de la misión.</p>
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold" style="color: #134679; font-size: 0.85rem;">Fecha de recogida del pasaporte <span class="text-danger">*</span></label>
+                            <div class="input-group mt-1">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-passport"></i></span>
+                                </div>
+                                <input type="text" class="form-control date-time-picker" id="finalFechaEntregaPasaporte" name="fechaEntregaPasaporte" autocomplete="off" placeholder="dd/mm/aaaa" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                        <button type="submit" id="btnSubmitFinalizar" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; font-weight: 600; background: #134679; border-color: #134679;">
+                            <i class="fas fa-check-circle mr-1"></i> CONFIRMAR RETORNO
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Informe Ejecutivo (Informe Ejecutivo → Finalizada) -->
+    <div class="modal fade" id="modalInformeEjecutivo" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-file-alt mr-2"></i> Adjuntar Informe Ejecutivo</h5>
+                </div>
+                <form id="formInformeEjecutivo" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body p-4">
+                        <p class="text-muted mb-4" style="font-size:0.88rem;">Para finalizar el trámite es obligatorio adjuntar el <strong>Informe Ejecutivo</strong> de la misión en formato PDF.</p>
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold" style="color: #134679; font-size: 0.85rem;">Informe Ejecutivo <span class="text-danger">*</span></label>
+                            <div class="custom-file mt-1">
+                                <input type="file" class="custom-file-input" id="informeEjecutivoFile" name="informeEjecutivo" accept=".pdf" required>
+                                <label class="custom-file-label" for="informeEjecutivoFile">Seleccionar documento PDF...</label>
+                            </div>
+                            <small class="form-text text-muted mt-2"><i class="fas fa-info-circle mr-1"></i> El documento se guardará automáticamente en el historial de esta salida.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                        <button type="submit" id="btnSubmitInforme" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; font-weight: 600; background: #134679; border-color: #134679;">
+                            <i class="fas fa-check-circle mr-1"></i> FINALIZAR TRÁMITE
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asignar Trámite -->
+    <div class="modal fade" id="modalAsignarTramite" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-address-book mr-2"></i> Asignar Trámites</h5>
+                </div>
+                {{ form_start(formAsignar, {'attr': {'id': 'formAsignarTramite'}}) }}
+                <div class="modal-body p-4">
+
+                    <!-- Tarjeta de persona -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center">
+                            <div id="asigAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                            <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                <div id="asigPersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                <div id="asigGrado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                <div id="asigInstitucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                            </div>
+                            <span id="asigEstado" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                        </div>
+                        <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                <div id="asigPais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Fecha Salida</div>
+                                <div id="asigFecha" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia</div>
+                                <div id="asigEstancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                <div id="asigEmbajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Entrega Pasaporte</div>
+                                <div id="asigFechaEntrega" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Recogida Pasaporte</div>
+                                <div id="asigFechaRecogida" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        {{ form_label(formAsignar.tramite, null, {'label_attr': {'class': 'font-weight-bold', 'style': 'color: #134679; font-size: 0.85rem;'}}) }}
+                        {{ form_widget(formAsignar.tramite, {'attr': {'class': 'form-control select2', 'style': 'width: 100%;'}}) }}
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; font-weight: 600; background: #134679; border-color: #134679;">
+                        <i class="fas fa-save mr-1"></i> GUARDAR CAMBIOS
+                    </button>
+                </div>
+                {{ form_end(formAsignar) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aprobar Trámites -->
+    <div class="modal fade" id="modalAprobarTramites" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-check-circle mr-2"></i> Aprobar Trámites</h5>
+                </div>
+                <div class="modal-body p-4">
+
+                    <!-- Tarjeta de persona -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center">
+                            <div id="aprobAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                            <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                <div id="aprobPersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                <div id="aprobGrado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                <div id="aprobInstitucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                            </div>
+                            <span id="aprobEstadoActual" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                        </div>
+                        <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                <div id="aprobPais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Fecha Salida</div>
+                                <div id="aprobFecha" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia</div>
+                                <div id="aprobEstancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                <div id="aprobEmbajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Entrega Pasaporte</div>
+                                <div id="aprobFechaEntrega" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Recogida Pasaporte</div>
+                                <div id="aprobFechaRecogida" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="loaderAprobar" class="text-center p-4 d-none">
+                        <div class="spinner-border text-primary" role="status" style="width:2rem;height:2rem;"></div>
+                        <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">Cargando trámites...</p>
+                    </div>
+                    <div id="bodyAprobar"></div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CERRAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Asignar Fecha Salida / Regreso -->
+    <div class="modal fade" id="modalFechaSalidaRegreso" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-plane-departure mr-2"></i> Asignar Fechas de Salida y Regreso</h5>
+                </div>
+                {{ form_start(formFecha, {'attr': {'id': 'formFechaSalidaRegreso'}}) }}
+                <div class="modal-body p-4">
+
+                    <!-- Tarjeta de persona -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center">
+                            <div id="fechaAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                            <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                <div id="fechaPersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                <div id="fechaGrado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                <div id="fechaInstitucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                            </div>
+                            <span id="fechaEstado" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                        </div>
+                        <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                <div id="fechaPais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia (días)</div>
+                                <div id="fechaEstancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                <div id="fechaEmbajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Entrega Pasaporte</div>
+                                <div id="fechaFechaEntrega" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Recogida Pasaporte</div>
+                                <div id="fechaFechaRecogida" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-sm-4 form-group">
+                            {{ form_label(formFecha.fechaSalidaReal, null, {'label_attr': {'class': 'font-weight-bold', 'style': 'color: #134679; font-size: 0.85rem;'}}) }}
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                </div>
+                                {{ form_widget(formFecha.fechaSalidaReal, {'attr': {'autocomplete': 'off'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 form-group">
+                            {{ form_label(formFecha.fechaRegresoReal, null, {'label_attr': {'class': 'font-weight-bold', 'style': 'color: #134679; font-size: 0.85rem;'}}) }}
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                </div>
+                                {{ form_widget(formFecha.fechaRegresoReal, {'attr': {'autocomplete': 'off'}}) }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 form-group mb-0">
+                            {{ form_label(formFecha.fechaEntregaPasaporte, null, {'label_attr': {'class': 'font-weight-bold', 'style': 'color: #134679; font-size: 0.85rem;'}}) }}
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-passport"></i></span>
+                                </div>
+                                {{ form_widget(formFecha.fechaEntregaPasaporte, {'attr': {'autocomplete': 'off'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                    <button type="submit" id="btnSubmitFecha" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; font-weight: 600; background: #134679; border-color: #134679;">
+                        <i class="fas fa-check-circle mr-1"></i> GUARDAR FECHAS
+                    </button>
+                </div>
+                {{ form_end(formFecha) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        window.docDataMap = {
+            {% for item in registros %}
+            "{{ item.id }}": {
+                persona: "{{ (item.persona.primerNombre ~ ' ' ~ (item.persona.segundoNombre ?? '') ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ (item.persona.segundoApellido ?? '')) | trim | e('js') }}",
+                grado: "{{ (item.persona.gradoAcademico is not null ? item.persona.gradoAcademico.nombre : '') | e('js') }}",
+                institucion: "{{ (item.institucionCubana is not null ? item.institucionCubana.siglas : '') | e('js') }}",
+                pais: "{{ (item.pais is not null ? item.pais.nombre : '') | e('js') }}",
+                fecha: "{{ item.fechaSalidaReal | date('d/m/Y') }}",
+                estancia: "{{ item.tiempoEstancia | default('') | e('js') }}",
+                estado: "{{ (item.estadoDocumentoSalida is not null ? item.estadoDocumentoSalida.nombre : '') | e('js') }}",
+                consultaEmbajada: {{ item.fichaSalida is not null and item.fichaSalida.consultaEmbajada is not null ? (item.fichaSalida.consultaEmbajada ? 'true' : 'false') : 'null' }},
+                fechaEntregaPasaporte: "{{ item.fechaEntregaPasaporte is not null ? item.fechaEntregaPasaporte | date('d/m/Y') : '' }}",
+                fechaRecogidaPasaporte: "{{ item.fechaRecogidaPasaporte is not null ? item.fechaRecogidaPasaporte | date('d/m/Y') : '' }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        // Fix dropdown recortado por overflow:hidden del wrapper DataTables
+        $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+            var $toggle = $(this).find('[data-toggle="dropdown"]');
+            var $menu   = $(this).find('.dropdown-menu');
+            var offset  = $toggle.offset();
+            var toggleH = $toggle.outerHeight();
+            var menuW   = $menu.outerWidth() || 230;
+            var left    = offset.left + $toggle.outerWidth() - menuW;
+            $menu.appendTo('body').css({
+                position: 'fixed',
+                top:  offset.top + toggleH,
+                left: Math.max(0, left),
+                zIndex: 9999
+            });
+        }).on('hide.bs.dropdown', '.dropdown', function () {
+            var $menu = $(this).find('.dropdown-menu');
+            $menu.appendTo($(this)).css({ position: '', top: '', left: '', zIndex: '' });
+        });
+
+        function recargarDocs() {
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+            $.post("{{ path('app_documento_salida_index') }}", {
+                estado: $('#estadoFicha').val(),
+                clasificacion: $('#clasificacionDoc').val()
+            }, function () {
+                $(window).attr('location', window.location);
+                HoldOn.close();
+            });
+        }
+        $('#estadoFicha').change(recargarDocs);
+        $('#clasificacionDoc').change(recargarDocs);
+
+        // Tabs pill en modal historial — manejo manual de cambio de panel
+        $(document).on('click', '.doc-tab-pill', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
+            // Actualizar estilos
+            $('.doc-tab-pill').css({'background':'transparent','color':'#64748b','box-shadow':'none'});
+            $(this).css({'background':'#134679','color':'#fff','box-shadow':'0 2px 6px rgba(19,70,121,.25)'});
+            // Mostrar panel correcto
+            $('.tab-pane').removeClass('show active');
+            $(target).addClass('show active');
+        });
+
+        $(document).on('click', '.btn-view-doc-history', function (e) {
+            e.stopPropagation();
+            var $btn = $(this);
+            var id   = $btn.attr('data-id');
+            var url  = $btn.attr('data-url') || '';
+            
+            // Buscar datos en el mapa
+            var d = window.docDataMap[id] || {};
+            var persona  = (d.persona    || '').trim() || '—';
+            var grado    = d.grado       || '';
+            var inst     = d.institucion || '';
+            var pais     = d.pais        || '—';
+            var fecha    = d.fecha       || '—';
+            var estancia = d.estancia    || '—';
+            var estado   = d.estado      || '—';
+
+            var parts    = persona.split(/\s+/).filter(Boolean);
+            var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+
+            // Poblar tarjeta de persona
+            $('#hist2Avatar').text(initials.toUpperCase() || '?');
+            $('#hist2PersonaName').text(persona);
+            $('#hist2Grado').text(grado);
+            $('#hist2Institucion').text(inst);
+            $('#hist2Estado').text(estado);
+            $('#hist2Pais').text(pais);
+            $('#hist2Fecha').text(fecha);
+            $('#hist2Estancia').text(estancia);
+            $('#hist2Embajada').text(d.consultaEmbajada === true ? 'Sí' : (d.consultaEmbajada === false ? 'No' : '—'));
+            $('#hist2FechaEntrega').text(d.fechaEntregaPasaporte || '—');
+            $('#hist2FechaRecogida').text(d.fechaRecogidaPasaporte || '—');
+
+            let bodyDoc = $('#bodyDocSalida');
+            let bodyFicha = $('#bodyFichaSalida');
+            let loader = $('#loaderDocSalida');
+            bodyDoc.empty();
+            bodyFicha.empty();
+            loader.removeClass('d-none');
+            $('#docSalidaHistoryModal').modal('show');
+            $('#tab-doc-salida-tab').tab('show');
+            // Resetear estilos de pills al abrir
+            $('#tab-doc-salida-tab').css({'background':'#134679','color':'#fff','box-shadow':'0 2px 6px rgba(19,70,121,.25)'});
+            $('#tab-ficha-salida-tab').css({'background':'transparent','color':'#64748b','box-shadow':'none'});
+            $.get(url, function (data) {
+                loader.addClass('d-none');
+                
+                function renderEmptyState(message) {
+                    return `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px 20px;">
+                                <div style="width: 56px; height: 56px; border-radius: 50%; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                    <i class="fas fa-folder-open" style="font-size: 1.4rem; color: #94a3b8;"></i>
+                                </div>
+                                <p style="color: #64748b; font-size: 0.88rem; font-weight: 600; margin: 0;">${message}</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                if (data.documento.length === 0) {
+                    bodyDoc.append(renderEmptyState('Sin documentos específicos registrados para este trámite.'));
+                } else {
+                    data.documento.forEach(doc => { bodyDoc.append(renderDocRow(doc)); });
+                }
+                if (data.ficha.length === 0) {
+                    bodyFicha.append(renderEmptyState('Sin documentos de ficha asociados.'));
+                } else {
+                    data.ficha.forEach(doc => { bodyFicha.append(renderDocRow(doc)); });
+                }
+            }).fail(function(){
+                loader.addClass('d-none');
+                toastr.error("Error al cargar el historial documental.");
+            });
+        });
+
+        function renderDocRow(doc) {
+            var ext = (doc.nombre || '').split('.').pop().toLowerCase();
+            var iconClass = ext === 'pdf' ? 'fa-file-pdf' : (ext === 'doc' || ext === 'docx' ? 'fa-file-word' : (ext === 'jpg' || ext === 'png' ? 'fa-file-image' : 'fa-file-alt'));
+            var iconColor = ext === 'pdf' ? '#e53e3e' : (ext === 'doc' || ext === 'docx' ? '#2b6cb0' : (ext === 'jpg' || ext === 'png' ? '#d69e2e' : '#718096'));
+            return `
+                <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.1s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                    <td style="padding: 12px 16px; vertical-align: middle;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 38px; height: 38px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas ${iconClass}" style="font-size: 1.1rem; color: ${iconColor};"></i>
+                            </div>
+                            <span style="font-weight: 600; color: #1a2e44; font-size: 0.85rem;">${doc.nombre}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 12px 16px; vertical-align: middle; color: #4a5568; font-size: 0.83rem; white-space: nowrap;">
+                        <i class="far fa-clock mr-1" style="color: #94a3b8;"></i>${doc.fecha}
+                    </td>
+                    <td style="padding: 12px 16px; vertical-align: middle;">
+                        <span style="background: #e8edf5; color: #134679; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-block;">
+                            <i class="fas fa-user mr-1"></i>${doc.usuario}
+                        </span>
+                    </td>
+                    <td style="padding: 12px 16px; vertical-align: middle; text-align: center;">
+                        <a href="${doc.url}" target="_blank"
+                           title="Ver / Descargar"
+                           style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; background: #134679; color: #fff; transition: background 0.15s; text-decoration: none;"
+                           onmouseover="this.style.background='#0e3460'" onmouseout="this.style.background='#134679'">
+                            <i class="fas fa-download" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </td>
+                </tr>
+            `;
+        }
+
+        $(document).on('click', '.btn-finalizar-salida', function() {
+            let url = $(this).data('url');
+            $('#formFinalizarSalida').attr('action', url);
+            $('#finalFechaEntregaPasaporte').val('');
+            $('#modalFinalizarSalida').modal('show');
+        });
+
+        $('#modalFinalizarSalida').on('shown.bs.modal', function() {
+            var $el = $('#finalFechaEntregaPasaporte');
+            if ($el.data('DateTimePicker')) $el.data('DateTimePicker').destroy();
+            $el.datetimepicker({ format: 'DD/MM/YYYY', locale: 'es', useCurrent: false });
+        });
+
+        $('#formFinalizarSalida').on('submit', function(e) {
+            if (!$('#finalFechaEntregaPasaporte').val()) {
+                e.preventDefault();
+                toastr.warning('La fecha de entrega del pasaporte es obligatoria.');
+                return;
+            }
+            $('#btnSubmitFinalizar').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Procesando...', textColor: "white" });
+        });
+
+        $(document).on('click', '.btn-adjuntar-informe', function() {
+            let url = $(this).data('url');
+            $('#formInformeEjecutivo').attr('action', url);
+            $('#informeEjecutivoFile').val('');
+            $('#informeEjecutivoFile').next('.custom-file-label').html('Seleccionar documento PDF...');
+            $('#modalInformeEjecutivo').modal('show');
+        });
+
+        $('#informeEjecutivoFile').on('change', function() {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        });
+
+        $('#formInformeEjecutivo').on('submit', function() {
+            if (!$('#informeEjecutivoFile').val()) {
+                toastr.warning('Debe seleccionar el informe ejecutivo en PDF.');
+                return false;
+            }
+            $('#btnSubmitInforme').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Subiendo informe y finalizando trámite...', textColor: "white" });
+        });
+
+        // Lógica Asignar Trámite
+        $(document).on('click', '.btn-asignar-tramite', function() {
+            let url      = $(this).data('url');
+            let fetchUrl = $(this).data('fetch-url');
+            let persona  = ($(this).data('persona') || '').trim();
+            let grado    = $(this).data('grado')       || '';
+            let inst     = $(this).data('institucion') || '';
+            let pais     = $(this).data('pais')        || '';
+            let fecha    = $(this).data('fecha')       || '';
+            let estancia = $(this).data('estancia')    || '';
+            let estado   = $(this).data('estado')      || '';
+            let docId   = $(this).data('doc-id');
+            let docData = window.docDataMap[docId] || {};
+
+            let modal  = $('#modalAsignarTramite');
+            let select = modal.find('select');
+
+            // Iniciales del avatar
+            var parts    = persona.split(/\s+/).filter(Boolean);
+            var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+            $('#asigAvatar').text(initials.toUpperCase() || '?');
+
+            // Pre-poblar con datos del botón
+            $('#asigPersonaName').text(persona || '—');
+            $('#asigGrado').text(grado);
+            $('#asigInstitucion').text(inst);
+            $('#asigPais').text(pais || '—');
+            $('#asigFecha').text(fecha || '—');
+            $('#asigEstancia').text(estancia || '—');
+            $('#asigEstado').text(estado || '—');
+            $('#asigEmbajada').text(docData.consultaEmbajada === true ? 'Sí' : (docData.consultaEmbajada === false ? 'No' : '—'));
+            $('#asigFechaEntrega').text(docData.fechaEntregaPasaporte || '—');
+            $('#asigFechaRecogida').text(docData.fechaRecogidaPasaporte || '—');
+
+            select.val(null).trigger('change');
+            modal.find('form').attr('action', url);
+            modal.modal('show');
+
+            $.get(fetchUrl, function(data) {
+                // Si la persona ya tiene pasaporte habilitado, deshabilitar la opción de confección
+                var idConfeccion = data.idTramiteConfeccion;
+                var $opt = select.find('option[value="' + idConfeccion + '"]');
+                if (data.tienePasaporteHabilitado) {
+                    $opt.prop('disabled', true).attr('title', 'Esta persona ya tiene un pasaporte habilitado');
+                    // Quitar de la selección actual si estuviera marcado
+                    var vals = (data.tramites || []).filter(function(v) { return v != idConfeccion; });
+                    select.val(vals).trigger('change');
+                    // Mostrar aviso en el modal
+                    if (!$('#aviso-pasaporte-habilitado').length) {
+                        select.closest('.form-group').before(
+                            '<div id="aviso-pasaporte-habilitado" class="alert alert-warning py-2 px-3 mb-3" style="font-size:0.82rem;border-radius:8px;">' +
+                            '<i class="fas fa-exclamation-triangle mr-1"></i> Esta persona ya tiene un <strong>pasaporte habilitado</strong>. El trámite de confección de pasaporte no está disponible.' +
+                            '</div>'
+                        );
+                    }
+                } else {
+                    $opt.prop('disabled', false).removeAttr('title');
+                    $('#aviso-pasaporte-habilitado').remove();
+                    select.val(data.tramites).trigger('change');
+                }
+            }).fail(function() {
+                toastr.error("Error al cargar los trámites asignados.");
+            });
+        });
+
+        $('#formAsignarTramite').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Guardando asignaciones...', textColor: "white" });
+        });
+
+        $('#modalAsignarTramite').on('hidden.bs.modal', function() {
+            $('#aviso-pasaporte-habilitado').remove();
+            $(this).find('select option').prop('disabled', false).removeAttr('title');
+        });
+
+        // Lógica Aprobar Trámites
+        $(document).on('click', '.btn-aprobar-tramite', function() {
+            let fetchUrl = $(this).data('fetch-url');
+            let persona  = ($(this).data('persona') || '').trim();
+            let grado    = $(this).data('grado')       || '';
+            let inst     = $(this).data('institucion') || '';
+            let pais     = $(this).data('pais')        || '';
+            let fecha    = $(this).data('fecha')       || '';
+            let estancia = $(this).data('estancia')    || '';
+            let estado   = $(this).data('estado')      || '';
+            let docId   = $(this).data('doc-id');
+            let docData = window.docDataMap[docId] || {};
+
+            let body   = $('#bodyAprobar');
+            let loader = $('#loaderAprobar');
+
+            // Iniciales del avatar
+            var parts    = persona.split(/\s+/).filter(Boolean);
+            var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+            $('#aprobAvatar').text(initials.toUpperCase() || '?');
+
+            // Pre-poblar con datos del botón
+            $('#aprobPersonaName').text(persona || '—');
+            $('#aprobGrado').text(grado);
+            $('#aprobInstitucion').text(inst);
+            $('#aprobPais').text(pais || '—');
+            $('#aprobFecha').text(fecha || '—');
+            $('#aprobEstancia').text(estancia || '—');
+            $('#aprobEstadoActual').text(estado || '—');
+            $('#aprobEmbajada').text(docData.consultaEmbajada === true ? 'Sí' : (docData.consultaEmbajada === false ? 'No' : '—'));
+            $('#aprobFechaEntrega').text(docData.fechaEntregaPasaporte || '—');
+            $('#aprobFechaRecogida').text(docData.fechaRecogidaPasaporte || '—');
+
+            body.empty();
+            loader.removeClass('d-none');
+            $('#modalAprobarTramites').modal('show');
+
+            $.get(fetchUrl, function(data) {
+                loader.addClass('d-none');
+                if (data.estado) $('#aprobEstadoActual').text(data.estado);
+                
+                if (data.tramites.length === 0) {
+                    body.html(`
+                        <div class="text-center py-4" style="color:#94a3b8;">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                            <span style="font-size:0.85rem;">No hay trámites asignados.</span>
+                        </div>`);
+                } else {
+                    let totalListo = data.tramites.filter(t => t.listo).length;
+                    let total = data.tramites.length;
+                    let pct = total > 0 ? Math.round(totalListo / total * 100) : 0;
+
+                    let header = `
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.7px;">
+                                ${total} trámite${total !== 1 ? 's' : ''}
+                            </span>
+                            <span id="aprobCounter" style="font-size:0.78rem;font-weight:700;color:#134679;">
+                                ${totalListo}/${total} completados
+                            </span>
+                        </div>
+                        <div id="aprobProgressBar" style="height:4px;background:#e2e8f0;border-radius:4px;margin-bottom:16px;overflow:hidden;">
+                            <div id="aprobProgressFill" style="height:100%;width:${pct}%;background:linear-gradient(90deg,#134679,#2563eb);border-radius:4px;transition:width .35s ease;"></div>
+                        </div>
+                    `;
+                    body.html(header);
+
+                    data.tramites.forEach((item, idx) => {
+                        let isListo    = !!item.listo;
+                        let bloqueado  = !!item.bloqueado;
+                        let bgCard     = isListo ? 'linear-gradient(135deg,#f0fdf4,#dcfce7)' : (bloqueado ? 'linear-gradient(135deg,#fffbeb,#fef3c7)' : '#fff');
+                        let borderCard = isListo ? '#86efac' : (bloqueado ? '#fcd34d' : '#e2e8f0');
+                        let bgNum      = isListo ? '#16a34a' : (bloqueado ? '#d97706' : '#cbd5e1');
+                        let colorName  = isListo ? '#15803d' : (bloqueado ? '#92400e' : '#1a2e44');
+                        let bgTrack    = isListo ? '#16a34a' : '#cbd5e1';
+                        let thumbX     = isListo ? '24px' : '0px';
+                        let statusHtml = isListo
+                            ? '<i class="fas fa-check-circle mr-1"></i>Completado'
+                            : (bloqueado
+                                ? '<i class="fas fa-lock mr-1"></i>Bloqueado — pasaporte en Pendiente'
+                                : '<i class="fas fa-clock mr-1"></i>Pendiente');
+                        let statusColor = isListo ? '#16a34a' : (bloqueado ? '#d97706' : '#94a3b8');
+                        let toggleCursor = bloqueado ? 'not-allowed' : 'pointer';
+                        let card = $(`
+                            <div class="tramite-card d-flex align-items-center justify-content-between"
+                                 data-id="${item.id}"
+                                 data-bloqueado="${bloqueado ? '1' : '0'}"
+                                 style="background:${bgCard};
+                                        border:1.5px solid ${borderCard};
+                                        border-radius:10px;padding:14px 18px;margin-bottom:10px;
+                                        transition:all .25s ease;cursor:default;">
+                                <div class="d-flex align-items-center" style="min-width:0;flex:1;">
+                                    <div class="tramite-num" style="width:26px;height:26px;border-radius:50%;
+                                                background:${bgNum};color:white;
+                                                display:flex;align-items:center;justify-content:center;
+                                                font-size:0.7rem;font-weight:700;flex-shrink:0;
+                                                transition:background .25s ease;">${idx + 1}</div>
+                                    <div style="margin-left:12px;min-width:0;">
+                                        <div class="tramite-nombre" style="font-size:0.88rem;font-weight:600;
+                                                     color:${colorName};
+                                                     transition:color .25s ease;">${item.nombre}</div>
+                                        <div class="tramite-status" style="font-size:0.72rem;font-weight:600;
+                                                     color:${statusColor};margin-top:2px;
+                                                     transition:color .25s ease;">
+                                            ${statusHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="tramite-toggle mb-0 ml-3" style="flex-shrink:0;" title="${bloqueado ? 'El pasaporte de esta persona está Pendiente de confección' : ''}">
+                                    <input type="checkbox" class="switch-aprobar" ${isListo ? 'checked' : ''} style="display:none;">
+                                    <span class="toggle-track" style="display:inline-flex;align-items:center;width:52px;height:28px;
+                                               border-radius:14px;background:${bgTrack};
+                                               padding:3px;cursor:${toggleCursor};transition:background .25s ease;position:relative;
+                                               ${bloqueado ? 'opacity:0.5;' : ''}">
+                                        <span class="toggle-thumb" style="width:22px;height:22px;border-radius:50%;background:white;
+                                                     box-shadow:0 1px 4px rgba(0,0,0,.2);
+                                                     transform:translateX(${thumbX});
+                                                     transition:transform .25s ease;display:block;"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        `);
+                        body.append(card);
+                    });
+
+                    body.on('click', '.tramite-toggle', function(e) {
+                        e.preventDefault();
+                        let $card  = $(this).closest('.tramite-card');
+                        if ($card.data('bloqueado') == '1') {
+                            toastr.warning('El pasaporte de esta persona está <b>Pendiente</b> de confección. No se puede marcar este trámite como completado hasta que el pasaporte esté habilitado.', '', { timeOut: 5000, escapeHtml: false });
+                            return;
+                        }
+                        let $cb    = $card.find('.switch-aprobar');
+                        let id     = $card.data('id');
+                        let newVal = $cb.is(':checked') ? 0 : 1;
+                        let $track = $card.find('.toggle-track');
+                        let $thumb = $card.find('.toggle-thumb');
+                        let $num   = $card.find('.tramite-num');
+                        let $name  = $card.find('.tramite-nombre');
+                        let $stat  = $card.find('.tramite-status');
+
+                        // Optimistic UI
+                        $cb.prop('checked', !!newVal);
+                        if (newVal) {
+                            $card.css({'background':'linear-gradient(135deg,#f0fdf4,#dcfce7)','border-color':'#86efac'});
+                            $track.css('background','#16a34a');
+                            $thumb.css('transform','translateX(24px)');
+                            $num.css('background','#16a34a');
+                            $name.css('color','#15803d');
+                            $stat.html('<i class="fas fa-check-circle mr-1"></i>Completado').css('color','#16a34a');
+                        } else {
+                            $card.css({'background':'#fff','border-color':'#e2e8f0'});
+                            $track.css('background','#cbd5e1');
+                            $thumb.css('transform','translateX(0px)');
+                            $num.css('background','#cbd5e1');
+                            $name.css('color','#1a2e44');
+                            $stat.html('<i class="fas fa-clock mr-1"></i>Pendiente').css('color','#94a3b8');
+                        }
+
+                        // Actualizar contador y barra
+                        let listos = body.find('.switch-aprobar:checked').length;
+                        let tot    = body.find('.switch-aprobar').length;
+                        let p      = tot > 0 ? Math.round(listos / tot * 100) : 0;
+                        $('#aprobCounter').text(listos + '/' + tot + ' completados');
+                        $('#aprobProgressFill').css('width', p + '%');
+
+                        function revertirCard() {
+                            $cb.prop('checked', !newVal);
+                            if (!newVal) {
+                                $card.css({'background':'linear-gradient(135deg,#f0fdf4,#dcfce7)','border-color':'#86efac'});
+                                $track.css('background','#16a34a');
+                                $thumb.css('transform','translateX(24px)');
+                                $num.css('background','#16a34a');
+                                $name.css('color','#15803d');
+                                $stat.html('<i class="fas fa-check-circle mr-1"></i>Completado').css('color','#16a34a');
+                            } else {
+                                $card.css({'background':'#fff','border-color':'#e2e8f0'});
+                                $track.css('background','#cbd5e1');
+                                $thumb.css('transform','translateX(0px)');
+                                $num.css('background','#cbd5e1');
+                                $name.css('color','#1a2e44');
+                                $stat.html('<i class="fas fa-clock mr-1"></i>Pendiente').css('color','#94a3b8');
+                            }
+                            let l2 = body.find('.switch-aprobar:checked').length;
+                            let t2 = body.find('.switch-aprobar').length;
+                            let p2 = t2 > 0 ? Math.round(l2 / t2 * 100) : 0;
+                            $('#aprobCounter').text(l2 + '/' + t2 + ' completados');
+                            $('#aprobProgressFill').css('width', p2 + '%');
+                        }
+
+                        HoldOn.open({ theme: "sk-cube-grid", message: 'Actualizando...', textColor: "white" });
+                        $.ajax({
+                            url: "{{ path('app_documento_salida_aprobar_tramites_guardar') }}",
+                            type: 'POST',
+                            data: { id: id, valor: newVal },
+                            success: function() {
+                                HoldOn.close();
+                                toastr.success("Trámite actualizado.");
+                            },
+                            statusCode: {
+                                422: function(xhr) {
+                                    HoldOn.close();
+                                    let msg = xhr.responseJSON && xhr.responseJSON.error
+                                        ? xhr.responseJSON.error
+                                        : 'No se puede completar este trámite.';
+                                    toastr.warning(msg, '', { timeOut: 6000 });
+                                    revertirCard();
+                                }
+                            },
+                            error: function(xhr) {
+                                if (xhr.status !== 422) {
+                                    HoldOn.close();
+                                    toastr.error("Error al actualizar.");
+                                    revertirCard();
+                                }
+                            }
+                        });
+                    });
+                }
+            }).fail(function() {
+                loader.addClass('d-none');
+                toastr.error("Error al cargar los trámites.");
+            });
+        });
+
+        // Al cerrar el modal de aprobar, recargamos la página para ver los cambios de estado global
+        $('#modalAprobarTramites').on('hidden.bs.modal', function () {
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Actualizando vista...', textColor: "white" });
+            location.reload();
+        });
+
+        // Lógica Asignar Fecha Salida / Regreso
+        $(document).on('click', '.btn-fecha-salida-regreso', function() {
+            let url          = $(this).data('url');
+            let persona      = ($(this).data('persona')        || '').trim();
+            let grado        = $(this).data('grado')           || '';
+            let inst         = $(this).data('institucion')     || '';
+            let pais         = $(this).data('pais')            || '';
+            let fechaSalida   = $(this).data('fecha-salida')   || '';
+            let fechaRegreso  = $(this).data('fecha-regreso')  || '';
+            let fechaEntrega  = $(this).data('fecha-entrega')  || '';
+            let estancia     = $(this).data('estancia')        || '';
+            let estado       = $(this).data('estado')          || '';
+            let docId   = $(this).data('doc-id');
+            let docData = window.docDataMap[docId] || {};
+
+            // Iniciales del avatar
+            var parts    = persona.split(/\s+/).filter(Boolean);
+            var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+            $('#fechaAvatar').text(initials.toUpperCase() || '?');
+
+            // Pre-poblar tarjeta de persona
+            $('#fechaPersonaName').text(persona || '—');
+            $('#fechaGrado').text(grado);
+            $('#fechaInstitucion').text(inst);
+            $('#fechaPais').text(pais || '—');
+            $('#fechaEstancia').text(estancia || '—');
+            $('#fechaEstado').text(estado || '—');
+            $('#fechaEmbajada').text(docData.consultaEmbajada === true ? 'Sí' : (docData.consultaEmbajada === false ? 'No' : '—'));
+            $('#fechaFechaEntrega').text(docData.fechaEntregaPasaporte || '—');
+            $('#fechaFechaRecogida').text(docData.fechaRecogidaPasaporte || '—');
+
+            // Establecer valores de fechas
+            $('#asignar_fecha_salida_fechaSalidaReal').val(fechaSalida);
+            $('#asignar_fecha_salida_fechaRegresoReal').val(fechaRegreso);
+            $('#asignar_fecha_salida_fechaEntregaPasaporte').val(fechaEntrega);
+
+            // Establecer acción del formulario
+            $('#formFechaSalidaRegreso').attr('action', url);
+
+            $('#modalFechaSalidaRegreso').modal('show');
+        });
+
+        // Inicializar datetimepickers al mostrar el modal
+        $('#modalFechaSalidaRegreso').on('shown.bs.modal', function() {
+            var $fpEl  = $('#asignar_fecha_salida_fechaSalidaReal');
+            var $frEl  = $('#asignar_fecha_salida_fechaRegresoReal');
+            var $fepEl = $('#asignar_fecha_salida_fechaEntregaPasaporte');
+
+            if ($fpEl.data('DateTimePicker'))  $fpEl.data('DateTimePicker').destroy();
+            if ($frEl.data('DateTimePicker'))  $frEl.data('DateTimePicker').destroy();
+            if ($fepEl.data('DateTimePicker')) $fepEl.data('DateTimePicker').destroy();
+
+            $fpEl.datetimepicker({ format: 'DD/MM/YYYY', locale: 'es' });
+            $frEl.datetimepicker({ format: 'DD/MM/YYYY', locale: 'es', useCurrent: false });
+            $fepEl.datetimepicker({ format: 'DD/MM/YYYY', locale: 'es', useCurrent: false });
+
+            $fpEl.off('dp.change').on('dp.change', function(e) {
+                if (e.date) $frEl.data('DateTimePicker').minDate(moment(e.date).add(1, 'days'));
+            });
+            $frEl.off('dp.change').on('dp.change', function(e) {
+                var dep = $fpEl.data('DateTimePicker') ? $fpEl.data('DateTimePicker').date() : null;
+                if (e.date && dep && e.date.isSameOrBefore(dep)) {
+                    toastr.warning('La fecha de regreso debe ser posterior a la fecha de salida.');
+                    $frEl.data('DateTimePicker').clear();
+                }
+            });
+        });
+
+        $('#formFechaSalidaRegreso').on('submit', function() {
+            var $fp = $('#asignar_fecha_salida_fechaSalidaReal').val();
+            var $fr = $('#asignar_fecha_salida_fechaRegresoReal').val();
+            if (!$fp || !$fr) {
+                toastr.warning('Debe completar ambas fechas.');
+                return false;
+            }
+            $('#btnSubmitFecha').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Guardando fechas...', textColor: "white" });
+        });
+    </script>
+{% endblock %}

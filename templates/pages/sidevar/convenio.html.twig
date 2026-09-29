@@ -1,0 +1,76 @@
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column nav-legacy nav-child-indent" data-widget="treeview"
+        role="menu"
+        data-accordion="true">
+        <!-- Add icons to the links using the .nav-icon class
+             with font-awesome or any other icon font library -->
+
+
+        {% if hasRoles('ROLE_GEST_CONVENIO') %}
+            <li class="nav-item">
+                <a href="#"
+                   class="nav-link nav-link-menu">
+                    <i class="nav-icon fa fa-globe"></i>
+                    <p>
+                        Instrumentos Jurídicos
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{ path('app_convenio_index') }}"
+                           class="nav-link nav-link-menu">
+                            <p>Instrumentos Jurídicos</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+        {% if hasRoles('ROLE_GEST_TIPO') or hasRoles('ROLE_GEST_MODALIDAD') or hasRoles('ROLE_GEST_INST_EXTRANJERA')%}
+            <li class="nav-item">
+                <a href="#"
+                   class="nav-link nav-link-menu">
+                    <i class="nav-icon fas fa-cog"></i>
+                    <p>
+                        Configuración
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    {% if hasRoles('ROLE_GEST_MODALIDAD') %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_modalidad_index') }}"
+                               class="nav-link nav-link-menu">
+                                <p>Modalidad</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if hasRoles('ROLE_GEST_REGION') %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_region_index') }}"
+                               class="nav-link nav-link-menu">
+                                <p>Regiones</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if hasRoles('ROLE_GEST_TIPO') %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_tipo_index') }}"
+                               class="nav-link nav-link-menu">
+                                <p>Tipos</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if hasRoles('ROLE_GEST_INST_EXTRANJERA') %}
+                        <li class="nav-item">
+                            <a href="{{ path('app_institucion_extranjera_index') }}"
+                               class="nav-link nav-link-menu">
+                                <p>Instituciones extranjeras</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

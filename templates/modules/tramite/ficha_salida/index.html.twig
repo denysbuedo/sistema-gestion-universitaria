@@ -1,0 +1,1003 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Fichas de salida{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+
+    /* Accordion Customization */
+    .search-accordion { margin-bottom: 1rem; }
+    .search-accordion .card { border: none; box-shadow: none; background: transparent; }
+    .search-accordion .card-header { 
+        background: #f8fafc !important; 
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important; 
+        padding: 12px 20px;
+        transition: all 0.3s;
+    }
+    .search-accordion .card-header:hover { background: #f1f5f9 !important; }
+    .search-accordion .card-title a { 
+        color: #134679 !important; 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        text-decoration: none !important;
+    }
+    .filter-container {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 20px;
+        margin-top: -2px;
+    }
+    .filter-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Proteger headers de modales personalizados del override de bootbox */
+    #documentsModal .modal-header,
+    #modalCambiarEstado .modal-header,
+    #modalConsultaEmbajada .modal-header,
+    #signatureModal .modal-header {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        padding: 18px 24px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    #documentsModal .modal-header .close,
+    #modalCambiarEstado .modal-header .close,
+    #modalConsultaEmbajada .modal-header .close,
+    #signatureModal .modal-header .close {
+        color: white !important;
+        opacity: .85 !important;
+        font-size: 1.6rem !important;
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        transform: none !important;
+        margin-left: auto !important;
+    }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-file-export label-icon"></i>Listado de fichas de salida</h3>
+            <a title="Adicionar" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_ficha_salida_registrar') }}">
+                <i class="fa fa-plus"></i> Nuevo
+            </a>
+        </div>
+        
+        <div class="px-4 pt-3">
+            <div class="search-accordion" id="accordion">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title w-100">
+                            <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                                <span><i class="fas fa-filter mr-2"></i>Filtrar resultados {{ text_fil }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse" data-parent="#accordion">
+                        <div class="filter-container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="filter-label" for="estadoFicha">Estado del trámite</label>
+                                    <select id="estadoFicha" name="estadoFicha" class="form-control select2" style="width: 100%;">
+                                        <option value="">Todos los estados</option>
+                                        {% for item2 in estados %}
+                                            <option {% if item2.id == fil_estado %} selected {% endif %} value="{{ item2.id }}">{{ item2.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="filter-label" for="clasificacionFicha">Clasificación</label>
+                                    <select id="clasificacionFicha" name="clasificacionFicha" class="form-control" style="width: 100%;">
+                                        <option value="">Todas las clasificaciones</option>
+                                        <option {% if fil_clasificacion == 'Interno' %}selected{% endif %} value="Interno">Interno</option>
+                                        <option {% if fil_clasificacion == 'Externa' %}selected{% endif %} value="Externa">Externa</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre y apellidos</th>
+                    <th>Inst. cubana</th>
+                    <th>Clasificación</th>
+                    <th>País</th>
+                    <th>Salida prev.</th>
+                    <th>Estancia</th>
+                    <th>Estado</th>
+                    <th class="text-center" style="width: 60px;">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.persona.primerNombre ~ ' ' ~ item.persona.segundoNombre ~' '~ item.persona.primerApellido ~ ' ' ~ item.persona.segundoApellido }}</td>
+                        <td>{{ item.institucionCubana.siglas | default('') }}</td>
+                        <td>
+                            {% if item.clasificacion == 'Interno' %}
+                                <span class="badge badge-info"><i class="fas fa-building mr-1"></i>Interno</span>
+                            {% elseif item.clasificacion == 'Externa' %}
+                                <span class="badge badge-warning"><i class="fas fa-globe-americas mr-1"></i>Externa</span>
+                            {% else %}
+                                {{ item.clasificacion | default('') }}
+                            {% endif %}
+                        </td>
+                        <td>{{ item.pais.nombre | default('') }}</td>
+                        <td width="10%">{{ item.fechaSalidaPrevista | date('d/m/Y') }}</td>
+                        <td>{{ item.tiempoEstancia | default('') }}</td>
+                        <td>
+                            {% set eNom = item.estadoFichaSalida.nombre | default('') %}
+                            {% set eId  = item.estadoFichaSalida.id | default(0) %}
+                            {% if eId == 1 %}
+                                <span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 2 %}
+                                <span class="badge" style="background:#fef9c3;color:#854d0e;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 3 %}
+                                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% elseif eId == 9 or eId == 10 %}
+                                <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% else %}
+                                <span class="badge" style="background:#f1f5f9;color:#475569;font-size:0.75rem;padding:4px 8px;border-radius:12px;font-weight:600;">{{ eNom }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center" style="white-space: nowrap; width: 60px;">
+                            {% set embajadaStr = item.consultaEmbajada is null ? 'null' : (item.consultaEmbajada ? '1' : '0') %}
+                            {% set downloadUrl = item.fichaSalida is not null ? (item.fichaSalida starts with 'uploads' ? app.request.getSchemeAndHttpHost() ~ '/' ~ item.fichaSalida : app.request.getSchemeAndHttpHost() ~ '/uploads/tramites/ficha_salida/ficha_salida/' ~ item.fichaSalida) : '' %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle-no-caret"
+                                        id="actions-{{ item.id }}"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        title="Opciones"
+                                        style="border-radius: 50%; width: 34px; height: 34px; padding: 0; line-height: 34px; font-size: 1rem;">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="actions-{{ item.id }}" style="min-width: 230px; border-radius: 0.5rem; padding: 8px 0;">
+
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px;">Acciones</h6>
+
+                                    {% if item.estadoFichaSalida.id == 1 and item.directivoFirma is null %}
+                                        <button class="dropdown-item elementSignature"
+                                                data-url="{{ path('app_ficha_salida_firmar', {'id': item.id}) }}"
+                                                data-download="{{ downloadUrl }}">
+                                            <i class="fa fa-signature fa-fw mr-2 text-primary"></i> Firmar por el directivo
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoFichaSalida.id != 3 and item.estadoFichaSalida.id != 10 %}
+                                        <a class="dropdown-item" href="{{ path('app_ficha_salida_modificar', {'id': item.id}) }}">
+                                            <i class="fa fa-edit fa-fw mr-2 text-primary"></i> Modificar datos
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="dropdown-divider"></div>
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px;">Trámite</h6>
+
+                                    {% if item.estadoFichaSalida.id != 3 and item.estadoFichaSalida.id != 10 and item.directivoFirma is not null %}
+                                        <button class="dropdown-item btn-consulta-embajada"
+                                                data-id="{{ item.id }}"
+                                                data-url="{{ path('app_ficha_salida_consulta_embajada', {'id': item.id}) }}"
+                                                data-valor="{{ embajadaStr }}">
+                                            {% if item.consultaEmbajada is null %}
+                                                <i class="fa fa-building fa-fw mr-2 text-secondary"></i> Consulta en embajada <span class="badge badge-warning ml-1" style="font-size:0.6rem;">Pendiente</span>
+                                            {% elseif item.consultaEmbajada %}
+                                                <i class="fa fa-building fa-fw mr-2 text-success"></i> Consulta en embajada <span class="badge badge-success ml-1" style="font-size:0.6rem;">Sí</span>
+                                            {% else %}
+                                                <i class="fa fa-building fa-fw mr-2 text-secondary"></i> Consulta en embajada <span class="badge badge-secondary ml-1" style="font-size:0.6rem;">No</span>
+                                            {% endif %}
+                                        </button>
+
+                                        <button class="dropdown-item btn-cambiar-estado {% if item.consultaEmbajada is null %}disabled text-muted{% endif %}"
+                                                {% if item.consultaEmbajada is null %}disabled title="Debe indicar si lleva consulta en embajada primero"{% else %}title="Cambiar de estado"{% endif %}
+                                                data-url="{{ path('app_ficha_salida_cambiar_estado', {'id': item.id}) }}"
+                                                data-fetch-url="{{ path('app_ficha_salida_datos_cambiar_estado', {'id': item.id}) }}"
+                                                data-persona="{{ (item.persona.primerNombre ~ ' ' ~ item.persona.segundoNombre ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ item.persona.segundoApellido) | trim }}"
+                                                data-grado="{{ item.persona.gradoAcademico.nombre | default('') }}"
+                                                data-institucion="{{ item.institucionCubana.siglas | default('') }}"
+                                                data-pais="{{ item.pais.nombre | default('') }}"
+                                                data-fecha="{{ item.fechaSalidaPrevista | date('d/m/Y') }}"
+                                                data-estancia="{{ item.tiempoEstancia | default('') }}"
+                                                data-id="{{ item.id }}"
+                                                data-estado-id="{{ item.estadoFichaSalida.id }}"
+                                                data-download="{{ downloadUrl }}"
+                                                data-url-dri="{{ path('app_ficha_salida_firmar_dri', {'id': item.id}) }}"
+                                                data-estado="{{ item.estadoFichaSalida.nombre | default('') }}">
+                                            <i class="fa fa-exchange-alt fa-fw mr-2 {% if item.consultaEmbajada is null %}text-muted{% else %}text-warning{% endif %}"></i> Cambiar de estado
+                                        </button>
+                                    {% endif %}
+
+                                    <button class="dropdown-item btn-view-documents"
+                                            data-id="{{ item.id }}"
+                                            data-url="{{ path('app_ficha_salida_historial_documentos', {'id': item.id}) }}">
+                                        <i class="fa fa-folder-open fa-fw mr-2 text-info"></i> Historial de documentos
+                                    </button>
+
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item text-danger elementRemove"
+                                            data-url="{{ path('app_ficha_salida_eliminar', {'id': item.id}) }}">
+                                        <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modals and Scripts preserved from original -->
+    <!-- Modal Firma Directivo -->
+    <div class="modal fade" id="signatureModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-signature mr-2"></i> Firma del Directivo</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="step1-container">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center mr-3" style="width: 30px; height: 30px; font-weight: bold;">1</div>
+                            <h6 class="mb-0 font-weight-bold">Descargar documento oficial</h6>
+                        </div>
+                        <p class="text-muted mb-3" style="margin-left: 45px; font-size: 0.9rem;">Debe descargar la ficha generada para proceder con su firma física o digital.</p>
+                        <div style="margin-left: 45px;">
+                            <a href="#" target="_blank" class="btn btn-outline-primary btn-sm px-4" id="downloadDocument">
+                                <i class="fas fa-file-pdf mr-2"></i> Descargar Documento
+                            </a>
+                        </div>
+                    </div>
+                    <hr class="my-4" style="margin-left: 45px;">
+                    <div id="step2-container" style="opacity: 0.4; pointer-events: none; transition: all 0.3s ease;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center mr-3" style="width: 30px; height: 30px; font-weight: bold;" id="step2-number">2</div>
+                            <h6 class="mb-0 font-weight-bold text-muted" id="step2-title">Subir documento firmado</h6>
+                        </div>
+                        <p class="text-muted mb-3" style="margin-left: 45px; font-size: 0.9rem;">Adjunte el documento ya firmado por la autoridad correspondiente.</p>
+                        <div class="form-group mb-0" style="margin-left: 45px;">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="signatureFile" accept=".pdf,.jpg,.png,.doc,.docx">
+                                <label class="custom-file-label" for="signatureFile">Seleccionar archivo...</label>
+                            </div>
+                            <small class="form-text text-muted mt-2">Formatos permitidos: PDF, JPG, PNG o DOC.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" id="cancelSignature" style="text-decoration: none;">CANCELAR</button>
+                    <button type="button" class="btn btn-primary px-4 shadow-sm" id="confirmSignature" disabled style="border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-check-circle mr-2"></i> COMPLETAR FIRMA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historial Documentos -->
+    <div class="modal fade" id="documentsModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header d-flex align-items-center justify-content-between"
+                     style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold mb-0"><i class="fas fa-folder-open mr-2"></i> Historial de Documentos</h5>
+                    <button type="button" class="close mb-0" data-dismiss="modal" aria-label="Close"
+                            style="color: white; opacity: .85; font-size: 1.6rem; line-height: 1; padding: 0; background: none; border: none; cursor: pointer; margin-left: auto;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Tarjeta de persona -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <div class="d-flex align-items-center">
+                            <div id="histAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                            <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                <div id="histPersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                <div id="histGrado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                <div id="histInstitucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                            </div>
+                            <span id="histEstado" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                        </div>
+                        <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                <div id="histPais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Salida Prevista</div>
+                                <div id="histFecha" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia</div>
+                                <div id="histEstancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                <div id="histEmbajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Loader -->
+                    <div id="documentsLoader" class="text-center py-5 d-none">
+                        <div class="spinner-border" role="status" style="color: #134679; width: 2.5rem; height: 2.5rem;"></div>
+                        <p class="mt-3 mb-0" style="color: #64748b; font-size: 0.88rem; font-weight: 600;">Buscando documentos relacionados...</p>
+                    </div>
+                    <!-- Contenido -->
+                    <div id="documentsContent">
+                        <div style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;">
+                            <table class="table mb-0" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background: #f1f5f9;">
+                                        <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Documento</th>
+                                        <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Fecha de registro</th>
+                                        <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none;">Usuario</th>
+                                        <th style="color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 1px solid #e2e8f0; border-top: none; text-align: center; width: 80px;">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documentsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CERRAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal No Carta Invitacion -->
+    <div class="modal fade" id="modalNoFile" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content text-center" style="border-radius: 15px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                <div class="modal-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-file-circle-exclamation text-info" style="font-size: 4.5rem; opacity: 0.9;"></i>
+                    </div>
+                    <h4 class="text-bold mb-2" style="color: #134679; letter-spacing: -0.5px;">Carta de invitación</h4>
+                    <p class="text-muted mb-4" style="font-size: 1.05rem; line-height: 1.5;">Lo sentimos, este registro no cuenta con una carta de invitación adjunta en el sistema.</p>
+                    <button type="button" class="btn btn-primary px-5 py-2 shadow-sm" data-dismiss="modal" style="border-radius: 30px; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Consulta Embajada -->
+    <div class="modal fade" id="modalConsultaEmbajada" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-building mr-2"></i> Consulta en Embajada</h5>
+                    <button type="button" class="close mb-0" data-dismiss="modal" aria-label="Close"
+                            style="color: white; opacity: .85; font-size: 1.6rem; line-height: 1; padding: 0; background: none; border: none; cursor: pointer; margin-left: auto;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="mb-4" style="color: #4a5568; font-size: 0.95rem;">¿Esta ficha de salida requiere consulta en embajada?</p>
+                    <div id="ceEmbajadaActual" class="mb-3 p-3" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b; display: none;">
+                        Estado actual: <strong id="ceEmbajadaValorActual"></strong>
+                    </div>
+                    <div class="d-flex" style="gap: 12px;">
+                        <button type="button" class="btn btn-outline-success flex-fill py-3 btn-embajada-opcion" data-valor="1" style="border-radius: 8px; font-weight: 700; font-size: 0.9rem; border-width: 2px;">
+                            <i class="fas fa-check-circle mr-2"></i> Sí lleva consulta
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary flex-fill py-3 btn-embajada-opcion" data-valor="0" style="border-radius: 8px; font-weight: 700; font-size: 0.9rem; border-width: 2px;">
+                            <i class="fas fa-times-circle mr-2"></i> No lleva consulta
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Estado -->
+    <div class="modal fade" id="modalCambiarEstado" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-exchange-alt mr-2"></i> Cambiar Estado</h5>
+                </div>
+                <form id="formCambiarEstado" method="POST">
+                    <input type="hidden" name="cambio_estado_salida[_token]" value="{{ csrf_token('cambio_estado_salida') }}">
+                    <div class="modal-body p-4">
+
+                        <!-- Tarjeta de persona -->
+                        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                            <div class="d-flex align-items-center">
+                                <div id="ceAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #134679, #1a5898); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(19,70,121,.3); letter-spacing: 1px;">--</div>
+                                <div style="margin-left: 14px; flex: 1; min-width: 0;">
+                                    <div id="cePersonaName" style="font-weight: 700; font-size: 0.92rem; color: #1a2e44; line-height: 1.3;">—</div>
+                                    <div id="ceGrado" style="font-size: 0.78rem; color: #64748b; margin-top: 2px;"></div>
+                                    <div id="ceInstitucion" style="font-size: 0.78rem; color: #64748b;"></div>
+                                </div>
+                                <span id="ceEstadoActual" style="background: #dbeafe; color: #134679; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; align-self: flex-start; white-space: nowrap; margin-left: 10px;">—</span>
+                            </div>
+                            <div class="d-flex" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; gap: 24px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">País</div>
+                                    <div id="cePais" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Salida Prevista</div>
+                                    <div id="ceFechaSalida" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Estancia</div>
+                                    <div id="ceEstancia" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px;">Consulta Embajada</div>
+                                    <div id="ceEmbajada" style="font-size: 0.82rem; font-weight: 600; color: #1a2e44;">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="loaderCambiarEstado" class="text-center p-4 d-none">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">Cargando estados disponibles...</p>
+                        </div>
+                        <div id="formFieldsCambiarEstado">
+                            <div class="form-group">
+                                <label class="font-weight-bold" style="color: #134679; font-size: 0.85rem;">Nuevo Estado <span class="text-danger">*</span></label>
+                                <select id="ceSelectEstado" name="cambio_estado_salida[estadoFichaSalida]" class="form-control" required>
+                                    <option value="">Seleccione un estado...</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="font-weight-bold" style="color: #134679; font-size: 0.85rem;">Descripción</label>
+                                <textarea name="cambio_estado_salida[descripcion]" id="ceDescripcion" class="form-control" rows="3" placeholder="Describa el motivo del cambio de estado..." style="resize: none;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                        <button type="submit" id="btnSubmitCambiarEstado" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; font-weight: 600; background: #134679; border-color: #134679;">
+                            <i class="fas fa-check-circle mr-1"></i> APLICAR CAMBIO
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        window.fichaDataMap = {
+            {% for item in registros %}
+            "{{ item.id }}": {
+                persona: "{{ (item.persona.primerNombre ~ ' ' ~ (item.persona.segundoNombre ?? '') ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ (item.persona.segundoApellido ?? '')) | trim | e('js') }}",
+                grado: "{{ (item.persona.gradoAcademico is not null ? item.persona.gradoAcademico.nombre : '') | e('js') }}",
+                institucion: "{{ (item.institucionCubana is not null ? item.institucionCubana.siglas : '') | e('js') }}",
+                pais: "{{ (item.pais is not null ? item.pais.nombre : '') | e('js') }}",
+                fecha: "{{ item.fechaSalidaPrevista | date('d/m/Y') }}",
+                estancia: "{{ item.tiempoEstancia | default('') | e('js') }}",
+                estado: "{{ (item.estadoFichaSalida is not null ? item.estadoFichaSalida.nombre : '') | e('js') }}",
+                consultaEmbajada: {{ item.consultaEmbajada is null ? 'null' : (item.consultaEmbajada ? 'true' : 'false') }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        $(document).ready(function() {
+            // Fix dropdown recortado por overflow:hidden del wrapper DataTables
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $toggle = $(this).find('[data-toggle="dropdown"]');
+                var $menu   = $(this).find('.dropdown-menu');
+                var offset  = $toggle.offset();
+                var toggleH = $toggle.outerHeight();
+                var menuW   = $menu.outerWidth() || 230;
+                var left    = offset.left + $toggle.outerWidth() - menuW;
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top:  offset.top + toggleH,
+                    left: Math.max(0, left),
+                    zIndex: 9999
+                });
+            }).on('hide.bs.dropdown', '.dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                $menu.appendTo($(this)).css({ position: '', top: '', left: '', zIndex: '' });
+            });
+
+            function recargarFichas() {
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+                $.post("{{ path('app_ficha_salida_index') }}", {
+                    estado: $('#estadoFicha').val(),
+                    clasificacion: $('#clasificacionFicha').val()
+                }, function () {
+                    $(window).attr('location', window.location);
+                    HoldOn.close();
+                });
+            }
+            $('#estadoFicha').change(recargarFichas);
+            $('#clasificacionFicha').change(recargarFichas);
+
+            $(document).on('click', '.elementSignature', function () {
+                let url = $(this).data('url');
+                let downloadUrl = $(this).data('download');
+                $('#downloadDocument').attr('href', downloadUrl || '#');
+                $('#signatureFile').val('');
+                $('.custom-file-label').html('Seleccionar archivo...');
+                $('#step2-container').css({'opacity': '0.4', 'pointer-events': 'none'});
+                $('#step2-number').removeClass('bg-primary').addClass('bg-secondary');
+                $('#step2-title').addClass('text-muted');
+                $('#confirmSignature').prop('disabled', true);
+                $('#confirmSignature').off('click');
+                $('#signatureModal .modal-title').html('<i class="fas fa-signature mr-2"></i> Firma del Directivo');
+                $('#signatureModal').modal('show');
+
+                $('#downloadDocument').off('click').on('click', function () {
+                    if (!downloadUrl) {
+                        toastr.warning("No hay documento disponible para descargar.");
+                        return false;
+                    }
+                    $('#step2-container').css({'opacity': '1', 'pointer-events': 'auto'});
+                    $('#step2-number').removeClass('bg-secondary').addClass('bg-primary');
+                    $('#step2-title').removeClass('text-muted');
+                    toastr.info("Paso 1 completado. Ahora puede adjuntar el documento firmado.");
+                });
+
+                $('#signatureFile').off('change').on('change', function () {
+                    let fileName = $(this).val().split('\\').pop();
+                    $(this).next('.custom-file-label').addClass("selected").html(fileName);
+                    if (fileName) {
+                        $('#confirmSignature').prop('disabled', false);
+                    }
+                });
+
+                $('#confirmSignature').on('click', function () {
+                    let btn = $(this);
+                    var fileInput = $('#signatureFile')[0];
+                    if (fileInput.files.length === 0) {
+                        toastr.warning("Por favor seleccione un archivo.");
+                        return;
+                    }
+                    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+                    var formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    HoldOn.open({ theme: "sk-cube-grid", message: 'Firmando documento...', textColor: "white" });
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            HoldOn.close();
+                            $('#signatureModal').modal('hide');
+                            if (response.success) {
+                                toastr.success(response.message);
+                                location.reload();
+                            } else {
+                                btn.prop('disabled', false);
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function () {
+                            HoldOn.close();
+                            btn.prop('disabled', false);
+                            toastr.error("Error al procesar la firma.");
+                        }
+                    });
+                });
+            });
+
+            $(document).on('click', '.btn-view-documents', function (e) {
+                e.stopPropagation();
+                var $btn = $(this);
+                var id   = $btn.attr('data-id');
+                var url  = $btn.attr('data-url') || '';
+                
+                // Buscar datos en el mapa de JS (bypasses todos los problemas de escape HTML)
+                var d = window.fichaDataMap[id] || {};
+                
+                var persona  = (d.persona    || '').trim() || '—';
+                var grado    = d.grado       || '';
+                var inst     = d.institucion || '';
+                var pais     = d.pais        || '—';
+                var fecha    = d.fecha       || '—';
+                var estancia = d.estancia    || '—';
+                var estado   = d.estado      || '—';
+                var embajada = d.consultaEmbajada === true ? 'Sí' : (d.consultaEmbajada === false ? 'No' : '—');
+
+                // Iniciales del avatar
+                var parts    = persona.split(/\s+/).filter(Boolean);
+                var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+
+                // Poblar tarjeta de persona
+                $('#histAvatar').text(initials.toUpperCase() || '?');
+                $('#histPersonaName').text(persona);
+                $('#histGrado').text(grado);
+                $('#histInstitucion').text(inst);
+                $('#histEstado').text(estado);
+                $('#histPais').text(pais);
+                $('#histFecha').text(fecha);
+                $('#histEstancia').text(estancia);
+                $('#histEmbajada').text(embajada);
+                
+                // Resetear tabla y mostrar loader
+                var $tbody   = $('#documentsTableBody');
+                var $loader  = $('#documentsLoader');
+                var $content = $('#documentsContent');
+                $tbody.empty();
+                $content.addClass('d-none');
+                $loader.removeClass('d-none');
+                $('#documentsModal').modal('show');
+                $.get(url, function (data) {
+                    $loader.addClass('d-none');
+                    $content.removeClass('d-none');
+                    if (data.length === 0) {
+                        $tbody.append(`
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px 20px;">
+                                    <div style="width: 56px; height: 56px; border-radius: 50%; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <i class="fas fa-folder-open" style="font-size: 1.4rem; color: #94a3b8;"></i>
+                                    </div>
+                                    <p style="color: #64748b; font-size: 0.88rem; font-weight: 600; margin: 0;">No se han registrado documentos para esta ficha de salida.</p>
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+                    data.forEach(function (doc) {
+                        var ext = (doc.nombre || '').split('.').pop().toLowerCase();
+                        var iconClass = ext === 'pdf' ? 'fa-file-pdf' : (ext === 'doc' || ext === 'docx' ? 'fa-file-word' : (ext === 'jpg' || ext === 'png' ? 'fa-file-image' : 'fa-file-alt'));
+                        var iconColor = ext === 'pdf' ? '#e53e3e' : (ext === 'doc' || ext === 'docx' ? '#2b6cb0' : (ext === 'jpg' || ext === 'png' ? '#d69e2e' : '#718096'));
+                        $tbody.append(`
+                            <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.1s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                                <td style="padding: 12px 16px; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fas ${iconClass}" style="font-size: 1.1rem; color: ${iconColor};"></i>
+                                        </div>
+                                        <span style="font-weight: 600; color: #1a2e44; font-size: 0.85rem;">${doc.nombre}</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 16px; vertical-align: middle; color: #4a5568; font-size: 0.83rem; white-space: nowrap;">
+                                    <i class="far fa-clock mr-1" style="color: #94a3b8;"></i>${doc.fecha}
+                                </td>
+                                <td style="padding: 12px 16px; vertical-align: middle;">
+                                    <span style="background: #e8edf5; color: #134679; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-block;">
+                                        <i class="fas fa-user mr-1"></i>${doc.usuario}
+                                    </span>
+                                </td>
+                                <td style="padding: 12px 16px; vertical-align: middle; text-align: center;">
+                                    <a href="${doc.url}" target="_blank"
+                                       title="Ver / Descargar"
+                                       style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; background: #134679; color: #fff; transition: background 0.15s; text-decoration: none;"
+                                       onmouseover="this.style.background='#0e3460'" onmouseout="this.style.background='#134679'">
+                                        <i class="fas fa-download" style="font-size: 0.8rem;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }).fail(function() {
+                    $loader.addClass('d-none');
+                    $('#documentsModal').modal('hide');
+                    toastr.error("No se pudo obtener el historial de documentos.");
+                });
+            });
+
+            $('.btn-download-invitation').on('click', function () {
+                let hasFile = $(this).data('has-file');
+                let url = $(this).data('url');
+                if (hasFile && url && url !== "") {
+                    window.open(url, '_blank');
+                } else {
+                    $('#modalNoFile').modal('show');
+                }
+            });
+
+            // Lógica Consulta Embajada
+            $(document).on('click', '.btn-consulta-embajada', function() {
+                var $btn = $(this);
+                var id = $btn.data('id');
+                var url = $btn.data('url');
+                var valorActual = $btn.data('valor'); // 'null', '1', '0'
+
+                var $modal = $('#modalConsultaEmbajada');
+                $modal.data('url', url);
+                $modal.data('id', id);
+                $modal.data('btn-origen', $btn);
+
+                // Mostrar estado actual si ya fue definido
+                var $caja = $('#ceEmbajadaActual');
+                if (valorActual === 'null') {
+                    $caja.hide();
+                } else {
+                    var texto = valorActual === '1' ? 'Sí lleva consulta en embajada' : 'No lleva consulta en embajada';
+                    $('#ceEmbajadaValorActual').text(texto);
+                    $caja.show();
+                }
+
+                // Resaltar opción seleccionada actualmente
+                $modal.find('.btn-embajada-opcion').removeClass('active btn-success btn-secondary').addClass(function() {
+                    return $(this).data('valor') == 1 ? 'btn-outline-success' : 'btn-outline-secondary';
+                });
+                if (valorActual === '1') {
+                    $modal.find('.btn-embajada-opcion[data-valor="1"]').removeClass('btn-outline-success').addClass('btn-success');
+                } else if (valorActual === '0') {
+                    $modal.find('.btn-embajada-opcion[data-valor="0"]').removeClass('btn-outline-secondary').addClass('btn-secondary');
+                }
+
+                $modal.modal('show');
+            });
+
+            $(document).on('click', '.btn-embajada-opcion', function() {
+                var $modal = $('#modalConsultaEmbajada');
+                var url = $modal.data('url');
+                var id = $modal.data('id');
+                var $btnOrigen = $modal.data('btn-origen');
+                var valor = $(this).data('valor');
+
+                $modal.find('.btn-embajada-opcion').prop('disabled', true).addClass('opacity-50');
+                $(this).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Guardando...', textColor: "white" });
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { consulta_embajada: valor },
+                    success: function(response) {
+                        HoldOn.close();
+                        if (response.success) {
+                            toastr.success(response.message);
+                            $modal.modal('hide');
+
+                            if (window.fichaDataMap[id]) {
+                                window.fichaDataMap[id].consultaEmbajada = valor == 1 ? true : false;
+                            }
+
+                            // Actualizar el item del dropdown "Consulta en embajada"
+                            $btnOrigen.data('valor', valor == 1 ? '1' : '0');
+                            if (valor == 1) {
+                                $btnOrigen.html('<i class="fa fa-building fa-fw mr-2 text-success"></i> Consulta en embajada <span class="badge badge-success ml-1" style="font-size:0.6rem;">Sí</span>');
+                            } else {
+                                $btnOrigen.html('<i class="fa fa-building fa-fw mr-2 text-secondary"></i> Consulta en embajada <span class="badge badge-secondary ml-1" style="font-size:0.6rem;">No</span>');
+                            }
+
+                            // Habilitar el item "Cambiar de estado" en el mismo dropdown
+                            var $dropdownMenu = $btnOrigen.closest('.dropdown-menu');
+                            var $btnCambiar = $dropdownMenu.find('.btn-cambiar-estado');
+                            $btnCambiar.prop('disabled', false)
+                                       .removeClass('disabled text-muted')
+                                       .attr('title', 'Cambiar de estado');
+                            $btnCambiar.find('i').removeClass('text-muted').addClass('text-warning');
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function() {
+                        HoldOn.close();
+                        $modal.find('.btn-embajada-opcion').prop('disabled', false).removeClass('opacity-50');
+                        toastr.error('Error al guardar. Intente de nuevo.');
+                    }
+                });
+            });
+
+            // Lógica Cambiar Estado (Modal)
+            $(document).on('click', '.btn-cambiar-estado', function() {
+                let url      = $(this).data('url');
+                let fetchUrl = $(this).data('fetch-url');
+                let persona  = ($(this).data('persona') || '').trim();
+                let grado    = $(this).data('grado')       || '';
+                let inst     = $(this).data('institucion') || '';
+                let pais     = $(this).data('pais')        || '';
+                let fecha    = $(this).data('fecha')       || '';
+                let estancia = $(this).data('estancia')    || '';
+                let estado   = $(this).data('estado')      || '';
+                let stateId  = $(this).data('estado-id');
+
+                if (stateId == 2) {
+                    // Mostrar flujo de firma similar al directivo pero para DRI
+                    let urlDRI = $(this).data('url-dri');
+                    let downloadUrl = $(this).data('download');
+                    
+                    $('#signatureModal .modal-title').html('<i class="fas fa-signature mr-2"></i> Firma DRI');
+                    $('#downloadDocument').attr('href', downloadUrl || '#');
+                    $('#signatureFile').val('');
+                    $('.custom-file-label').html('Seleccionar archivo...');
+                    $('#step2-container').css({'opacity': '0.4', 'pointer-events': 'none'});
+                    $('#step2-number').removeClass('bg-primary').addClass('bg-secondary');
+                    $('#step2-title').addClass('text-muted');
+                    $('#confirmSignature').prop('disabled', true);
+                    
+                    $('#signatureModal').modal('show');
+
+                    $('#downloadDocument').off('click').on('click', function () {
+                        $('#step2-container').css({'opacity': '1', 'pointer-events': 'auto'});
+                        $('#step2-number').removeClass('bg-secondary').addClass('bg-primary');
+                        $('#step2-title').removeClass('text-muted');
+                        toastr.info("Paso 1 completado. Ahora adjunte el documento firmado por DRI.");
+                    });
+
+                    $('#signatureFile').off('change').on('change', function () {
+                        let fileName = $(this).val().split('\\').pop();
+                        $(this).next('.custom-file-label').html(fileName);
+                        if (fileName) $('#confirmSignature').prop('disabled', false);
+                    });
+
+                    $('#confirmSignature').off('click').on('click', function () {
+                        let btn = $(this);
+                        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+                        var fileInput = $('#signatureFile')[0];
+                        var formData = new FormData();
+                        formData.append('file', fileInput.files[0]);
+
+                        HoldOn.open({ theme: "sk-cube-grid", message: 'Procesando firma DRI...', textColor: "white" });
+                        $.ajax({
+                            url: urlDRI,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                HoldOn.close();
+                                $('#signatureModal').modal('hide');
+                                if (response.success) {
+                                    toastr.success(response.message);
+                                    location.reload();
+                                } else {
+                                    btn.prop('disabled', false);
+                                    toastr.error(response.message);
+                                }
+                            },
+                            error: function () {
+                                HoldOn.close();
+                                btn.prop('disabled', false);
+                                toastr.error("Error al procesar la firma DRI.");
+                            }
+                        });
+                    });
+                    return;
+                }
+
+                let modal  = $('#modalCambiarEstado');
+                let select = $('#ceSelectEstado');
+                let loader = $('#loaderCambiarEstado');
+                let fields = $('#formFieldsCambiarEstado');
+
+                // Iniciales del avatar
+                var parts    = persona.split(/\s+/).filter(Boolean);
+                var initials = (parts[0] ? parts[0][0] : '') + (parts.length > 1 ? parts[parts.length - 1][0] : '');
+                $('#ceAvatar').text(initials.toUpperCase() || '?');
+
+                // Pre-poblar campos con los datos del botón
+                let fichaId  = $(this).data('id');
+                let fichaData = window.fichaDataMap[fichaId] || {};
+                select.html('<option value="">Seleccione un estado...</option>');
+                $('#ceDescripcion').val('');
+                $('#cePersonaName').text(persona || '—');
+                $('#ceGrado').text(grado);
+                $('#ceInstitucion').text(inst);
+                $('#cePais').text(pais || '—');
+                $('#ceFechaSalida').text(fecha || '—');
+                $('#ceEstancia').text(estancia || '—');
+                $('#ceEstadoActual').text(estado || '—');
+                $('#ceEmbajada').text(fichaData.consultaEmbajada === true ? 'Sí' : (fichaData.consultaEmbajada === false ? 'No' : '—'));
+
+                loader.removeClass('d-none');
+                fields.addClass('d-none');
+                modal.find('form').attr('action', url);
+                modal.modal('show');
+
+                $.get(fetchUrl, function(data) {
+                    loader.addClass('d-none');
+                    fields.removeClass('d-none');
+
+                    // Actualizar con datos del servidor (más confiables para estado actual)
+                    if (data.estadoActual) $('#ceEstadoActual').text(data.estadoActual);
+
+                    // Poblar estados, excluyendo "Viajando"
+                    var estadosValidos = data.estados.filter(function(e) {
+                        return e.nombre.toLowerCase().trim() !== 'viajando';
+                    });
+                    estadosValidos.forEach(function(est) {
+                        select.append('<option value="' + est.id + '">' + est.nombre + '</option>');
+                    });
+                    if (estadosValidos.length === 1) {
+                        select.val(estadosValidos[0].id);
+                    }
+                }).fail(function() {
+                    loader.addClass('d-none');
+                    modal.modal('hide');
+                    toastr.error("Error al cargar los datos.");
+                });
+            });
+
+            $('#formCambiarEstado').on('submit', function(e) {
+                let select = $('#ceSelectEstado');
+                if (!select.val()) {
+                    e.preventDefault();
+                    toastr.warning("Debe seleccionar un estado.");
+                    return;
+                }
+                let $btnCE = $(this).find('button[type="submit"]');
+                $btnCE.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Aplicando cambio de estado...', textColor: "white" });
+            });
+    });
+    </script>
+{% endblock %}

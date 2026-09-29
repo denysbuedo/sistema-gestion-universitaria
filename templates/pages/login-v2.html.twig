@@ -1,0 +1,374 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary:      #0e375f;
+            --primary-dark: #071e3d;
+            --primary-mid:  #174f80;
+            --accent:       #2b7de9;
+            --white:        #ffffff;
+            --gray-100:     #f7f8fa;
+            --gray-200:     #e9ecef;
+            --gray-400:     #adb5bd;
+            --gray-600:     #6c757d;
+            --gray-800:     #343a40;
+            --error:        #dc3545;
+            --error-bg:     #fff5f5;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #071e3d 0%, #0e375f 52%, #174f80 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Formas flotantes de fondo ── */
+        .bg-shapes { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatShape 22s infinite ease-in-out;
+        }
+        .shape-1 {
+            width: 480px; height: 480px;
+            top: -140px; right: -120px;
+            background: radial-gradient(circle, rgba(43,125,233,.1) 0%, transparent 70%);
+            animation-delay: 0s;
+        }
+        .shape-2 {
+            width: 360px; height: 360px;
+            bottom: -100px; left: -90px;
+            background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+            animation-delay: -8s;
+        }
+        .shape-3 {
+            width: 220px; height: 220px;
+            top: 38%; right: 12%;
+            background: radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%);
+            animation-delay: -15s;
+        }
+        .shape-4 {
+            width: 160px; height: 160px;
+            top: 18%; left: 8%;
+            background: radial-gradient(circle, rgba(43,125,233,.09) 0%, transparent 70%);
+            animation-delay: -4s;
+        }
+        /* Cuadrícula de puntos */
+        .bg-dots {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        @keyframes floatShape {
+            0%,100% { transform: translateY(0)   rotate(0deg);   }
+            33%      { transform: translateY(-22px) rotate(6deg);  }
+            66%      { transform: translateY(12px)  rotate(-4deg); }
+        }
+
+        /* ── Tarjeta ── */
+        .login-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 24px 64px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.2);
+            overflow: hidden;
+            animation: slideUp .45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+
+        .card-top-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .card-body { padding: 36px 36px 26px; }
+
+        /* ── Cabecera ── */
+        .login-header { text-align: center; margin-bottom: 28px; }
+        .login-header h1 {
+            font-size: 22px; font-weight: 700;
+            color: var(--primary); margin-bottom: 6px;
+        }
+        .login-header p { font-size: 13px; color: var(--gray-600); }
+
+        /* ── Error ── */
+        .alert-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--error-bg);
+            border: 1px solid #f5c2c7;
+            border-left: 4px solid var(--error);
+            border-radius: 8px;
+            margin-bottom: 22px;
+            font-size: 13px;
+            color: #842029;
+            animation: shake .45s ease;
+        }
+        .alert-error i { font-size: 15px; color: var(--error); flex-shrink: 0; margin-top: 1px; }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0);   }
+            20%      { transform: translateX(-5px); }
+            40%      { transform: translateX(5px);  }
+            60%      { transform: translateX(-4px); }
+            80%      { transform: translateX(4px);  }
+        }
+
+        /* ── Campos ── */
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .input-wrap { position: relative; }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%; transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 13.5px;
+            pointer-events: none;
+            transition: color .2s;
+            z-index: 1;
+        }
+        .input-wrap:focus-within .input-icon { color: var(--primary); }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--gray-800);
+            background: var(--gray-100);
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(14,55,95,.1);
+        }
+        .form-control.has-toggle { padding-right: 44px; }
+
+        .password-toggle {
+            position: absolute;
+            right: 1px; top: 1px; bottom: 1px;
+            width: 42px;
+            background: none;
+            border: none;
+            border-radius: 0 7px 7px 0;
+            color: var(--gray-400);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            transition: color .2s;
+        }
+        .password-toggle:hover { color: var(--primary); }
+
+        /* ── Aviso Bloq Mayús ── */
+        .caps-warning {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #7d5a00;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 6px;
+            padding: 5px 9px;
+        }
+        .caps-warning.visible { display: flex; }
+        .caps-warning i { font-size: 11px; }
+
+        /* ── Botón submit ── */
+        .btn-submit {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: background .2s, box-shadow .2s, transform .1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover:not(:disabled) {
+            background: var(--primary-mid);
+            box-shadow: 0 6px 18px rgba(14,55,95,.35);
+        }
+        .btn-submit:active:not(:disabled) { transform: scale(.99); }
+        .btn-submit:disabled { background: #7a9db8; cursor: not-allowed; }
+
+        .btn-spinner { display: none; }
+        .btn-submit.loading .btn-spinner { display: inline-block; animation: spin .65s linear infinite; }
+        .btn-submit.loading .btn-label  { opacity: .75; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Pie ── */
+        .card-divider { border: none; border-top: 1px solid var(--gray-200); margin: 24px 0 18px; }
+
+        .card-footer { text-align: center; }
+        .system-tag  { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--gray-400); margin-bottom: 3px; }
+        .system-name { font-size: 13.5px; font-weight: 700; color: var(--primary); margin-bottom: 14px; }
+        .support-txt { font-size: 12px; color: var(--gray-600); }
+        .support-txt a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .support-txt a:hover { text-decoration: underline; }
+        .copyright   { margin-top: 10px; font-size: 11px; color: var(--gray-400); }
+        .copyright a { color: var(--gray-400); text-decoration: none; }
+
+        /* ── Mobile ── */
+        @media (max-width: 480px) {
+            body { align-items: flex-start; }
+            .login-card { margin-top: 16px; }
+            .card-body { padding: 28px 22px 20px; }
+            .form-control { font-size: 16px; } /* evita zoom en iOS */
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="bg-dots"></div>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <div class="login-card">
+        <div class="card-top-bar"></div>
+        <div class="card-body">
+
+            <div class="login-header">
+                <h1>Iniciar Sesión</h1>
+                <p>Introduce tus credenciales para acceder al sistema</p>
+            </div>
+
+            {% if error %}
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Credenciales inválidas. Verifique su correo y contraseña.</span>
+                </div>
+            {% endif %}
+
+            <form method="post" autocomplete="off" id="login-form">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="form-group">
+                    <label for="inputEmail">Correo electrónico</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                               class="form-control" autocomplete="email" required autofocus
+                               placeholder="usuario@dominio.cu">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword">Contraseña</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" id="inputPassword"
+                               class="form-control has-toggle" autocomplete="current-password" required
+                               placeholder="Contraseña">
+                        <button type="button" class="password-toggle" id="passwordToggle" tabindex="-1">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <div class="caps-warning" id="capsWarning">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        Bloq Mayús activado
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-circle-notch btn-spinner"></i>
+                    <span class="btn-label">Entrar al sistema</span>
+                </button>
+            </form>
+
+            <hr class="card-divider">
+
+            <div class="card-footer">
+                <div class="system-tag">Sistema</div>
+                <div class="system-name">Gestión Universitaria</div>
+                <div class="support-txt">
+                    Soporte: <a href="mailto:soporte@mes.gob.cu">soporte@mes.gob.cu</a>
+                </div>
+                <div class="copyright">
+                    &copy; <a href="https://www.uci.cu/" target="_blank" rel="noopener">UCI</a>
+                    {{ "now"|date("Y") }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    (function () {
+        /* Mostrar / ocultar contraseña */
+        var passInput = document.getElementById('inputPassword');
+        var toggleBtn = document.getElementById('passwordToggle');
+        var toggleIcon = document.getElementById('toggleIcon');
+
+        toggleBtn.addEventListener('click', function () {
+            var isPass = passInput.type === 'password';
+            passInput.type = isPass ? 'text' : 'password';
+            toggleIcon.classList.toggle('fa-eye',       !isPass);
+            toggleIcon.classList.toggle('fa-eye-slash',  isPass);
+        });
+
+        /* Aviso Bloq Mayús */
+        var capsWarn = document.getElementById('capsWarning');
+        function checkCaps(e) {
+            if (typeof e.getModifierState === 'function') {
+                capsWarn.classList.toggle('visible', e.getModifierState('CapsLock'));
+            }
+        }
+        passInput.addEventListener('keydown', checkCaps);
+        passInput.addEventListener('keyup',   checkCaps);
+
+        /* Bloquear botón al enviar */
+        document.getElementById('login-form').addEventListener('submit', function () {
+            var btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,512 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Instrumentos Jurídicos{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Stat Cards */
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid #e8ecf1;
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.09);
+            border-color: transparent;
+        }
+        .stat-card { position: relative; }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: var(--sc, #0d6efd);
+            border-radius: 12px 12px 0 0;
+        }
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .stat-card-icon.icon-total { background: #e8f4fd; color: #0d6efd; }
+        .stat-card-icon.icon-vigentes { background: #e8f8ef; color: #198754; }
+        .stat-card-icon.icon-vencidos { background: #fde8e8; color: #dc3545; }
+        .stat-card-icon.icon-porvencer { background: #fef3e0; color: #e67e22; }
+        .stat-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .stat-card-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1.1;
+        }
+
+        /* Chart Cards */
+        .chart-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e8ecf1;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .chart-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chart-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 0;
+        }
+        .chart-card-body {
+            padding: 20px 16px;
+        }
+
+        /* Type Distribution */
+        .type-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .type-row:last-child { border-bottom: none; }
+        .type-row-label {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+        .type-row-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .type-row-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .type-row-bar {
+            width: 80px;
+            height: 6px;
+            background: #f0f2f5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .type-row-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        /* Status indicators */
+        .status-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .status-item:last-child { border-bottom: none; }
+        .status-item-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .status-item-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .status-item-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .status-item-bar {
+            width: 100%;
+            height: 4px;
+            background: #f0f2f5;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .status-item-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* Quick access */
+        .quick-access {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .quick-access a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            background: #f8f9fa;
+            border: 1px solid #e8ecf1;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .quick-access a:hover {
+            background: #e9ecef;
+            border-color: #c5cdd8;
+            color: #1a1a2e;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h4 style="color:#1a2e44;font-weight:700;margin:0">Instrumentos Jurídicos</h4>
+            <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Panel de control de convenios y acuerdos internacionales</p>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <!-- Stat Cards Row -->
+            <div class="row" style="margin-bottom: 24px;">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="stat-card" style="--sc:#0d6efd">
+                        <div class="stat-card-icon icon-total">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-card-label">Total Convenios</div>
+                            <div class="stat-card-value">{{ total_convenios }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="stat-card" style="--sc:#198754">
+                        <div class="stat-card-icon icon-vigentes">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-card-label">Vigentes</div>
+                            <div class="stat-card-value">{{ convenios_vigentes }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="stat-card" style="--sc:#dc3545">
+                        <div class="stat-card-icon icon-vencidos">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-card-label">Vencidos</div>
+                            <div class="stat-card-value">{{ convenios_vencidos }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="stat-card" style="--sc:#e67e22">
+                        <div class="stat-card-icon icon-porvencer">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-card-body">
+                            <div class="stat-card-label">Por Vencer</div>
+                            <div class="stat-card-value">{{ convenios_proximos_vencer }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Row: Tipo + Institución -->
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h6 class="chart-card-title">Distribución por Tipo</h6>
+                        </div>
+                        <div class="chart-card-body">
+                            <div id="container_convenio_tipo" style="height: 240px;"></div>
+                            <div style="margin-top: 8px;">
+                                <div class="type-row">
+                                    <span class="type-row-label">Bilaterales</span>
+                                    <div class="type-row-right">
+                                        <span class="type-row-count">{{ convenios_bilaterales }}</span>
+                                        <div class="type-row-bar">
+                                            <div class="type-row-bar-fill" style="width: {% if total_convenios > 0 %}{{ (convenios_bilaterales * 100 / total_convenios) | round }}{% else %}0{% endif %}%; background: #3b82f6;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="type-row">
+                                    <span class="type-row-label">Multilaterales</span>
+                                    <div class="type-row-right">
+                                        <span class="type-row-count">{{ convenios_multilaterales }}</span>
+                                        <div class="type-row-bar">
+                                            <div class="type-row-bar-fill" style="width: {% if total_convenios > 0 %}{{ (convenios_multilaterales * 100 / total_convenios) | round }}{% else %}0{% endif %}%; background: #8b5cf6;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h6 class="chart-card-title">Convenios por Institución Cubana</h6>
+                        </div>
+                        <div class="chart-card-body">
+                            <div id="container_institucion_cubana" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Row: País + Año -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h6 class="chart-card-title">Convenios por País</h6>
+                        </div>
+                        <div class="chart-card-body">
+                            <div id="container_pais" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h6 class="chart-card-title">Evolución Temporal</h6>
+                        </div>
+                        <div class="chart-card-body">
+                            <div id="container_anio" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            Highcharts.chart('container_convenio_tipo', {
+                chart: {
+                    type: 'pie',
+                    spacing: [0, 0, 0, 0]
+                },
+                title: { text: '' },
+                tooltip: {
+                    pointFormat: '<b>{point.y}</b> convenios ({point.percentage:.1f}%)',
+                    backgroundColor: '#1a1a2e',
+                    style: { color: '#ffffff' },
+                    borderRadius: 8,
+                    shadow: false
+                },
+                plotOptions: {
+                    pie: {
+                        innerSize: '55%',
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>',
+                            style: { fontWeight: '500', color: '#495057' }
+                        },
+                        showInLegend: false,
+                        colors: ['#3b82f6', '#8b5cf6']
+                    }
+                },
+                series: [{
+                    name: 'Convenios',
+                    data: [
+                        {name: 'Bilaterales', y: {{ convenios_bilaterales }}},
+                        {name: 'Multilaterales', y: {{ convenios_multilaterales }}}
+                    ]
+                }]
+            });
+
+            Highcharts.chart('container_institucion_cubana', {
+                chart: {
+                    type: 'bar',
+                    spacing: [8, 8, 8, 8]
+                },
+                title: { text: '' },
+                xAxis: {
+                    type: 'category',
+                    labels: {
+                        style: { fontSize: '12px', color: '#6c757d' },
+                        reserveSpace: true
+                    },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
+                yAxis: {
+                    title: { text: '' },
+                    gridLineColor: '#f0f2f5',
+                    labels: { style: { color: '#6c757d' } }
+                },
+                legend: { enabled: false },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        borderWidth: 0,
+                        colorByPoint: false,
+                        color: '#3b82f6',
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.0f}',
+                            style: { fontWeight: '600', color: '#1a1a2e' }
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1a2e',
+                    style: { color: '#ffffff' },
+                    borderRadius: 8,
+                    shadow: false,
+                    pointFormat: '<b>{point.y:.0f}</b> convenios'
+                },
+                series: [{
+                    name: 'Instituciones',
+                    data: JSON.parse('{{ convenios_por_institucion_cubana | raw }}')
+                }]
+            });
+
+            Highcharts.chart('container_pais', {
+                chart: {
+                    type: 'bar',
+                    spacing: [8, 8, 8, 8]
+                },
+                title: { text: '' },
+                xAxis: {
+                    type: 'category',
+                    labels: {
+                        style: { fontSize: '12px', color: '#6c757d' }
+                    },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
+                yAxis: {
+                    title: { text: '' },
+                    gridLineColor: '#f0f2f5',
+                    labels: { style: { color: '#6c757d' } }
+                },
+                legend: { enabled: false },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        borderWidth: 0,
+                        colorByPoint: false,
+                        color: '#10b981',
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.0f}',
+                            style: { fontWeight: '600', color: '#1a1a2e' }
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1a2e',
+                    style: { color: '#ffffff' },
+                    borderRadius: 8,
+                    shadow: false,
+                    pointFormat: '<b>{point.y:.0f}</b> convenios'
+                },
+                series: [{
+                    name: 'Países',
+                    data: JSON.parse('{{ convenios_por_pais | raw }}')
+                }]
+            });
+
+            Highcharts.chart('container_anio', {
+                chart: {
+                    type: 'areaspline',
+                    spacing: [8, 8, 8, 8]
+                },
+                title: { text: '' },
+                xAxis: {
+                    type: 'category',
+                    labels: { style: { color: '#6c757d' } },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
+                yAxis: {
+                    title: { text: '' },
+                    gridLineColor: '#f0f2f5',
+                    labels: { style: { color: '#6c757d' } }
+                },
+                legend: { enabled: false },
+                plotOptions: {
+                    areaspline: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, 'rgba(59, 130, 246, 0.15)'],
+                                [1, 'rgba(59, 130, 246, 0.01)']
+                            ]
+                        },
+                        lineWidth: 2.5,
+                        lineColor: '#3b82f6',
+                        marker: {
+                            enabled: true,
+                            radius: 4,
+                            fillColor: '#3b82f6',
+                            lineWidth: 2,
+                            lineColor: '#ffffff'
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.0f}',
+                            style: { fontWeight: '600', color: '#1a1a2e' }
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1a2e',
+                    style: { color: '#ffffff' },
+                    borderRadius: 8,
+                    shadow: false,
+                    pointFormat: '<b>{point.y:.0f}</b> convenios firmados'
+                },
+                series: [{
+                    name: 'Convenios por Año',
+                    data: JSON.parse('{{ convenios_por_anio | raw }}')
+                }]
+            });
+        })
+    </script>
+{% endblock %}
+
+

@@ -1,0 +1,16 @@
+{# Macros reutilizables para vistas de detalle "luxury" #}
+
+{% macro badge_estado(activo) %}
+    {% if '1' == activo or activo == true %}
+        <span class="detail-badge -success"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Habilitado</span>
+    {% else %}
+        <span class="detail-badge -danger"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Deshabilitado</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro field(label, value, emptyText) %}
+    <div class="detail-field">
+        <span class="detail-label">{{ label }}</span>
+        <span class="detail-value{{ (value is empty) ? ' text-muted-value' : '' }}">{{ (value is empty) ? (emptyText|default('Sin especificar')) : value }}</span>
+    </div>
+{% endmacro %}

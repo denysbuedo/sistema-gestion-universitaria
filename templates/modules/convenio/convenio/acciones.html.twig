@@ -1,0 +1,169 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Definir acciones{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #4a5568;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    .form-control:focus {
+        border-color: #134679;
+        box-shadow: 0 0 0 3px rgba(19, 70, 121, 0.1);
+    }
+    
+    /* ── Compact Buttons ── */
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+    .btn-lux-outline-danger { background: #fff; border: 1px solid #fecaca; color: #dc2626 !important; }
+    .btn-lux-outline-danger:hover { background: #fff5f5; border-color: #feb2b2; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .convenio-summary {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+    }
+</style>
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-tasks label-icon"></i>Definir acciones del convenio</h3>
+            <a href="{{ path('app_convenio_index') }}" class="btn btn-sm btn-outline-secondary ml-auto">
+                <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+            </a>
+        </div>
+        
+        <div class="card-body px-4">
+            <div class="convenio-summary">
+                {{ include('modules/convenio/convenio/comun.html.twig', { 'item': convenio }) }}
+            </div>
+
+            <div class="mt-4 pt-2 border-top">
+                <h5 class="font-weight-bold mb-3" style="color: #134679; font-size: 0.9rem;">
+                    <i class="fas fa-plus-circle mr-2"></i>Nueva Acción
+                </h5>
+                {{ form_start(form) }}
+                <div class="row align-items-end">
+                    <div class="col-md-10 form-group mb-md-0">
+                        {{ form_label(form.nombre, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Describa la acción a realizar...'}}) }}
+                        <div class="text-danger small mt-1">
+                            {{ form_errors(form.nombre) }}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btn_submit" class="btn-lux-sm btn-lux-primary w-100">
+                            <i class="fas fa-check"></i> Aceptar
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+
+            <div class="mt-5">
+                <h5 class="font-weight-bold mb-3" style="color: #134679; font-size: 0.9rem;">
+                    <i class="fas fa-list mr-2"></i>Acciones Registradas
+                </h5>
+                <table class="table config-table table-bordered table-striped dataTable">
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Descripción de la Acción</th>
+                        <th class="text-center">Opciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in acciones %}
+                        <tr>
+                            <td width="1%">{{ loop.index }}</td>
+                            <td>{{ item.nombre }}</td>
+                            <td width="10%" class="text-center">
+                                <button title="Eliminar" class="btn btn-outline-danger elementRemove"
+                                        style="min-width: auto; padding: 4px 8px;"
+                                        data-url="{{ path('app_convenio_eliminar_accion', {'id': item.id}) }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if acciones|length == 0 %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">No hay acciones definidas para este convenio.</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $('#btn_submit').click(function (e) {
+                e.preventDefault();
+                $('form[name="convenio_acciones"]').attr('action', 'acciones');
+                $('form[name="convenio_acciones"]').submit();
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Guardando acción...', textColor: "white" });
+            });
+        });
+    </script>
+{% endblock %}

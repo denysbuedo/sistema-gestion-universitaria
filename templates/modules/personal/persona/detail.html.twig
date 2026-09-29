@@ -1,0 +1,260 @@
+<style>
+    /* ── SCOPED Detail modal styles ── */
+    .persona-detail-container .detail-banner {
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        height: 100px;
+        border-radius: 0.5rem 0.5rem 0 0;
+        position: relative;
+    }
+    .persona-detail-container .detail-avatar-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: -55px;
+        z-index: 2;
+        position: relative;
+    }
+    .persona-detail-container .detail-avatar {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        background: #e9ecef;
+        transition: transform 0.2s ease;
+    }
+    .persona-detail-container .detail-avatar:hover { transform: scale(1.04); }
+    .persona-detail-container .detail-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 2px;
+    }
+    .persona-detail-container .detail-ci {
+        font-size: 0.8rem;
+        color: #6c757d;
+        letter-spacing: 0.5px;
+    }
+    .persona-detail-container .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+    .persona-detail-container .info-cell {
+        padding: 10px 16px;
+        border-bottom: 1px solid #f1f3f5;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.85rem;
+    }
+    .persona-detail-container .info-cell:nth-child(odd) { border-right: 1px solid #f1f3f5; }
+    .persona-detail-container .info-cell i {
+        color: #1a73e8;
+        width: 16px;
+        text-align: center;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .persona-detail-container .info-cell-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: block;
+    }
+    .persona-detail-container .info-cell-value {
+        color: #212529;
+        font-size: 0.85rem;
+    }
+    .persona-detail-container .section-header-detail {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #6c757d;
+        padding: 10px 16px 6px;
+        border-bottom: 1px solid #f1f3f5;
+        background: #f8f9fa;
+    }
+    .persona-detail-container .plantilla-badge-active {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .persona-detail-container .plantilla-badge-inactive {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: #fce4ec;
+        color: #b71c1c;
+    }
+    .persona-detail-container .detail-card {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: none;
+        overflow: hidden;
+    }
+    .persona-detail-container .plantilla-table th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #6c757d;
+        font-weight: 600;
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        padding: 8px 12px;
+    }
+    .persona-detail-container .plantilla-table td {
+        font-size: 0.85rem;
+        vertical-align: middle;
+        padding: 8px 12px;
+        color: #212529;
+    }
+</style>
+
+<div class="persona-detail-container">
+    {# ── Banner + Avatar ── #}
+    <div class="detail-banner"></div>
+    <div class="detail-avatar-wrap">
+        <a href="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %}/assets/images/usuario.png{% endif %}" target="_blank">
+            <img src="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %}/assets/images/usuario.png{% endif %}"
+                 class="detail-avatar" alt="{{ item.primerNombre }}">
+        </a>
+    </div>
+
+    {# ── Nombre y CI ── #}
+    <div class="text-center px-3 pt-2 pb-3">
+        <p class="detail-name">{{ item.primerNombre }} {{ item.segundoNombre }} {{ item.primerApellido }} {{ item.segundoApellido }}</p>
+        <p class="detail-ci">CI: {{ item.carnetIdentidad }}</p>
+        {% if item.responsabilidad is not null %}
+            <span class="plantilla-badge-active"><i class="fas fa-circle mr-1" style="font-size:0.55rem;"></i>{{ item.responsabilidad.nombre }}</span>
+        {% else %}
+            <span class="plantilla-badge-inactive"><i class="fas fa-circle mr-1" style="font-size:0.55rem;"></i>Sin responsabilidad</span>
+        {% endif %}
+    </div>
+
+    {# ── Grid de datos ── #}
+    <div class="detail-card border mx-0 mb-3">
+        <div class="section-header-detail">
+            <i class="fas fa-user mr-1 text-primary"></i> Datos Personales y Laborales
+        </div>
+        <div class="info-grid">
+            <div class="info-cell">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <span class="info-cell-label">Provincia</span>
+                    <span class="info-cell-value">{{ item.provincia.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell">
+                <i class="fas fa-city"></i>
+                <div>
+                    <span class="info-cell-label">Municipio</span>
+                    <span class="info-cell-value">{{ item.municipio.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell">
+                <i class="fas fa-sitemap"></i>
+                <div>
+                    <span class="info-cell-label">Estructura superior</span>
+                    <span class="info-cell-value">{{ item.estructura.estructura.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell">
+                <i class="fas fa-building"></i>
+                <div>
+                    <span class="info-cell-label">Estructura</span>
+                    <span class="info-cell-value">{{ item.estructura.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell">
+                <i class="fas fa-graduation-cap"></i>
+                <div>
+                    <span class="info-cell-label">Categoría docente</span>
+                    <span class="info-cell-value">{{ item.categoriaDocente.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell">
+                <i class="fas fa-flask"></i>
+                <div>
+                    <span class="info-cell-label">Categoría científica</span>
+                    <span class="info-cell-value">{{ item.gradoAcademico.nombre | default('—') }}</span>
+                </div>
+            </div>
+            <div class="info-cell" style="grid-column: 1 / -1;">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <span class="info-cell-label">Usuario del sistema</span>
+                    <span class="info-cell-value">{{ item.usuario.email | default('—') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Tabla de Plantillas ── #}
+    <div class="detail-card border mx-0">
+        <div class="section-header-detail">
+            <i class="fas fa-clipboard-list mr-1 text-primary"></i> Historial de Plantillas
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 plantilla-table dataTable1">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Estructura</th>
+                        <th>Responsabilidad</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plantilla in plantillas %}
+                        <tr>
+                            <td class="text-muted">{{ loop.index }}</td>
+                            <td>{{ plantilla.estructura.nombre | default('—') }}</td>
+                            <td>{{ plantilla.responsabilidad.nombre | default('—') }}</td>
+                            <td>
+                                {% if plantilla.activo %}
+                                    <span class="plantilla-badge-active"><i class="fas fa-circle mr-1" style="font-size:0.55rem;"></i>Activa</span>
+                                {% else %}
+                                    <span class="plantilla-badge-inactive"><i class="fas fa-circle mr-1" style="font-size:0.55rem;"></i>Inactiva</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ plantilla.creado | date('d/m/Y') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox mr-2"></i>Sin registros de plantilla
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+    if (!$.fn.DataTable.isDataTable('.dataTable1')) {
+        $(".dataTable1").DataTable({
+            "lengthMenu": [[5, 25, 50, -1], [5, 25, 50, "All"]],
+            "responsive": true, "lengthChange": true, "autoWidth": false,
+            language: {
+                "sProcessing": "Procesando...", "sLengthMenu": "Gr registros", "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "No existen resultados", "sInfo": "Registros del _START_ al _END_ de _TOTAL_",
+                "sSearch": "Buscar:", "oPaginate": { "sFirst": "Primero", "sLast": "Último", "sNext": "Sig", "sPrevious": "Ant" }
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{# Toggle pill Habilitado/Deshabilitado + confirmación de cancelar + overlay de envío, para formularios "luxury" #}
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.estado-toggle .et-opt', function() {
+            var $toggle = $(this).closest('.estado-toggle');
+            var cbId    = $toggle.data('cb');
+            var isOn    = $(this).hasClass('et-on');
+            $toggle.find('.et-opt').removeClass('active');
+            $(this).addClass('active');
+            $('#' + cbId).prop('checked', isOn);
+        });
+
+        var $form = $('{{ formSelector|default('#luxury-form') }}');
+
+        $('.btn-cancel-confirm').on('click', function() {
+            bootbox.confirm({
+                title: "<h5 class='font-weight-bold mb-0'>¿Confirmar Cancelación?</h5>",
+                message: "<p class='mb-0 text-muted'>{{ cancelMessage|default('Se perderán los datos que no hayan sido guardados.') }}</p>",
+                buttons: {
+                    confirm: { label: 'Sí, cancelar', className: 'btn-danger btn-sm px-3' },
+                    cancel: { label: 'No, mantener', className: 'btn-light btn-sm border px-3' }
+                },
+                callback: function (result) {
+                    if (result) { window.location.href = "{{ cancelUrl }}"; }
+                }
+            });
+        });
+
+        $form.on('submit', function() {
+            if ($form[0].checkValidity()) {
+                HoldOn.open({ theme: "sk-cube-grid", message: '{{ submitMessage|default('Procesando...') }}', textColor: "white" });
+            }
+        });
+    });
+</script>

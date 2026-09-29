@@ -1,0 +1,248 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Pasaportes{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-passport label-icon"></i>Listado de pasaportes</h3>
+            <a title="Adicionar" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_pasaporte_registrar') }}">
+                <i class="fa fa-plus"></i> Nuevo
+            </a>
+        </div>
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre y apellidos</th>
+                    <th>CI</th>
+                    <th>Tipo</th>
+                    <th>Número</th>
+                    <th>Emisión</th>
+                    <th>Caducidad</th>
+                    <th style="min-width:120px;">Estado</th>
+                    <th style="text-align:center;">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.persona.primerNombre ~ ' ' ~ item.persona.segundoNombre ~' '~ item.persona.primerApellido ~ ' ' ~ item.persona.segundoApellido }}</td>
+                        <td><span style="font-family:monospace;font-size:0.8rem;background:#f1f5f9;padding:2px 7px;border-radius:4px;">{{ item.persona.carnetIdentidad | default('—') }}</span></td>
+                        <td>{{ item.tipoPasaporte.nombre | default('') }}</td>
+                        <td>{{ item.numeroPasaporte | default('') }}</td>
+                        <td>{% if item.fechaEmisionPasaporte is not null %} {{ item.fechaEmisionPasaporte | date('d/m/Y') }} {% endif %}</td>
+                        <td>{% if item.fechaCaducidadPasaporte is not null %} {{ item.fechaCaducidadPasaporte | date('d/m/Y') }} {% endif %}</td>
+                        <td style="white-space:nowrap;">
+                            {% if '1' == item.activo %}
+                                <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;background:#dcfce7;color:#15803d;letter-spacing:.3px;">
+                                    <i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Habilitado
+                                </span>
+                            {% else %}
+                                <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;background:#fef3c7;color:#92400e;letter-spacing:.3px;">
+                                    <i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Pendiente
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td width="5%">
+                            <div class="dropdown d-flex justify-content-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center"
+                                        style="width:32px;height:32px;background:#f1f5f9;color:#64748b;font-size:1rem;line-height:1;"
+                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    &#8942;
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:190px;padding:6px 0;font-size:0.85rem;">
+                                    <button class="dropdown-item modalDetailAction"
+                                            data-url="{{ path('app_pasaporte_detail', {'id': item.id}) }}"
+                                            data-title="Detalles de pasaporte"
+                                            style="padding:8px 16px;">
+                                        <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                    </button>
+                                    <a class="dropdown-item" href="{{ path('app_pasaporte_modificar', {'id': item.id}) }}"
+                                       style="padding:8px 16px;">
+                                        <i class="fa fa-edit fa-fw mr-2 text-warning"></i> Modificar
+                                    </a>
+                                    {% if item.asignado == false %}
+                                        <button class="dropdown-item btn-assign-doc"
+                                                data-id="{{ item.id }}"
+                                                style="padding:8px 16px;">
+                                            <i class="fa fa-address-card fa-fw mr-2 text-info"></i> Asignar doc. salida
+                                        </button>
+                                    {% endif %}
+                                    <div class="dropdown-divider my-1"></div>
+                                    <button class="dropdown-item elementRemove text-danger"
+                                            data-url="{{ path('app_pasaporte_eliminar', {'id': item.id}) }}"
+                                            style="padding:8px 16px;">
+                                        <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Asignar Documento -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2);">
+                <div class="modal-header" style="background: #134679; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 18px 24px;">
+                    <h5 class="modal-title font-weight-bold" id="addModalLabel"><i class="fas fa-link mr-2"></i> Asignar documento de salida</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="addForm">
+                        <div class="form-group mb-0">
+                            <label for="personaSeleccion" class="font-weight-bold text-muted mb-2">Documentos de salida disponibles</label>
+                            <select class="form-control select2" id="personaSeleccion" name="personaSeleccion" required style="width: 100%;">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                            </select>
+                            <div id="errorSeleccion" class="text-danger mt-2" style="display:none; font-size: 0.85rem;">
+                                <i class="fas fa-exclamation-triangle mr-1"></i> Por favor seleccione una opción válida.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fa; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal" style="text-decoration: none;">CANCELAR</button>
+                    <button type="button" class="btn font-weight-bold shadow-sm" id="saveBtn" style="background: #134679; color: white;">
+                        <i class="fas fa-check mr-1"></i> ASIGNAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            // Fix DataTables overflow:hidden clipping dropdowns
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                var offset = $(this).find('button[data-toggle="dropdown"]').offset();
+                var btnH = $(this).find('button[data-toggle="dropdown"]').outerHeight();
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top: offset.top + btnH + 2,
+                    left: 'auto',
+                    right: $(window).width() - offset.left - $(this).find('button[data-toggle="dropdown"]').outerWidth(),
+                    display: 'block',
+                    zIndex: 9999
+                });
+            });
+            $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                if ($menu.parent().is('body')) {
+                    $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', display: '' });
+                }
+            });
+
+            var itemId = null;
+
+            $(document).on('click', '.btn-assign-doc', function (e) {
+                e.preventDefault();
+                itemId = $(this).data('id');
+                
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Cargando documentos...', textColor: "white" });
+                
+                $('#personaSeleccion').empty().append(new Option("Seleccione una opción", "", true, true));
+                $('#personaSeleccion').prop('disabled', true);
+
+                $.post("{{ path('app_tramites_get_documentos_salida') }}", { idPasaporte: itemId }, function (data) {
+                    if (data.status === 1) {
+                        data.data.forEach(elemento => {
+                            $('#personaSeleccion').append(new Option(elemento.nombre, elemento.id));
+                        });
+                        $('#personaSeleccion').prop('disabled', false);
+                        $('#addModal').modal('show');
+                    } else {
+                        toastr.error('Error al cargar los documentos de salida.');
+                    }
+                    HoldOn.close();
+                });
+            });
+
+            $('#saveBtn').on('click', function () {
+                const personaSeleccion = $('#personaSeleccion').val();
+                if (!personaSeleccion) {
+                    $('#errorSeleccion').fadeIn();
+                    return;
+                }
+
+                $('#errorSeleccion').hide();
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Asignando pasaporte...', textColor: "white" });
+
+                $.post("{{ path('app_tramites_asignar_pasaporte') }}", { idDocumento: personaSeleccion, idPasaporte: itemId }, function (data) {
+                    if (data.status === 1) {
+                        $('#addModal').modal('hide');
+                        toastr.success("Pasaporte asignado correctamente.");
+                        setTimeout(() => { location.reload(); }, 800);
+                    } else {
+                        toastr.error(data.msg || "Ocurrió un error en la asignación.");
+                    }
+                    HoldOn.close();
+                });
+            });
+
+            $('#personaSeleccion').on('change', function () { $('#errorSeleccion').fadeOut(); });
+        });
+    </script>
+{% endblock %}

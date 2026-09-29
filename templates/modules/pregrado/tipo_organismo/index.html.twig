@@ -1,0 +1,122 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Tipos de Organismo{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px; border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679; margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+    .config-table th {
+        background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700;
+        border-color: #e2e8f0; padding: 8px 10px;
+    }
+    .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+    .config-table tbody tr:hover { background: #f8fafc; }
+    .btn-lux-sm {
+        padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem;
+        border: none; display: inline-flex; align-items: center; gap: 5px;
+        text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+</style>
+
+{% include 'pages/modalDetail.html.twig' %}
+
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title text-bold m-0"><i class="fas fa-sitemap label-icon"></i>Tipos de Organismo</h3>
+        <a title="Nuevo" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_tipo_organismo_registrar') }}">
+            <i class="fa fa-plus"></i> Nuevo
+        </a>
+    </div>
+    <div class="card-body px-4">
+        <table class="table config-table table-bordered table-striped dataTable">
+            <thead>
+            <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>Siglas</th>
+                    <th>Estado</th>
+                    <th class="text-center">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.siglas }}</td>
+                        <td width="10%">
+                            {% if '1' == item.activo %}
+                                <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;background:#dcfce7;color:#15803d;letter-spacing:.3px;"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Habilitado</span>
+                            {% else %}
+                                <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;background:#fee2e2;color:#b91c1c;letter-spacing:.3px;"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Deshabilitado</span>
+                            {% endif %}
+                        </td>
+                        <td width="5%">
+                            <div class="dropdown d-flex justify-content-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center"
+                                        style="width:32px;height:32px;background:#f1f5f9;color:#64748b;font-size:1rem;line-height:1;"
+                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    &#8942;
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:180px;padding:6px 0;font-size:0.85rem;">
+                                    <button class="dropdown-item modalDetailAction" style="padding:8px 16px;"
+                                            data-url="{{ path('app_tipo_organismo_detail', {'id': item.id}) }}"
+                                            data-title="Detalles del tipo de organismo">
+                                        <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                    </button>
+                                    <a class="dropdown-item" style="padding:8px 16px;" href="{{ path('app_tipo_organismo_modificar', {'id': item.id}) }}">
+                                        <i class="fa fa-edit fa-fw mr-2 text-warning"></i> Modificar
+                                    </a>
+                                    <div class="dropdown-divider my-1"></div>
+                                    <button class="dropdown-item elementRemove text-danger" style="padding:8px 16px;"
+                                            data-url="{{ path('app_tipo_organismo_eliminar', {'id': item.id}) }}">
+                                        <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function () {
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $btn  = $(this).find('button[data-toggle="dropdown"]');
+                var $menu = $(this).find('.dropdown-menu');
+                var offset = $btn.offset();
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top:   offset.top + $btn.outerHeight() + 2,
+                    left:  'auto',
+                    right: $(window).width() - offset.left - $btn.outerWidth(),
+                    display: 'block',
+                    zIndex: 9999
+                });
+            });
+            $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                if ($menu.parent().is('body')) {
+                    $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', zIndex: '' });
+                }
+            });
+        });
+    </script>
+{% endblock %}

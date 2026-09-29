@@ -1,0 +1,101 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar municipio{% endblock %}
+
+{% block body %}
+{% include 'pages/_luxury_form_styles.html.twig' %}
+
+<div class="card card-luxury">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-plus-circle label-icon"></i>Adicionar Municipio</h3>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
+    <div class="card-body px-4 pt-3">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-id-card label-icon"></i>Nombre</label>
+                    {{ form_widget(form.nombre, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.nombre.vars.valid ? '' : 'is-invalid-luxury'), 'placeholder': 'Ej: Plaza de la Revolución'}}) }}
+                    {% if not form.nombre.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.nombre) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-hashtag label-icon"></i>Código</label>
+                    {{ form_widget(form.codigo, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.codigo.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    {% if not form.codigo.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.codigo) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-map-marked-alt label-icon"></i>Provincia</label>
+                    {{ form_widget(form.provincia, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.provincia) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-paragraph label-icon"></i>Descripción</label>
+                    {{ form_widget(form.descripcion, {'attr': {'class': 'form-control form-control-luxury', 'rows': 3, 'placeholder': 'Breve descripción de este municipio...'}}) }}
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-toggle-on label-icon"></i>Estado Inicial</label>
+                    <input type="checkbox"
+                           id="{{ form.activo.vars.id }}"
+                           name="{{ form.activo.vars.full_name }}"
+                           class="d-none activo-checkbox"
+                           {% if form.activo.vars.data %}checked{% endif %}>
+                    <div class="estado-toggle" data-cb="{{ form.activo.vars.id }}">
+                        <button type="button" class="et-opt et-on{% if form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Habilitado
+                        </button>
+                        <button type="button" class="et-opt et-off{% if not form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Deshabilitado
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white px-4 py-3 border-top-0 d-flex justify-content-end" style="gap: 10px;">
+        <button type="button" class="btn-lux-sm btn-lux-outline-danger btn-cancel-confirm">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button type="submit" id="submit-btn" class="btn-lux-sm btn-lux-primary">
+            <i class="fas fa-check"></i> Aceptar
+        </button>
+    </div>
+    {{ form_row(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {% include 'pages/_luxury_form_toggle_js.html.twig' with {
+        cancelUrl: path('app_municipio_index')
+    } %}
+    <script>
+        $('#municipio_codigo').on('keydown keypress', function (e) {
+            if (e.key.length === 1) {
+                if ($(this).val().length < 4 /*&& !isNaN(parseFloat(e.key))*/) {
+                    $(this).val($(this).val() + e.key);
+                }
+                return false;
+            }
+        });
+    </script>
+{% endblock %}

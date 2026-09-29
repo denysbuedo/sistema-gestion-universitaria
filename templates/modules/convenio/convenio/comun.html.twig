@@ -1,0 +1,53 @@
+{# Sección de Información General Organizada #}
+<div class="row g-4 mb-4">
+
+    {# Fila 1: Lo más importante #}
+    <div class="col-md-8">
+        <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Nombre del Convenio</label>
+        <p class="fs-6 fw-medium text-dark text-break">{{ item.nombre }}</p>
+    </div>
+
+    <div class="col-md-4">
+        <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Institución Cubana</label>
+        <p class="fs-6">{{ item.institucionCubana.nombre | default('N/A') }}</p>
+    </div>
+
+    {# Fila 2: Datos de Contraparte y Clasificación #}
+    <div class="col-md-4">
+        <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Institución Extranjera</label>
+        <p class="fs-6 text-info fw-semibold">{{ item.institucionExtranjera.nombre | default('No definida') }}</p>
+    </div>
+
+    <div class="col-md-4">
+        <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Ubicación</label>
+        <p class="fs-6 d-flex align-items-center">
+            <span class="badge bg-light text-primary border me-2">{{ item.region.nombre | default('') }}</span>
+            <span class="text-secondary opacity-50 mx-2"> &nbsp;|&nbsp; </span>
+            <span class="text-dark">{{ item.pais.nombre | default('') }}</span>
+        </p>
+    </div>
+
+    <div class="col-md-4">
+        <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Clasificación</label>
+        <p class="fs-6">
+            <span class="fw-bold text-dark">{{ item.modalidad.nombre | default('') }}</span>
+            <span class="text-muted small">({{ item.tipo.nombre | default('') }})</span>
+        </p>
+    </div>
+
+    {# Fila 3: Tiempo (Vigencia) - Unificada para equilibrio visual #}
+    <div class="col-12 mt-2">
+        <div class="p-2 bg-light rounded-2 d-inline-block border">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block px-1">Periodo de Vigencia</label>
+            <p class="fs-6 mb-0 px-1">
+                <span class="badge bg-white text-dark border shadow-sm">
+                    <i class="far fa-calendar-alt text-primary me-2"></i>{{ item.fechaSuscribe | date('d/m/Y') }}
+                </span>
+                <i class="fas fa-long-arrow-alt-right mx-3 text-muted"></i>
+                <span class="badge bg-white text-dark border shadow-sm">
+                    <i class="far fa-calendar-times text-danger me-2"></i>{{ item.fechaCaducidad | date('d/m/Y') }}
+                </span>
+            </p>
+        </div>
+    </div>
+</div>

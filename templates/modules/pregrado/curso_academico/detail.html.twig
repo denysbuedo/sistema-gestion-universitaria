@@ -1,0 +1,58 @@
+<style>
+    .pd-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        margin-bottom: 8px;
+    }
+    .pd-field {
+        padding: 10px 16px;
+        border-bottom: 1px solid #f0f4f8;
+    }
+    .pd-field:nth-child(odd) { border-right: 1px solid #f0f4f8; }
+    .pd-field-label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #a0aec0;
+        margin-bottom: 3px;
+    }
+    .pd-field-value {
+        font-size: .9rem;
+        font-weight: 600;
+        color: #1a2e44;
+    }
+    .pd-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 20px;
+        padding: 3px 12px;
+    }
+    .pd-badge.active   { background: #e6f9f0; color: #276749; }
+    .pd-badge.inactive { background: #fff5f5; color: #c53030; }
+</style>
+
+<div class="pd-grid">
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="fas fa-calendar-alt mr-1"></i>Nombre</div>
+        <div class="pd-field-value">{{ item.nombre | default('—') }}</div>
+    </div>
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="fas fa-circle mr-1"></i>Estado</div>
+        <div class="pd-field-value">
+            {% if '1' == item.activo %}
+                <span class="pd-badge active"><i class="fas fa-check-circle"></i>Habilitado</span>
+            {% else %}
+                <span class="pd-badge inactive"><i class="fas fa-times-circle"></i>Deshabilitado</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="pd-field" style="grid-column: 1 / -1; border-right: none;">
+        <div class="pd-field-label"><i class="fas fa-align-left mr-1"></i>Descripción</div>
+        <div class="pd-field-value" style="font-weight:400;font-size:.88rem;color:#4a5568;">{{ item.descripcion | default('—') }}</div>
+    </div>
+</div>

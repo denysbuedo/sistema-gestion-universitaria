@@ -1,0 +1,197 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar curso académico{% endblock %}
+
+{% block body %}
+<style>
+    .fs-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #134679;
+        border-left: 4px solid #134679;
+        padding-left: 12px;
+        margin-bottom: 24px;
+        line-height: 1.3;
+    }
+    .fs-title small {
+        display: block;
+        font-size: .78rem;
+        font-weight: 400;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+
+    .fs-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 18px;
+    }
+    .fs-section-title {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: #134679;
+        padding: 11px 18px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .fs-section-title i { opacity: .7; }
+    .fs-section-body { padding: 18px 18px 4px; }
+
+    .fs-label {
+        font-size: .78rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 5px;
+        display: block;
+    }
+    .fs-label .req { color: #e53e3e; }
+
+    .fs-section-body .form-control,
+    .fs-section-body .custom-select {
+        border-radius: 7px;
+        border: 1.5px solid #cbd5e0;
+        font-size: .875rem;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .fs-section-body .form-control:focus,
+    .fs-section-body .custom-select:focus {
+        border-color: #134679;
+        box-shadow: 0 0 0 3px rgba(19,70,121,.1);
+    }
+
+    /* Estado toggle */
+    .estado-toggle { display:inline-flex; border-radius:20px; background:#f1f5f9; padding:3px; gap:2px; }
+    .et-opt { padding:4px 14px; border-radius:20px; border:none; font-size:0.75rem; font-weight:700;
+              cursor:pointer; background:transparent; color:#94a3b8; display:inline-flex;
+              align-items:center; gap:5px; transition:all .18s; letter-spacing:.3px; }
+    .et-opt i { font-size:0.42rem; vertical-align:middle; }
+    .et-opt.et-on.active  { background:#dcfce7; color:#15803d; }
+    .et-opt.et-off.active { background:#fee2e2; color:#b91c1c; }
+    .et-opt:not(.active):hover { color:#64748b; }
+
+    .fs-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding-top: 4px;
+        padding-bottom: 8px;
+    }
+    .btn-fs-cancel {
+        background: transparent;
+        border: 1.5px solid #cbd5e0;
+        color: #718096;
+        border-radius: 7px;
+        padding: 7px 20px;
+        font-weight: 600;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: all .15s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-fs-cancel:hover { border-color: #a0aec0; color: #4a5568; background: #f7fafc; text-decoration: none; }
+    .btn-fs-submit {
+        background: #134679;
+        border: none;
+        color: #fff;
+        border-radius: 7px;
+        padding: 7px 24px;
+        font-weight: 700;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: background .15s;
+    }
+    .btn-fs-submit:hover { background: #0e3460; color: #fff; }
+</style>
+
+<div class="fs-title">
+    Modificar curso académico
+    <small>Actualice los datos del curso académico y guarde los cambios</small>
+</div>
+
+{{ form_start(form) }}
+
+<div class="fs-section">
+    <div class="fs-section-title"><i class="fas fa-calendar-alt"></i> Datos del curso académico</div>
+    <div class="fs-section-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Nombre <span class="req">*</span></label>
+                {{ form_widget(form.nombre) }}
+                {{ form_errors(form.nombre) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label"><i class="fas fa-toggle-on" style="color:#134679;margin-right:6px;opacity:0.8;"></i>Estado</label>
+                <input type="checkbox"
+                       id="{{ form.activo.vars.id }}"
+                       name="{{ form.activo.vars.full_name }}"
+                       class="d-none activo-checkbox"
+                       {% if form.activo.vars.data %}checked{% endif %}>
+                <div class="estado-toggle" data-cb="{{ form.activo.vars.id }}">
+                    <button type="button" class="et-opt et-on{% if form.activo.vars.data %} active{% endif %}">
+                        <i class="fas fa-circle"></i> Habilitado
+                    </button>
+                    <button type="button" class="et-opt et-off{% if not form.activo.vars.data %} active{% endif %}">
+                        <i class="fas fa-circle"></i> Deshabilitado
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 form-group">
+                <label class="fs-label">Descripción</label>
+                {{ form_widget(form.descripcion, {'attr': {'rows': 3}}) }}
+                {{ form_errors(form.descripcion) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fs-actions">
+    <a class="btn-fs-cancel btn-cancel"
+       data-url="{{ path('app_curso_academico_index') }}"
+       data-title=""
+       data-content="¿Está seguro que desea cancelar?"
+       href="#">
+        <i class="fas fa-times mr-1"></i> Cancelar
+    </a>
+    <button id="btn_aceptar" type="submit" class="btn-fs-submit">
+        <i class="fas fa-save mr-1"></i> Guardar cambios
+    </button>
+</div>
+
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Pill toggle
+            $(document).on('click', '.estado-toggle .et-opt', function() {
+                var $toggle = $(this).closest('.estado-toggle');
+                var cbId    = $toggle.data('cb');
+                var isOn    = $(this).hasClass('et-on');
+                $toggle.find('.et-opt').removeClass('active');
+                $(this).addClass('active');
+                $('#' + cbId).prop('checked', isOn);
+            });
+
+            $('#btn_aceptar').on('click', function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...');
+                HoldOn.open({ theme: 'sk-cube-grid', message: 'Por favor espere...', textColor: 'white' });
+                $('form').submit();
+            });
+        });
+    </script>
+{% endblock %}

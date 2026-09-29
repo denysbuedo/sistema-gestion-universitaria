@@ -1,0 +1,192 @@
+<style>
+    .pd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .pd-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+    .pd-item { display: flex; flex-direction: column; }
+    .pd-label { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .pd-value { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+    .pd-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+    .pd-link { color: #134679; text-decoration: none; font-weight: 600; }
+    .pd-link:hover { text-decoration: underline; }
+    .config-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .config-table thead th { background: #f8fafc; color: #475569; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; border-bottom: 2px solid #e2e8f0; }
+    .config-table tbody td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.82rem; color: #334155; }
+    .config-table tbody tr:hover { background: #f8fafc; }
+</style>
+
+<div class="pd-section-title"><i class="fas fa-graduation-cap"></i> Datos del programa académico</div>
+
+{% if format == 'col2' %}
+<div class="pd-grid">
+    <div class="pd-item">
+        <span class="pd-label">Nombre del programa</span>
+        <span class="pd-value text-primary">{{ item.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Tipo de programa</span>
+        <span class="pd-value">{{ item.tipoProgramaAcademico.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Organismo demandante</span>
+        <span class="pd-value">{{ item.organismoDemandante.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Organismo formador</span>
+        <span class="pd-value">{{ item.organismoFormador.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Fecha de aprobación</span>
+        <span class="pd-value">{{ item.fechaAprobacion | date('d/m/Y') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Centro rector</span>
+        <span class="pd-value">{{ item.centroRector.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Categoría de Acreditación</span>
+        <span class="pd-value">{{ item.categoriaAcreditacion.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Presidente Comisión Nacional</span>
+        <span class="pd-value">{{ presindeteComision | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Carta de aprobación</span>
+        <span class="pd-value">
+            {% if item.cartaAprobacion %}
+                <a class="pd-link" target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/carta_aprobacion/{{ item.cartaAprobacion }}"><i class="fas fa-file-download mr-1"></i>{{ item.cartaAprobacion }}</a>
+            {% else %}-{% endif %}
+        </span>
+    </div>
+</div>
+
+<div class="pd-section-title mt-3"><i class="fas fa-clock"></i> Modalidades y Duración</div>
+<div class="pd-grid" style="grid-template-columns: repeat(3,1fr);">
+    <div class="pd-item">
+        <span class="pd-label">Curso Diurno</span>
+        <span class="pd-value">{% if item.modalidadDiurno %}{{ item.duracionCursoDiurno | default('0') }} años{% else %}<span style="color:#94a3b8;">No disponible</span>{% endif %}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Curso por Encuentro</span>
+        <span class="pd-value">{% if item.modalidadPorEncuentro %}{{ item.duracionCursoPorEncuentro | default('0') }} años{% else %}<span style="color:#94a3b8;">No disponible</span>{% endif %}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Curso a Distancia</span>
+        <span class="pd-value">{% if item.modalidadADistancia %}{{ item.duracionCursoADistancia | default('0') }} años{% else %}<span style="color:#94a3b8;">No disponible</span>{% endif %}</span>
+    </div>
+</div>
+
+<div class="pd-section-title mt-4"><i class="fas fa-university"></i> Universidades en las que se estudia</div>
+<table class="config-table">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Logo</th>
+        <th>Nombre</th>
+        <th>Centro rector</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item2 in universidades %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td width="1%">
+                <a href="{% if item2.institucion.logo != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item2.institucion.logo }}{% else %}/assets/images/usuario.png{% endif %}" target="_blank">
+                    <img src="{% if item2.institucion.logo != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item2.institucion.logo }}{% else %}/assets/images/usuario.png{% endif %}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
+                </a>
+            </td>
+            <td>({{ item2.institucion.siglas | default('-') }}) {{ item2.institucion.nombre }}</td>
+            <td width="20%">
+                {% if item2.institucion.id == item.centroRector.id %}
+                    <span class="badge" style="background:#dcfce7;color:#15803d;border-radius:20px;padding:4px 10px;font-weight:700;font-size:0.72rem;">Sí</span>
+                {% else %}
+                    <span class="badge" style="background:#f1f5f9;color:#94a3b8;border-radius:20px;padding:4px 10px;font-weight:700;font-size:0.72rem;">No</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pd-section-title mt-4"><i class="fas fa-book"></i> Modificaciones del plan de estudio</div>
+<table class="config-table">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Curso académico inicial</th>
+        <th>Fecha de aprobación</th>
+        <th>Diurno</th>
+        <th>Por Encuentro</th>
+        <th>A Distancia</th>
+        <th class="text-center">Opciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in modificacionesPlanEstudio %}
+        <tr>
+            <td width="1%">{{ loop.index }}</td>
+            <td>{{ item.cursoAcademico.nombre | default('') }}</td>
+            <td>{{ item.fechaAprobacion | date('d/m/Y') }}</td>
+            <td>{{ item.duracionCursoDiurno | default('-') }}</td>
+            <td>{{ item.duracionCursoPorEncuentro | default('-') }}</td>
+            <td>{{ item.duracionCursoDistancia | default('-') }}</td>
+            <td width="15%" class="text-center">
+                <a title="Descargar plan de estudio" target="_blank" style="color:#134679;margin-right:8px;" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/modificaciones/plan_estudio/{{ item.planEstudioDoc }}"><i class="fa fa-file-download"></i></a>
+                <a title="Descargar dictamen" target="_blank" style="color:#134679;" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/modificaciones/dictamen/{{ item.dictamen }}"><i class="fa fa-file-download"></i></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% elseif format == 'col3' %}
+<div class="pd-grid-3">
+    <div class="pd-item">
+        <span class="pd-label">Tipo de programa</span>
+        <span class="pd-value">{{ item.tipoProgramaAcademico.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Nombre del programa</span>
+        <span class="pd-value text-primary">{{ item.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Tipo de organismo</span>
+        <span class="pd-value">{{ item.tipoOrganismo.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Organismo demandante</span>
+        <span class="pd-value">{{ item.organismoDemandante.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Fundamentación</span>
+        <span class="pd-value"><a class="pd-link" target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/fundamentacion/{{ item.fundamentacion }}"><i class="fas fa-file-download mr-1"></i>{{ item.fundamentacion }}</a></span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Solicitud</span>
+        <span class="pd-value"><a class="pd-link" target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/solicitud/{{ item.solicitud }}"><i class="fas fa-file-download mr-1"></i>{{ item.solicitud }}</a></span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Fecha de aprobación</span>
+        <span class="pd-value">{{ item.fechaAprobacion | date('d/m/Y') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Estado del programa</span>
+        <span class="pd-value">{{ item.estadoProgramaAcademico.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Carta de aprobación</span>
+        <span class="pd-value"><a class="pd-link" target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/carta_aprobacion/{{ item.cartaAprobacion }}"><i class="fas fa-file-download mr-1"></i>{{ item.cartaAprobacion }}</a></span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Duración Curso Diurno</span>
+        <span class="pd-value">{% if item.modalidadDiurno %}{{ item.duracionCursoDiurno | default('0') }} años{% else %}-{% endif %}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Duración Curso por Encuentro</span>
+        <span class="pd-value">{% if item.modalidadPorEncuentro %}{{ item.duracionCursoPorEncuentro | default('0') }} años{% else %}-{% endif %}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Centro rector</span>
+        <span class="pd-value">{{ item.centroRector.nombre | default('-') }}</span>
+    </div>
+</div>
+{% endif %}

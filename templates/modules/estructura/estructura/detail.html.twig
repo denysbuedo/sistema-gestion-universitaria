@@ -1,0 +1,217 @@
+<style>
+    .detail-section {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+    }
+    .detail-section .detail-section-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-section .detail-section-header i { color: #134679; }
+    .detail-section .detail-section-header h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #1a2e44;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+    .detail-section .detail-section-body { padding: 20px; }
+
+    .detail-field { margin-bottom: 14px; }
+    .detail-field:last-child { margin-bottom: 0; }
+    .detail-field .detail-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: #94a3b8;
+        margin-bottom: 3px;
+    }
+    .detail-field .detail-value {
+        font-size: 0.92rem;
+        color: #1a2e44;
+        font-weight: 600;
+    }
+    .detail-field .detail-value.text-muted-value { color: #94a3b8; font-weight: 400; font-style: italic; }
+
+    .detail-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: .3px;
+    }
+    .detail-badge.-success { background: #dcfce7; color: #15803d; }
+    .detail-badge.-danger  { background: #fee2e2; color: #b91c1c; }
+
+    .detail-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .detail-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>Datos generales</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="detail-field">
+                    <span class="detail-label">Nombre</span>
+                    <span class="detail-value">{{ item.nombre | default('') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Siglas</span>
+                    <span class="detail-value{{ item.siglas is empty ? ' text-muted-value' : '' }}">{{ item.siglas | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Categoría de estructura</span>
+                    <span class="detail-value{{ item.categoriaEstructura is null ? ' text-muted-value' : '' }}">{{ item.categoriaEstructura.nombre | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Fecha de activación</span>
+                    <span class="detail-value">{{ item.fechaActivacion ? item.fechaActivacion|date('d/m/Y') : 'Sin especificar' }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Provincia</span>
+                    <span class="detail-value{{ item.provincia is null ? ' text-muted-value' : '' }}">{{ item.provincia.nombre | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Dirección</span>
+                    <span class="detail-value{{ item.direccion is empty ? ' text-muted-value' : '' }}">{{ item.direccion | default('Sin especificar') }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-field">
+                    <span class="detail-label">Subordinado a</span>
+                    <span class="detail-value{{ item.estructura is null ? ' text-muted-value' : '' }}">{{ item.estructura.nombre | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Tipo de estructura</span>
+                    <span class="detail-value{{ item.tipoEstructura is null ? ' text-muted-value' : '' }}">{{ item.tipoEstructura.nombre | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Correo</span>
+                    <span class="detail-value{{ item.email is empty ? ' text-muted-value' : '' }}">{{ item.email | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Teléfono</span>
+                    <span class="detail-value{{ item.telefono is empty ? ' text-muted-value' : '' }}">{{ item.telefono | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Municipio</span>
+                    <span class="detail-value{{ item.municipio is null ? ' text-muted-value' : '' }}">{{ item.municipio.nombre | default('Sin especificar') }}</span>
+                </div>
+                <div class="detail-field">
+                    <span class="detail-label">Estado</span>
+                    {% if '1' == item.activo %}
+                        <span class="detail-badge -success"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Habilitado</span>
+                    {% else %}
+                        <span class="detail-badge -danger"><i class="fas fa-circle" style="font-size:0.45rem;vertical-align:middle;margin-right:4px;"></i>Deshabilitado</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="detail-field">
+                    <span class="detail-label">Entidad</span>
+                    <span class="detail-badge {{ '1' == item.esEntidad ? '-success' : '-danger' }}">{{ '1' == item.esEntidad ? 'Sí' : 'No' }}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-field">
+                    <span class="detail-label">Centro autorizado de posgrado</span>
+                    <span class="detail-badge {{ '1' == item.centroAutorizadoPosgrado ? '-success' : '-danger' }}">{{ '1' == item.centroAutorizadoPosgrado ? 'Sí' : 'No' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-clipboard-list"></i>
+        <h3>Responsabilidades asociadas</h3>
+    </div>
+    <div class="detail-section-body">
+        <table class="table table-bordered table-striped detail-table dataTable1">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Responsabilidad</th>
+                <th>Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td width="1%">{{ loop.index }}</td>
+                    <td>{{ item.responsabilidad.nombre | default('') }}</td>
+                    <td>{{ item.cantidad }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% block javascripts %}
+    <script>
+        $(".dataTable1").DataTable({
+            "lengthMenu": [[5, 25, 50, -1], [5, 25, 50, "All"]],
+            "responsive": true, "lengthChange": true, "autoWidth": false,
+            language: {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "No existen resultados",
+                "sInfo": "Registros del _START_ al _END_ de  _TOTAL_ ",
+                "sInfoEmpty": "Rregistros del 0 al 0 de  0 ",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                },
+                "buttons": {
+                    "copy": "Copiar",
+                    "colvis": "Visibilidad"
+                }
+            }
+        });
+    </script>
+{% endblock %}

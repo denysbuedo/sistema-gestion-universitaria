@@ -1,0 +1,84 @@
+{# Estilos compartidos para listados con estilo "luxury": card-luxury, config-table, btn-lux, dropdown de acciones #}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; color: #fff !important; }
+    .btn-lux-success { background: #15803d; color: #fff !important; }
+    .btn-lux-success:hover { background: #116430; color: #fff !important; }
+
+    .responsive-input {
+        width: 100%;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 0.78rem;
+        font-weight: 400;
+    }
+
+    .status-pill {
+        display:inline-block;
+        padding:3px 10px;
+        border-radius:20px;
+        font-size:0.72rem;
+        font-weight:700;
+        letter-spacing:.3px;
+    }
+    .status-pill.-on  { background:#dcfce7; color:#15803d; }
+    .status-pill.-off { background:#fee2e2; color:#b91c1c; }
+    .status-pill i { font-size:0.45rem; vertical-align:middle; margin-right:4px; }
+
+    .actions-dropdown-btn {
+        width:32px;height:32px;
+        background:#f1f5f9;color:#64748b;
+        font-size:1rem;line-height:1;
+    }
+    .actions-dropdown-menu {
+        border-radius:10px;border:none;min-width:180px;padding:6px 0;font-size:0.85rem;
+    }
+    .actions-dropdown-menu .dropdown-item { padding:8px 16px; }
+</style>

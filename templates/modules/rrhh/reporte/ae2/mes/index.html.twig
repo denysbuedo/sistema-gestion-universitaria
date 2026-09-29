@@ -1,0 +1,363 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Reporte de Modelo 223.216 (I) (AE2)-MES{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% include 'pages/_luxury_list_styles.html.twig' %}
+    <style>
+        .accordion-luxury .card {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        .accordion-luxury .card-header {
+            background: #134679 !important;
+            padding: 12px 20px;
+        }
+        .accordion-luxury .card-header a {
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .table-indicadores {
+            width: auto;
+        }
+
+        .table-indicadores th, .table-indicadores td {
+            white-space: nowrap;
+            padding: 8px 12px;
+        }
+
+        .col-indicador {
+            width: 1%;
+            white-space: normal;
+            min-width: 250px;
+        }
+
+        .col-mes {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .col-total {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        /* Botones originales (fondo blanco con borde) */
+        .btn-modal-1-2 {
+            color: #007bff !important;
+            background-color: white !important;
+            border: 1px solid #007bff !important;
+        }
+
+        .btn-modal-1-3 {
+            color: #134679 !important;
+            background-color: white !important;
+            border: 1px solid #134679 !important;
+        }
+
+        /* Hover states */
+        .btn-modal-1-2:hover {
+            color: white !important;
+            background-color: #007bff !important;
+        }
+
+        .btn-modal-1-3:hover {
+            color: white !important;
+            background-color: #134679 !important;
+        }
+
+        /* Tamaño y espaciado */
+        .btn-modal-1-2, .btn-modal-1-3 {
+            padding: 0.15rem 0.35rem;
+            font-size: 0.7rem;
+            line-height: 1.2;
+            border-radius: 0.2rem;
+            text-decoration: none !important;
+            margin-left: 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-file-invoice label-icon"></i>Reporte de Modelo 223.216 (I) (AE2)-MES</h3>
+        </div>
+
+        {# Filtros #}
+        <div class="px-4 pt-3">
+        <div id="accordion" class="accordion-luxury mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title w-100 mb-0">
+                        <a class="d-block w-100 collapsed" data-toggle="collapse"
+                           href="#collapseOne" aria-expanded="false">
+                            <i class="fas fa-filter mr-1"></i> Búsqueda avanzada por: {{ text_fil | default('') }}
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="collapse" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Select de Meses -->
+                            {#                            <div class="col-md-4"> #}
+                            {#                                <label class="required" for="mesFicha">Mes</label> #}
+                            {#                                <select id="mesFicha" name="mesFicha" class="form-control"> #}
+                            {#                                    <option value="">Seleccione</option> #}
+                            {#                                    {% for id, nombre in meses %} #}
+                            {#                                        <option value="{{ id }}" {% if id == fil_mes %} selected {% endif %}> #}
+                            {#                                            {{ nombre }} #}
+                            {#                                        </option> #}
+                            {#                                    {% endfor %} #}
+                            {#                                </select> #}
+                            {#                            </div> #}
+
+                            <!-- Select de Años -->
+                            <div class="col-md-4">
+                                <label class="required" for="annoFicha">Año</label>
+                                <select id="annoFicha" name="annoFicha" class="form-control">
+                                    <option value="">Seleccione</option>
+                                    {% set annoActual = "now"|date("Y") %}
+                                    {% set annoInicial = annoActual - 5 %}
+                                    {% for anno in annoActual..annoInicial %}
+                                        <option value="{{ anno }}" {% if anno == fil_anno %} selected {% endif %}>
+                                            {{ anno }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Select de Universidad -->
+                            {#                            <div class="col-md-4"> #}
+                            {#                                <label class="required" for="annoFicha">Universidad</label> #}
+                            {#                                <select id="universidadFicha" name="universidadFicha" class="form-control"> #}
+                            {#                                    <option value="">Seleccione</option> #}
+                            {#                                    {% for univ in universidades %} #}
+                            {#                                        <option value="{{ univ.id }}" {% if univ.id == fil_universidad %} selected {% endif %}> #}
+                            {#                                            {{ univ.nombre }} #}
+                            {#                                        </option> #}
+                            {#                                    {% endfor %} #}
+                            {#                                </select> #}
+                            {#                            </div> #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Resultados #}
+                {% if datos.meses is defined and datos.meses|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table config-table table-striped table-bordered table-indicadores">
+                            <thead>
+                            <tr>
+                                <th class="col-indicador">Indicador</th>
+                                {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                    <th class="col-mes" style="white-space: nowrap;">
+                                        {{ meses[mesData.mes] }}/{{ mesData.anno }}
+                                        <span style="display: inline-flex; gap: 4px; margin-left: 8px;">
+                                        <!-- Botón Tabla 1.2 -->
+                                            <a href="#" class="btn-modal-1-2 btn-primary"
+                                               data-mes="{{ mesData.mes }}"
+                                               data-anno="{{ mesData.anno }}"
+                                               data-toggle="modal"
+                                               data-target="#modalDetalleMes"
+                                               title="Tabla 1.2 - Detalles de trabajadores">
+                                                <i class="fas fa-users"></i> 1.2
+                                            </a>
+                                            <!-- Botón Tabla 1.3 -->
+                                            <a href="#" class="btn-modal-1-3 btn-secondary"
+                                               data-mes="{{ mesData.mes }}"
+                                               data-anno="{{ mesData.anno }}"
+                                               data-toggle="modal"
+                                               data-target="#modalDetalleMes2"
+                                               title="Tabla 1.3 - Estadísticas adicionales">
+                                                <i class="fas fa-table"></i> 1.3
+                                            </a>
+                                    </span>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for field in fields %}
+                                <tr>
+                                    <td class="col-indicador">{{ field.label }}</td>
+                                    {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                        <td>{{ mesData.valores[field.field] ?? 0 }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="text-align: center" class="alert alert-info">
+                        No se encontraron registros con los filtros aplicados.
+                    </div>
+                {% endif %}
+        </div>
+    </div>
+    <!-- Modal para tabla 1.2 -->
+    <div class="modal fade" id="modalDetalleMes" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+            <div class="modal-content">
+                <div class="modal-header bg-white"> <!-- Fondo blanco -->
+                    <h5 class="modal-title text-dark" id="modalDetalleMesLabel">Tabla 1.2</h5> <!-- Texto oscuro -->
+                    <div class="d-flex align-items-center ml-auto">
+                        <button id="exportExcelBtn" class="btn btn-success btn-sm mr-2" title="Exportar a Excel">
+                            <i class="fas fa-file-excel mr-1"></i> Exportar
+                        </button>
+                        <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                            <!-- Icono X en negro -->
+                            <span aria-hidden="true" style="color: black !important">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="modalDetalleMesContent">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Cargando datos...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Segundo Modal para Tabla 1.3 -->
+    <div class="modal fade" id="modalDetalleMes2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+            <div class="modal-content">
+                <div class="modal-header   text-black">
+                    <h5 class="modal-title" id="modalDetalleMesLabel2">Tabla 1.3</h5>
+                    <div class="d-flex align-items-center ml-auto">
+                        <button id="exportExcelBtn2" class="btn btn-success btn-sm mr-2" title="Exportar a Excel">
+                            <i class="fas fa-file-excel mr-1"></i> Exportar
+                        </button>
+                        <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                            <!-- Icono X en negro -->
+                            <span aria-hidden="true" style="color: black !important">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="modalDetalleMesContent2">
+                        <!-- El contenido se cargará aquí dinámicamente via AJAX -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Cargando datos...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div> `
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('#mesFicha, #annoFicha, #universidadFicha').change(function (e) {
+            var mes = $('#mesFicha').val();
+            var anno = $('#annoFicha').val();
+            var universidad = $('#universidadFicha').val();
+            HoldOn.open({
+                theme: "sk-cube-grid",
+                message: 'Por favor espere...',
+                textColor: "white"
+            });
+            $.post("{{ path('app_rrhh_reporte_ae2_mes_index') }}",
+                {
+                    mes: mes,
+                    anno: anno,
+                    universidad: universidad
+                },
+                function (data) {
+                    $(window).attr('location', window.location)
+                    HoldOn.close()
+                });
+        });
+
+
+        // Configuración inicial de meses
+        window.meses = {{ meses|json_encode|raw }};
+
+        // Manejo del modal para Tabla 1.2
+        $(document).on('click', '.btn-modal-1-2', function (e) {
+            e.preventDefault();
+            loadModalData(
+                $(this).data('mes'),
+                $(this).data('anno'),
+                '#modalDetalleMes',
+                '#modalDetalleMesLabel',
+                '#modalDetalleMesContent',
+                "{{ path('app_rrhh_reporte_ae2_mes_detalle') }}",
+                "Tabla 1.2 -  "
+            );
+        });
+
+        // Manejo del modal para Tabla 1.3
+        $(document).on('click', '.btn-modal-1-3', function (e) {
+            e.preventDefault();
+            loadModalData(
+                $(this).data('mes'),
+                $(this).data('anno'),
+                '#modalDetalleMes2',
+                '#modalDetalleMesLabel2',
+                '#modalDetalleMesContent2',
+                "{{ path('app_rrhh_reporte_ae2_mes_detalle2') }}",
+                "Tabla 1.3 -  "
+            );
+        });
+
+        // Función reusable para cargar datos modales
+        function loadModalData(mes, anno, modalId, labelId, contentId, url, titleTable) {
+            $(labelId).text('Cargando...');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {mes: mes, anno: anno},
+                beforeSend: function () {
+                    $(contentId).html(`
+                        <div class="text-center py-4">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Cargando...</span>
+                            </div>
+                            <p>Por favor espere...</p>
+                        </div>
+                    `);
+                },
+                success: function (response) {
+                    $(labelId).text(titleTable + window.meses[mes] + ' ' + anno);
+                    $(contentId).html(response);
+                },
+                error: function () {
+                    $(contentId).html(`
+                        <div class="alert alert-danger">
+                            Error al cargar los datos. Intente nuevamente.
+                        </div>
+                    `);
+                }
+            });
+        }
+    </script>
+{% endblock %}

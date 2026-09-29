@@ -1,0 +1,116 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Programas asignados en CUM{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury {
+            border-radius: 12px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #134679; margin-bottom: 1.5rem;
+        }
+        .card-luxury .card-header {
+            background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px;
+        }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+        .config-table th {
+            background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700;
+            border-color: #e2e8f0; padding: 8px 10px;
+        }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+        .config-table tbody tr:hover { background: #f8fafc; }
+        
+        .btn-lux-sm {
+            padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem;
+            border: none; display: inline-flex; align-items: center; gap: 5px;
+            text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-lux-success { background: #10b981; color: #fff !important; }
+        .btn-lux-success:hover { background: #059669; }
+
+        .info-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-sitemap label-icon"></i>Programas asignados en CUM</h3>
+            <div class="ml-auto">
+                <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
+                    <i class="fa fa-file-excel"></i> Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body px-4">
+            <div class="info-section">
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="info-label">Institución</span>
+                        <div class="info-value">
+                            <i class="fa fa-university text-primary mr-2"></i>
+                            ({{ entidad.siglas | default('No definida') }}) {{ entidad.nombre | default('') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>Tipo de curso</th>
+                    <th>CUM</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.nombre_programa | default('-') }}</td>
+                        <td>
+                            <span class="badge badge-secondary shadow-sm" style="font-weight: 600; font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; background: #e2e8f0; color: #475569;">
+                                {{ item.modalidad | default('-') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building text-muted mr-2" style="font-size: 0.8rem;"></i>
+                                {{ item.nombre_facultad | default('-') }}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

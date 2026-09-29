@@ -1,0 +1,242 @@
+{% import 'pages/_detail_macros.html.twig' as dm %}
+{% include 'pages/_detail_styles.html.twig' %}
+
+<div class="d-flex justify-content-end mb-3">
+    <a id="exportToExcel" class="btn-lux-sm btn-lux-success">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+    </a>
+</div>
+
+{% set meses = [
+    '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+] %}
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>Datos generales</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="row">
+            <div class="col-6">
+                <h5 class="mb-0">
+                    <b><i class="fa fa-university"></i></b>
+                    ({{ item.entidad.siglas | default('') }}) {{ item.entidad.nombre | default('') }}
+                </h5>
+            </div>
+            <div class="col-3">
+                <h5 class="mb-0"><b>Mes:</b> {{ meses[item.mes]|capitalize }}</h5>
+            </div>
+            <div class="col-3">
+                <h5 class="mb-0"><b>Año:</b> {{ item.anno }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-list-ol"></i>
+        <h3>Indicadores</h3>
+    </div>
+    <div class="detail-section-body p-0">
+        <table class="table detail-table table-bordered mb-0">
+            <thead>
+            <tr>
+                <th>Indicadores</th>
+                <th class="text-center">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1.- Total Plantilla Aprobada</td>
+                <td class="text-center">{{ item.totalPlantillaAprobada | default('') }}</td>
+            </tr>
+            <tr>
+                <td>2.- Total Plantilla Cubierta</td>
+                <td class="text-center">{{ item.totalPlantillaCubierta | default('') }}</td>
+            </tr>
+            <tr>
+                <td>3.- Total General de Contratos (4+7+14)</td>
+                <td class="text-center">{{ item.totalGeneralContratos | default('') }}</td>
+            </tr>
+            <tr>
+                <td>4.- Total de Contratos de Profesores por tiempo determinado</td>
+                <td class="text-center">{{ item.totalContratosProfesoresTiempoDeterminado | default('') }}</td>
+            </tr>
+            <tr>
+                <td>5.- De ellos: a tiempo completo</td>
+                <td class="text-center">{{ item.profesoresTiempoCompleto | default('') }}</td>
+            </tr>
+            <tr>
+                <td>6.- Total de Contratos No Docentes (7+14)</td>
+                <td class="text-center">{{ item.totalContratosNoDocentes | default('') }}</td>
+            </tr>
+            <tr>
+                <td>7.- Contratos No Docentes con respaldo de plazas (8 a 13)</td>
+                <td class="text-center">{{ item.contratosNoDocentesConRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>8.- De ellos: por sustitución</td>
+                <td class="text-center">{{ item.contratosPorSustitucion | default('') }}</td>
+            </tr>
+            <tr>
+                <td>9.- Período de Prueba</td>
+                <td class="text-center">{{ item.periodoPrueba | default('') }}</td>
+            </tr>
+            <tr>
+                <td>10.- Serenos y Auxiliares de Limpieza</td>
+                <td class="text-center">{{ item.serenosAuxiliaresLimpieza | default('') }}</td>
+            </tr>
+            <tr>
+                <td>11.- Labores Agrícolas</td>
+                <td class="text-center">{{ item.laboresAgricolas | default('') }}</td>
+            </tr>
+            <tr>
+                <td>12.- Jubilados</td>
+                <td class="text-center">{{ item.jubilados | default('') }}</td>
+            </tr>
+            <tr>
+                <td>13.- Otros</td>
+                <td class="text-center">{{ item.otrosConRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>14.- Contratos No Docentes sin respaldo de plazas (15 a 19)</td>
+                <td class="text-center">{{ item.contratosNoDocentesSinRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>15.- De ellos: Serenos y Auxiliares de Limpieza</td>
+                <td class="text-center">{{ item.serenosAuxiliaresLimpiezaSinRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>16.- Labores Agrícolas</td>
+                <td class="text-center">{{ item.laboresAgricolasSinRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>17.- Jubilados</td>
+                <td class="text-center">{{ item.jubiladosSinRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>18.- Ejecución de Obra</td>
+                <td class="text-center">{{ item.ejecucionObra | default('') }}</td>
+            </tr>
+            <tr>
+                <td>19.- Otros</td>
+                <td class="text-center">{{ item.otrosSinRespaldo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>20.- Reserva Científica en Preparación</td>
+                <td class="text-center">{{ item.reservaCientificaPreparacion | default('') }}</td>
+            </tr>
+            <tr>
+                <td>21.- Recién Graduados en Preparación (Nivel Sup.)</td>
+                <td class="text-center">{{ item.recienGraduadosPreparacion | default('') }}</td>
+            </tr>
+            <tr>
+                <td>22.- Reserva Dirección Provincial de Trabajo</td>
+                <td class="text-center">{{ item.reservaDireccionProvincialTrabajo | default('') }}</td>
+            </tr>
+            <tr>
+                <td>23.- Técnicos Medios en Preparación</td>
+                <td class="text-center">{{ item.tecnicosMediosPreparacion | default('') }}</td>
+            </tr>
+            <tr>
+                <td>24.- Del total de estudiantes de la Universidad de CD contratados por tiempo determinado</td>
+                <td class="text-center">{{ item.totalEstudiantesUniversidadContratados | default('') }}</td>
+            </tr>
+            <tr>
+                <td>25.- Del total de estudiantes de CD contratados, cifras como Auxiliar Técnico de la Docencia</td>
+                <td class="text-center">{{ item.estudiantesAuxiliaresTecnicosDocencia | default('') }}</td>
+            </tr>
+            <tr>
+                <td>26.- Del total de estudiantes de CD contratados, cifras en cargos No Docentes</td>
+                <td class="text-center">{{ item.estudiantesCargosNoDocentes | default('') }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">AE2 firmado</td>
+                <td class="text-center">
+                    {% if item.documento %}
+                        <a target="_blank"
+                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/rrhh/ae2/documento/{{ item.documento }}"
+                           title="Descargar documento firmado">
+                            <i class="fas fa-file-pdf fa-lg text-danger"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Primero carga las bibliotecas necesarias -->
+<script src="{{ asset('assets/js/excel/exceljs.js') }}"></script>
+<script src="{{ asset('assets/js/excel/fileSaver.js') }}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#exportToExcel').on('click', function (e) {
+            e.preventDefault();
+
+            // 1. Crear libro y hoja
+            var workbook = new ExcelJS.Workbook();
+            var worksheet = workbook.addWorksheet('Hoja1');
+
+            // 2. Configuración inicial
+            var entidad = $('h5:contains("Entidad:")').text().replace('Entidad:', '').trim();
+            var mes = $('h5:contains("Mes:")').text().replace('Mes:', '').trim();
+            var anno = $('h5:contains("Año:")').text().replace('Año:', '').trim();
+
+            // 3. Añadir datos con estilos
+            // Títulos en negrita
+            var row1 = worksheet.addRow(['MODELO 223.216 (I) AE-2']);
+            row1.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row3 = worksheet.addRow(['INDICADORES MENSUALES DE LA ACTIVIDAD DE RECURSOS HUMANOS']);
+            row3.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row5 = worksheet.addRow(['CENTRO INFORMANTE:', entidad]);
+            row5.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row7 = worksheet.addRow(['MES:', mes]);
+            row7.getCell(1).font = {bold: true};
+
+            var headerRow = worksheet.addRow(['Indicadores', 'Total']);
+            headerRow.eachCell(function (cell) {
+                cell.font = {bold: true};
+            });
+
+            // 4. Procesar los 26 indicadores
+            $('table tbody tr').slice(0, 26).each(function () {
+                worksheet.addRow([
+                    $(this).find('td:first').text().trim(),
+                    $(this).find('td:last').text().trim() || ""
+                ]);
+            });
+
+            // 5. Añadir pie del documento
+            // worksheet.addRow(['']);
+            // worksheet.addRow(['Confeccionado por:', '']);
+
+            // 6. Ajustar columnas
+            worksheet.getColumn(1).width = 60;
+            worksheet.getColumn(2).width = 15;
+
+            // 7. Crear hojas adicionales
+            workbook.addWorksheet('Hoja2');
+            workbook.addWorksheet('Hoja3');
+
+            // 8. Generar archivo (versión sincrónica alternativa)
+            workbook.xlsx.writeBuffer().then(function (buffer) {
+                saveAs(new Blob([buffer], {type: 'application/octet-stream'}),
+                    `Modelo_AE-2_${mes}_${anno}.xlsx`);
+            }).catch(function (error) {
+                console.error('Error al generar Excel:', error);
+            });
+        });
+    });
+</script>

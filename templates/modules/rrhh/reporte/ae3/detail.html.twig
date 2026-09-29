@@ -1,0 +1,290 @@
+{% include 'pages/_detail_styles.html.twig' %}
+
+<div class="d-flex justify-content-end mb-3">
+    <a id="exportToExcel" class="btn-lux-sm btn-lux-success">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+    </a>
+</div>
+
+{% set meses = [
+    '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+] %}
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>Datos generales</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="row">
+            <div class="col-6">
+                <h5 class="mb-0">
+                    <b><i class="fa fa-university"></i></b>
+                    ({{ ae3.entidad.siglas | default('0') }}) {{ ae3.entidad.nombre | default('0') }}
+                </h5>
+            </div>
+            <div class="col-3">
+                <h5 class="mb-0"><b>Mes:</b> {{ meses[ae3['mes']]|capitalize }}</h5>
+            </div>
+            <div class="col-2">
+                <h5 class="mb-0"><b>Año:</b> {{ ae3['anno'] }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table detail-table table-bordered table-striped" style="font-size: 0.85rem; width: auto;">
+        <colgroup>
+            <col style="width: 25%; min-width: 200px;"> {# INDICADORES #}
+            <col style="width: 5%;"> {# FILA #}
+            <col style="width: 5%;"> {# Total #}
+            <col style="width: 5%;"> {# Fem. #}
+            <col style="width: 5%;"> {# Jóvenes Total #}
+            <col style="width: 5%;"> {# Jóvenes Fem. #}
+            {# Profesores e Investigadores #}
+            <col style="width: 4%;"> {# PT #}
+            <col style="width: 4%;"> {# PA #}
+            <col style="width: 4%;"> {# As #}
+            <col style="width: 4%;"> {# I #}
+            <col style="width: 4%;"> {# IT #}
+            <col style="width: 4%;"> {# IA #}
+            <col style="width: 4%;"> {# IAg #}
+            <col style="width: 4%;"> {# AI #}
+            <col style="width: 4%;"> {# Aux.Téc.Doc. #}
+            <col style="width: 4%;"> {# MsC #}
+            <col style="width: 4%;"> {# Dr. #}
+        </colgroup>
+        <thead class="thead-light">
+        <tr>
+            <th rowspan="3">INDICADORES</th>
+            <th rowspan="3">FILA</th>
+            <th rowspan="3">Total cubierta</th>
+            <th rowspan="3">Fem.</th>
+            <th colspan="2">Jóvenes</th>
+            <th colspan="11">Profesores a Tiempo Completo e Investigadores</th>
+        </tr>
+        <tr>
+            <th rowspan="2">Total</th>
+            <th rowspan="2">Fem.</th>
+            <th rowspan="2">PT</th>
+            <th rowspan="2">PA</th>
+            <th rowspan="2">As</th>
+            <th rowspan="2">I</th>
+            <th rowspan="2">IT</th>
+            <th rowspan="2">IA</th>
+            <th rowspan="2">IAg</th>
+            <th rowspan="2">AI</th>
+            <th rowspan="2">Aux.Téc.Doc.</th>
+            <th rowspan="2">MsC</th>
+            <th rowspan="2">Dr.</th>
+        </tr>
+        <tr>
+            {# Esta fila vacía completa la estructura de 3 filas en el encabezado #}
+        </tr>
+        <tr>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>16</th>
+            <th>17</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% set indicadores = {
+            'totalCuadros': '1. TOTAL CUADROS (Suma 2-5)',
+            'cuadrosDocentes': '2. Cuadros Docentes',
+            'cuadrosAdministrativos': '3. Cuadros Administrativos',
+            'cuadrosInvestigacion': '4. Cuadros Investigación',
+            'otrosCuadros': '5. Otros Cuadros',
+            'totalTecnicos': '6. TOTAL TÉCNICOS  (Suma 7-10)',
+            'profesoresTiempoCompleto': '7. Profesores a Tiempo Completo',
+            'asesoresMetodologos': '8. Asesores o Metodólogos',
+            'investigadores': '9. Investigadores',
+            'otrosTecnicos': '10. Otros Técnicos',
+            'administrativos': '11. ADMINISTRATIVOS',
+            'servicio': '12. SERVICIO',
+            'operarios': '13. OPERARIOS',
+            'total': 'TOTAL',
+            'profesoresTipoParcial': 'Profesores a Tiempo Parcial'
+        } %}
+
+        {% for key in indicadores|keys %}
+            {% set label = indicadores[key] %}
+
+            <tr>
+                <td>{{ label }}</td>
+                <td class="text-center">{{ "%02d"|format(loop.index) }}</td>
+
+                <td class="text-center">
+                    {{ ae3[key ~ 'TotalCubierta']  | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'DeEllosFem'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'JovenesTotal'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'JovenesFem'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Pt'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Pa'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'As'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'I'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'It'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Ia'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Iag'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Ai'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'AuxTecDoc'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Msc'] | default('0') }}
+                </td>
+                <td class="text-center">
+                    {{ ae3[key ~ 'Dr'] | default('0') }}
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% if ae3.documento %}
+    <div class="mt-3">
+        <span class="detail-label d-inline">AE3 firmado:</span>
+        <a target="_blank"
+           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/rrhh/ae3/documento/{{ ae3.documento }}"
+           title="Ver documento" class="ml-2">
+            <i class="fas fa-file-pdf fa-lg text-danger"></i>
+        </a>
+    </div>
+{% endif %}
+
+
+<!-- Primero carga las bibliotecas necesarias -->
+<script src="{{ asset('assets/js/excel/exceljs.js') }}"></script>
+<script src="{{ asset('assets/js/excel/fileSaver.js') }}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#exportToExcel').on('click', function (e) {
+            e.preventDefault();
+
+            // 1. Crear libro y hoja
+            var workbook = new ExcelJS.Workbook();
+            var worksheet = workbook.addWorksheet('Hoja1');
+
+            // 2. Configuración inicial
+            var entidad = $('h5:contains("(")').text().trim();
+            var mes = $('h5:contains("Mes:")').text().replace('Mes:', '').trim();
+            var anno = $('h5:contains("Año:")').text().replace('Año:', '').trim();
+
+            // 3. Añadir datos con estilos
+            // Títulos en negrita
+            var row1 = worksheet.addRow(['MODELO 223.216 (III) AE-3']);
+            row1.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row3 = worksheet.addRow(['PLANTILLA DE PERSONAL']);
+            row3.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row5 = worksheet.addRow(['CENTRO INFORMANTE:', entidad]);
+            row5.getCell(1).font = {bold: true};
+            worksheet.addRow(['']);
+
+            var row7 = worksheet.addRow(['MES:', mes]);
+            row7.getCell(1).font = {bold: true};
+
+            // 4. Crear encabezado de la tabla
+            var headerRow = worksheet.addRow([
+                'Indicadores', 'Fila', 'Total cubierta', 'Fem.',
+                'Jóvenes Total', 'Jóvenes Fem.',
+                'PT', 'PA', 'As', 'I', 'IT', 'IA', 'IAg', 'AI',
+                'Aux.Téc.Doc.', 'MsC', 'Dr.']);
+
+            headerRow.eachCell(function (cell) {
+                cell.font = {bold: true};
+                cell.alignment = {vertical: 'middle', horizontal: 'center', wrapText: true};
+            });
+
+            // 5. Procesar los datos de la tabla
+            $('table tbody tr').each(function (index) {
+                // Verificar si no es el último elemento
+                if (index < $('table tbody tr').length - 1) {
+                    var rowData = [];
+                    $(this).find('td').each(function () {
+                        rowData.push($(this).text().trim());
+                    });
+                    worksheet.addRow(rowData);
+                }
+            });
+
+            // 6. Ajustar columnas
+            worksheet.columns = [
+                {width: 30}, // Indicadores
+                {width: 5},  // Fila
+                {width: 10},  // Total cubierta
+                {width: 5},   // Fem.
+                {width: 10},  // Jóvenes Total
+                {width: 10},  // Jóvenes Fem.
+                {width: 5},   // PT
+                {width: 5},   // PA
+                {width: 5},   // As
+                {width: 5},   // I
+                {width: 5},   // IT
+                {width: 5},   // IA
+                {width: 5},   // IAg
+                {width: 5},   // AI
+                {width: 10},  // Aux.Téc.Doc.
+                {width: 5},   // MsC
+                {width: 5}    // Dr.
+            ];
+
+            // 7. Congelar filas de encabezado
+            worksheet.views = [
+                {state: 'frozen', ySplit: 5} // Congela las primeras 5 filas
+            ];
+
+            // 8. Generar archivo
+            workbook.xlsx.writeBuffer().then(function (buffer) {
+                saveAs(new Blob([buffer], {type: 'application/octet-stream'}),
+                    `Modelo_AE-3_${mes}_${anno}.xlsx`);
+            }).catch(function (error) {
+                console.error('Error al generar Excel:', error);
+            });
+        });
+    });
+</script>

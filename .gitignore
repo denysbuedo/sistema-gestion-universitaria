@@ -1,0 +1,28 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+nbproject
+.idea
+.vscode
+.env
+.env.test
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/public/uploads
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+# Local secrets and generated authentication keys
+/config/jwt/*.pem
+
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

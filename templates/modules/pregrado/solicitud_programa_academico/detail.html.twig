@@ -1,0 +1,77 @@
+<style>
+    .pd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
+    .pd-item { display: flex; flex-direction: column; }
+    .pd-label { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .pd-value { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+    .pd-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .pd-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+    .file-link { color: #134679; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+    .file-link:hover { color: #0f3560; text-decoration: underline; }
+    .status-badge { 
+        padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; 
+        background: #dcfce7; color: #15803d; /* Default to success/approved look if no logic provided */
+    }
+</style>
+
+<div class="pd-section-title"><i class="fas fa-university"></i> Datos del Programa Académico</div>
+<div class="pd-grid">
+    <div class="pd-item">
+        <span class="pd-label">Nombre del programa</span>
+        <span class="pd-value text-primary font-weight-bold">{{ item.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Tipo de programa</span>
+        <span class="pd-value"><span class="pd-badge">{{ item.tipoProgramaAcademico.nombre | default('-') }}</span></span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Estado actual</span>
+        <span class="pd-value">
+            {% set status_color = '#64748b' %}
+            {% if item.estadoProgramaAcademico.id == 1 %}{% set status_color = '#3b82f6' %}
+            {% elseif item.estadoProgramaAcademico.id == 2 %}{% set status_color = '#10b981' %}
+            {% elseif item.estadoProgramaAcademico.id == 3 %}{% set status_color = '#ef4444' %}
+            {% endif %}
+            <span class="badge" style="background: {{ status_color }}20; color: {{ status_color }}; border-radius: 20px; padding: 5px 12px; font-weight: 700;">
+                {{ item.estadoProgramaAcademico.nombre | default('Desconocido') }}
+            </span>
+        </span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Rama de la ciencia</span>
+        <span class="pd-value">{{ item.ramaCiencia.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Organismo demandante</span>
+        <span class="pd-value">{{ item.organismoDemandante.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Centro solicitante</span>
+        <span class="pd-value">{{ item.centroSolicitante.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Categoría de acreditación</span>
+        <span class="pd-value">{{ item.categoriaAcreditacion.nombre | default('No acreditado') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Documento de solicitud</span>
+        <a class="file-link" target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/solicitud/{{ item.solicitud }}">
+            <i class="fas fa-file-pdf"></i> {% if item.solicitud %}{{ item.solicitud }}{% else %}No disponible{% endif %}
+        </a>
+    </div>
+</div>
+
+<div class="pd-section-title mt-4"><i class="fas fa-user-tie"></i> Datos del Solicitante</div>
+<div class="pd-grid">
+    <div class="pd-item">
+        <span class="pd-label">Nombre y apellidos</span>
+        <span class="pd-value">{{ item.nombreSolicitante | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Correo electrónico</span>
+        <span class="pd-value"><i class="fas fa-envelope mr-1 text-muted small"></i> {{ item.correoSolicitante | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Teléfono de contacto</span>
+        <span class="pd-value"><i class="fas fa-phone mr-1 text-muted small"></i> {{ item.telefonoSolicitante | default('-') }}</span>
+    </div>
+</div>

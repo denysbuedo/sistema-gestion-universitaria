@@ -1,0 +1,520 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Portada Recursos Humanos{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* ── Layout ───────────────────────────────────────── */
+    .rrhh-wrap { padding: 0 0 32px 0; }
+
+    /* ── Header (legacy — hidden) ── */
+    .rrhh-header { display: none; }
+
+    /* ── KPI Cards ─────────────────────────────────────── */
+    .kpi-card {
+        background: #fff; border-radius: 14px;
+        padding: 18px 20px; border: 1px solid #e8ecf1;
+        display: flex; align-items: center; gap: 14px;
+        height: 100%;
+        transition: box-shadow .2s, border-color .2s;
+    }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.09); border-color: transparent; }
+    .kpi-card { position: relative; }
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 3px;
+        background: var(--sc, #4f46e5);
+        border-radius: 14px 14px 0 0;
+    }
+    .kpi-icon {
+        width: 46px; height: 46px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 19px; flex-shrink: 0;
+    }
+    .ki-aprobada   { background: #eef2ff; color: #4f46e5; }
+    .ki-cubierta   { background: #d1fae5; color: #059669; }
+    .ki-vacantes   { background: #fee2e2; color: #dc2626; }
+    .ki-cobertura  { background: #dbeafe; color: #2563eb; }
+    .ki-proftc     { background: #ede9fe; color: #7c3aed; }
+    .ki-contratos  { background: #fef3c7; color: #d97706; }
+
+    .kpi-body { flex: 1; min-width: 0; }
+    .kpi-label {
+        font-size: 11px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: .6px; color: #9ca3af; margin-bottom: 4px;
+    }
+    .kpi-value { font-size: 30px; font-weight: 800; color: #1e1b4b; line-height: 1; }
+    .kpi-value-pct { font-size: 26px; font-weight: 800; color: #2563eb; line-height: 1; }
+    .kpi-sub { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+
+    /* ── Chart cards ────────────────────────────────────── */
+    .cc {
+        background: #fff; border-radius: 14px;
+        border: 1px solid #e8ecf1; overflow: hidden; margin-bottom: 24px;
+    }
+    .cc-head {
+        padding: 14px 20px; border-bottom: 1px solid #f3f4f6;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .cc-head-left { display: flex; align-items: center; gap: 10px; }
+    .cc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cc-title { font-size: 14px; font-weight: 600; color: #1e1b4b; margin: 0; }
+    .cc-badge {
+        font-size: 11px; font-weight: 700;
+        background: #eef2ff; color: #4f46e5;
+        border: 1px solid #c7d2fe; border-radius: 20px; padding: 2px 10px;
+    }
+    .cc-body { padding: 16px; }
+
+    /* ── Distribution rows ──────────────────────────────── */
+    .dist-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 9px 0; border-bottom: 1px solid #f3f4f6;
+    }
+    .dist-row:last-child { border-bottom: none; }
+    .dist-label { font-size: 13px; color: #374151; font-weight: 500; flex: 1; min-width: 0; padding-right: 8px; }
+    .dist-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .dist-count { font-size: 13px; font-weight: 700; color: #1e1b4b; min-width: 28px; text-align: right; }
+    .dist-bar  { width: 72px; height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+    .dist-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+
+    /* ── AE3 metric pills ───────────────────────────────── */
+    .ae3-pills { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 16px 0; }
+    .ae3-pill {
+        display: flex; align-items: center; gap: 8px;
+        background: #f9fafb; border: 1px solid #e5e7eb;
+        border-radius: 10px; padding: 8px 14px;
+    }
+    .ae3-pill-icon { font-size: 14px; }
+    .ae3-pill-value { font-size: 18px; font-weight: 800; color: #1e1b4b; }
+    .ae3-pill-label { font-size: 11px; color: #6b7280; font-weight: 500; }
+
+    /* ── Section label ──────────────────────────────────── */
+    .section-label {
+        font-size: 11px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .8px; color: #9ca3af; margin: 8px 0 16px 2px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="content-header">
+    <div class="container-fluid">
+        <h4 style="color:#1a2e44;font-weight:700;margin:0">Recursos Humanos</h4>
+        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Plantilla, contratos y calificación del personal · Período: {{ periodo_label }}</p>
+    </div>
+</div>
+
+<section class="content">
+<div class="container-fluid rrhh-wrap">
+    <div class="rrhh-header"></div>
+
+    {# ── KPI cards fila 1 ─────────────────────────────────── #}
+    <div class="row" style="margin-bottom:16px;">
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#4f46e5">
+                <div class="kpi-icon ki-aprobada"><i class="fas fa-clipboard-list"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Plantilla Aprobada</div>
+                    <div class="kpi-value">{{ aprobada }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#059669">
+                <div class="kpi-icon ki-cubierta"><i class="fas fa-user-check"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Plantilla Cubierta</div>
+                    <div class="kpi-value">{{ cubierta }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#dc2626">
+                <div class="kpi-icon ki-vacantes"><i class="fas fa-user-minus"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Vacantes</div>
+                    <div class="kpi-value">{{ vacantes }}</div>
+                    <div class="kpi-sub">puestos sin cubrir</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ── KPI cards fila 2 ─────────────────────────────────── #}
+    <div class="row" style="margin-bottom:28px;">
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#2563eb">
+                <div class="kpi-icon ki-cobertura"><i class="fas fa-percentage"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Índice de Cobertura</div>
+                    <div class="kpi-value-pct">{{ cobertura_pct }}%</div>
+                    <div class="kpi-sub">{{ cubierta }} / {{ aprobada }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#7c3aed">
+                <div class="kpi-icon ki-proftc"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Profesores TC</div>
+                    <div class="kpi-value">{{ prof_tc }}</div>
+                    <div class="kpi-sub">tiempo completo</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4" style="margin-bottom:16px;">
+            <div class="kpi-card" style="--sc:#d97706">
+                <div class="kpi-icon ki-contratos"><i class="fas fa-file-signature"></i></div>
+                <div class="kpi-body">
+                    <div class="kpi-label">Contratos Generales</div>
+                    <div class="kpi-value">{{ contratos }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Sección: Plantilla ───────────────────────────────── #}
+    <div class="section-label">Plantilla y Contratos (AE2 — {{ periodo_label }})</div>
+    <div class="row">
+
+        {# Distribución de contratos — donut #}
+        <div class="col-12 col-md-5">
+            <div class="cc">
+                <div class="cc-head">
+                    <div class="cc-head-left">
+                        <div class="cc-dot" style="background:#4f46e5;"></div>
+                        <h6 class="cc-title">Distribución de contratos</h6>
+                    </div>
+                    <span class="cc-badge">{{ contratos }} total</span>
+                </div>
+                <div class="cc-body">
+                    <div id="chart_contratos" style="height:220px;"></div>
+                    <div style="margin-top:6px;">
+                        {% set c_colors=['#4f46e5','#2563eb','#059669','#dc2626','#d97706'] %}
+                        {% set c_labels=['Prof. TC','Prof. TD','No Doc. c/R','No Doc. s/R','Estudiantes'] %}
+                        {% set c_vals=[prof_tc, contratos, 0, 0, 0] %}{# JS handles the real values #}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Cobertura por entidad — barras agrupadas #}
+        <div class="col-12 col-md-7">
+            <div class="cc">
+                <div class="cc-head">
+                    <div class="cc-head-left">
+                        <div class="cc-dot" style="background:#059669;"></div>
+                        <h6 class="cc-title">Cobertura por entidad</h6>
+                    </div>
+                    <span class="cc-badge" style="background:#ecfdf5;color:#059669;border-color:#6ee7b7;">Aprobada vs Cubierta</span>
+                </div>
+                <div class="cc-body">
+                    <div id="chart_cobertura_entidad" style="height:320px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {# ── Sección: Evolución anual ──────────────────────────── #}
+    <div class="section-label">Evolución mensual {{ anno }}</div>
+    <div class="row">
+        <div class="col-12">
+            <div class="cc">
+                <div class="cc-head">
+                    <div class="cc-head-left">
+                        <div class="cc-dot" style="background:#2563eb;"></div>
+                        <h6 class="cc-title">Tendencia de plantilla — {{ anno }}</h6>
+                    </div>
+                    <div style="display:flex;gap:16px;align-items:center;">
+                        <span style="font-size:12px;color:#6b7280;display:flex;align-items:center;gap:5px;">
+                            <span style="display:inline-block;width:12px;height:3px;background:#4f46e5;border-radius:2px;"></span>Aprobada
+                        </span>
+                        <span style="font-size:12px;color:#6b7280;display:flex;align-items:center;gap:5px;">
+                            <span style="display:inline-block;width:12px;height:3px;background:#059669;border-radius:2px;"></span>Cubierta
+                        </span>
+                    </div>
+                </div>
+                <div class="cc-body">
+                    <div id="chart_tendencia" style="height:260px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Sección: Personal (AE3) ──────────────────────────── #}
+    <div class="section-label">Composición del personal (AE3)</div>
+
+    {# Pills de métricas AE3 #}
+    <div class="ae3-pills" style="margin-bottom:20px;">
+        <div class="ae3-pill">
+            <span class="ae3-pill-icon" style="color:#4f46e5;"><i class="fas fa-users"></i></span>
+            <div>
+                <div class="ae3-pill-value">{{ total_personal }}</div>
+                <div class="ae3-pill-label">Total Personal</div>
+            </div>
+        </div>
+        <div class="ae3-pill">
+            <span class="ae3-pill-icon" style="color:#be185d;"><i class="fas fa-venus"></i></span>
+            <div>
+                <div class="ae3-pill-value">{{ total_fem }}</div>
+                <div class="ae3-pill-label">Femenino</div>
+            </div>
+        </div>
+        <div class="ae3-pill">
+            <span class="ae3-pill-icon" style="color:#0891b2;"><i class="fas fa-user-graduate"></i></span>
+            <div>
+                <div class="ae3-pill-value">{{ total_jovenes }}</div>
+                <div class="ae3-pill-label">Jóvenes</div>
+            </div>
+        </div>
+        <div class="ae3-pill">
+            <span class="ae3-pill-icon" style="color:#7c3aed;"><i class="fas fa-microscope"></i></span>
+            <div>
+                <div class="ae3-pill-value">{{ total_dr }}</div>
+                <div class="ae3-pill-label">Doctores</div>
+            </div>
+        </div>
+        <div class="ae3-pill">
+            <span class="ae3-pill-icon" style="color:#2563eb;"><i class="fas fa-graduation-cap"></i></span>
+            <div>
+                <div class="ae3-pill-value">{{ total_msc }}</div>
+                <div class="ae3-pill-label">Másters</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        {# Distribución por categoría laboral — columnas #}
+        <div class="col-12 col-md-7">
+            <div class="cc">
+                <div class="cc-head">
+                    <div class="cc-head-left">
+                        <div class="cc-dot" style="background:#7c3aed;"></div>
+                        <h6 class="cc-title">Distribución por categoría laboral</h6>
+                    </div>
+                </div>
+                <div class="cc-body">
+                    <div id="chart_categorias" style="height:280px;"></div>
+                </div>
+            </div>
+        </div>
+
+        {# Calificación científica — donut #}
+        <div class="col-12 col-md-5">
+            <div class="cc">
+                <div class="cc-head">
+                    <div class="cc-head-left">
+                        <div class="cc-dot" style="background:#d97706;"></div>
+                        <h6 class="cc-title">Grado científico</h6>
+                    </div>
+                    <span class="cc-badge" style="background:#fffbeb;color:#d97706;border-color:#fde68a;">
+                        {{ total_dr + total_msc }} titulados
+                    </span>
+                </div>
+                <div class="cc-body">
+                    <div id="chart_calificacion" style="height:200px;"></div>
+                    {% set calif_data = [
+                        {'label': 'Doctor (Dr.C)',  'val': total_dr,  'color': '#7c3aed'},
+                        {'label': 'Máster (MSc.)', 'val': total_msc, 'color': '#2563eb'},
+                        {'label': 'Otros',          'val': max(total_personal - total_dr - total_msc, 0), 'color': '#e5e7eb'},
+                    ] %}
+                    <div style="margin-top:6px;">
+                        {% for c in calif_data %}
+                            {% set pct = total_personal > 0 ? ((c.val / total_personal) * 100)|round : 0 %}
+                            <div class="dist-row">
+                                <span class="dist-label">{{ c.label }}</span>
+                                <div class="dist-right">
+                                    <span class="dist-count">{{ c.val }}</span>
+                                    <div class="dist-bar">
+                                        <div class="dist-fill" style="width:{{ pct }}%; background:{{ c.color }};"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).ready(function () {
+
+    var COLORS = ['#4f46e5','#059669','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2','#be185d'];
+
+    var baseTooltip = {
+        backgroundColor: '#1e1b4b',
+        style: { color: '#fff', fontSize: '12px' },
+        borderRadius: 8, shadow: false
+    };
+    var baseAxis = {
+        lineWidth: 0, tickWidth: 0,
+        gridLineColor: '#f3f4f6',
+        labels: { style: { color: '#6b7280', fontSize: '12px' } }
+    };
+
+    /* ── 1. Distribución de contratos — donut ── */
+    var contratosData = JSON.parse('{{ distrib_contratos | raw }}');
+    var contratosConDatos = contratosData.filter(function(d){ return d.y > 0; });
+    if (contratosConDatos.length > 0) {
+        Highcharts.chart('chart_contratos', {
+            chart: { type: 'pie', spacing: [0,0,0,0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, {
+                pointFormat: '<b>{point.y}</b> contratos ({point.percentage:.1f}%)'
+            }),
+            plotOptions: {
+                pie: {
+                    innerSize: '58%', allowPointSelect: true, cursor: 'pointer',
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true, format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'Contratos', data: contratosConDatos }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 2. Cobertura por entidad — barras agrupadas ── */
+    var cobCats      = JSON.parse('{{ cobertura_categories | raw }}');
+    var cobAprobada  = JSON.parse('{{ cobertura_aprobada | raw }}').map(function(d){ return d.y; });
+    var cobCubierta  = JSON.parse('{{ cobertura_cubierta | raw }}').map(function(d){ return d.y; });
+    if (cobCats.length > 0) {
+        Highcharts.chart('chart_cobertura_entidad', {
+            chart: { type: 'bar', spacing: [8,16,8,8], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { categories: cobCats }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: {
+                enabled: true,
+                itemStyle: { fontSize: '12px', color: '#6b7280', fontWeight: '500' }
+            },
+            plotOptions: {
+                bar: { borderRadius: 4, borderWidth: 0, groupPadding: 0.1, pointPadding: 0.05 }
+            },
+            tooltip: $.extend({}, baseTooltip, {
+                shared: true,
+                pointFormat: '<span style="color:{point.color}">●</span> {series.name}: <b>{point.y}</b><br/>'
+            }),
+            series: [
+                { name: 'Aprobada', data: cobAprobada, color: '#c7d2fe' },
+                { name: 'Cubierta', data: cobCubierta, color: '#059669' }
+            ],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 3. Tendencia mensual — areaspline ── */
+    var tendCats     = JSON.parse('{{ tendencia_cats | raw }}');
+    var tendAprobada = JSON.parse('{{ tendencia_aprobada | raw }}');
+    var tendCubierta = JSON.parse('{{ tendencia_cubierta | raw }}');
+    if (tendCats.length > 0) {
+        Highcharts.chart('chart_tendencia', {
+            chart: { type: 'areaspline', spacing: [12,16,12,16], animation: { duration: 700 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { categories: tendCats }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: {
+                enabled: true,
+                itemStyle: { fontSize: '12px', color: '#6b7280', fontWeight: '500' }
+            },
+            plotOptions: {
+                areaspline: {
+                    lineWidth: 2.5,
+                    marker: { enabled: true, radius: 4, lineWidth: 2, lineColor: '#fff' },
+                    dataLabels: {
+                        enabled: true, format: '{point.y}',
+                        style: { fontWeight: '600', color: '#1e1b4b', fontSize: '10px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, {
+                shared: true,
+                pointFormat: '<span style="color:{point.color}">●</span> {series.name}: <b>{point.y}</b><br/>'
+            }),
+            series: [
+                {
+                    name: 'Aprobada', data: tendAprobada, color: '#4f46e5',
+                    fillColor: { linearGradient: { x1:0,y1:0,x2:0,y2:1 },
+                        stops: [[0,'rgba(79,70,229,.12)'],[1,'rgba(79,70,229,.01)']] }
+                },
+                {
+                    name: 'Cubierta', data: tendCubierta, color: '#059669',
+                    fillColor: { linearGradient: { x1:0,y1:0,x2:0,y2:1 },
+                        stops: [[0,'rgba(5,150,105,.12)'],[1,'rgba(5,150,105,.01)']] }
+                }
+            ],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 4. Distribución por categoría laboral — columnas ── */
+    var catsData = JSON.parse('{{ distrib_categorias | raw }}');
+    var catsConDatos = catsData.filter(function(d){ return d.y > 0; });
+    if (catsConDatos.length > 0) {
+        Highcharts.chart('chart_categorias', {
+            chart: { type: 'column', spacing: [12,16,12,16], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: { enabled: false },
+            plotOptions: {
+                column: {
+                    borderRadius: 6, borderWidth: 0, colorByPoint: true, colors: COLORS,
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#1e1b4b', fontSize: '11px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> personas' }),
+            series: [{ name: 'Personal', data: catsConDatos }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 5. Grado científico — donut ── */
+    var califData = JSON.parse('{{ distrib_calificacion | raw }}');
+    var califConDatos = califData.filter(function(d){ return d.y > 0; });
+    if (califConDatos.length > 0) {
+        Highcharts.chart('chart_calificacion', {
+            chart: { type: 'pie', spacing: [0,0,0,0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, {
+                pointFormat: '<b>{point.y}</b> personas ({point.percentage:.1f}%)'
+            }),
+            plotOptions: {
+                pie: {
+                    innerSize: '55%', allowPointSelect: true, cursor: 'pointer',
+                    colors: ['#7c3aed','#2563eb','#e5e7eb'],
+                    dataLabels: {
+                        enabled: true, format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'Calificación', data: califConDatos }],
+            credits: { enabled: false }
+        });
+    }
+
+});
+</script>
+{% endblock %}

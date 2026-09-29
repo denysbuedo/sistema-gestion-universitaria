@@ -1,0 +1,64 @@
+{% import 'pages/_detail_macros.html.twig' as dm %}
+{% include 'pages/_detail_styles.html.twig' %}
+<style>
+    .detail-estructura-list { max-height: 280px; overflow-y: auto; }
+    .detail-estructura-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: #f8fafc;
+    }
+    .detail-estructura-item:last-child { margin-bottom: 0; }
+    .detail-estructura-item .nombre { font-weight: 700; font-size: 0.85rem; color: #1a2e44; }
+    .detail-estructura-item .subordinado { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+</style>
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>Información básica</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="row">
+            <div class="col-md-6">
+                {{ dm.field('Nombre', grupo.nombre) }}
+            </div>
+            <div class="col-md-6">
+                <div class="detail-field">
+                    <span class="detail-label">Estado</span>
+                    {{ dm.badge_estado(grupo.activo) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{ dm.field('Descripción', grupo.descripcion, 'Sin descripción') }}
+            </div>
+            <div class="col-md-6">
+                {{ dm.field('Estructuras asignadas', grupo.estructuras|length) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if grupo.estructuras|length > 0 %}
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-sitemap"></i>
+        <h3>Estructuras asignadas</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="detail-estructura-list">
+            {% for estructura in grupo.estructuras %}
+                <div class="detail-estructura-item">
+                    <div class="nombre">{% if estructura.siglas %}({{ estructura.siglas }}) {% endif %}{{ estructura.nombre }}</div>
+                    {% if estructura.estructura %}
+                        <div class="subordinado">Subordinado a: {% if estructura.estructura.siglas %}({{ estructura.estructura.siglas }}) {% endif %}{{ estructura.estructura.nombre }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}

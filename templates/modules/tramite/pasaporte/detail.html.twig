@@ -1,0 +1,153 @@
+<style>
+    .pd-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        margin-bottom: 18px;
+    }
+    .pd-field {
+        padding: 10px 16px;
+        border-bottom: 1px solid #f0f4f8;
+    }
+    .pd-field:nth-child(odd) { border-right: 1px solid #f0f4f8; }
+    .pd-field-label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #a0aec0;
+        margin-bottom: 3px;
+    }
+    .pd-field-value {
+        font-size: .9rem;
+        font-weight: 600;
+        color: #1a2e44;
+    }
+    .pd-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 20px;
+        padding: 3px 12px;
+    }
+    .pd-badge.active   { background: #e6f9f0; color: #276749; }
+    .pd-badge.inactive { background: #fff5f5; color: #c53030; }
+
+    .pd-images-title {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #134679;
+        padding: 8px 16px 10px;
+        border-top: 1px solid #f0f4f8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pd-images-title i { opacity: .7; }
+    .pd-images-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 0 16px 16px;
+    }
+    .pd-img-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+    .pd-img-label {
+        font-size: .72rem;
+        font-weight: 600;
+        color: #718096;
+        padding: 6px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .pd-img-label i { color: #134679; font-size: .65rem; }
+    .pd-img-card a {
+        display: block;
+    }
+    .pd-img-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        transition: opacity .2s;
+    }
+    .pd-img-card img:hover { opacity: .85; }
+    .pd-img-empty {
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #a0aec0;
+        font-size: .8rem;
+    }
+    .pd-img-empty i { font-size: 2rem; }
+</style>
+
+<div class="pd-grid">
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="fas fa-passport mr-1"></i>Tipo de pasaporte</div>
+        <div class="pd-field-value">{{ item.tipoPasaporte.nombre | default('—') }}</div>
+    </div>
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="fas fa-hashtag mr-1"></i>Número de pasaporte</div>
+        <div class="pd-field-value">{{ item.numeroPasaporte | default('—') }}</div>
+    </div>
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="far fa-calendar-check mr-1"></i>Fecha de emisión</div>
+        <div class="pd-field-value">
+            {% if item.fechaEmisionPasaporte is not null %}{{ item.fechaEmisionPasaporte | date('d/m/Y') }}{% else %}—{% endif %}
+        </div>
+    </div>
+    <div class="pd-field">
+        <div class="pd-field-label"><i class="far fa-calendar-times mr-1"></i>Fecha de caducidad</div>
+        <div class="pd-field-value">
+            {% if item.fechaCaducidadPasaporte is not null %}{{ item.fechaCaducidadPasaporte | date('d/m/Y') }}{% else %}—{% endif %}
+        </div>
+    </div>
+    <div class="pd-field" style="grid-column: 1 / -1; border-right: none;">
+        <div class="pd-field-label"><i class="fas fa-circle mr-1"></i>Estado</div>
+        <div class="pd-field-value">
+            {% if '1' == item.activo %}
+                <span class="pd-badge active"><i class="fas fa-check-circle"></i>Habilitado</span>
+            {% else %}
+                <span class="pd-badge inactive"><i class="fas fa-times-circle"></i>Deshabilitado</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="pd-images-title"><i class="fas fa-images"></i> Imágenes del pasaporte</div>
+<div class="pd-images-grid">
+    <div class="pd-img-card">
+        <div class="pd-img-label"><i class="fas fa-circle"></i>Cara frontal</div>
+        {% if item.cara1 is not null %}
+            <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/tramites/pasaporte/{{ item.cara1 }}" target="_blank">
+                <img src="{{ app.request.getSchemeAndHttpHost() }}/uploads/tramites/pasaporte/{{ item.cara1 }}" alt="Cara frontal">
+            </a>
+        {% else %}
+            <div class="pd-img-empty"><i class="fas fa-image"></i><span>Sin imagen</span></div>
+        {% endif %}
+    </div>
+    <div class="pd-img-card">
+        <div class="pd-img-label"><i class="fas fa-circle"></i>Cara posterior</div>
+        {% if item.cara2 is not null %}
+            <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/tramites/pasaporte/{{ item.cara2 }}" target="_blank">
+                <img src="{{ app.request.getSchemeAndHttpHost() }}/uploads/tramites/pasaporte/{{ item.cara2 }}" alt="Cara posterior">
+            </a>
+        {% else %}
+            <div class="pd-img-empty"><i class="fas fa-image"></i><span>Sin imagen</span></div>
+        {% endif %}
+    </div>
+</div>

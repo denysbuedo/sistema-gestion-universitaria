@@ -1,0 +1,275 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar institución{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Blindaje Definitivo: ID ÚNICO para RESTRICCIÓN TOTAL */
+        #form-inst-new .inst-banner {
+            background: linear-gradient(135deg, #134679 0%, #0f3560 100%);
+            height: 90px;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        #form-inst-new .inst-logo-wrap {
+            display: flex; justify-content: center; margin-top: -48px; z-index: 2; position: relative;
+        }
+        #form-inst-new .inst-logo {
+            width: 90px; height: 90px; object-fit: contain; border-radius: 0.5rem;
+            border: 4px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.15); background: #fff; padding: 4px;
+        }
+        #form-inst-new .inst-logo-placeholder {
+            width: 90px; height: 90px; border-radius: 0.5rem; border: 4px solid #fff;
+            background: #e8f0fe; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; font-weight: 700; color: #134679;
+        }
+        #form-inst-new .inst-name {
+            font-size: 0.9rem; font-weight: 700; color: #1a1a2e;
+            line-height: 1.3; margin-bottom: 2px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        /* Nav Pills blindadas */
+        #form-inst-new .nav-modern-pills .nav-link {
+            color: #3a3a4a; font-weight: 500; border-radius: 0.4rem;
+            margin-bottom: 4px; transition: all 0.2s ease;
+            border-left: 3px solid transparent; padding: 0.5rem 0.85rem; font-size: 0.9rem;
+        }
+        #form-inst-new .nav-modern-pills .nav-link.active {
+            background-color: #134679 !important; color: #fff !important;
+            border-left: 3px solid #0f3560 !important;
+        }
+        #form-inst-new .nav-modern-pills .nav-link:hover:not(.active) {
+            background-color: rgba(26,115,232,0.1); color: #134679 !important;
+        }
+
+        #form-inst-new .card-custom-tabs {
+            border-radius: 0.75rem; border: none; background: #fff;
+        }
+        #form-inst-new .form-section-title {
+            font-size: 1.1rem; font-weight: 600; color: #2c3e50;
+            margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e9ecef;
+        }
+        #form-inst-new .form-group label {
+            font-weight: 600; color: #34495e; font-size: 0.875rem;
+        }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; text-decoration:none; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div id="form-inst-new">
+    {{ form_start(form) }}
+    <div class="row d-flex align-items-stretch">
+        <div class="col-md-3 pr-3">
+            <div class="card card-custom-tabs shadow-sm h-100">
+                <div class="card-body p-0">
+                    <div class="inst-banner"></div>
+                    <div class="inst-logo-wrap">
+                        <img src="/assets/images/usuario.png" class="inst-logo" id="inst-logo-preview" style="display:none;">
+                        <div id="inst-logo-fallback" class="inst-logo-placeholder">IES</div>
+                    </div>
+                    <div class="text-center px-3 mt-3 mb-2">
+                        <p class="inst-name" id="inst-name-preview">Nueva Institución</p>
+                        <span id="inst-siglas-preview" class="badge badge-light border text-secondary" style="font-size:0.75rem; letter-spacing:0.5px;">—</span>
+                    </div>
+                    <hr class="my-0 mx-3">
+                    <div class="nav flex-column nav-modern-pills mt-2 px-3 pb-3" id="v-pills-tab" role="tablist">
+                        <a class="nav-link active" id="v-pills-general-tab" data-toggle="pill" href="#v-pills-general" role="tab" aria-selected="true">
+                            <i class="fas fa-university mr-2"></i> Datos Generales
+                        </a>
+                        <a class="nav-link" id="v-pills-identidad-tab" data-toggle="pill" href="#v-pills-identidad" role="tab" aria-selected="false">
+                            <i class="fas fa-scroll mr-2"></i> Identidad Institucional
+                        </a>
+                        <a class="nav-link" id="v-pills-contacto-tab" data-toggle="pill" href="#v-pills-contacto" role="tab" aria-selected="false">
+                            <i class="fas fa-address-book mr-2"></i> Datos de Contacto
+                        </a>
+                        <a class="nav-link" id="v-pills-localizacion-tab" data-toggle="pill" href="#v-pills-localizacion" role="tab" aria-selected="false">
+                            <i class="fas fa-map-marker-alt mr-2"></i> Localización
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card card-custom-tabs shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                    <h3 class="card-title text-bold text-gray m-0" style="font-size: 1.4rem;">Adicionar Institución</h3>
+                </div>
+                <div class="card-body px-4 pb-2">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel">
+                            <h5 class="form-section-title"><i class="fas fa-university mr-2 text-primary"></i>Información General</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.estructura) }}
+                                    {{ form_widget(form.estructura) }}
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.siglas) }}
+                                    {{ form_widget(form.siglas) }}
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.codigo) }}
+                                    {{ form_widget(form.codigo) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.tipoInstitucion) }}
+                                    {{ form_widget(form.tipoInstitucion) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.gradoAcademicoRector) }}
+                                    {{ form_widget(form.gradoAcademicoRector) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.rector) }}
+                                    {{ form_widget(form.rector) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.fechaFundacion) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                                        {{ form_widget(form.fechaFundacion) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-8 form-group">
+                                    {{ form_label(form.logo) }}
+                                    {{ form_widget(form.logo) }}
+                                    <span class="cargar-archivo text-muted"></span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-1"></i></button>
+                            </div>
+                        </div>
+
+                        {# Otras pestañas omitidas por brevedad, se mantiene el código anterior #}
+                        <div class="tab-pane fade" id="v-pills-identidad" role="tabpanel">
+                            <h5 class="form-section-title"><i class="fas fa-scroll mr-2 text-primary"></i>Identidad Institucional</h5>
+                            <div class="form-group">{{ form_label(form.lema) }}{{ form_widget(form.lema) }}</div>
+                            <div class="form-group">{{ form_label(form.mision) }}{{ form_widget(form.mision) }}</div>
+                            <div class="form-group">{{ form_label(form.vision) }}{{ form_widget(form.vision) }}</div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-prev-tab"><i class="fas fa-arrow-left mr-1"></i> Anterior</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-1"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="v-pills-contacto" role="tabpanel">
+                            <h5 class="form-section-title"><i class="fas fa-address-book mr-2 text-primary"></i>Datos de Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group">{{ form_label(form.sitioWeb) }}{{ form_widget(form.sitioWeb) }}</div>
+                                <div class="col-md-4 form-group">{{ form_label(form.telefono) }}{{ form_widget(form.telefono) }}</div>
+                                <div class="col-md-4 form-group">{{ form_label(form.correo) }}{{ form_widget(form.correo) }}</div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-prev-tab"><i class="fas fa-arrow-left mr-1"></i> Anterior</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-1"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="v-pills-localizacion" role="tabpanel">
+                            <h5 class="form-section-title"><i class="fas fa-map-marker-alt mr-2 text-primary"></i>Localización</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group">{{ form_label(form.direccionSedePrincipal) }}{{ form_widget(form.direccionSedePrincipal) }}</div>
+                                <div class="col-md-4 form-group">{{ form_label(form.coordenadasSedePrincipal) }}{{ form_widget(form.coordenadasSedePrincipal) }}</div>
+                                <div class="col-md-2 form-group">{{ form_label(form.activo) }}{{ form_widget(form.activo) }}</div>
+                            </div>
+                            <div class="d-flex justify-content-start mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-prev-tab"><i class="fas fa-arrow-left mr-1"></i> Anterior</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end align-items-center" style="border-bottom-left-radius:0.75rem;border-bottom-right-radius:0.75rem;">
+                    <a class="btn-fs-cancel mr-2 btn-cancel" data-url="{{ path('app_institucion_index') }}" data-title="Confirmar" data-content="¿Está seguro que desea cancelar?" type="button">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button type="submit" id="btn-aceptar" class="btn-fs-submit">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $('#btn-aceptar').click(function () { HoldOn.open({ theme: "sk-cube-grid", message: 'Registrando...', textColor: "white" }); });
+    $('#institucion_fechaFundacion').datetimepicker({ format: 'DD/MM/YYYY' });
+
+    $('#institucion_logo').change(function () {
+        var filename = $(this).val().split('\\').pop();
+        $('.cargar-archivo').html('<i class="fas fa-paperclip mr-1"></i>' + filename);
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#inst-logo-preview').attr('src', e.target.result).show();
+            $('#inst-logo-fallback').hide();
+        };
+        if (this.files[0]) reader.readAsDataURL(this.files[0]);
+    });
+
+    $(document).ready(function () {
+        $('#institucion_estructura').on('change', function () {
+            var selectedText = $("#institucion_estructura option:selected").text();
+            if ($(this).val() !== "" && selectedText !== "Seleccione") {
+                $('#inst-name-preview').text(selectedText).attr('title', selectedText);
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Cargando datos...', textColor: "white" });
+                var url = "{{ path('app_estructura_dado_id', {'id':'idP'}) }}".replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#institucion_siglas').val(data.siglas);
+                    $('#inst-siglas-preview').text(data.siglas || '—');
+                    $('#inst-logo-fallback').text(data.siglas || 'IES');
+                    $('#institucion_telefono').val(data.telefono);
+                    $('#institucion_correo').val(data.correo);
+                    $('#institucion_direccionSedePrincipal').val(data.direccion);
+                    $('#institucion_coordenadasSedePrincipal').val(data.ubicacion);
+                    HoldOn.close();
+                });
+            }
+        });
+
+        $('#institucion_siglas').on('input', function() {
+            var val = $(this).val() || '—';
+            $('#inst-siglas-preview').text(val);
+            if ($('#inst-logo-preview').is(':hidden')) {
+                $('#inst-logo-fallback').text($(this).val() || 'IES');
+            }
+        });
+    });
+
+    var tabOrder = ['#v-pills-general-tab', '#v-pills-identidad-tab', '#v-pills-contacto-tab', '#v-pills-localizacion-tab'];
+    function getActiveTabIndex() { return tabOrder.indexOf('#' + $('.nav-link.active').attr('id')); }
+
+    $(document).on('click', '.btn-next-tab', function () {
+        var currentPane = $('.tab-pane.active');
+        var inputs = currentPane.find('input, select, textarea');
+        var allValid = true;
+        inputs.each(function() {
+            if (!this.checkValidity()) { allValid = false; $(this).addClass('is-invalid'); this.reportValidity(); return false; }
+            else { $(this).removeClass('is-invalid'); }
+        });
+        if (allValid) {
+            var next = getActiveTabIndex() + 1;
+            if (next < tabOrder.length) $(tabOrder[next]).tab('show');
+            $('html, body').animate({ scrollTop: $(".card-custom-tabs").offset().top - 20 }, 300);
+        }
+    });
+
+    $(document).on('click', '.btn-prev-tab', function () {
+        var prev = getActiveTabIndex() - 1;
+        if (prev >= 0) $(tabOrder[prev]).tab('show');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modelo 223.216 (I) (AE2){% endblock %}
+
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-file-invoice label-icon"></i>Listado de Modelo 223.216 (I) (AE2)</h3>
+            <a title="Adicionar" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_rrhh_reporte_ae2_registrar') }}">
+                <i class="fa fa-plus"></i> Nuevo
+            </a>
+        </div>
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Año</th>
+                    <th>Mes</th>
+                    <th>Institución</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th><input type="text" placeholder="Filtrar por Año" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Mes" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Institución" class="responsive-input"/></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set meses = [
+                    '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ] %}
+
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.anno | default('') }}</td>
+                        <td>{{ meses[item.mes]|default('') }}</td>
+                        <td>{{ item.entidad.nombre | default('') }}</td>
+                        <td width="5%">
+                            <div class="dropdown d-flex justify-content-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center actions-dropdown-btn"
+                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    &#8942;
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm actions-dropdown-menu">
+                                    <button class="dropdown-item modalDetailAction"
+                                            data-url="{{ path('app_rrhh_reporte_ae2_detail', {'id' : item.id}) }}"
+                                            data-title="Detalles del AE2">
+                                        <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                    </button>
+                                    <a class="dropdown-item" href="{{ path('app_rrhh_reporte_ae2_modificar', {'id': item.id}) }}">
+                                        <i class="fa fa-edit fa-fw mr-2 text-warning"></i> Modificar
+                                    </a>
+                                    {% if item.documento %}
+                                        <a class="dropdown-item" target="_blank"
+                                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/rrhh/ae2/documento/{{ item.documento }}">
+                                            <i class="fa fa-file-download fa-fw mr-2 text-info"></i> Descargar firmado
+                                        </a>
+                                    {% endif %}
+                                    <div class="dropdown-divider my-1"></div>
+                                    <button class="dropdown-item elementRemove text-danger"
+                                            data-url="{{ path('app_rrhh_reporte_ae2_eliminar', {'id': item.id}) }}">
+                                        <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include 'pages/_luxury_list_dropdown_js.html.twig' %}
+{% endblock %}

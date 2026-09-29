@@ -1,0 +1,143 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Instrumentos Jurídicos{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .config-table th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-color: #e2e8f0;
+        padding: 8px 10px;
+        white-space: nowrap;
+    }
+    .config-table td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        border-color: #e2e8f0;
+        padding: 7px 10px;
+        vertical-align: middle;
+    }
+    .config-table tbody tr:hover { background: #f8fafc; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+
+    .entity-badge {
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-left: 4px solid #134679;
+        margin-bottom: 20px;
+    }
+    .entity-badge h5 { margin: 0; color: #1a2e44; font-size: 0.95rem; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block body %}
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-file-contract label-icon"></i>Listado de Instrumentos Jurídicos</h3>
+            <a title="Adicionar" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_convenio_registrar') }}">
+                <i class="fa fa-plus"></i> Nuevo
+            </a>
+        </div>
+        <div class="card-body px-4">
+            {% if isAdmin == false %}
+                <div class="entity-badge">
+                    <h5>
+                        <i class="fa fa-university mr-2" style="color: #134679;"></i>
+                        <strong>({{ entidad.siglas | default('No definida') }})</strong> {{ entidad.nombre | default('') }}
+                    </h5>
+                </div>
+            {% endif %}
+
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>Inst. cubana</th>
+                    <th>Inst. extranjera</th>
+                    <th>País</th>
+                    <th>Suscrito</th>
+                    <th>Caducidad</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>
+                            <span title="{{ item.nombre }}" data-toggle="tooltip">
+                                {{ item.nombre|length > 40 ? item.nombre|slice(0, 40) ~ '...' : item.nombre }}
+                            </span>
+                        </td>
+                        <td>{{ item.institucionCubana.siglas | default(item.institucionCubana.nombre | default('')) }}</td>
+                        <td>{{ item.institucionExtranjera.nombre | default('') }}</td>
+                        <td>{{ item.pais.nombre | default('') }}</td>
+                        <td width="8%">{{ item.fechaSuscribe | date('d/m/Y') }}</td>
+                        <td width="8%">{{ item.fechaCaducidad | date('d/m/Y') }}</td>
+                        <td width="15%" class="text-center">
+                            <button title="Detalles" class="btn btn-outline-primary modalDetailAction"
+                                    style="min-width: auto; padding: 4px 8px;"
+                                    data-url="{{ path('app_convenio_detail', {'id' : item.id}) }}"
+                                    data-title="Detalles del Instrumento Jurídico">
+                                <i class="fa fa-eye"></i>
+                            </button>
+
+                            <a title="Modificar" href="{{ path('app_convenio_modificar', {'id': item.id}) }}"
+                               style="min-width: auto; padding: 4px 8px;"
+                               class="btn btn-outline-primary"><i class="fa fa-edit"></i>
+                            </a>
+                            <a title="Definir acciones" href="{{ path('app_convenio_acciones', {'id': item.id}) }}"
+                               style="min-width: auto; padding: 4px 8px;"
+                               class="btn btn-outline-primary"><i class="fa fa-book-open"></i>
+                            </a>
+                            <button title="Eliminar" class="btn btn-outline-danger elementRemove"
+                                    style="min-width: auto; padding: 4px 8px;"
+                                    data-url="{{ path('app_convenio_eliminar', {'id': item.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

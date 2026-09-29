@@ -1,0 +1,164 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar solicitud de programa académico{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 2rem; }
+        .card-luxury .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 18px 24px; }
+        .fs-title { color: #1a2e44; font-weight: 700; font-size: 1.1rem; margin: 0; }
+        .label-icon { color: #134679; margin-right: 8px; opacity: 0.8; }
+        
+        .fs-section { background: #fff; border-radius: 8px; padding: 0; margin-bottom: 1.5rem; }
+        .fs-section-header { padding: 12px 0; border-bottom: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .fs-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+        .fs-section-title i { font-size: 0.8rem; opacity: 0.7; }
+        
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: " *"; color: #ef4444; font-weight: 700; }
+        
+        .btn-fs-submit { 
+            background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; 
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+        
+        .btn-fs-cancel {
+            background: #f1f5f9; color: #475569 !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px;
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-cancel:hover { background: #e2e8f0; color: #1e293b !important; }
+
+        .custom-file-upload {
+            border: 2px dashed #e2e8f0; border-radius: 10px; padding: 15px; text-align: center;
+            background: #f8fafc; transition: all 0.2s; cursor: pointer; position: relative;
+        }
+        .custom-file-upload:hover { border-color: #134679; background: #f0f7ff; }
+        .file-name { font-size: 0.72rem; color: #134679; font-weight: 600; margin-top: 8px; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .upload-icon { font-size: 1.5rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="fs-title"><i class="fas fa-edit label-icon"></i>Modificar solicitud de programa académico</h3>
+        </div>
+
+        {{ form_start(form) }}
+        <div class="card-body px-4">
+            
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-university"></i> Datos del Programa Académico</span>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.tipoProgramaAcademico) }}</label>
+                        {{ form_widget(form.tipoProgramaAcademico, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.nombre) }}</label>
+                        {{ form_widget(form.nombre, {'attr': {'class': 'form-control shadow-sm'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.organismoDemandante) }}</label>
+                        {{ form_widget(form.organismoDemandante, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.ramaCiencia) }}</label>
+                        {{ form_widget(form.ramaCiencia, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.centroSolicitante) }}</label>
+                        {{ form_widget(form.centroSolicitante, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group text-center">
+                        <label class="fs-label text-left">{{ form_label(form.solicitud) }}</label>
+                        <div class="custom-file-upload shadow-sm mb-2" onclick="$('#{{ form.solicitud.vars.id }}').click()">
+                            <i class="fas fa-cloud-upload-alt upload-icon" {% if solicitudProgramaAcademico.solicitud %}style="color: #27ae60;"{% endif %}></i>
+                            <span class="small text-muted">Cambiar Documento de Solicitud (PDF)</span>
+                            <span id="filename-preview" class="file-name">{{ solicitudProgramaAcademico.solicitud | default('Ninguno') }}</span>
+                            <div class="d-none">
+                                {{ form_widget(form.solicitud) }}
+                            </div>
+                        </div>
+                        {% if solicitudProgramaAcademico.solicitud %}
+                        <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/solicitud_programa_academico/solicitud/{{ solicitudProgramaAcademico.solicitud }}" target="_blank" class="btn btn-xs btn-outline-info rounded-pill px-3">
+                            <i class="fas fa-external-link-alt mr-1"></i> Ver archivo actual
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-section mt-4">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-user-tie"></i> Datos del Solicitante</span>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.nombreSolicitante) }}</label>
+                        {{ form_widget(form.nombreSolicitante, {'attr': {'class': 'form-control shadow-sm'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.correoSolicitante) }}</label>
+                        <div class="input-group shadow-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0"><i class="fas fa-envelope text-primary"></i></span>
+                            </div>
+                            {{ form_widget(form.correoSolicitante, {'attr': {'class': 'form-control border-left-0'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.telefonoSolicitante) }}</label>
+                        <div class="input-group shadow-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0"><i class="fas fa-phone text-primary"></i></span>
+                            </div>
+                            {{ form_widget(form.telefonoSolicitante, {'attr': {'class': 'form-control border-left-0', 'data-inputmask': '"mask": "(999) 999-9999"', 'data-mask': ''}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end gap-3" style="gap:12px;">
+            <a class="btn-fs-cancel btn-cancel" 
+               data-url="{{ path('app_solicitud_programa_academico_index') }}" 
+               data-content="¿Desea descartar los cambios realizados?">
+               <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button class="btn-fs-submit" type="submit">
+                <i class="fas fa-save"></i> Guardar Cambios
+            </button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Filename update
+            $('#{{ form.solicitud.vars.id }}').on('change', function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#filename-preview').text(filename || 'Ninguno');
+            });
+
+            // Input mask
+            if ($.fn.inputmask) {
+                $('[data-mask]').inputmask();
+            }
+            
+            // Select2 init
+            $('.select2').select2({ width: '100%' });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,818 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar persona{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .password-icon {
+            float: right;
+            position: relative;
+            margin: -25px 10px 0 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .profile-img-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-img-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* Banner de perfil profesional */
+        .profile-banner {
+            background: linear-gradient(135deg, #134679 0%, #0f3560 100%);
+            height: 90px;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .profile-avatar-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-top: -50px;
+            z-index: 2;
+        }
+        .profile-avatar-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+            background: #e9ecef;
+            transition: transform 0.2s ease;
+        }
+        .profile-avatar-img:hover {
+            transform: scale(1.05);
+        }
+        .profile-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+        .profile-ci {
+            font-size: 0.8rem;
+            color: #6c757d;
+            letter-spacing: 0.5px;
+        }
+        .profile-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .profile-badge i {
+            font-size: 0.6rem;
+        }
+        .card-custom-tabs .nav-pills .nav-link.active,
+        .card-custom-tabs .nav-pills .show > .nav-link {
+            background-color: #134679;
+            color: #fff !important;
+            box-shadow: 0 4px 6px rgba(19,70,121,0.25);
+            border-left: 3px solid #0f3560;
+        }
+        .card-custom-tabs .nav-pills .nav-link {
+            color: #3a3a4a;
+            font-weight: 500;
+            border-radius: 0.4rem;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            padding: 0.5rem 0.85rem;
+        }
+        .card-custom-tabs .nav-pills .nav-link:hover {
+            background-color: rgba(19, 70, 121, 0.1);
+            color: #134679 !important;
+            border-left: 3px solid #134679;
+            text-decoration: none;
+        }
+        .card-custom-tabs .nav-pills .nav-link i {
+            width: 22px;
+            text-align: center;
+            opacity: 0.75;
+        }
+        .card-custom-tabs .nav-pills .nav-link.active i,
+        .card-custom-tabs .nav-pills .nav-link:hover i {
+            opacity: 1;
+        }
+        .card-custom-tabs {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.05);
+        }
+        /* Igualar altura de ambas cards */
+        .card-custom-tabs .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .card-custom-tabs .form-group label {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.9rem;
+        }
+        .card-custom-tabs .equal-height-col {
+            display: flex;
+            flex-direction: column;
+        }
+        .card-custom-tabs .equal-height-col .card-custom-tabs {
+            flex: 1 1 auto;
+        }
+        .card-custom-tabs .sidebar-nav-fill {
+            flex: 1 1 auto;
+        }
+        .checkbox-custom label {
+            font-weight: normal;
+            margin-left: 5px;
+        }
+        .afiliacion-header {
+            background: #f0f5fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            color: #1a2e44;
+            font-weight: bold;
+            border-left: 4px solid #134679;
+        }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; text-decoration:none; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="row d-flex align-items-stretch">
+        <!-- Columna Izquierda: Foto y Menu -->
+        <div class="col-md-3 equal-height-col pr-3">
+            <div class="card card-custom-tabs shadow-sm h-100" style="display:flex; flex-direction:column;">
+                <div class="card-body d-flex flex-column p-0">
+                    <!-- Banner de perfil -->
+                    <div class="profile-banner"></div>
+
+                    <!-- Avatar flotante sobre el banner -->
+                    <div class="profile-avatar-wrap">
+                        <a href="{% if foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ foto }} {% else %} /assets/images/usuario.png {% endif %}" target="_blank" title="Ver foto completa">
+                            <img src="{% if foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ foto }}{% else %}/assets/images/usuario.png{% endif %}"
+                                 class="profile-avatar-img" alt="Foto de Perfil">
+                        </a>
+                    </div>
+
+                    <!-- Info del perfil -->
+                    <div class="text-center px-2 mb-3">
+                        <p class="profile-name mt-2">{{ persona.primerNombre }} {{ persona.segundoNombre }} {{ persona.primerApellido }} {{ persona.segundoApellido }}</p>
+                        <p class="profile-ci">CI: {{ persona.carnetIdentidad }}</p>
+                        {% if persona.responsabilidad is not null %}
+                            <span class="profile-badge"><i class="fas fa-circle"></i> {{ persona.responsabilidad.nombre }}</span>
+                        {% else %}
+                            <span class="profile-badge" style="background:#fff3e0; color:#e65100;"><i class="fas fa-circle"></i> Sin responsabilidad</span>
+                        {% endif %}
+                    </div>
+                    <hr class="my-0 mx-3">
+
+                    <div class="nav flex-column nav-pills sidebar-nav-fill mt-2 px-3 pb-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link active" id="v-pills-personal-tab" data-toggle="pill" href="#v-pills-personal" role="tab" aria-controls="v-pills-personal" aria-selected="true">
+                            <i class="fas fa-user"></i> Datos Personales
+                        </a>
+                        <a class="nav-link" id="v-pills-laboral-tab" data-toggle="pill" href="#v-pills-laboral" role="tab" aria-controls="v-pills-laboral" aria-selected="false">
+                            <i class="fas fa-briefcase"></i> Datos Laborales
+                        </a>
+                        <a class="nav-link" id="v-pills-acceso-tab" data-toggle="pill" href="#v-pills-acceso" role="tab" aria-controls="v-pills-acceso" aria-selected="false">
+                            <i class="fas fa-lock"></i> Seguridad y Acceso
+                        </a>
+                        <a class="nav-link" id="v-pills-contacto-tab" data-toggle="pill" href="#v-pills-contacto" role="tab" aria-controls="v-pills-contacto" aria-selected="false">
+                            <i class="fas fa-address-book"></i> Datos de Contacto
+                        </a>
+                        <a class="nav-link" id="v-pills-superacion-tab" data-toggle="pill" href="#v-pills-superacion" role="tab" aria-controls="v-pills-superacion" aria-selected="false">
+                            <i class="fas fa-graduation-cap"></i> Datos Académicos
+                        </a>
+                        {% if tipoOrganizacion|length > 0 %}
+                        <a class="nav-link" id="v-pills-afiliaciones-tab" data-toggle="pill" href="#v-pills-afiliaciones" role="tab" aria-controls="v-pills-afiliaciones" aria-selected="false">
+                            <i class="fas fa-users"></i> Afiliaciones
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Contenido del Formulario -->
+        <div class="col-md-9 equal-height-col">
+            <div class="card card-custom-tabs shadow-sm h-100" style="display:flex; flex-direction:column;">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                    <h3 class="card-title text-bold text-gray m-0" style="font-size: 1.4rem;">Modificar Registro de Persona</h3>
+                </div>
+                <div class="card-body px-4 pb-2">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        
+                        <!-- TAB: DATOS PERSONALES -->
+                        <div class="tab-pane fade show active" id="v-pills-personal" role="tabpanel" aria-labelledby="v-pills-personal-tab">
+                            <h5 class="form-section-title"><i class="fas fa-user-circle mr-2" style="color:#134679;"></i>Información Personal</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.carnetIdentidad) }}
+                                    {{ form_widget(form.carnetIdentidad, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.carnetIdentidad) }}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.fechaNacimiento) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white"><i class="far fa-calendar-alt text-muted"></i></span>
+                                        </div>
+                                        {{ form_widget(form.fechaNacimiento, {'attr': {'class': 'form-control datetimepicker-input'}}) }}
+                                    </div>
+                                    {{ form_errors(form.fechaNacimiento) }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.primerNombre) }}
+                                    {{ form_widget(form.primerNombre, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.primerNombre) }}
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.segundoNombre) }}
+                                    {{ form_widget(form.segundoNombre, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.segundoNombre) }}
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.primerApellido) }}
+                                    {{ form_widget(form.primerApellido, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.primerApellido) }}
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    {{ form_label(form.segundoApellido) }}
+                                    {{ form_widget(form.segundoApellido, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.segundoApellido) }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.sexo) }}
+                                    {{ form_widget(form.sexo, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.sexo) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.provincia) }}
+                                    {{ form_widget(form.provincia, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.provincia) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.municipio) }}
+                                    {{ form_widget(form.municipio, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.municipio) }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-12 form-group">
+                                    {{ form_label(form.direccion) }}
+                                    {{ form_widget(form.direccion, {'attr': {'class': 'form-control', 'rows': '2'}}) }}
+                                    {{ form_errors(form.direccion) }}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3 mb-2">
+                                <button type="button" class="btn btn-outline-primary px-4 btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: DATOS LABORALES -->
+                        <div class="tab-pane fade" id="v-pills-laboral" role="tabpanel" aria-labelledby="v-pills-laboral-tab">
+                            <h5 class="form-section-title"><i class="fas fa-briefcase mr-2" style="color:#134679;"></i>Información Laboral</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.entidad) }}
+                                    {{ form_widget(form.entidad, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.entidad) }}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.estructura) }}
+                                    {{ form_widget(form.estructura, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.estructura) }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.responsabilidad) }}
+                                    {{ form_widget(form.responsabilidad, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.responsabilidad) }}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.clasificacionPersona) }}
+                                    {{ form_widget(form.clasificacionPersona, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.clasificacionPersona) }}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4 mb-2">
+                                <button type="button" class="btn btn-outline-secondary px-4 btn-prev-tab"><i class="fas fa-arrow-left mr-2"></i> Anterior</button>
+                                <button type="button" class="btn btn-outline-primary px-4 btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: SEGURIDAD Y ACCESO -->
+                        <div class="tab-pane fade" id="v-pills-acceso" role="tabpanel" aria-labelledby="v-pills-acceso-tab">
+                            <h5 class="form-section-title"><i class="fas fa-lock mr-2" style="color:#134679;"></i>Configuración de Acceso</h5>
+                            
+                            <div class="alert alert-info bg-light text-info border-info alert-dismissible fade show" role="alert">
+                                <strong><i class="fas fa-info-circle mr-1"></i> Nota:</strong> 
+                                El usuario institucional debe contener el dominio <b>@mes.gob.cu</b>. 
+                                Solo complete las contraseñas si desea cambiarlas.
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-12 form-group">
+                                    {{ form_label(form.usuario) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white"><i class="fas fa-envelope text-muted"></i></span>
+                                        </div>
+                                        {{ form_widget(form.usuario, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    {{ form_errors(form.usuario) }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.contrasena) }}
+                                    <div class="position-relative">
+                                        {{ form_widget(form.contrasena, {'attr': {'class': 'form-control'}}) }}
+                                        <span class="fa fa-fw fa-eye password-icon show-password text-muted"></span>
+                                    </div>
+                                    {{ form_errors(form.contrasena) }}
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    {{ form_label(form.contrasena2) }}
+                                    {{ form_widget(form.contrasena2, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.contrasena2) }}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4 mb-2">
+                                <button type="button" class="btn btn-outline-secondary px-4 btn-prev-tab"><i class="fas fa-arrow-left mr-2"></i> Anterior</button>
+                                <button type="button" class="btn btn-outline-primary px-4 btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: DATOS DE CONTACTO -->
+                        <div class="tab-pane fade" id="v-pills-contacto" role="tabpanel" aria-labelledby="v-pills-contacto-tab">
+                            <h5 class="form-section-title"><i class="fas fa-address-book mr-2" style="color:#134679;"></i>Información de Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.email) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white"><i class="fas fa-at text-muted"></i></span>
+                                        </div>
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Correo alternativo'}}) }}
+                                        {{ form_errors(form.email) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.celular) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white"><i class="fas fa-mobile-alt text-muted"></i></span>
+                                        </div>
+                                        {{ form_widget(form.celular, {'attr': {'class': 'form-control', 'placeholder': '+53 50000000'}}) }}
+                                        {{ form_errors(form.celular) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.telefono) }}
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white"><i class="fas fa-phone-alt text-muted"></i></span>
+                                        </div>
+                                        {{ form_widget(form.telefono, {'attr': {'class': 'form-control', 'placeholder': 'Tel. Fijo'}}) }}
+                                        {{ form_errors(form.telefono) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4 mb-2">
+                                <button type="button" class="btn btn-outline-secondary px-4 btn-prev-tab"><i class="fas fa-arrow-left mr-2"></i> Anterior</button>
+                                <button type="button" class="btn btn-outline-primary px-4 btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: DATOS ACADÉMICOS -->
+                        <div class="tab-pane fade" id="v-pills-superacion" role="tabpanel" aria-labelledby="v-pills-superacion-tab">
+                            <h5 class="form-section-title"><i class="fas fa-graduation-cap mr-2" style="color:#134679;"></i>Datos de Superación Académica</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.nivelEscolar) }}
+                                    {{ form_widget(form.nivelEscolar, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.nivelEscolar) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.profesion) }}
+                                    {{ form_widget(form.profesion, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.profesion) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.categoriaDocente) }}
+                                    {{ form_widget(form.categoriaDocente, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.categoriaDocente) }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.gradoAcademico) }}
+                                    {{ form_widget(form.gradoAcademico, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.gradoAcademico) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.categoriaInvestigativa) }}
+                                    {{ form_widget(form.categoriaInvestigativa, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.categoriaInvestigativa) }}
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    {{ form_label(form.solicitudProgramaAcademico) }}
+                                    {{ form_widget(form.solicitudProgramaAcademico, {'attr': {'class': 'form-control custom-select'}}) }}
+                                    {{ form_errors(form.solicitudProgramaAcademico) }}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4 mb-2">
+                                <button type="button" class="btn btn-outline-secondary px-4 btn-prev-tab"><i class="fas fa-arrow-left mr-2"></i> Anterior</button>
+                                {% if tipoOrganizacion|length > 0 %}
+                                    <button type="button" class="btn btn-outline-primary px-4 btn-next-tab">Siguiente <i class="fas fa-arrow-right ml-2"></i></button>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- TAB: AFILIACIONES -->
+                        {% if tipoOrganizacion|length > 0 %}
+                        <div class="tab-pane fade" id="v-pills-afiliaciones" role="tabpanel" aria-labelledby="v-pills-afiliaciones-tab">
+                            <h5 class="form-section-title"><i class="fas fa-users mr-2" style="color:#134679;"></i>Afiliaciones a Organizaciones</h5>
+                            <div class="row">
+                                {% for tipo in tipoOrganizacion %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="afiliacion-header">
+                                            <i class="fas fa-layer-group mr-2" style="color:#134679;"></i>{{ tipo.nombre }}
+                                        </div>
+                                        <div class="pl-3">
+                                            {% for item in organizaciones %}
+                                                {% if item.tipoOrganizacion.id == tipo.id %}
+                                                    <div class="custom-control custom-checkbox mb-2 checkbox-custom">
+                                                        <input type="checkbox" class="custom-control-input" id="org_{{ item.id }}" name="persona[organizacion][{{ item.id }}]" value="{{ item.id }}" {% if item.id in organizacionesAsociadas %} checked {% endif %}>
+                                                        <label class="custom-control-label" for="org_{{ item.id }}">{{ item.nombre }}</label>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="d-flex justify-content-between mt-4 mb-2">
+                                <button type="button" class="btn btn-outline-secondary px-4 btn-prev-tab"><i class="fas fa-arrow-left mr-2"></i> Anterior</button>
+                                <span></span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end align-items-center"
+                     style="border-bottom-left-radius:0.75rem; border-bottom-right-radius:0.75rem;">
+                    <a class="btn-fs-cancel mr-2 btn-cancel"
+                       data-url="{{ path('app_persona_index') }}"
+                       data-title="Confirmar cancelación"
+                       data-content="¿Está seguro que desea cancelar la modificación? Se perderán los datos no guardados." type="button">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button id="aceptar" class="btn-fs-submit">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if form.foto is defined %}{% do form.foto.setRendered() %}{% endif %}
+    {{ form_end(form) }}
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $('#aceptar').click(function (e) {
+            HoldOn.open({
+                theme: "sk-cube-grid",
+                message: 'Por favor espere...',
+                textColor: "white"
+            });
+        })
+        $('#persona_carnetIdentidad').on('keydown keypress', function (e) {
+            if (e.key.length === 1) {
+                if ($(this).val().length < 11 /*&& !isNaN(parseFloat(e.key))*/) {
+                    $(this).val($(this).val() + e.key);
+                }
+                return false;
+            }
+        });
+
+        var fechaNacimiento = "{% if persona.fechaNacimiento is empty %}  {{ persona.fechaNacimiento | default('') }} {% else %}  {{ persona.fechaNacimiento|date('d/m/Y') }} {% endif %}".replace(' ', '');
+        $('#persona_fechaNacimiento').val(fechaNacimiento.replace(' ', ''));
+
+        $('#persona_municipio').val({{ persona.municipio.id | default(null) }});
+        $('#persona_estructura').val({{ persona.estructura.id | default(null) }});
+        $('#persona_responsabilidad').val({{ persona.responsabilidad.id | default(null) }});
+
+
+        $('#persona_carnetIdentidad').focusout(function (e) {
+            $.post("{{ path('app_persona_existe_ci') }}",
+                {
+                    carnetIdentidad: $('#persona_carnetIdentidad').val()
+                },
+                function (data) {
+                    if (data) {
+                        toastr.warning("EL Carné de identidad " + $('#persona_carnetIdentidad').val() + " ya existe. ");
+                        $('#persona_carnetIdentidad').val(null)
+                    } else {
+                        if ($('#persona_carnetIdentidad').val().length == 11) {
+                            var dia = $('#persona_carnetIdentidad').val()[4] + '' + $('#persona_carnetIdentidad').val()[5];
+                            var mes = $('#persona_carnetIdentidad').val()[2] + '' + $('#persona_carnetIdentidad').val()[3];
+                            var anno = $('#persona_carnetIdentidad').val()[0] + '' + $('#persona_carnetIdentidad').val()[1];
+                            if (parseInt($('#persona_carnetIdentidad').val()[0]) == 0) {
+                                anno = "20" + anno
+                            } else if (parseInt($('#persona_carnetIdentidad').val()[0]) == 2) {
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 1) {
+                                    anno = "2021"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 2) {
+                                    anno = "2022"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 3) {
+                                    anno = "2023"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 4) {
+                                    anno = "2024"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 5) {
+                                    anno = "2025"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 6) {
+                                    anno = "2026"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 7) {
+                                    anno = "2027"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 8) {
+                                    anno = "2028"
+                                }
+                                if (parseInt($('#persona_carnetIdentidad').val()[1]) == 9) {
+                                    anno = "2029"
+                                }
+                            } else {
+                                anno = "19" + anno
+                            }
+                            $('#persona_fechaNacimiento').val(dia + '/' + mes + '/' + anno);
+                        }
+                    }
+                });
+        })
+
+
+        $('#persona_numeroSerieCarnetIdentidad').focusout(function (e) {
+            $.post("{{ path('app_persona_existe_serie_ci') }}",
+                {
+                    numeroSerieCarnetIdentidad: $('#persona_numeroSerieCarnetIdentidad').val()
+                },
+                function (data) {
+                    if (data) {
+                        toastr.warning("EL número de serie del CI " + $('#persona_numeroSerieCarnetIdentidad').val() + " ya existe. ");
+                        $('#persona_numeroSerieCarnetIdentidad').val(null)
+                    }
+                });
+        })
+
+        $('[data-mask]').inputmask()
+        $('#persona_provincia').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var url = "{{ path('app_municipio_dado_provincia', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#persona_municipio option').remove();
+                    $('#persona_municipio').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#persona_municipio').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            } else {
+                $('#persona_municipio option').remove();
+                $('#persona_municipio').append(new Option('Seleccione', ""));
+            }
+        });
+        $('#persona_entidad').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var url = "{{ path('app_estructura_dado_entidad', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#persona_estructura option').remove();
+                    $('#persona_estructura').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#persona_estructura').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            } else {
+                $('#persona_estructura option').remove();
+                $('#persona_estructura').append(new Option('Seleccione', ""));
+
+                $('#persona_responsabilidad option').remove();
+                $('#persona_responsabilidad').append(new Option('Seleccione', ""));
+            }
+        });
+
+        {#$('#persona_categoriaEstructura').on('change', function () {#}
+        {#    if ($(this).val() != "") {#}
+        {#        HoldOn.open({#}
+        {#            theme: "sk-cube-grid",#}
+        {#            message: 'Por favor espere...',#}
+        {#            textColor: "white"#}
+        {#        });#}
+        {#        var url = "{{ path('app_estructura_dado_categoria', {'id':'idP'}) }}";#}
+        {#        url = url.replace('idP', $(this).val());#}
+        {#        $.get(url, function (data) {#}
+        {#            $('#persona_estructura option').remove();#}
+        {#            $('#persona_estructura').append(new Option('Seleccione', ""));#}
+        {#            for (var i = 0; i < data.length; i++) {#}
+        {#                $('#persona_estructura').append(new Option(data[i].nombre, data[i].id));#}
+        {#            }#}
+        {#            HoldOn.close()#}
+        {#        });#}
+        {#    } else {#}
+        {#        $('#persona_estructura option').remove();#}
+        {#        $('#persona_estructura').append(new Option('Seleccione', ""));#}
+
+        {#        $('#persona_responsabilidad option').remove();#}
+        {#        $('#persona_responsabilidad').append(new Option('Seleccione', ""));#}
+        {#    }#}
+        {#});#}
+
+        $('#persona_estructura').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var url = "{{ path('app_responsabilidad_dado_estructura', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#persona_responsabilidad option').remove();
+                    $('#persona_responsabilidad').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#persona_responsabilidad').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            }
+        });
+        $('#persona_usuario').val('{{ usuarioPersona }}');
+        $('#persona_fechaNacimiento').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+
+        $("#persona_foto").on('change', function () {
+            //Get count of selected files
+            var countFiles = $(this)[0].files.length;
+            var imgPath = $(this)[0].value;
+
+            var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+            var image_holder = $("#image-holder");
+            image_holder.empty();
+            if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+                if (typeof (FileReader) != "undefined") {
+                    //loop for each file selected for uploaded.
+                    for (var i = 0; i < countFiles; i++) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+
+                            $('.imgp').remove()
+                            $("<img />", {
+                                "src": e.target.result,
+                                "class": "thumb-image   img-circle",
+                                "style": 'width: 40px; height: 40px; position: absolute; bottom: 0;'
+                            }).appendTo(image_holder);
+                        }
+                        image_holder.show();
+                        reader.readAsDataURL($(this)[0].files[i]);
+                    }
+                } else {
+                    alert("This browser does not support FileReader.");
+                }
+            } else {
+                alert("Pls select only images");
+            }
+        });
+
+
+        $('#persona_usuario').focusout(function (e) {
+            if ($('#persona_usuario').val() != "") {
+                $.post("{{ path('app_persona_validar_usuario') }}",
+                    {
+                        usuario: $('#persona_usuario').val()
+                    },
+                    function (data) {
+                        if (!data) {
+                            toastr.warning("El usuario " + $('#persona_usuario').val() + " no es institucional. Debe contener @mes.gob.cu");
+                            $('#persona_usuario').val(null)
+                        }
+                    });
+            }
+        })
+        window.addEventListener("load", function () {
+            // icono para mostrar contraseña
+            showPassword = document.querySelector('.show-password');
+            showPassword.addEventListener('click', () => {
+
+                // elementos input de tipo clave
+                password1 = $('#persona_contrasena');
+                password2 = $('#persona_contrasena2');
+
+                if (password1.attr('type') === "text") {
+                    password1.attr('type', "password")
+                    password2.attr('type', "password")
+                    showPassword.classList.remove('fa-eye-slash');
+                } else {
+                    password1.attr('type', "text")
+                    password2.attr('type', "text")
+                    showPassword.classList.toggle("fa-eye-slash");
+                }
+            })
+        });
+
+        // ── Navegación de tabs (Siguiente / Anterior) ──────────────────────
+        var tabOrder = [
+            '#v-pills-personal-tab',
+            '#v-pills-laboral-tab',
+            '#v-pills-acceso-tab',
+            '#v-pills-contacto-tab',
+            '#v-pills-superacion-tab',
+            '#v-pills-afiliaciones-tab'
+        ];
+
+        function getActiveTabIndex() {
+            for (var i = 0; i < tabOrder.length; i++) {
+                if ($(tabOrder[i]).hasClass('active')) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        $(document).on('click', '.btn-next-tab', function () {
+            var current = getActiveTabIndex();
+            var next = current + 1;
+            while (next < tabOrder.length && $(tabOrder[next]).length === 0) {
+                next++;
+            }
+            if (next < tabOrder.length) {
+                $(tabOrder[next]).tab('show');
+            }
+        });
+
+        $(document).on('click', '.btn-prev-tab', function () {
+            var current = getActiveTabIndex();
+            var prev = current - 1;
+            while (prev >= 0 && $(tabOrder[prev]).length === 0) {
+                prev--;
+            }
+            if (prev >= 0) {
+                $(tabOrder[prev]).tab('show');
+            }
+        });
+    </script>
+{% endblock %}

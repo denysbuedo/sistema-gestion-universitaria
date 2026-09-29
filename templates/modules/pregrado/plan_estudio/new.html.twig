@@ -1,0 +1,217 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar plan de estudio{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 2rem; }
+        .card-luxury .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 18px 24px; }
+        .fs-title { color: #1a2e44; font-weight: 700; font-size: 1.1rem; margin: 0; }
+        .label-icon { color: #134679; margin-right: 8px; opacity: 0.8; }
+        
+        .fs-section { background: #fff; border-radius: 8px; padding: 0; margin-bottom: 1.5rem; }
+        .fs-section-header { padding: 12px 0; border-bottom: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .fs-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+        .fs-section-title i { font-size: 0.8rem; opacity: 0.7; }
+        .fs-section-body { padding: 0; }
+        
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: " *"; color: #ef4444; font-weight: 700; }
+        
+        .btn-fs-submit { 
+            background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; 
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+        
+        .btn-fs-cancel {
+            background: #f1f5f9; color: #475569 !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px;
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-cancel:hover { background: #e2e8f0; color: #1e293b !important; }
+
+        .custom-file-upload {
+            border: 2px dashed #e2e8f0; border-radius: 10px; padding: 15px; text-align: center;
+            background: #f8fafc; transition: all 0.2s; cursor: pointer; position: relative;
+        }
+        .custom-file-upload:hover { border-color: #134679; background: #f0f7ff; }
+        .file-name { font-size: 0.75rem; color: #134679; font-weight: 600; margin-top: 8px; display: block; }
+        .upload-icon { font-size: 1.5rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+
+        .config-table th { background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700; border-color: #e2e8f0; padding: 8px 10px; }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="fs-title"><i class="fas fa-plus-circle label-icon"></i>Adicionar plan de estudio</h3>
+        </div>
+
+        {{ form_start(form) }}
+        <div class="card-body px-4">
+            
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-info-circle"></i> Datos Generales</span>
+                </div>
+                <div class="fs-section-body">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.annoAprobacion) }}</label>
+                            {{ form_widget(form.annoAprobacion, {'attr': {'class': 'form-control shadow-sm'}}) }}
+                            {{ form_errors(form.annoAprobacion) }}
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.fechaAprobacion) }}</label>
+                            <div class="input-group shadow-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light border-right-0"><i class="far fa-calendar-alt text-primary"></i></span>
+                                </div>
+                                {{ form_widget(form.fechaAprobacion, {'attr': {'class': 'form-control border-left-0'}}) }}
+                            </div>
+                            {{ form_errors(form.fechaAprobacion) }}
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.carrera) }}</label>
+                            {{ form_widget(form.carrera, {'attr': {'class': 'form-control select2'}}) }}
+                            {{ form_errors(form.carrera) }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.organismoFormador) }}</label>
+                            {{ form_widget(form.organismoFormador, {'attr': {'class': 'form-control select2'}}) }}
+                            {{ form_errors(form.organismoFormador) }}
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.ramaCiencia) }}</label>
+                            {{ form_widget(form.ramaCiencia, {'attr': {'class': 'form-control select2'}}) }}
+                            {{ form_errors(form.ramaCiencia) }}
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label class="fs-label required">{{ form_label(form.cursoAcademico) }}</label>
+                            {{ form_widget(form.cursoAcademico, {'attr': {'class': 'form-control select2'}}) }}
+                            {{ form_errors(form.cursoAcademico) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-file-upload"></i> Documentación del Plan</span>
+                </div>
+                <div class="fs-section-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="fs-label required">{{ form_label(form.planEstudio) }}</label>
+                            <div class="custom-file-upload" onclick="$('#{{ form.planEstudio.vars.id }}').click()">
+                                <i class="fas fa-file-pdf upload-icon"></i>
+                                <span class="small text-muted">Haga clic para subir el Plan de Estudio (PDF)</span>
+                                <span id="filename-plan" class="file-name">Ningún archivo seleccionado</span>
+                                <div class="d-none">
+                                    {{ form_widget(form.planEstudio) }}
+                                </div>
+                            </div>
+                            {{ form_errors(form.planEstudio) }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="fs-label required">{{ form_label(form.documentoEjecutivo) }}</label>
+                            <div class="custom-file-upload" onclick="$('#{{ form.documentoEjecutivo.vars.id }}').click()">
+                                <i class="fas fa-file-word upload-icon"></i>
+                                <span class="small text-muted">Haga clic para subir el Documento Ejecutivo</span>
+                                <span id="filename-doc" class="file-name">Ningún archivo seleccionado</span>
+                                <div class="d-none">
+                                    {{ form_widget(form.documentoEjecutivo) }}
+                                </div>
+                            </div>
+                            {{ form_errors(form.documentoEjecutivo) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-align-left"></i> Notas Adicionales</span>
+                </div>
+                <div class="fs-section-body">
+                    <div class="row">
+                        <div class="col-12 form-group">
+                            {{ form_widget(form.descripcionPlanEstudio, {'attr': {'class': 'form-control shadow-sm', 'rows': '3', 'placeholder': 'Describa brevemente los detalles de este plan...'}}) }}
+                            {{ form_errors(form.descripcionPlanEstudio) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-2 border-top">
+                {{ include('modules/pregrado/plan_estudio/asociar_documento.html.twig', {
+                    'documentos': documentos,
+                    'registros': registros
+                }) }}
+            </div>
+        </div>
+
+        <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end gap-3" style="gap:12px;">
+            <a class="btn-fs-cancel btn-cancel" 
+               data-url="{{ path('app_plan_estudio_index') }}" 
+               data-content="¿Está seguro que desea cancelar el registro? Se perderán los datos no guardados.">
+               <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button class="btn-fs-submit" type="submit">
+                <i class="fas fa-save"></i> Guardar Plan de Estudio
+            </button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Filename update on change
+            $('#{{ form.planEstudio.vars.id }}').change(function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#filename-plan').text(filename || 'Ningún archivo seleccionado');
+                if(filename) $(this).closest('.custom-file-upload').css('border-color', '#27ae60');
+            });
+            
+            $('#{{ form.documentoEjecutivo.vars.id }}').change(function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#filename-doc').text(filename || 'Ningún archivo seleccionado');
+                if(filename) $(this).closest('.custom-file-upload').css('border-color', '#27ae60');
+            });
+
+            // Datepickers
+            $('#{{ form.fechaAprobacion.vars.id }}').datetimepicker({
+                format: 'DD/MM/YYYY'
+            });
+            
+            $('#{{ form.annoAprobacion.vars.id }}').datetimepicker({
+                format: 'YYYY'
+            });
+
+            // Restoring from LocalStorage (if needed)
+            const fields = [
+                'annoAprobacion', 'fechaAprobacion', 'carrera', 'organismoFormador', 
+                'ramaCiencia', 'cursoAcademico', 'descripcionPlanEstudio'
+            ];
+            
+            fields.forEach(field => {
+                const el = $('#plan_estudio_' + field);
+                const storageKey = 'plan_estudio_' + field;
+                if(localStorage.getItem(storageKey)) el.val(localStorage.getItem(storageKey));
+                
+                el.on('change keyup', function() {
+                    localStorage.setItem(storageKey, $(this).val());
+                });
+            });
+        });
+    </script>
+{% endblock %}

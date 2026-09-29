@@ -1,0 +1,86 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar redes sociales{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; }
+    .card-luxury .card-header { background:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; border-radius:12px 12px 0 0; }
+    .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .form-group label { font-weight:600; color:#34495e; font-size:0.875rem; }
+    .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+    .config-table thead th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-bottom:2px solid #e2e8f0; text-transform:uppercase; letter-spacing:0.03em; }
+    .config-table tbody td { font-size:0.85rem; vertical-align:middle; }
+    .config-table tbody tr:hover { background:#f8fafc; }
+    .section-divider { border:none; border-top:1px solid #e2e8f0; margin:0; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title"><i class="fas fa-share-alt label-icon"></i>Asignar redes sociales</h3>
+    </div>
+
+    {{ include('modules/institucion/institucion/short_details.html.twig', { 'item': institucion }) }}
+
+    {{ form_start(form) }}
+    <div class="card-body px-4 pt-3">
+        <div class="row">
+            <div class="col-md-4 form-group">
+                {{ form_label(form.redSocial) }}
+                {{ form_widget(form.redSocial) }}
+                {{ form_errors(form.redSocial) }}
+            </div>
+            <div class="col-md-6 form-group">
+                {{ form_label(form.perfil) }}
+                {{ form_widget(form.perfil) }}
+                {{ form_errors(form.perfil) }}
+            </div>
+            <div class="col-md-2 form-group d-flex align-items-end">
+                <button class="btn-fs-submit w-100"><i class="fas fa-link"></i> Asociar</button>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <hr class="section-divider">
+
+    <div class="card-body px-4 pt-3">
+        <table class="table config-table dataTable">
+            <thead>
+            <tr>
+                <th style="width:3%">No.</th>
+                <th>Red social</th>
+                <th>Perfil</th>
+                <th class="text-center" style="width:10%">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.redSocial.nombre | default('') }}</td>
+                    <td>{{ item.perfil | default('') }}</td>
+                    <td class="text-center">
+                        <button title="Eliminar" class="btn btn-outline-danger btn-sm elementRemove"
+                                data-url="{{ path('app_institucion_eliminar_red_social', {'id': item.id}) }}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-3"><i class="fas fa-inbox mr-1"></i>No hay redes sociales asignadas.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script></script>
+{% endblock %}

@@ -1,0 +1,43 @@
+<style>
+    .info-panel { background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; padding:20px 24px; margin-bottom:1.5rem; }
+    .info-panel-title { font-size:0.72rem; font-weight:700; color:#134679; text-transform:uppercase; letter-spacing:.6px; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .info-item { display:flex; flex-direction:column; gap:2px; }
+    .info-label { font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.4px; }
+    .info-value { font-size:0.88rem; font-weight:600; color:#1e293b; }
+    .info-value a { color:#134679; text-decoration:none; }
+    .info-value a:hover { text-decoration:underline; }
+</style>
+<div class="px-4 pt-3 pb-1">
+    <div class="info-panel">
+        <div class="info-panel-title"><i class="fas fa-info-circle"></i> Datos del programa académico</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Nombre del programa</span>
+                <span class="info-value">{{ item.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Tipo de programa académico</span>
+                <span class="info-value">{{ item.tipoProgramaAcademico.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Organismo demandante</span>
+                <span class="info-value">{{ item.organismoDemandante.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Estado del programa</span>
+                <span class="info-value">{{ item.estadoProgramaAcademico.nombre | default('-') }}</span>
+            </div>
+            {% if item.solicitud %}
+            <div class="info-item">
+                <span class="info-label">Documento de solicitud</span>
+                <span class="info-value">
+                    <a target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/solicitud/{{ item.solicitud }}">
+                        <i class="fas fa-file-pdf mr-1"></i>{{ item.solicitud }}
+                    </a>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

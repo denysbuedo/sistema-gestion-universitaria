@@ -1,0 +1,77 @@
+<style>
+    .info-panel { background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; padding:20px 24px; margin-bottom:1.5rem; }
+    .info-panel-title { font-size:0.72rem; font-weight:700; color:#134679; text-transform:uppercase; letter-spacing:.6px; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .info-item { display:flex; flex-direction:column; gap:2px; }
+    .info-label { font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.4px; }
+    .info-value { font-size:0.88rem; font-weight:600; color:#1e293b; }
+    .info-value a { color:#134679; text-decoration:none; }
+    .info-value a:hover { text-decoration:underline; }
+</style>
+<div class="px-4 pt-3 pb-1">
+    <div class="info-panel">
+        <div class="info-panel-title"><i class="fas fa-info-circle"></i> Datos del programa</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Nombre del programa</span>
+                <span class="info-value">{{ solicitudPrograma.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Tipo de programa</span>
+                <span class="info-value">{{ solicitudPrograma.tipoPrograma.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Rama de la ciencia</span>
+                <span class="info-value">{{ solicitudPrograma.ramaCiencia.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Institución solicitante</span>
+                <span class="info-value">{{ solicitudPrograma.universidad.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Tipo de solicitud</span>
+                <span class="info-value">{{ solicitudPrograma.tipoSolicitud.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Clasificación</span>
+                <span class="info-value">{{ solicitudPrograma.tipoSolicitudClasificacion.clasificacion | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Modalidad de dedicación</span>
+                <span class="info-value">{{ solicitudPrograma.modalidadPrograma.nombre | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Modalidad de estudio</span>
+                <span class="info-value">{{ presencialidades | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Duración</span>
+                <span class="info-value">{{ solicitudPrograma.duracionPrograma | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Créditos</span>
+                <span class="info-value">{{ solicitudPrograma.cantidadCreditos | default('-') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Estado</span>
+                <span class="info-value">{{ solicitudPrograma.estadoPrograma.nombre | default('-') }}</span>
+            </div>
+            {% if solicitudPrograma.fechaAprobacion is not null %}
+            <div class="info-item">
+                <span class="info-label">Fecha de aprobación</span>
+                <span class="info-value">{{ solicitudPrograma.fechaAprobacion | date('d/m/Y') }}</span>
+            </div>
+            {% endif %}
+            {% if solicitudPrograma.docPrograma %}
+            <div class="info-item">
+                <span class="info-label">Documento del programa</span>
+                <span class="info-value">
+                    <a target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/postgrado/solicitud_programa/{{ solicitudPrograma.docPrograma }}">
+                        <i class="fas fa-file-pdf mr-1"></i>{{ solicitudPrograma.docPrograma }}
+                    </a>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

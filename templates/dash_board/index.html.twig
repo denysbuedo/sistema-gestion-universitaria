@@ -1,0 +1,356 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sistema de Gestión Universitaria - Akademos MES{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #004194;
+            --secondary-blue: #1E4A7A;
+            --light-blue: #2c5f8a;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --medium-gray: #E9ECEF;
+            --dark-gray: #495057;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .navbar {
+            background: var(--primary-blue) !important;
+            padding: 12px 30px !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--white) !important;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            color: var(--white) !important;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.8;
+            color: var(--white) !important;
+        }
+
+        .dashboard-container {
+            padding: 30px;
+            min-height: calc(100vh - 140px);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            font-weight: 400;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .module-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid var(--medium-gray);
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(14, 55, 95, 0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .module-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .module-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .module-description {
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .enter-btn {
+            background: var(--primary-blue);
+            color: var(--white) !important;
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .enter-btn:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 20px 15px;
+            }
+
+            .dashboard-title {
+                font-size: 1.6rem;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        /* Ocultar sidebar si existe */
+        .sidebar {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <!-- Contenido Principal -->
+    <div class="dashboard-container">
+        <div class="modules-grid">
+            {% if hasRoles('ROLE_HOME_PREGR') %}
+                <!-- Módulo Pregrado -->
+                <div class="module-card" onclick="window.location='{{ path('app_pregrado_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3 class="module-title">Pregrado</h3>
+                    <p class="module-description">
+                        Gestión de programas académicos de pregrado, planes de estudio y procesos estudiantiles.
+                    </p>
+                    <a href="{{ path('app_pregrado_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_HOME_POSTG') or hasRoles('ROLE_GEST_REPORTE_GRADO_CIENTIFICO') or hasRoles('ROLE_GEST_REPORTE_FORMACION_ACADEMICA')
+                or hasRoles('ROLE_GEST_FORMACION_DOCTORES')  or hasRoles('ROLE_GEST_CENTRO_AUTORIZADO')  or hasRoles('ROLE_GEST_COMISION')   or hasRoles('ROLE_GEST_COPEP')
+                or hasRoles('ROLE_GEST_TIP_SOLICITUD_POST') or hasRoles('ROLE_GEST_ROLESPOS') or hasRoles('ROLE_GEST_RAMCIENC') or hasRoles('ROLE_GEST_TIPPROGRAM') %}
+                <!-- Módulo Posgrado -->
+                <div class="module-card" onclick="window.location='{{ path('app_postgrado_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="module-title">Posgrado</h3>
+                    <p class="module-description">
+                        Administración de maestrías, doctorados, especialidades y programas de superación.
+                    </p>
+                    <a href="{{ path('app_postgrado_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_HOME_CONVENIO') or hasRoles('ROLE_HOME_TRAMITES') or  hasRoles('ROLE_HOME_COOPERACION') or hasRoles('ROLE_HOME_VISITA') or hasRoles('ROLE_HOME_ECONOMIA') %}
+                <!-- Módulo Internacionalización -->
+                <div class="module-card" onclick="window.location='{{ path('app_convenio_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-globe-americas"></i>
+                    </div>
+                    <h3 class="module-title">Internacionalización</h3>
+                    <p class="module-description">
+                        Gestión de convenios, cooperación internacional y relaciones exteriores universitarias.
+                    </p>
+                    <a href="{{ path('app_convenio_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_GEST_CONVOCATORIA') or hasRoles('ROLE_GEST_SOLICITUD')
+                or hasRoles('ROLE_GEST_PLAN_ANUAL_EVALUACION')
+                or hasRoles('ROLE_GEST_INFORME_AUTOEVALUACION')
+                or hasRoles('ROLE_GEST_ESTADO_SOLICITUD')
+                or hasRoles('ROLE_GEST_ESTADO_APLAZAMIENTO')
+                or hasRoles('ROLE_GEST_COMISION_EVALUADORA')
+                or hasRoles('ROLE_GEST_APLAZAMIENTO')
+                or hasRoles('ROLE_GEST_ROL_COMISION')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_PREGRADO')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_POSGRADO') %}
+                <!-- Módulo Evaluación y Acreditación -->
+                <div class="module-card" onclick="window.location='{{ path('app_evaluacion_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 class="module-title">Evaluación y Acreditación</h3>
+                    <p class="module-description">
+                        Procesos de evaluación institucional, acreditación y garantía de calidad académica.
+                    </p>
+                    <a href="{{ path('app_evaluacion_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_GEST_MARCA')
+                or hasRoles('ROLE_GEST_PUBLICO_OBJETIVO')
+                or hasRoles('ROLE_GEST_SISTEMA_OPERATIVO')
+                or hasRoles('ROLE_GEST_TIPO_CONECTIVIDAD')
+                or hasRoles('ROLE_GEST_TIPO_SISTEMA')
+                or hasRoles('ROLE_GEST_VISIBILIDAD')
+                or hasRoles('ROLE_GEST_ENLACE_CONECTIVIDAD')
+                or hasRoles('ROLE_GEST_NAUTA_HOGAR')
+                or hasRoles('ROLE_GEST_LINEA_CELULAR')
+                or hasRoles('ROLE_GEST_TELEFONO_CELULAR')
+                or hasRoles('ROLE_GEST_SISTEMA_INFORMATICO')
+                or hasRoles('ROLE_GEST_CENTRO_DATO_VIRTUAL') %}
+                <!-- Módulo Informatización -->
+                <div class="module-card" onclick="window.location='{{ path('app_informatizacion_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="module-title">Informatización</h3>
+                    <p class="module-description">
+                        Gestión de sistemas informáticos, infraestructura tecnológica y conectividad.
+                    </p>
+                    <a href="{{ path('app_informatizacion_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') or  hasRoles('ROLE_RRHH_REPORTE_AE2_CONSOLIDADO')
+                or  hasRoles('ROLE_RRHH_REPORTE_AE2') or  hasRoles('ROLE_RRHH_REPORTE_AE3') or
+                hasRoles('ROLE_RRHH_GEST_ESPECIALIDAD') or
+                hasRoles('ROLE_RRHH_REPORTE_AE2_MES') %}
+                <!-- Módulo Recursos Humanos -->
+                <div class="module-card" onclick="window.location='{{ path('app_rrhh_portada') }}'">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="module-title">Recursos Humanos</h3>
+                    <p class="module-description">
+                        Administración del personal, categorías docentes y desarrollo profesional.
+                    </p>
+                    <a href="{{ path('app_rrhh_portada') }}" class="enter-btn">
+                        Acceder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navegación mejorada para las tarjetas
+            const cards = document.querySelectorAll('.module-card');
+
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Evitar que se active al hacer click en el botón
+                    if (!e.target.classList.contains('enter-btn') && !e.target.closest('.enter-btn')) {
+                        const link = this.querySelector('.enter-btn');
+                        if (link) {
+                            window.location.href = link.href;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

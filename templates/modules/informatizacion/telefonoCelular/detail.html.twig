@@ -1,0 +1,42 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-4">
+            <h5 class="mb-0"><b>Marca:</b> {{ item.marca.nombre | default('') }}</h5>
+        </div>
+        <div class="col-4">
+            <h5 class="mb-0"><b>Modelo:</b> {{ item.modelo.nombre | default('') }}</h5>
+        </div>
+        <div class="col-4">
+            <h5 class="mb-0"><b>Sistema operativo:</b> {{ item.sistemaOperativo.nombre | default('') }}</h5>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <h5 class="mb-0"><b>Responsables</b></h5>
+    <table id="tbl-asociados" class="table table-bordered table-striped dataTable">
+        <thead class="table-custom-header">
+        <tr>
+            <th>No.</th>
+            <th>Foto</th>
+            <th>Nombre y apellidos</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in asignadas %}
+            <tr>
+                <td width="1%" style="width: 2%">{{ loop.index }}</td>
+                <td width="5%" style="width: 3%"><a
+                            href="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }} {% else %} /assets/images/usuario.png {% endif %}"
+                            target="_blank">
+                        <img src="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %} /assets/images/usuario.png {% endif %}"
+                             class="img-circle" alt="{{ item.primerNombre }}"
+                             style="width: 40px;height: 40px; object-fit: cover">
+                    </a></td>
+                <td style="{% if loop.index == 1 %} color: red;font-weight: bold {% endif %}">{{ item.primerNombre ~ ' ' ~ item.segundoNombre ~' '~ item.primerApellido ~ ' ' ~ item.segundoApellido }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+

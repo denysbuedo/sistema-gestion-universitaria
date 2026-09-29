@@ -1,0 +1,111 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Programas de posgrado{% endblock %}
+
+{% block body %}
+
+<style>
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+        .btn-lux-primary { background:#134679; color:#fff; }
+        .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+        .btn-lux-success { background:#15803d; color:#fff; }
+        .btn-lux-success:hover { background:#166534; color:#fff; transform:translateY(-1px); }
+        .btn-action-sm { width:28px; height:28px; padding:0; display:inline-flex; justify-content:center; align-items:center; border-radius:6px; font-size:0.75rem; border:none; transition:all 0.2s; color:#fff; margin:0 2px; text-decoration:none; cursor:pointer; }
+        .btn-action-primary { background:#3b82f6; }
+        .btn-action-primary:hover { background:#2563eb; transform:translateY(-1px); }
+        .btn-action-warning { background:#eab308; color:#1e293b !important; }
+        .btn-action-warning:hover { background:#ca8a04; transform:translateY(-1px); }
+        .btn-action-danger { background:#ef4444; }
+        .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
+        .badge-pill-on { background:#dcfce7; color:#15803d; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .badge-pill-off { background:#fee2e2; color:#b91c1c; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .config-table tbody tr:hover { background:#f8fafc; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold text-gray">Listado de Programas de Posgrado</h3>
+            <div class="ml-auto d-flex gap-2"><a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
+                        <i class="fa fa-file-excel"></i>
+                    </a></div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead >
+                <tr>
+                    <th>No.</th>
+                    <th>Organismo</th>
+                    <th>Institución</th>
+                    <th>Programa</th>
+                    <th>Tipo de programa</th>
+                    <th>Categoría de acreditación</th>
+                    <th>Fecha de emisión</th>
+                    <th>Número del pleno</th>
+                    <th>Número de acuerdo del pleno</th>
+                    <th>Años de vigencia</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                <tr>
+                    <th></th> <!-- No filter for index -->
+                    <th><input type="text" placeholder="Filtrar por Organismo" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Institución" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Programa" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Tipo de programa" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Categoría de acreditación"
+                               class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Fecha de emisión" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Número del pleno" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Número de acuerdo del pleno" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Años de vigencia" class="responsive-input"/></th>
+                    <th></th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.nombre_siglas_organismo | default('') }}</td>
+                        <td>{{ item.nombre_siglas | default('') }}</td>
+                        <td>{{ item.nombre | default('') }}</td>
+                        <td>{{ item.nombreTipoPrograma | default('') }}</td>
+                        <td>{{ item.catAcreditacion | default('') }}</td>
+                        <td>{{ item.fechaEmision | default('') }}</td>
+                        <td>{{ item.numeroPleno | default('') }}</td>
+                        <td>{{ item.numeroAcuerdoPleno | default('') }}</td>
+                        <td>{{ item.annosVigenciaCategoriaAcreditacion | default('') }}</td>
+                        <td width="5%" class="text-center">
+                            <a title="Modificar"
+                               href="{{ path('app_evaluacion_categoria_acreditacion_posgrado_modificar', {'id': item.id}) }}"
+                               class="btn-action-sm btn-action-primary"><i
+                                        class="fa fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+
+
+
+{% endblock %}
+
+

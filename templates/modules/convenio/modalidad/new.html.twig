@@ -1,0 +1,139 @@
+﻿{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar modalidad{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #4a5568;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    .form-control:focus {
+        border-color: #134679;
+        box-shadow: 0 0 0 3px rgba(19, 70, 121, 0.1);
+    }
+    
+    /* ── Compact Buttons ── */
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+    .btn-lux-outline-danger { background: #fff; border: 1px solid #fecaca; color: #dc2626 !important; }
+    .btn-lux-outline-danger:hover { background: #fff5f5; border-color: #feb2b2; }
+
+    .estado-toggle { display:inline-flex; border-radius:20px; background:#f1f5f9; padding:3px; gap:2px; }
+    .et-opt { padding:4px 14px; border-radius:20px; border:none; font-size:0.75rem; font-weight:700;
+              cursor:pointer; background:transparent; color:#94a3b8; display:inline-flex;
+              align-items:center; gap:5px; transition:all .18s; letter-spacing:.3px; }
+    .et-opt i { font-size:0.42rem; vertical-align:middle; }
+    .et-opt.et-on.active  { background:#dcfce7; color:#15803d; }
+    .et-opt.et-off.active { background:#fee2e2; color:#b91c1c; }
+    .et-opt:not(.active):hover { color:#64748b; }
+</style>
+
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="card-title text-bold"><i class="fas fa-plus-circle label-icon"></i>Adicionar modalidad</h3>
+        </div>
+        
+        {{ form_start(form) }}
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    {{ form_label(form.nombre, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Nombre de la modalidad'}}) }}
+                    {{ form_errors(form.nombre) }}
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="form-label d-block"><i class="fas fa-toggle-on label-icon"></i>Estado</label>
+                    <input type="checkbox"
+                           id="{{ form.activo.vars.id }}"
+                           name="{{ form.activo.vars.full_name }}"
+                           class="d-none activo-checkbox"
+                           {% if form.activo.vars.data %}checked{% endif %}>
+                    <div class="estado-toggle" data-cb="{{ form.activo.vars.id }}">
+                        <button type="button" class="et-opt et-on{% if form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Habilitado
+                        </button>
+                        <button type="button" class="et-opt et-off{% if not form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Deshabilitado
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 form-group">
+                    {{ form_label(form.descripcion, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.descripcion, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Descripción detallada...'}}) }}
+                    {{ form_errors(form.descripcion) }}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white p-4 d-flex justify-content-end gap-3" style="gap: 10px;">
+            <a class="btn-lux-sm btn-lux-outline-danger mr-2 btn-cancel" 
+               data-url="{{ path('app_modalidad_index') }}"
+               data-title="Cancelar"
+               data-content="¿Está seguro que desea cancelar la operación? Los cambios se perderán.">
+               <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" class="btn-lux-sm btn-lux-primary">
+                <i class="fas fa-check"></i> Aceptar
+            </button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            // Pill toggle activo/desactivo
+            $(document).on('click', '.estado-toggle .et-opt', function() {
+                var $toggle = $(this).closest('.estado-toggle');
+                var cbId    = $toggle.data('cb');
+                var isOn    = $(this).hasClass('et-on');
+                $toggle.find('.et-opt').removeClass('active');
+                $(this).addClass('active');
+                $('#' + cbId).prop('checked', isOn);
+            });
+
+
+
+        });
+    </script>
+{% endblock %}

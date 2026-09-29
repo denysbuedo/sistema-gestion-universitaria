@@ -1,0 +1,181 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Programas asignados{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury {
+            border-radius: 12px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #134679; margin-bottom: 1.5rem;
+        }
+        .card-luxury .card-header {
+            background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px;
+        }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+        .config-table th {
+            background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700;
+            border-color: #e2e8f0; padding: 8px 10px;
+        }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+        .config-table tbody tr:hover { background: #f8fafc; }
+        
+        .btn-lux-sm {
+            padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem;
+            border: none; display: inline-flex; align-items: center; gap: 5px;
+            text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-lux-success { background: #10b981; color: #fff !important; }
+        .btn-lux-success:hover { background: #059669; }
+
+        .info-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-list-check label-icon"></i>Programas asignados</h3>
+            <div class="ml-auto">
+                <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
+                    <i class="fa fa-file-excel"></i> Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body px-4">
+            {% if isAdmin == false %}
+                <div class="info-section">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="info-label">Institución</span>
+                            <div class="info-value">
+                                <i class="fa fa-university text-primary mr-2"></i>
+                                ({{ entidad.siglas | default('No definida') }}) {{ entidad.nombre | default('') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre del programa</th>
+                    <th>Categoría de acreditación</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.solicitudProgramaAcademico.nombre | default('-') }}</td>
+                        <td>
+                            <span class="badge badge-info shadow-sm" style="font-weight: 600; font-size: 0.75rem; padding: 5px 10px; border-radius: 6px;">
+                                {{ item.institucion.categoriaAcreditacion.nombre | default('-') }}
+                            </span>
+                        </td>
+                        <td width="5%">
+                            <div class="dropdown d-flex justify-content-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center"
+                                        style="width:32px;height:32px;background:#f1f5f9;color:#64748b;font-size:1rem;line-height:1;"
+                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    &#8942;
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:180px;padding:6px 0;font-size:0.85rem;">
+                                    <a class="dropdown-item" style="padding:8px 16px;" href="{{ path('app_pregrado_mis_programas_asignados_cum', {'id': item.id}) }}">
+                                        <i class="fas fa-building fa-fw mr-2 text-primary"></i> Asociar CUM
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function () {
+            // Fix dropdown position inside table
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $btn  = $(this).find('button[data-toggle="dropdown"]');
+                var $menu = $(this).find('.dropdown-menu');
+                var offset = $btn.offset();
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top:   offset.top + $btn.outerHeight() + 2,
+                    left:  'auto',
+                    right: $(window).width() - offset.left - $btn.outerWidth(),
+                    display: 'block',
+                    zIndex: 9999
+                });
+            });
+            $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                if ($menu.parent().is('body')) {
+                    $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', zIndex: '' });
+                }
+            });
+
+            $('select[id*=categoria_acreditacion_]').change(function (e) {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var arr = $(this)[0].name.split('_');
+                var solicitud = arr[4];
+                var id_asociacion = arr[2];
+                var institucion = arr[3];
+                var id_categoria_acreditacion = $(this).val();
+
+                $.post("{{ path('app_solicitud_programa_academico_aprobar_guardar_cambio_categoria_acreditacion') }}",
+                    {
+                        solicitudProgramaAcademico: solicitud,
+                        institucion: institucion,
+                        id: id_asociacion,
+                        categoriaAcreditacion: id_categoria_acreditacion
+                    },
+                    function (data) {
+                        if (data.status == 200) {
+                            HoldOn.close()
+                            toastr.success("El elemento ha sido guardado satisfactoriamente.");
+                            window.location.reload();
+                        } else {
+                            HoldOn.close()
+                            toastr.error(data.message);
+                        }
+                    });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar tipo de institución{% endblock %}
+
+{% block body %}
+
+<style>
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; }
+    .card-luxury .card-header { background:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+    .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .card-luxury .card-body .form-group label { font-weight:600; color:#34495e; font-size:0.875rem; }
+    .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+    .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; text-decoration:none; }
+    .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before { background-color:#134679; border-color:#134679; }
+</style>
+
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title"><i class="fas fa-layer-group label-icon"></i>Modificar tipo de institución</h3>
+    </div>
+    {{ form_start(form) }}
+    <div class="card-body px-4">
+        <div class="row">
+            <div class="col-md-4 form-group">
+                {{ form_label(form.nombre) }}
+                {{ form_widget(form.nombre) }}
+                {{ form_errors(form.nombre) }}
+            </div>
+            <div class="col-md-4 form-group">
+                {{ form_label(form.siglas) }}
+                {{ form_widget(form.siglas) }}
+                {{ form_errors(form.siglas) }}
+            </div>
+            <div class="col-md-4 form-group d-flex flex-column justify-content-center" style="padding-top:1.5rem;">
+                <div class="custom-control custom-switch">
+                    {{ form_widget(form.activo, {'attr': {'class': 'custom-control-input'}}) }}
+                    <label class="custom-control-label" for="{{ form.activo.vars.id }}" style="font-weight:600;color:#34495e;font-size:0.875rem;">Habilitado</label>
+                </div>
+                {{ form_errors(form.activo) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 form-group">
+                {{ form_label(form.descripcion) }}
+                {{ form_widget(form.descripcion) }}
+                {{ form_errors(form.descripcion) }}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end align-items-center" style="border-bottom-left-radius:12px;border-bottom-right-radius:12px;">
+        <a class="btn-fs-cancel mr-2 btn-cancel"
+           data-url="{{ path('app_tipo_institucion_index') }}"
+           data-title="" data-content="¿Está seguro que desea realizar la acción?" type="button">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+        <button class="btn-fs-submit">
+            <i class="fas fa-save"></i> Guardar cambios
+        </button>
+    </div>
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

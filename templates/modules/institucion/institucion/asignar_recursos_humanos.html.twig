@@ -1,0 +1,83 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar recursos humanos{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; }
+    .card-luxury .card-header { background:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; border-radius:12px 12px 0 0; }
+    .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .config-table thead th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-bottom:2px solid #e2e8f0; text-transform:uppercase; letter-spacing:0.03em; }
+    .config-table tbody td { font-size:0.85rem; vertical-align:middle; }
+    .config-table tbody tr:hover { background:#f8fafc; }
+    .rh-input { border:1px solid #e2e8f0; border-radius:6px; padding:5px 10px; font-size:0.85rem; width:100%; text-align:center; transition:border-color 0.2s; }
+    .rh-input:focus { border-color:#134679; outline:none; box-shadow:0 0 0 2px rgba(19,70,121,0.12); }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'pages/modalDetail.html.twig' %}
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title"><i class="fas fa-users label-icon"></i>Asignar recursos humanos</h3>
+    </div>
+
+    {{ include('modules/institucion/institucion/short_details.html.twig', { 'item': institucion }) }}
+
+    <div class="card-body px-4 pt-3">
+        <table class="table config-table dataTable" id="tbl-carrera">
+            <thead>
+            <tr>
+                <th style="width:3%">No.</th>
+                <th>Recurso humano</th>
+                <th style="width:20%">Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in recursosHumanos %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>
+                        <input class="rh-input" type="text" id="rh_{{ item.id }}" name="rh_{{ item.id }}"
+                               maxlength="4" minlength="1"
+                               value="{{ recursosHumanosAsignados[item.id] | default(0) }}">
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3" class="text-center text-muted py-3"><i class="fas fa-inbox mr-1"></i>No hay recursos humanos disponibles.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $('[id*=rh_]').bind("keypress", function (event) {
+        if (event.charCode != 0) {
+            var regex = new RegExp("^[0-9-]*$");
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        }
+    });
+
+    $('input[id*="rh_"]').on('blur', function (e) {
+        var valor = $(this).val();
+        var id = e.currentTarget.id.split('_')[1];
+        HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+        $.post("{{ path('app_institucion_asignar_recursos_humanos', {'id': institucion.id}) }}",
+            { id: id, valor: valor },
+            function (data) {
+                toastr.success("El elemento ha sido modificado correctamente.");
+                HoldOn.close();
+            });
+    });
+</script>
+{% endblock %}

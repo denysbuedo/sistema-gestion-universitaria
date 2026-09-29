@@ -1,0 +1,175 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Programas de Formación de Pregrado aprobados{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px; border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679; margin-bottom: 1.5rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+    .config-table th {
+        background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700;
+        border-color: #e2e8f0; padding: 8px 10px;
+    }
+    .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+    .config-table tbody tr:hover { background: #f8fafc; }
+    .btn-lux-sm {
+        padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem;
+        border: none; display: inline-flex; align-items: center; gap: 5px;
+        text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-lux-primary { background: #134679; color: #fff !important; }
+    .btn-lux-primary:hover { background: #0f3560; }
+</style>
+
+{% include 'pages/modalDetail.html.twig' %}
+
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title text-bold m-0"><i class="fas fa-graduation-cap label-icon"></i>Programas de Formación de Pregrado aprobados</h3>
+    </div>
+    <div class="card-body px-4">
+        <table class="table config-table table-bordered table-striped dataTable">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Ministerio</th>
+                <th>Programa académico</th>
+                <th>Tipo de programa</th>
+                <th>Rama de la ciencia</th>
+                <th>Fecha de aprobación</th>
+                <th>Centro rector</th>
+                <th>Categoría de acreditación</th>
+                <th style="text-align:center;">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td width="1%">{{ loop.index }}</td>
+                    <td>{{ item.organismoFormador.nombre | default('') }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.tipoProgramaAcademico.nombre | default('') }}</td>
+                    <td>{{ item.ramaCiencia.nombre | default('') }}</td>
+                    <td>{% if item.fechaAprobacion is not null %}{{ item.fechaAprobacion | date('d/m/Y') }}{% endif %}</td>
+                    <td>{{ item.centroRector.nombre | default('') }}</td>
+                    <td>{{ item.categoriaAcreditacion.nombre | default('') }}</td>
+                    <td width="5%">
+                        <div class="dropdown d-flex justify-content-center">
+                            <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center"
+                                    style="width:32px;height:32px;background:#f1f5f9;color:#64748b;font-size:1rem;line-height:1;"
+                                    type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                &#8942;
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:230px;padding:6px 0;font-size:0.85rem;">
+
+                                <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Acciones</span>
+                                <button class="dropdown-item modalDetailAction" style="padding:8px 16px;"
+                                        data-url="{{ path('app_solicitud_programa_academico_aprobado_detail', {'id': item.id}) }}"
+                                        data-title="Detalles del Programa de Pregrado">
+                                    <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                </button>
+
+                                {% if item.estadoProgramaAcademico.id == 2 %}
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobar_modificar', {'id': item.id}) }}">
+                                        <i class="fa fa-edit fa-fw mr-2 text-warning"></i> Modificar datos
+                                    </a>
+
+                                    <div class="dropdown-divider my-1"></div>
+                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Asociaciones</span>
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobado_asignar_universidad', {'id': item.id}) }}">
+                                        <i class="fa fa-university fa-fw mr-2 text-success"></i> Universidades donde se estudia
+                                    </a>
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobado_asignar_comision', {'id': item.id}) }}">
+                                        <i class="fa fa-user-cog fa-fw mr-2 text-success"></i> Comisión nacional
+                                    </a>
+
+                                    <div class="dropdown-divider my-1"></div>
+                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Gestión de programa</span>
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobado_reabrir', {'id': item.id}) }}">
+                                        <i class="fa fa-redo fa-fw mr-2 text-info"></i> Reabrir programa
+                                    </a>
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobado_desactivar', {'id': item.id}) }}">
+                                        <i class="fa fa-power-off fa-fw mr-2 text-danger"></i> Desactivar programa
+                                    </a>
+                                {% endif %}
+
+                                {% if item.estadoProgramaAcademico.id == 7 %}
+                                    <a class="dropdown-item" style="padding:8px 16px;"
+                                       href="{{ path('app_solicitud_programa_academico_aprobado_desactivar', {'id': item.id}) }}">
+                                        <i class="fa fa-power-off fa-fw mr-2 text-danger"></i> Desactivar programa
+                                    </a>
+                                {% endif %}
+
+                                {% if item.cartaAprobacion is not null or item.solicitud is not null or item.plan_estudio is not null %}
+                                    <div class="dropdown-divider my-1"></div>
+                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Documentación</span>
+                                    {% if item.dictamen is not null %}
+                                        <a class="dropdown-item" style="padding:8px 16px;" target="_blank"
+                                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/dictamen/{{ item.dictamen }}">
+                                            <i class="fa fa-file-pdf fa-fw mr-2 text-secondary"></i> Ver dictamen técnico
+                                        </a>
+                                    {% endif %}
+                                    {% if item.cartaAprobacion is not null %}
+                                        <a class="dropdown-item" style="padding:8px 16px;" target="_blank"
+                                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/carta_aprobacion/{{ item.cartaAprobacion }}">
+                                            <i class="fa fa-file-signature fa-fw mr-2 text-secondary"></i> Carta de aprobación
+                                        </a>
+                                    {% endif %}
+                                    {% if item.solicitud is not null %}
+                                        <a class="dropdown-item" style="padding:8px 16px;" target="_blank"
+                                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/solicitud/{{ item.solicitud }}">
+                                            <i class="fa fa-file-alt fa-fw mr-2 text-secondary"></i> Ver solicitud original
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function () {
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $btn  = $(this).find('button[data-toggle="dropdown"]');
+                var $menu = $(this).find('.dropdown-menu');
+                var offset = $btn.offset();
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top:   offset.top + $btn.outerHeight() + 2,
+                    left:  'auto',
+                    right: $(window).width() - offset.left - $btn.outerWidth(),
+                    display: 'block',
+                    zIndex: 9999
+                });
+            });
+            $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                if ($menu.parent().is('body')) {
+                    $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', zIndex: '' });
+                }
+            });
+        });
+    </script>
+{% endblock %}

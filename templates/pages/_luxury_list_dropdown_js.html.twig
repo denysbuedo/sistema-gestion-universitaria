@@ -1,0 +1,24 @@
+{# Reposiciona los dropdown de acciones (⋮) dentro de tablas a position:fixed para que no se recorten #}
+<script>
+    $(document).ready(function () {
+        $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+            var $btn  = $(this).find('button[data-toggle="dropdown"]');
+            var $menu = $(this).find('.dropdown-menu');
+            var offset = $btn.offset();
+            $menu.appendTo('body').css({
+                position: 'fixed',
+                top:   offset.top + $btn.outerHeight() + 2,
+                left:  'auto',
+                right: $(window).width() - offset.left - $btn.outerWidth(),
+                display: 'block',
+                zIndex: 9999
+            });
+        });
+        $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+            var $menu = $(this).find('.dropdown-menu');
+            if ($menu.parent().is('body')) {
+                $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', zIndex: '' });
+            }
+        });
+    });
+</script>

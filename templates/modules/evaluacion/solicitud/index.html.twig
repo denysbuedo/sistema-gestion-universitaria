@@ -1,0 +1,195 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Solicitudes{% endblock %}
+
+{% block body %}
+
+<style>
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+        .btn-lux-primary { background:#134679; color:#fff; }
+        .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .config-table tbody tr:hover { background:#f8fafc; }
+        .status-badge { font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .dropdown-toggle-no-caret::after { display:none !important; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-clipboard-list label-icon"></i>Listado de solicitudes</h3>
+            <div class="ml-auto">
+                <a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_solicitud_registrar') }}">
+                    <i class="fas fa-plus mr-1"></i> Nuevo
+                </a>
+            </div>
+        </div>
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Organismo</th>
+                    <th>Institución</th>
+                    <th>Prog. pregrado</th>
+                    <th>Prog. posgrado</th>
+                    <th>Eval. actual</th>
+                    <th>Fecha propuesta</th>
+                    <th>Fecha aprobada</th>
+                    <th>Estado</th>
+                    <th class="text-center" style="width:60px;">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+
+                        {% if item.tipoSolicitud == 'institucion' %}
+                            <td>{{ item.institucion.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.institucion.nombre | default('') }}</td>
+                        {% elseif item.tipoSolicitud == 'programa_pregrado' %}
+                            <td>{{ item.programaPregrado.centroRector.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.programaPregrado.centroRector.nombre | default('') }}</td>
+                        {% elseif item.tipoSolicitud == 'programa_posgrado' %}
+                            <td>{{ item.programaPosgrado.universidad.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.programaPosgrado.universidad.nombre | default('') }}</td>
+                        {% else %}
+                            <td>-</td><td>-</td>
+                        {% endif %}
+
+                        <td>{{ item.programaPregrado.nombre | default('') }}</td>
+                        <td>{{ item.programaPosgrado.nombre | default('') }}</td>
+                        <td>{{ item.categoriaAcreditacionActual | default('') }}</td>
+                        <td>{{ item.fechaPropuesta is not null ? item.fechaPropuesta | date('d/m/Y') : '' }}</td>
+                        <td>{{ item.fechaAprobada is not null ? item.fechaAprobada | date('d/m/Y') : '' }}</td>
+                        <td>
+                            {% set eId = item.estadoSolicitud.id | default(0) %}
+                            {% set eNom = item.estadoSolicitud.nombre | default('') %}
+                            {% if eId == 1 %}
+                                <span class="status-badge" style="background:#e0f2fe;color:#0369a1;">{{ eNom }}</span>
+                            {% elseif eId == 2 %}
+                                <span class="status-badge" style="background:#fef9c3;color:#854d0e;">{{ eNom }}</span>
+                            {% elseif eId == 3 %}
+                                <span class="status-badge" style="background:#dcfce7;color:#166534;">{{ eNom }}</span>
+                            {% elseif eId == 4 %}
+                                <span class="status-badge" style="background:#fee2e2;color:#991b1b;">{{ eNom }}</span>
+                            {% else %}
+                                <span class="status-badge" style="background:#f1f5f9;color:#475569;">{{ eNom }}</span>
+                            {% endif %}
+                            {% if item.informeAutoevaluacion is not null %}
+                                {% if item.estadoInformeAutoevaluacion == 'Aprobado' %}
+                                    <span class="status-badge ml-1" style="background:#dcfce7;color:#166534;" title="Informe aprobado"><i class="fas fa-file-check"></i></span>
+                                {% elseif item.estadoInformeAutoevaluacion == 'Rechazado' %}
+                                    <span class="status-badge ml-1" style="background:#fee2e2;color:#991b1b;" title="Informe rechazado"><i class="fas fa-file-times"></i></span>
+                                {% else %}
+                                    <span class="status-badge ml-1" style="background:#fef9c3;color:#854d0e;" title="Informe enviado"><i class="fas fa-file-alt"></i></span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center" style="width:60px; white-space:nowrap;">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle-no-caret"
+                                        id="actions-{{ item.id }}"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style="border-radius:50%;width:34px;height:34px;padding:0;line-height:34px;font-size:1rem;border-color:#dee2e6;">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="actions-{{ item.id }}" style="min-width:220px;border-radius:0.5rem;padding:6px 0;">
+                                    <h6 class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;text-transform:uppercase;letter-spacing:0.5px;">Acciones</h6>
+
+                                    <button class="dropdown-item modalDetailAction"
+                                            data-url="{{ path('app_solicitud_detail', {'id': item.id}) }}"
+                                            data-title="Detalles de la solicitud">
+                                        <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                    </button>
+
+                                    {% if item.estadoSolicitud.id != 4 and item.estadoSolicitud.id != 3 %}
+                                        <a class="dropdown-item" href="{{ path('app_solicitud_modificar', {'id': item.id}) }}">
+                                            <i class="fa fa-edit fa-fw mr-2 text-primary"></i> Modificar
+                                        </a>
+                                    {% endif %}
+
+                                    {% if item.estadoSolicitud.id == 1 %}
+                                        <button class="dropdown-item elementRemove"
+                                                data-url="{{ path('app_solicitud_cambiar_estado', {'id': item.id}) }}">
+                                            <i class="fa fa-pencil-ruler fa-fw mr-2 text-warning"></i> Poner en revisión
+                                        </button>
+                                    {% endif %}
+
+                                    {% if item.estadoSolicitud.id == 2 %}
+                                        {% if item.estadoInformeAutoevaluacion == 'Aprobado' %}
+                                            <a class="dropdown-item" href="{{ path('app_solicitud_rechazar', {'id': item.id}) }}">
+                                                <i class="fa fa-calendar-times fa-fw mr-2 text-danger"></i> Rechazar
+                                            </a>
+                                        {% else %}
+                                            <a class="dropdown-item" href="{{ path('app_solicitud_aprobar', {'id': item.id}) }}">
+                                                <i class="fa fa-check fa-fw mr-2 text-success"></i> Aceptar
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <div class="dropdown-divider"></div>
+                                    <h6 class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;text-transform:uppercase;letter-spacing:0.5px;">Documentos</h6>
+
+                                    <a class="dropdown-item" target="_blank"
+                                       href="{{ app.request.getSchemeAndHttpHost() }}/uploads/evaluacion/solicitud/cartaSolicitud/{{ item.cartaSolicitud }}">
+                                        <i class="fa fa-download fa-fw mr-2 text-secondary"></i> Carta de solicitud
+                                    </a>
+
+                                    {% if item.estadoInformeAutoevaluacion == 'Aprobado' %}
+                                        <a class="dropdown-item" target="_blank"
+                                           href="{{ app.request.getSchemeAndHttpHost() }}/uploads/evaluacion/solicitud/informe/autoevaluacion/{{ item.informeAutoevaluacion }}">
+                                            <i class="fa fa-file-download fa-fw mr-2 text-secondary"></i> Informe de autoevaluación
+                                        </a>
+                                    {% endif %}
+
+                                    {% if item.estadoSolicitud.id != 4 and item.estadoSolicitud.id != 3 %}
+                                        <div class="dropdown-divider"></div>
+                                        <button class="dropdown-item text-danger elementRemove"
+                                                data-url="{{ path('app_solicitud_eliminar', {'id': item.id}) }}">
+                                            <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Fix dropdown overflow in DataTables
+$(document).on('show.bs.dropdown', function(e) {
+    var $btn = $(e.target).find('[data-toggle="dropdown"]');
+    var $menu = $(e.target).find('.dropdown-menu');
+    $menu.appendTo('body');
+    var offset = $btn.offset();
+    $menu.css({
+        position: 'fixed',
+        top: offset.top + $btn.outerHeight(),
+        left: 'auto',
+        right: $(window).width() - offset.left - $btn.outerWidth(),
+        display: 'block',
+        zIndex: 9999
+    });
+}).on('hide.bs.dropdown', function() {
+    $('.dropdown-menu').removeAttr('style').appendTo($(this));
+});
+</script>
+{% endblock %}

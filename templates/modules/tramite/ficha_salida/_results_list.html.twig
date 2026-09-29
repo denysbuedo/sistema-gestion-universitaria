@@ -1,0 +1,36 @@
+{% for item in registros %}
+    {% set initials = item.primerNombre|slice(0,1) ~ item.primerApellido|slice(0,1) %}
+    <div class="fs-person-row">
+        <div class="fs-person-avatar">
+            {% if item.foto is not null %}
+                <img src="{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}" alt="{{ initials }}">
+            {% else %}
+                {{ initials }}
+            {% endif %}
+        </div>
+        <div class="fs-person-info">
+            <p class="fs-person-name">
+                {{ item.primerNombre }} {{ item.segundoNombre }} {{ item.primerApellido }} {{ item.segundoApellido }}
+            </p>
+            <div class="fs-person-meta">
+                {% if item.responsabilidad is not null %}
+                    <span><i class="fas fa-briefcase"></i>{{ item.responsabilidad.nombre }}</span>
+                {% endif %}
+                {% if item.estructura is not null %}
+                    <span><i class="fas fa-building"></i>{{ item.estructura.nombre }}</span>
+                {% endif %}
+                {% if item.estructura.estructura is not null %}
+                    <span><i class="fas fa-sitemap"></i>{{ item.estructura.estructura.nombre }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% if item.gradoAcademico is not null %}
+            <span class="fs-person-badge">{{ item.gradoAcademico.nombre }}</span>
+        {% endif %}
+        <button title="Adicionar ficha de salida"
+                class="btn-fs-select elementRemove"
+                data-url="{{ path('app_ficha_salida_registrar_v2', {'id': item.id}) }}">
+            <i class="fas fa-file-medical"></i> Seleccionar
+        </button>
+    </div>
+{% endfor %}

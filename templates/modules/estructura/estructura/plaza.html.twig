@@ -1,0 +1,114 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% import 'pages/_detail_macros.html.twig' as dm %}
+
+{% block title %}Asociar composición a estructura{% endblock %}
+
+{% block body %}
+{% include 'pages/_detail_styles.html.twig' %}
+{% include 'pages/_luxury_form_styles.html.twig' %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+
+<div class="card card-luxury">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-users-cog label-icon"></i>Asociar Composición a Estructura</h3>
+    </div>
+    <div class="card-body px-4 pt-3">
+        <div class="detail-section mb-0">
+            <div class="detail-section-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Datos de la estructura</h3>
+            </div>
+            <div class="detail-section-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ dm.field('Categoría de estructura', estructura.categoriaEstructura.nombre) }}
+                        {{ dm.field('Tipo de estructura', estructura.tipoEstructura.nombre) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ dm.field('Nombre', estructura.nombre) }}
+                        {{ dm.field('Siglas', estructura.siglas) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ dm.field('Subordinado a', estructura.estructura.nombre) }}
+                        {{ dm.field('Fecha de activación', estructura.fechaActivacion ? estructura.fechaActivacion|date('d/m/Y') : '') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
+    <div class="card-body px-4 pt-0">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-user-tag label-icon"></i>Responsabilidad</label>
+                    {{ form_widget(form.responsabilidad, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                    {{ form_errors(form.responsabilidad) }}
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-hashtag label-icon"></i>Cantidad</label>
+                    {{ form_widget(form.cantidad, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.cantidad.vars.valid ? '' : 'is-invalid-luxury')}}) }}
+                    {% if not form.cantidad.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.cantidad) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white px-4 py-3 border-top-0 d-flex justify-content-end" style="gap: 10px;">
+        <button type="button" class="btn-lux-sm btn-lux-outline-danger btn-cancel-confirm">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button type="submit" id="submit-btn" class="btn-lux-sm btn-lux-primary">
+            <i class="fas fa-check"></i> Aceptar
+        </button>
+    </div>
+    {{ form_row(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+</div>
+
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title text-bold m-0"><i class="fas fa-list label-icon"></i>Composición asociada</h3>
+    </div>
+    <div class="card-body px-4">
+        <table class="table config-table table-bordered table-striped dataTable">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Responsabilidad</th>
+                <th>Cantidad</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td width="1%">{{ loop.index }}</td>
+                    <td>{{ item.responsabilidad.nombre | default('') }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td width="5%" class="text-center">
+                        <button class="btn-lux-sm btn-lux-outline-danger elementRemove"
+                                title="Eliminar"
+                                data-url="{{ path('app_estructura_eliminar_plaza', {'id': item.id}) }}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {% include 'pages/_luxury_form_toggle_js.html.twig' with {
+        cancelUrl: path('app_estructura_index')
+    } %}
+{% endblock %}

@@ -1,0 +1,458 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Portada Informatización{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* ── Layout ────────────────────────────────────── */
+        .inf-wrap { padding: 0 0 32px 0; }
+
+        /* ── Header (legacy — hidden) ─────────────────────────────────────── */
+        .inf-header { display: none; }
+
+        /* ── Stat cards ──────────────────────────────────── */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid #e8ecf1;
+            display: flex; align-items: center; gap: 14px;
+            height: 100%;
+            transition: box-shadow .2s ease, border-color .2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.09);
+            border-color: transparent;
+        }
+        .stat-card { position: relative; }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: var(--sc, #0891b2);
+            border-radius: 14px 14px 0 0;
+        }
+        .stat-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px; flex-shrink: 0;
+        }
+        .si-sistemas  { background: #cffafe; color: #0891b2; }
+        .si-servicios { background: #ede9fe; color: #7c3aed; }
+        .si-lineas    { background: #dbeafe; color: #2563eb; }
+        .si-telefonos { background: #d1fae5; color: #059669; }
+        .si-nauta     { background: #fef3c7; color: #d97706; }
+        .si-centros   { background: #fee2e2; color: #dc2626; }
+
+        .stat-body { flex: 1; min-width: 0; }
+        .stat-label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .6px; color: #9ca3af; margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 30px; font-weight: 800;
+            color: #0c1a2e; line-height: 1;
+        }
+
+        /* ── Chart cards ─────────────────────────────────── */
+        .cc {
+            background: #fff; border-radius: 14px;
+            border: 1px solid #e8ecf1;
+            overflow: hidden; margin-bottom: 24px;
+        }
+        .cc-head {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .cc-head-left { display: flex; align-items: center; gap: 10px; }
+        .cc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .cc-title { font-size: 14px; font-weight: 600; color: #0c1a2e; margin: 0; }
+        .cc-badge {
+            font-size: 11px; font-weight: 700;
+            background: #f0fafa; color: #0891b2;
+            border: 1px solid #a5f3fc;
+            border-radius: 20px; padding: 2px 10px;
+        }
+        .cc-body { padding: 16px; }
+
+        /* ── Distribution rows ───────────────────────────── */
+        .dist-row {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 9px 0; border-bottom: 1px solid #f3f4f6;
+        }
+        .dist-row:last-child { border-bottom: none; }
+        .dist-label { font-size: 13px; color: #374151; font-weight: 500; flex: 1; min-width: 0; padding-right: 8px; }
+        .dist-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .dist-count { font-size: 13px; font-weight: 700; color: #0c1a2e; min-width: 28px; text-align: right; }
+        .dist-bar { width: 72px; height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+        .dist-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+
+        /* ── Section label ───────────────────────────────── */
+        .section-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .8px; color: #9ca3af;
+            margin: 8px 0 16px 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="content-header">
+    <div class="container-fluid">
+        <h4 style="color:#1a2e44;font-weight:700;margin:0">Informatización</h4>
+        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Infraestructura tecnológica y sistemas de información</p>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid inf-wrap">
+        <div class="inf-header"></div>
+
+        {# ── Fila 1 de KPI cards ─────────────────────────── #}
+        <div class="row" style="margin-bottom: 16px;">
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#0891b2">
+                    <div class="stat-icon si-sistemas"><i class="fas fa-laptop-code"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Sistemas Informáticos</div>
+                        <div class="stat-value">{{ total_sistemas }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#7c3aed">
+                    <div class="stat-icon si-servicios"><i class="fas fa-server"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Servicios</div>
+                        <div class="stat-value">{{ total_servicios }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#2563eb">
+                    <div class="stat-icon si-lineas"><i class="fas fa-sim-card"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Líneas Celulares</div>
+                        <div class="stat-value">{{ total_lineas }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Fila 2 de KPI cards ─────────────────────────── #}
+        <div class="row" style="margin-bottom: 28px;">
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#059669">
+                    <div class="stat-icon si-telefonos"><i class="fas fa-mobile-alt"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Teléfonos Celulares</div>
+                        <div class="stat-value">{{ total_telefonos }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#d97706">
+                    <div class="stat-icon si-nauta"><i class="fas fa-wifi"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Nauta Hogar</div>
+                        <div class="stat-value">{{ total_nauta }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#dc2626">
+                    <div class="stat-icon si-centros"><i class="fas fa-database"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Centros de Datos Virtuales</div>
+                        <div class="stat-value">{{ total_centros }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Sección: Sistemas e Infraestructura ──────────── #}
+        <div class="section-label">Sistemas e Infraestructura</div>
+        <div class="row">
+
+            {# Sistemas por Tipo — donut + lista #}
+            <div class="col-12 col-md-5">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-left">
+                            <div class="cc-dot" style="background:#0891b2;"></div>
+                            <h6 class="cc-title">Sistemas por tipo</h6>
+                        </div>
+                        <span class="cc-badge">{{ total_sistemas }} total</span>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_tipo_sistema" style="height: 210px;"></div>
+                        <div style="margin-top: 6px;">
+                            {% for tipo in por_tipo_sistema %}
+                                {% set pct = total_sistemas > 0 ? ((tipo.y / total_sistemas) * 100)|round : 0 %}
+                                <div class="dist-row">
+                                    <span class="dist-label">{{ tipo.name }}</span>
+                                    <div class="dist-right">
+                                        <span class="dist-count">{{ tipo.y }}</span>
+                                        <div class="dist-bar">
+                                            <div class="dist-fill" style="width: {{ pct }}%; background: #0891b2;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding:12px 0;">Sin datos disponibles</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Servicios por Público Objetivo — barras horizontales #}
+            <div class="col-12 col-md-7">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-left">
+                            <div class="cc-dot" style="background:#7c3aed;"></div>
+                            <h6 class="cc-title">Servicios por público objetivo</h6>
+                        </div>
+                        <span class="cc-badge" style="background:#f5f3ff; color:#7c3aed; border-color:#ddd6fe;">{{ total_servicios }} total</span>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_publico_objetivo" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Sección: Telefonía Móvil ─────────────────────── #}
+        <div class="section-label">Telefonía Móvil</div>
+        <div class="row">
+
+            {# Teléfonos por Marca — barras #}
+            <div class="col-12 col-md-6">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-left">
+                            <div class="cc-dot" style="background:#059669;"></div>
+                            <h6 class="cc-title">Teléfonos por marca</h6>
+                        </div>
+                        <span class="cc-badge" style="background:#ecfdf5; color:#059669; border-color:#6ee7b7;">{{ total_telefonos }} total</span>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_marca" style="height: 280px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            {# Teléfonos por S.O. — donut + lista #}
+            <div class="col-12 col-md-6">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-left">
+                            <div class="cc-dot" style="background:#d97706;"></div>
+                            <h6 class="cc-title">Teléfonos por sistema operativo</h6>
+                        </div>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_so_telefono" style="height: 200px;"></div>
+                        <div style="margin-top: 6px;">
+                            {% set so_colors = ['#d97706','#0891b2','#7c3aed','#059669','#dc2626','#2563eb'] %}
+                            {% for so in por_so_telefono %}
+                                {% set pct = total_telefonos > 0 ? ((so.y / total_telefonos) * 100)|round : 0 %}
+                                <div class="dist-row">
+                                    <span class="dist-label">{{ so.name }}</span>
+                                    <div class="dist-right">
+                                        <span class="dist-count">{{ so.y }}</span>
+                                        <div class="dist-bar">
+                                            <div class="dist-fill" style="width: {{ pct }}%; background: {{ so_colors[loop.index0 % 6] }};"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding:12px 0;">Sin datos disponibles</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Sección: Conectividad ────────────────────────── #}
+        <div class="section-label">Conectividad</div>
+        <div class="row">
+            <div class="col-12">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-left">
+                            <div class="cc-dot" style="background:#6b7280;"></div>
+                            <h6 class="cc-title">Enlaces por tipo de conectividad</h6>
+                        </div>
+                        <span class="cc-badge" style="background:#f9fafb; color:#6b7280; border-color:#e5e7eb;">{{ total_enlaces }} total</span>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_tipo_enlace" style="height: 270px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).ready(function () {
+
+    var COLORS = ['#0891b2','#7c3aed','#059669','#d97706','#dc2626','#2563eb','#be185d','#6b7280'];
+
+    var baseTooltip = {
+        backgroundColor: '#0c1a2e',
+        style: { color: '#fff', fontSize: '12px' },
+        borderRadius: 8,
+        shadow: false
+    };
+    var baseAxis = {
+        lineWidth: 0, tickWidth: 0,
+        gridLineColor: '#f3f4f6',
+        labels: { style: { color: '#6b7280', fontSize: '12px' } }
+    };
+
+    /* ── 1. Sistemas por Tipo — donut ── */
+    var tipoData = JSON.parse('{{ por_tipo_sistema_json | raw }}');
+    if (tipoData.length > 0) {
+        Highcharts.chart('chart_tipo_sistema', {
+            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> sistemas ({point.percentage:.1f}%)' }),
+            plotOptions: {
+                pie: {
+                    innerSize: '58%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'Sistemas', data: tipoData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 2. Servicios por Público Objetivo — barras ── */
+    var pubData = JSON.parse('{{ por_publico_json | raw }}');
+    if (pubData.length > 0) {
+        Highcharts.chart('chart_publico_objetivo', {
+            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: { enabled: false },
+            plotOptions: {
+                bar: {
+                    borderRadius: 5, borderWidth: 0,
+                    color: '#7c3aed',
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '11px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> servicios' }),
+            series: [{ name: 'Servicios', data: pubData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 3. Teléfonos por Marca — barras ── */
+    var marcaData = JSON.parse('{{ por_marca_json | raw }}');
+    if (marcaData.length > 0) {
+        Highcharts.chart('chart_marca', {
+            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: { enabled: false },
+            plotOptions: {
+                bar: {
+                    borderRadius: 5, borderWidth: 0,
+                    colorByPoint: true,
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '11px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> teléfonos' }),
+            series: [{ name: 'Marca', data: marcaData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 4. Teléfonos por S.O. — donut ── */
+    var soData = JSON.parse('{{ por_so_telefono_json | raw }}');
+    if (soData.length > 0) {
+        Highcharts.chart('chart_so_telefono', {
+            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> teléfonos ({point.percentage:.1f}%)' }),
+            plotOptions: {
+                pie: {
+                    innerSize: '55%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    colors: ['#d97706','#0891b2','#7c3aed','#059669','#dc2626','#2563eb'],
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'S.O.', data: soData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 5. Enlaces por Tipo de Conectividad — columnas ── */
+    var enlaceData = JSON.parse('{{ por_tipo_enlace_json | raw }}');
+    if (enlaceData.length > 0) {
+        Highcharts.chart('chart_tipo_enlace', {
+            chart: { type: 'column', spacing: [12, 16, 12, 16], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
+            legend: { enabled: false },
+            plotOptions: {
+                column: {
+                    borderRadius: 6, borderWidth: 0,
+                    colorByPoint: true,
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '12px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> enlaces' }),
+            series: [{ name: 'Tipo', data: enlaceData }],
+            credits: { enabled: false }
+        });
+    }
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,600 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Configurar plan de misión{% endblock %}
+
+{% block body %}
+<style>
+    .card-lux {
+        border-radius: 14px;
+        border: none;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        border-top: 4px solid #134679;
+        margin-bottom: 20px;
+        background: #fff;
+        overflow: visible;
+    }
+    .card-lux-header {
+        padding: 14px 22px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 14px 14px 0 0;
+    }
+    .card-lux-title { font-size: 0.9rem; font-weight: 700; color: #1a2e44; margin: 0; flex: 1; }
+    .card-lux-icon {
+        width: 32px; height: 32px; border-radius: 8px; background: #eef3fa;
+        display: flex; align-items: center; justify-content: center;
+        color: #134679; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .card-lux-body { padding: 18px 22px; }
+    .card-lux-footer {
+        padding: 12px 22px; background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        display: flex; justify-content: flex-end; gap: 8px;
+        border-radius: 0 0 14px 14px;
+    }
+
+    /* ── Plan banner ── */
+    .plan-banner { display: flex; align-items: center; gap: 16px; padding: 16px 22px; }
+    .plan-banner-icon {
+        width: 46px; height: 46px; border-radius: 12px; background: #134679;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .plan-banner-name { font-size: 1.05rem; font-weight: 700; color: #1a2e44; }
+    .plan-banner-sub  { font-size: 0.72rem; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing:.04em; }
+    .estado-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+        margin-left: auto; flex-shrink: 0;
+    }
+    .estado-pill.on  { background: #dcfce7; color: #15803d; }
+    .estado-pill.off { background: #fee2e2; color: #b91c1c; }
+    .estado-pill i   { font-size: 0.42rem; vertical-align: middle; }
+
+    /* ── Stats ── */
+    .stats-row { display: flex; gap: 12px; padding: 0 22px 16px; border-top: 1px solid #f1f5f9; padding-top: 14px; }
+    .stat-chip { flex: 1; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; text-align: center; }
+    .stat-chip-val { font-size: 1.4rem; font-weight: 800; color: #134679; line-height: 1; }
+    .stat-chip-lbl { font-size: 0.7rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing:.04em; margin-top: 3px; }
+
+    /* ── Persona rows ── */
+    .persona-row {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        overflow: visible;
+        transition: border-color .2s, box-shadow .2s;
+        background: #fff;
+    }
+    .persona-row.open { border-color: #134679; box-shadow: 0 4px 16px rgba(19,70,121,0.10); }
+
+    .persona-row-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 11px 16px; cursor: pointer; user-select: none;
+    }
+    .persona-avatar {
+        width: 36px; height: 36px; border-radius: 50%; background: #134679;
+        color: #fff; font-size: 0.82rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        text-transform: uppercase;
+    }
+    .persona-row.open .persona-avatar { background: #0f3560; }
+    .persona-row-name { font-size: 0.83rem; font-weight: 700; color: #1a2e44; }
+    .persona-row-meta { font-size: 0.72rem; color: #64748b; }
+    .persona-row-chevron {
+        margin-left: auto; color: #94a3b8; font-size: 0.8rem;
+        transition: transform .2s; flex-shrink: 0;
+    }
+    .persona-row.open .persona-row-chevron { transform: rotate(180deg); color: #134679; }
+
+    .persona-row-body {
+        display: none;
+        padding: 0 16px 16px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .persona-row.open .persona-row-body { display: block; }
+
+    /* ── Form fields ── */
+    .field-row { display: flex; gap: 12px; margin-top: 14px; }
+    .field-col  { flex: 1; min-width: 0; }
+    .field-label {
+        font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing:.05em; color: #94a3b8; margin-bottom: 4px;
+    }
+    .field-control {
+        width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;
+        padding: 7px 10px; font-size: 0.82rem; color: #1a2e44;
+        background: #fff; transition: border-color .2s; box-sizing: border-box;
+    }
+    .field-control:focus { border-color: #134679; outline: none; box-shadow: 0 0 0 3px rgba(19,70,121,0.08); }
+    select.field-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+    }
+    textarea.field-control { resize: vertical; min-height: 64px; }
+
+    /* ── Assign button per row ── */
+    .btn-assign-row {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 16px; border-radius: 8px; border: none;
+        background: #134679; color: #fff; font-size: 0.78rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing:.04em; cursor: pointer;
+        transition: background .2s; margin-top: 14px;
+    }
+    .btn-assign-row:hover { background: #0f3560; }
+    .btn-assign-row:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* ── Botones generales ── */
+    .btn-lux {
+        padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.78rem;
+        text-transform: uppercase; letter-spacing:.04em; border: none;
+        display: inline-flex; align-items: center; gap: 6px;
+        cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-lux-ghost { background: #f1f5f9; color: #64748b; border: 1.5px solid #e2e8f0; }
+    .btn-lux-ghost:hover { background: #e2e8f0; }
+
+    /* ── Tabla asignados ── */
+    .assigned-table { width: 100%; border-collapse: collapse; }
+    .assigned-table th {
+        background: #f1f5f9; color: #4a5568; font-size: 0.75rem; font-weight: 700;
+        padding: 8px 12px; border-bottom: 2px solid #e2e8f0; white-space: nowrap;
+    }
+    .assigned-table td {
+        font-size: 0.82rem; color: #1a2e44; padding: 10px 12px;
+        border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+    }
+    .assigned-table tbody tr:hover { background: #f8fafc; }
+    .assigned-table tbody tr:last-child td { border-bottom: none; }
+    .tag-pill {
+        display: inline-block; padding: 2px 8px; border-radius: 20px;
+        font-size: 0.7rem; font-weight: 700; background: #eef3fa; color: #134679;
+    }
+    .btn-icon-del {
+        width: 28px; height: 28px; border-radius: 7px; border: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.72rem; cursor: pointer; background: #fee2e2; color: #dc2626;
+        transition: all .15s; text-decoration: none;
+    }
+    .btn-icon-del:hover { background: #dc2626; color: #fff; }
+
+    .search-box { position: relative; margin-bottom: 12px; }
+    .search-box input {
+        width: 100%; padding: 7px 10px 7px 32px; border: 1.5px solid #e2e8f0;
+        border-radius: 8px; font-size: 0.82rem; color: #1a2e44; background: #f8fafc; transition: border-color .2s;
+    }
+    .search-box input:focus { border-color: #134679; outline: none; background: #fff; }
+    .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.78rem; }
+
+    /* ── Paginación ── */
+    .pag-btn {
+        min-width: 30px; height: 30px; padding: 0 8px;
+        border-radius: 7px; border: 1.5px solid #e2e8f0;
+        background: #fff; color: #64748b;
+        font-size: 0.78rem; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        transition: all .15s;
+    }
+    .pag-btn:hover:not(:disabled) { border-color: #134679; color: #134679; background: #eef3fa; }
+    .pag-btn.active { background: #134679; color: #fff; border-color: #134679; }
+    .pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+</style>
+
+<form id="form" name="form" action="" method="post">
+    <input type="hidden" id="planMision" name="planMision" value="{{ planMisionId }}">
+
+    {# ── Banner ── #}
+    <div class="card-lux" style="border-top:none; margin-bottom:20px;">
+        <div class="plan-banner">
+            <div class="plan-banner-icon"><i class="fas fa-map-marked-alt"></i></div>
+            <div>
+                <div class="plan-banner-sub">Plan de Misión</div>
+                <div class="plan-banner-name">{{ planMision.nombre }}</div>
+            </div>
+            <span class="estado-pill {{ planMision.activo ? 'on' : 'off' }}">
+                <i class="fas fa-circle"></i>
+                {{ planMision.activo ? 'Habilitado' : 'Deshabilitado' }}
+            </span>
+        </div>
+        <div class="stats-row">
+            <div class="stat-chip">
+                <div class="stat-chip-val">{{ registros | length }}</div>
+                <div class="stat-chip-lbl">Disponibles</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-chip-val">{{ registrosAsignados | length }}</div>
+                <div class="stat-chip-lbl">Asignados</div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Personas disponibles ── #}
+    <div class="card-lux">
+        <div class="card-lux-header">
+            <div class="card-lux-icon"><i class="fas fa-user-plus"></i></div>
+            <h3 class="card-lux-title">Personas disponibles para asignar</h3>
+        </div>
+        <div class="card-lux-body">
+            {% if registros | length > 0 %}
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-personas" placeholder="Buscar persona...">
+            </div>
+            <div id="persona-list-wrap">
+            <div id="persona-list">
+                {% for item in registros %}
+                <div class="persona-row" data-id="{{ item.id }}"
+                     data-nombre="{{ (item.primerNombre ~ ' ' ~ (item.segundoNombre ?? '') ~ ' ' ~ item.primerApellido ~ ' ' ~ (item.segundoApellido ?? '')) | trim | e('html_attr') }}"
+                     data-cargo="{{ item.responsabilidad.nombre | default('') | e('html_attr') }}">
+
+                    <div class="persona-row-header">
+                        <div class="persona-avatar">{{ item.primerNombre | slice(0,1) }}{{ item.primerApellido | slice(0,1) }}</div>
+                        <div>
+                            <div class="persona-row-name">{{ item.primerNombre ~ ' ' ~ (item.segundoNombre ?? '') ~ ' ' ~ item.primerApellido ~ ' ' ~ (item.segundoApellido ?? '') }}</div>
+                            <div class="persona-row-meta">
+                                {{ item.responsabilidad.nombre | default('Sin cargo') }}
+                                {% if item.estructura is not null %} · {{ item.estructura.nombre }}{% endif %}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down persona-row-chevron"></i>
+                    </div>
+
+                    <div class="persona-row-body">
+                        <div class="field-row">
+                            <div class="field-col">
+                                <div class="field-label"><i class="fas fa-globe-americas mr-1"></i>País destino <span style="color:#ef4444;">*</span></div>
+                                <select class="field-control" id="pais_{{ item.id }}" name="pais_{{ item.id }}">
+                                    <option value="">Seleccione un país</option>
+                                    {% for resp in paises %}
+                                    <option value="{{ resp.id }}">{{ resp.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="field-col" style="max-width:160px;">
+                                <div class="field-label"><i class="far fa-calendar-alt mr-1"></i>Fecha prevista <span style="color:#ef4444;">*</span></div>
+                                <div class="input-group input-group-sm" id="fecha-wrap-{{ item.id }}">
+                                    <input type="text" id="fecha_{{ item.id }}" name="fecha_{{ item.id }}"
+                                           class="form-control date-time-picker"
+                                           placeholder="DD/MM/YYYY" autocomplete="off"
+                                           style="font-size:0.82rem;">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" data-toggle="datetimepicker" data-target="#fecha_{{ item.id }}"
+                                              style="cursor:pointer; font-size:0.75rem; background:#f8fafc;">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-col" style="max-width:100px;">
+                                <div class="field-label"><i class="fas fa-clock mr-1"></i>Días <span style="color:#ef4444;">*</span></div>
+                                <input type="number" class="field-control" id="duracion_{{ item.id }}" name="duracion_{{ item.id }}" min="1" placeholder="Ej: 15">
+                            </div>
+                        </div>
+                        <div class="field-row" style="margin-top:10px;">
+                            <div class="field-col">
+                                <div class="field-label"><i class="fas fa-bullseye mr-1"></i>Objetivo del viaje <span style="color:#ef4444;">*</span></div>
+                                <textarea class="field-control" id="objetivo_{{ item.id }}" name="objetivo_{{ item.id }}" rows="2" placeholder="Describa el objetivo del viaje..."></textarea>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:12px; padding-top:12px; border-top:1px solid #f1f5f9;">
+                            <button type="button" class="btn-assign-row btn-asociar-uno"
+                                    data-id="{{ item.id }}"
+                                    data-nombre="{{ (item.primerNombre ~ ' ' ~ (item.segundoNombre ?? '') ~ ' ' ~ item.primerApellido ~ ' ' ~ (item.segundoApellido ?? '')) | trim | e('html_attr') }}"
+                                    data-responsabilidad="{{ item.responsabilidad.nombre | default('') | e('html_attr') }}">
+                                <i class="fas fa-user-plus"></i> Asignar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="paginacion-disponibles" style="display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid #f1f5f9;">
+                <span id="pag-disp-info" style="font-size:0.75rem; color:#94a3b8;"></span>
+                <div id="pag-disp-btns" style="display:flex; gap:4px;"></div>
+            </div>
+            </div>
+            {% else %}
+            <div style="text-align:center; padding:32px 0; color:#94a3b8;">
+                <i class="fas fa-users" style="font-size:2rem; margin-bottom:10px; display:block; opacity:.3;"></i>
+                <p style="font-size:0.82rem; margin:0;">No hay personas disponibles para asignar.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ── Personas asignadas ── #}
+    <div class="card-lux">
+        <div class="card-lux-header">
+            <div class="card-lux-icon"><i class="fas fa-users"></i></div>
+            <h3 class="card-lux-title">Personas asignadas</h3>
+            <span class="tag-pill">{{ registrosAsignados | length }}</span>
+        </div>
+        <div style="overflow-x:auto;" id="assigned-table-wrap">
+            {% if registrosAsignados | length > 0 %}
+            <table class="assigned-table" id="assigned-table">
+                <thead>
+                    <tr>
+                        <th style="width:1%">#</th>
+                        <th>Nombre</th>
+                        <th>Cargo</th>
+                        <th>País</th>
+                        <th>Fecha</th>
+                        <th>Días</th>
+                        <th>Objetivo</th>
+                        <th class="text-center" style="width:1%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in registrosAsignados %}
+                    <tr>
+                        <td style="color:#94a3b8; font-size:0.75rem;">{{ loop.index }}</td>
+                        <td>
+                            <div style="font-weight:600;">{{ item.persona.primerNombre ~ ' ' ~ (item.persona.segundoNombre ?? '') ~ ' ' ~ item.persona.primerApellido ~ ' ' ~ (item.persona.segundoApellido ?? '') }}</div>
+                            <div style="font-size:0.72rem; color:#64748b;">{{ item.persona.estructura.nombre | default('') }}</div>
+                        </td>
+                        <td><span class="tag-pill" style="background:#f0fdf4;color:#15803d;">{{ item.persona.responsabilidad.nombre | default('—') }}</span></td>
+                        <td style="white-space:nowrap;">{{ item.pais.nombre | default('—') }}</td>
+                        <td style="white-space:nowrap;"><span class="tag-pill">{{ item.fecha | date('d/m/Y') }}</span></td>
+                        <td class="text-center">
+                            {% if item.duracion is not null %}
+                                <span class="tag-pill" style="background:#fff7ed;color:#c2410c;">{{ item.duracion }}d</span>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td style="max-width:200px; font-size:0.8rem; color:#64748b;">{{ item.objetivo | default('—') }}</td>
+                        <td class="text-center">
+                            <a class="btn-icon-del elementRemove"
+                               data-url="{{ path('app_plan_mision_eliminar_persona_asignada_registrar', {'id': item.id}) }}"
+                               data-title=""
+                               data-content="¿Está seguro que desea realizar la acción?"
+                               title="Eliminar">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center; padding:28px 0; color:#94a3b8;">
+                <i class="fas fa-user-slash" style="font-size:1.8rem; margin-bottom:8px; display:block; opacity:.3;"></i>
+                <p style="font-size:0.8rem; margin:0;">No hay personas asignadas a este plan.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% if registrosAsignados | length > 0 %}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 22px; border-top:1px solid #f1f5f9;">
+            <span id="pag-asig-info" style="font-size:0.75rem; color:#94a3b8;"></span>
+            <div id="pag-asig-btns" style="display:flex; gap:4px;"></div>
+        </div>
+        {% endif %}
+        <div class="card-lux-footer">
+            <button type="button" class="btn-lux btn-lux-ghost btn-cancel-confirm">
+                <i class="fas fa-arrow-left"></i> Volver al listado
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    $(document).ready(function() {
+
+        var PER_PAGE = 5;
+        var pagDisp  = 1;
+        var pagAsig  = 1;
+        var filteredRows = null; // null = sin filtro activo
+
+        // ── Inicializar datepicker para una fila ──
+        function initDatepicker(id) {
+            var $input = $('#fecha_' + id);
+            if ($input.length && !$input.data('DateTimePicker')) {
+                $input.datetimepicker({ format: 'DD/MM/YYYY', locale: 'es' });
+            }
+        }
+
+        // ── Paginación personas disponibles ──
+        function renderPagDisp() {
+            var $source = filteredRows !== null ? filteredRows : $('#persona-list .persona-row');
+            var all     = $source.toArray();
+            var total   = all.length;
+            var totalP  = Math.max(1, Math.ceil(total / PER_PAGE));
+            if (pagDisp > totalP) pagDisp = totalP;
+
+            // Ocultar todo primero
+            $('#persona-list .persona-row').hide();
+
+            var start = (pagDisp - 1) * PER_PAGE;
+            $(all).slice(start, start + PER_PAGE).each(function() {
+                $(this).show();
+                initDatepicker($(this).data('id'));
+            });
+
+            var from = total === 0 ? 0 : start + 1;
+            var to   = Math.min(start + PER_PAGE, total);
+            $('#pag-disp-info').text('Mostrando ' + from + '–' + to + ' de ' + total);
+            $('#pag-disp-btns').html(buildPagHtml(pagDisp, totalP, 'pag-disp'));
+        }
+
+        // ── Paginación personas asignadas ──
+        function renderPagAsig() {
+            var $rows  = $('#assigned-table tbody tr');
+            var total  = $rows.length;
+            var totalP = Math.max(1, Math.ceil(total / PER_PAGE));
+            if (pagAsig > totalP) pagAsig = totalP;
+
+            var start = (pagAsig - 1) * PER_PAGE;
+            $rows.each(function(i) { $(this).toggle(i >= start && i < start + PER_PAGE); });
+
+            var from = total === 0 ? 0 : start + 1;
+            var to   = Math.min(start + PER_PAGE, total);
+            $('#pag-asig-info').text('Mostrando ' + from + '–' + to + ' de ' + total);
+            $('#pag-asig-btns').html(buildPagHtml(pagAsig, totalP, 'pag-asig'));
+        }
+
+        function buildPagHtml(current, total, prefix) {
+            var h = '<button class="pag-btn" data-action="prev" data-prefix="' + prefix + '" ' + (current === 1 ? 'disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+            var s = Math.max(1, current - 2);
+            var e = Math.min(total, s + 4);
+            for (var p = s; p <= e; p++) {
+                h += '<button class="pag-btn ' + (p === current ? 'active' : '') + '" data-action="go" data-page="' + p + '" data-prefix="' + prefix + '">' + p + '</button>';
+            }
+            h += '<button class="pag-btn" data-action="next" data-prefix="' + prefix + '" ' + (current >= total ? 'disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+            return h;
+        }
+
+        renderPagDisp();
+        renderPagAsig();
+
+        // ── Delegación eventos paginación ──
+        $(document).on('click', '.pag-btn:not(:disabled)', function() {
+            var action = $(this).data('action');
+            var prefix = $(this).data('prefix');
+            if (prefix === 'pag-disp') {
+                if (action === 'prev') pagDisp--;
+                else if (action === 'next') pagDisp++;
+                else pagDisp = parseInt($(this).data('page'));
+                renderPagDisp();
+            } else {
+                if (action === 'prev') pagAsig--;
+                else if (action === 'next') pagAsig++;
+                else pagAsig = parseInt($(this).data('page'));
+                renderPagAsig();
+            }
+        });
+
+        // ── Búsqueda ──
+        $('#search-personas').on('input', function() {
+            var q = $(this).val().toLowerCase().trim();
+            $('.persona-row').removeClass('open');
+            if (q === '') {
+                filteredRows = null;
+            } else {
+                filteredRows = $('#persona-list .persona-row').filter(function() {
+                    return $(this).data('nombre').toLowerCase().includes(q) ||
+                           $(this).data('cargo').toLowerCase().includes(q);
+                });
+            }
+            pagDisp = 1;
+            renderPagDisp();
+        });
+
+        // ── Abrir/cerrar accordion ──
+        $(document).on('click', '.persona-row-header', function() {
+            var $row    = $(this).closest('.persona-row');
+            var wasOpen = $row.hasClass('open');
+            $('.persona-row').removeClass('open');
+            if (!wasOpen) $row.addClass('open');
+        });
+
+        // ── Solo números en duración ──
+        $(document).on('keypress', '[id^=duracion_]', function(e) {
+            if (e.charCode !== 0 && !/^[0-9]$/.test(String.fromCharCode(e.charCode))) {
+                e.preventDefault(); return false;
+            }
+        });
+
+        // ── Asignar persona (sin recargar página) ──
+        $(document).on('click', '.btn-asociar-uno', function(e) {
+            e.preventDefault();
+            var $btn            = $(this);
+            var id              = $btn.data('id');
+            var nombre          = $btn.data('nombre');
+            var responsabilidad = $btn.data('responsabilidad');
+
+            var pais       = $('#pais_'     + id).val();
+            var objetivo   = $('#objetivo_' + id).val().trim();
+            var fecha      = $('#fecha_'    + id).val().trim();
+            var duracion   = $('#duracion_' + id).val().trim();
+            var nombrePais = $('#pais_' + id + ' option:selected').text();
+
+            if (!pais)     { toastr.warning("El país es obligatorio.");     return; }
+            if (!objetivo) { toastr.warning("El objetivo es obligatorio."); return; }
+            if (!fecha)    { toastr.warning("La fecha es obligatoria.");    return; }
+            if (!duracion) { toastr.warning("La duración es obligatoria."); return; }
+
+            var obj = [{
+                id_persona:             id,
+                plan_mision_id:         {{ planMisionId }},
+                nombre_responsabilidad: responsabilidad,
+                nombre_persona:         nombre,
+                id_pais:                pais,
+                nombre_pais:            nombrePais,
+                objetivo:               objetivo,
+                fecha:                  fecha,
+                duracion:               duracion
+            }];
+
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
+            $.post("{{ path('app_plan_mision_persona_registrar') }}", { arrayId: obj }, function() {
+                // 1. Quitar la fila de disponibles
+                var $row = $('.persona-row[data-id="' + id + '"]');
+                $row.fadeOut(200, function() {
+                    $row.remove();
+                    filteredRows = null;
+                    pagDisp = 1;
+                    renderPagDisp();
+                    // Actualizar contador "Disponibles"
+                    var dispActual = parseInt($('.stat-chip-val').eq(0).text()) - 1;
+                    $('.stat-chip-val').eq(0).text(Math.max(0, dispActual));
+                });
+
+                // 2. Añadir fila a la tabla de asignados
+                var asigActual = parseInt($('.stat-chip-val').eq(1).text());
+                $('.stat-chip-val').eq(1).text(asigActual + 1);
+                // Actualizar badge del header
+                $('.card-lux-header .tag-pill').text(asigActual + 1);
+
+                // Construir nueva fila en la tabla
+                var newRow = '<tr>' +
+                    '<td style="color:#94a3b8;font-size:0.75rem;">' + (asigActual + 1) + '</td>' +
+                    '<td><div style="font-weight:600;">' + nombre + '</div></td>' +
+                    '<td><span class="tag-pill" style="background:#f0fdf4;color:#15803d;">' + (responsabilidad || '—') + '</span></td>' +
+                    '<td style="white-space:nowrap;">' + nombrePais + '</td>' +
+                    '<td style="white-space:nowrap;"><span class="tag-pill">' + fecha + '</span></td>' +
+                    '<td class="text-center"><span class="tag-pill" style="background:#fff7ed;color:#c2410c;">' + duracion + 'd</span></td>' +
+                    '<td style="max-width:200px;font-size:0.8rem;color:#64748b;">' + objetivo + '</td>' +
+                    '<td class="text-center"><span style="color:#94a3b8;font-size:0.72rem;">—</span></td>' +
+                    '</tr>';
+
+                // Si no existe la tabla aún, mostrarla
+                if ($('#assigned-table tbody').length === 0) {
+                    $('#assigned-table-wrap').html(
+                        '<table class="assigned-table" id="assigned-table">' +
+                        '<thead><tr><th style="width:1%">#</th><th>Nombre</th><th>Cargo</th><th>País</th><th>Fecha</th><th>Días</th><th>Objetivo</th><th class="text-center" style="width:1%"></th></tr></thead>' +
+                        '<tbody>' + newRow + '</tbody></table>'
+                    );
+                } else {
+                    $('#assigned-table tbody').append(newRow);
+                }
+                renderPagAsig();
+
+                toastr.success(nombre + ' asignado correctamente.');
+            }).fail(function() {
+                $btn.prop('disabled', false).html('<i class="fas fa-user-plus"></i> Asignar');
+                toastr.error("Ocurrió un error al asignar la persona. Intente nuevamente.");
+            });
+        });
+
+        // ── Volver ──
+        $('.btn-cancel-confirm').on('click', function() {
+            bootbox.confirm({
+                title:   "<h5 class='font-weight-bold mb-0'>¿Volver al listado?</h5>",
+                message: "<p class='mb-0 text-muted'>Se perderán los cambios no guardados.</p>",
+                buttons: {
+                    confirm: { label: 'Sí, volver',    className: 'btn-danger btn-sm px-3' },
+                    cancel:  { label: 'No, continuar', className: 'btn-light btn-sm border px-3' }
+                },
+                callback: function(result) {
+                    if (result) window.location.href = "{{ path('app_plan_mision_index') }}";
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

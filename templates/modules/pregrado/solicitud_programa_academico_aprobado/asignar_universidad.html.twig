@@ -1,0 +1,182 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar universidades{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+        .btn-lux-danger { background:#dc2626; color:#fff; }
+        .btn-lux-danger:hover { background:#b91c1c; color:#fff; transform:translateY(-1px); }
+        .badge-pill-yes { background:#dcfce7; color:#15803d; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .badge-pill-no { background:#fee2e2; color:#b91c1c; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .btn-action-sm { width:28px; height:28px; padding:0; display:inline-flex; justify-content:center; align-items:center; border-radius:6px; font-size:0.75rem; border:none; transition:all 0.2s; color:#fff; margin:0 2px; text-decoration:none; cursor:pointer; }
+        .btn-action-danger { background:#ef4444; }
+        .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
+        #map {
+            height: 350px;
+        }
+    </style>
+
+{% endblock %}
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-university label-icon"></i>Asignar universidades</h3>
+            <div class="ml-auto">
+                <a title="Exportar universidades asignadas" class="btn-lux-sm btn-lux-danger" target="_blank" href="{{ path('app_solicitud_programa_academico_aprobar_universidades_asignadas_exportar_pdf') }}"><i class="fa fa-file-pdf mr-1"></i> PDF</a>
+            </div>
+        </div>
+        {{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudProgramaAcademico, 'format':'col3' }) }}
+        <!-- /.card-header -->
+        {{ form_start(form) }}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.institucion) }}
+                    {{ form_widget(form.institucion) }}
+                    {{ form_errors(form.institucion) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.categoriaAcreditacion) }}
+                    {{ form_widget(form.categoriaAcreditacion) }}
+                    {{ form_errors(form.categoriaAcreditacion) }}
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    <label for="modalidad">Tipo de curso</label>
+                    <select id="modalidad" name="modalidad[]" multiple="multiple"
+                            class="form-control select2-hidden-accessible" data-select2-id="modalidad"
+                            tabindex="-1" aria-hidden="true">
+                        {#                        <option value="">Seleccione</option> #}
+                        {% for item2 in modalidades %}
+                            <option value="{{ item2.id }}">{{ item2.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 form-group" style="text-align: right">
+                    <button type="submit" class="btn-fs-submit"><i class="fas fa-check mr-2"></i>Asociar</button>
+                </div>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+        <hr>
+        <div class="card-body">
+            <table class="table table-bordered table-striped dataTable">
+                <thead class="table-custom-header">
+                <tr>
+                    <th>No.</th>
+                    <th>Logo</th>
+                    <th>Nombre</th>
+                    <th>Centro rector</th>
+                    <th>Categoría de acreditación</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    {% set visualizar = (item.institucion.estructura.id|default(0) == idEntidad) %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td width="1%">
+                            <a
+                                    href="{% if item.institucion.logo != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.institucion.logo }} {% else %} /assets/images/usuario.png {% endif %}"
+                                    target="_blank">
+                                <img src="{% if item.institucion.logo != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.institucion.logo }}{% else %} /assets/images/usuario.png {% endif %}"
+                                     style="width: 45px;height: 45px; object-fit: cover">
+                            </a>
+                        </td>
+                        <td>({{ item.institucion.siglas | default('-') }}) {{ item.institucion.nombre }}</td>
+                        <td width="10%">
+                            {% if item.institucion.id == solicitudProgramaAcademico.centroRector.id %}
+                                <span class="badge-pill-yes"><i class="fas fa-check mr-1"></i>Sí</span>
+                            {% else %}
+                                <span class="badge-pill-no"><i class="fas fa-times mr-1"></i>No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if visualizar or isAdmin %}
+                                <select id="categoria_acreditacion_{{ item.id }}_{{ item.institucion.id }}_{{ solicitudProgramaAcademico.id }}"
+                                        name="categoria_acreditacion_{{ item.id }}_{{ item.institucion.id }}_{{ solicitudProgramaAcademico.id }}"
+                                        prop="id_{{ item.id }}">
+                                    <option value="">Seleccione</option>
+                                    {% for resp in categoriasAcreditacion %}
+                                        <option {% if resp.id == item.categoriaAcreditacion.id | default('') %} selected {% endif %}
+                                                value="{{ resp.id }}">{{ resp.nombre }} </option>
+                                    {% endfor %}
+
+                                </select>
+                            {% endif %}
+                        </td>
+                        {#                        <td width="15%">{% if item.institucion.id == solicitudProgramaAcademico.centroRector.id %}{{ solicitudProgramaAcademico.categoriaAcreditacion.nombre | default('') }} {% else %} {{ item.categoriaAcreditacion.nombre | default('') }} {% endif %}</td> #}
+
+                        <td width="15%" class="text-center">
+                            {% if visualizar or isAdmin %}
+                                <button title="Eliminar" class="btn-action-sm btn-action-danger elementRemove"
+                                        data-url="{{ path('app_solicitud_programa_academico_aprobado_eliminar_universidad', {'id': item.id}) }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $('select[id*=categoria_acreditacion_]').change(function (e) {
+            HoldOn.open({
+                theme: "sk-cube-grid",
+                message: 'Por favor espere...',
+                textColor: "white"
+            });
+            var arr = $(this)[0].name.split('_');
+            console.log();
+            var solicitud = arr[4];
+            var id_asociacion = arr[2];
+            var institucion = arr[3];
+            var id_categoria_acreditacion = $(this).val();
+
+
+            $.post("{{ path('app_solicitud_programa_academico_aprobar_guardar_cambio_categoria_acreditacion') }}",
+                {
+                    solicitudProgramaAcademico: solicitud,
+                    institucion: institucion,
+                    id: id_asociacion,
+                    categoriaAcreditacion: id_categoria_acreditacion
+                },
+                function (data) {
+                    if (data.status == 200) {
+                        HoldOn.close()
+                        toastr.success("El elemento ha sido guardado satisfactoriamente.");
+                        window.location.href = window.location
+                    } else {
+                        HoldOn.close()
+                        toastr.error(data.message);
+                    }
+                });
+
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Reporte: Programas por Universidad{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 1.5rem; }
+        .card-luxury .card-header { background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px; }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+        
+        .config-table th { background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700; border-color: #e2e8f0; padding: 8px 10px; }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+        .config-table tbody tr:hover { background: #f8fafc; }
+
+        .btn-lux-sm { padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; border: none; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s; }
+        .btn-lux-success { background: #10b981; color: #fff !important; }
+        .btn-lux-success:hover { background: #059669; transform: translateY(-1px); }
+
+        /* Accordion Customization */
+        .search-accordion { margin-bottom: 1rem; }
+        .search-accordion .card { border: none; box-shadow: none; background: transparent; }
+        .search-accordion .card-header { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 12px 20px; transition: all 0.3s; }
+        .search-accordion .card-header:hover { background: #f1f5f9 !important; }
+        .search-accordion .card-title a { color: #134679 !important; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; text-decoration: none !important; }
+        .filter-container { background: #fff; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 20px; margin-top: -2px; }
+        .filter-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-university label-icon"></i>Listado de Programas por Universidad</h3>
+            <div class="ml-auto">
+                <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
+                    <i class="fa fa-file-excel"></i> EXCEL
+                </a>
+            </div>
+        </div>
+
+        <div class="px-4 pt-3">
+            <div class="search-accordion" id="accordion">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title w-100">
+                            <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                                <span><i class="fas fa-filter mr-2"></i>Filtrar resultados</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                        <div class="filter-container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="filter-label" for="universidad">SELECCIONE UNA O VARIAS UNIVERSIDADES <span class="text-danger">*</span></label>
+                                    <select id="universidad" name="universidad[]" multiple
+                                            class="form-control select2"
+                                            data-placeholder="Haga clic para seleccionar">
+                                        {% for item2 in universidad %}
+                                            <option value="{{ item2.id }}"
+                                                    {% if id_universidad is defined and item2.id in id_universidad %}selected{% endif %}>
+                                                {{ item2.nombre }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body px-4 pt-0">
+
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th width="1%">No.</th>
+                    <th>Ministerio</th>
+                    <th>Programa académico</th>
+                    <th>Tipo de programa</th>
+                    <th>Rama de la ciencia</th>
+                    <th>Centro rector</th>
+                    <th>Categoría de acreditación</th>
+                </tr>
+                <tr class="filter-row" style="background: #f8fafc;">
+                    <th></th>
+                    <th><input type="text" placeholder="Filtrar ministerio..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar programa..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar tipo..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar rama..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar centro..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar categoría..." class="filter-header-input responsive-input"/></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.nombre_organismo | default('') }}</td>
+                        <td class="font-weight-bold text-primary">{{ item.programa_academico }}</td>
+                        <td><span class="badge badge-light border">{{ item.tipo_programa_academico | default('') }}</span></td>
+                        <td>{{ item.rama_ciencia | default('') }}</td>
+                        <td>{{ item.centro_rector | default('') }}</td>
+                        <td class="text-center">
+                            {% if item.categoria_acreditacion %}
+                                <span class="badge badge-info shadow-sm" style="font-size: 0.7rem; padding: 4px 8px; border-radius: 4px;">{{ item.categoria_acreditacion }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({ width: '100%' });
+
+            $('#universidad').change(function (e) {
+                var id_universidad = $(this).val();
+
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Filtrando información, por favor espere...',
+                    textColor: "white"
+                });
+
+                $.post("{{ path('app_reporte_programa_academico_por_universidad_filter') }}",
+                    {
+                        id_universidad: id_universidad
+                    })
+                    .done(function (data) {
+                        HoldOn.close();
+                        location.reload();
+                    })
+                    .fail(function (xhr, status, error) {
+                        HoldOn.close();
+                        toastr.error("Ocurrió un error al filtrar por universidad.");
+                    });
+            });
+        });
+    </script>
+{% endblock %}

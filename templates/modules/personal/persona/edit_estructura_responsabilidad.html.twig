@@ -1,0 +1,314 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar Estructura y Responsabilidad{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+    .profile-banner-er {
+        background: linear-gradient(135deg, #134679 0%, #0f3560 100%);
+        height: 90px;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    .profile-avatar-wrap-er {
+        display: flex;
+        justify-content: center;
+        margin-top: -50px;
+        z-index: 2;
+        position: relative;
+    }
+    .profile-avatar-er {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        background: #e9ecef;
+        transition: transform 0.2s ease;
+    }
+    .profile-avatar-er:hover { transform: scale(1.05); }
+    .profile-name-er {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        line-height: 1.3;
+        margin-bottom: 2px;
+    }
+    .profile-ci-er {
+        font-size: 0.8rem;
+        color: #6c757d;
+        letter-spacing: 0.5px;
+    }
+    .card-pro .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 0.875rem;
+    }
+    .card-pro .info-item:last-child { border-bottom: none; }
+    .card-pro .info-item i {
+        width: 18px;
+        text-align: center;
+        color: #134679;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .card-pro .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+    .card-pro .info-value { color: #212529; }
+    .card-pro .form-section-title-er {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .card-pro .form-group label {
+        font-weight: 600;
+        color: #34495e;
+        font-size: 0.875rem;
+    }
+    .card-pro {
+        background:#fff;
+        border-radius:12px;
+        border:none;
+        box-shadow:0 4px 20px rgba(0,0,0,0.08);
+        border-top:4px solid #134679;
+    }
+    .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+    .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; text-decoration:none; }
+    .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+</style>
+{% endblock %}
+
+{% block body %}
+{{ form_start(form) }}
+<div class="row d-flex align-items-stretch">
+
+    {# ── Columna Izquierda: Perfil ── #}
+    <div class="col-md-4 d-flex flex-column pr-3 mb-3">
+        <div class="card-pro h-100" style="display:flex; flex-direction:column;">
+
+            <div class="profile-banner-er"></div>
+
+            <div class="profile-avatar-wrap-er">
+                <img src="{% if persona.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ persona.foto }}{% else %}/assets/images/usuario.png{% endif %}"
+                     class="profile-avatar-er" alt="{{ persona.primerNombre }}">
+            </div>
+
+            <div class="text-center px-3 mt-2 mb-3">
+                <p class="profile-name-er">{{ persona.primerNombre }} {{ persona.segundoNombre }} {{ persona.primerApellido }} {{ persona.segundoApellido }}</p>
+                <p class="profile-ci-er">CI: {{ persona.carnetIdentidad }}</p>
+            </div>
+
+            <hr class="my-0 mx-3">
+
+            <div class="px-3 py-3" style="flex:1;">
+                <p class="text-uppercase font-weight-bold mb-3" style="font-size:0.72rem; color:#6c757d; letter-spacing:0.6px;">
+                    <i class="fas fa-info-circle mr-1" style="color:#134679;"></i> Situación actual
+                </p>
+
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <span class="info-label">Provincia</span>
+                        <span class="info-value">{{ persona.provincia.nombre | default('—') }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-city"></i>
+                    <div>
+                        <span class="info-label">Municipio</span>
+                        <span class="info-value">{{ persona.municipio.nombre | default('—') }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-sitemap"></i>
+                    <div>
+                        <span class="info-label">Estructura actual</span>
+                        <span class="info-value">{{ persona.estructura.nombre | default('—') }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user-tag"></i>
+                    <div>
+                        <span class="info-label">Responsabilidad actual</span>
+                        <span class="info-value">{{ persona.responsabilidad.nombre | default('—') }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <span class="info-label">Usuario del sistema</span>
+                        <span class="info-value" style="word-break:break-all;">{{ persona.usuario.email | default('—') }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# ── Columna Derecha: Formulario ── #}
+    <div class="col-md-8 d-flex flex-column mb-3">
+        <div class="card-pro h-100" style="display:flex; flex-direction:column;">
+
+            <div class="px-4 pt-4 pb-3 border-bottom">
+                <h3 class="m-0 font-weight-bold" style="font-size:1.3rem; color:#2c3e50;">
+                    Modificar Estructura y Responsabilidad
+                </h3>
+                <p class="text-muted mb-0 mt-1" style="font-size:0.85rem;">
+                    Seleccione la nueva categoría, estructura y responsabilidad para la persona.
+                </p>
+            </div>
+
+            <div class="px-4 py-4" style="flex:1;">
+                <h5 class="form-section-title-er">
+                    <i class="fas fa-sitemap mr-2" style="color:#134679;"></i>Nueva Plantilla
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        {{ form_label(form.categoriaEstructura) }}
+                        {{ form_widget(form.categoriaEstructura, {'attr': {'class': 'form-control custom-select'}}) }}
+                        {{ form_errors(form.categoriaEstructura) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        {{ form_label(form.estructura) }}
+                        {{ form_widget(form.estructura, {'attr': {'class': 'form-control custom-select'}}) }}
+                        {{ form_errors(form.estructura) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        {{ form_label(form.responsabilidad) }}
+                        {{ form_widget(form.responsabilidad, {'attr': {'class': 'form-control custom-select'}}) }}
+                        {{ form_errors(form.responsabilidad) }}
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0 d-flex align-items-start" style="border-radius:0.5rem; font-size:0.85rem;">
+                    <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
+                    <span>Al modificar la estructura o responsabilidad se creará una <strong>nueva entrada en la plantilla</strong> y la anterior quedará inactiva.</span>
+                </div>
+            </div>
+
+            <div class="px-4 py-3 bg-light border-top d-flex justify-content-end align-items-center" style="border-radius:0 0 0.75rem 0.75rem;">
+                <a class="btn-fs-cancel mr-2 btn-cancel"
+                   data-url="{{ path('app_persona_index') }}"
+                   data-title="Confirmar cancelación"
+                   data-content="¿Está seguro que desea cancelar?" type="button">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button class="btn-fs-submit" id="btn-guardar-er">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<div style="display:none;">{{ form_rest(form) }}</div>
+{{ form_end(form, {'render_rest': false}) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('#btn-guardar-er').click(function () {
+            HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+        });
+
+        // ── Pre-cargar selects con los valores actuales de la persona ──────
+        var currentCategoriaId   = {{ persona.categoriaEstructura.id | default('null') }};
+        var currentEstructuraId  = {{ persona.estructura.id | default('null') }};
+        var currentResponsabilidadId = {{ persona.responsabilidad.id | default('null') }};
+
+        function initSelects() {
+            if (!currentCategoriaId) return;
+
+            // 1. Seleccionar la categoría actual
+            $('#plantilla_categoriaEstructura').val(currentCategoriaId);
+
+            // 2. Cargar estructuras de esa categoría y seleccionar la actual
+            var urlEstructura = "{{ path('app_estructura_dado_categoria', {'id':'idP'}) }}".replace('idP', currentCategoriaId);
+            $.get(urlEstructura, function (data) {
+                $('#plantilla_estructura option').remove();
+                $('#plantilla_estructura').append(new Option('Seleccione', ""));
+                for (var i = 0; i < data.length; i++) {
+                    $('#plantilla_estructura').append(new Option(data[i].nombre, data[i].id));
+                }
+                if (currentEstructuraId) {
+                    $('#plantilla_estructura').val(currentEstructuraId);
+
+                    // 3. Cargar responsabilidades de esa estructura y seleccionar la actual
+                    var urlResp = "{{ path('app_responsabilidad_dado_estructura', {'id':'idP'}) }}".replace('idP', currentEstructuraId);
+                    $.get(urlResp, function (respData) {
+                        $('#plantilla_responsabilidad option').remove();
+                        $('#plantilla_responsabilidad').append(new Option('Seleccione', ""));
+                        for (var j = 0; j < respData.length; j++) {
+                            $('#plantilla_responsabilidad').append(new Option(respData[j].nombre, respData[j].id));
+                        }
+                        if (currentResponsabilidadId) {
+                            $('#plantilla_responsabilidad').val(currentResponsabilidadId);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Ejecutar al cargar la página
+        $(document).ready(function () {
+            initSelects();
+        });
+
+        // ── Cambio dinámico de categoría ── 
+        $('#plantilla_categoriaEstructura').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+                var url = "{{ path('app_estructura_dado_categoria', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#plantilla_estructura option').remove();
+                    $('#plantilla_estructura').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#plantilla_estructura').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    $('#plantilla_responsabilidad option').remove();
+                    $('#plantilla_responsabilidad').append(new Option('Seleccione', ""));
+                    HoldOn.close()
+                });
+            } else {
+                $('#plantilla_estructura option').remove();
+                $('#plantilla_estructura').append(new Option('Seleccione', ""));
+                $('#plantilla_responsabilidad option').remove();
+                $('#plantilla_responsabilidad').append(new Option('Seleccione', ""));
+            }
+        });
+
+        // ── Cambio dinámico de estructura ──
+        $('#plantilla_estructura').on('change', function () {
+            if ($(this).val() != "") {
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+                var url = "{{ path('app_responsabilidad_dado_estructura', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#plantilla_responsabilidad option').remove();
+                    $('#plantilla_responsabilidad').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#plantilla_responsabilidad').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Países{% endblock %}
+
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-globe-americas label-icon"></i>Listado de países</h3>
+        </div>
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>ISO2</th>
+                    <th>ISO3</th>
+                    <th>Código telefónico</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pais in pais %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ pais.nombre | default('') }}</td>
+                        <td>{{ pais.iso2 | default('') }}</td>
+                        <td>{{ pais.iso3 | default('') }}</td>
+                        <td>{{ pais.codigoTelefonico | default('') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

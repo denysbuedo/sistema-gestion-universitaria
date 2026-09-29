@@ -1,0 +1,560 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Nueva Ficha de Salida{% endblock %}
+
+{% block body %}
+{% include 'modules/tramite/ficha_salida/_fs_styles.html.twig' %}
+
+
+{# Título #}
+<div class="fs-title">
+    Nueva Ficha de Salida
+    <small>Complete los campos requeridos (<span style="color:#e53e3e">*</span>) para registrar la solicitud</small>
+</div>
+
+{# Persona #}
+<div class="fs-persona">
+    <img class="fs-persona-avatar"
+         src="{% if persona.foto is not null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ persona.foto }}{% else %}/assets/images/usuario.png{% endif %}"
+         alt="{{ persona.primerNombre }}">
+    <div>
+        <p class="fs-persona-name">{{ persona.primerNombre }} {{ persona.segundoNombre }} {{ persona.primerApellido }} {{ persona.segundoApellido }}</p>
+        <div class="fs-persona-meta">
+            <span><i class="fas fa-id-card"></i>{{ persona.carnetIdentidad }}</span>
+            {% if persona.responsabilidad is not null %}<span><i class="fas fa-briefcase"></i>{{ persona.responsabilidad.nombre }}</span>{% endif %}
+            {% if persona.estructura is not null %}<span><i class="fas fa-building"></i>{{ persona.estructura.nombre }}</span>{% endif %}
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="idPersona" value="{{ persona.id }}" id="idPersona">
+
+{{ form_start(form) }}
+
+{# Sección 1 — Destino #}
+<div class="fs-section">
+    <div class="fs-section-title"><i class="fas fa-globe-americas"></i> Destino y concepto</div>
+    <div class="fs-section-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Clasificación <span class="req">*</span></label>
+                {{ form_widget(form.clasificacion) }}
+                {{ form_errors(form.clasificacion) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Institución cubana <span class="req">*</span></label>
+                {{ form_widget(form.institucionCubana) }}
+                {{ form_errors(form.institucionCubana) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">País de destino <span class="req">*</span></label>
+                {{ form_widget(form.pais) }}
+                {{ form_errors(form.pais) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Institución extranjera</label>
+                {{ form_widget(form.institucionExtranjera) }}
+                {{ form_errors(form.institucionExtranjera) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Ciudad extranjera</label>
+                {{ form_widget(form.provinciaExtranjera, {'attr': {'placeholder': 'Ej: Madrid'}}) }}
+                {{ form_errors(form.provinciaExtranjera) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Concepto de salida <span class="req">*</span></label>
+                {{ form_widget(form.conceptoSalida) }}
+                {{ form_errors(form.conceptoSalida) }}
+            </div>
+            {# Selector oculto — envía IDs al servidor #}
+            <div style="display:none">
+                {{ form_widget(form.conceptoGasto) }}
+            </div>
+
+            {# Selector visible de conceptos de gasto #}
+            <div class="col-12 form-group" id="gastos-section">
+                <label class="fs-label">Conceptos de gasto <span class="req">*</span></label>
+                <div class="fs-gastos-selector">
+                    <select id="gasto-select-visible">
+                        <option value="">Seleccione</option>
+                    </select>
+                    <button type="button" id="btn-add-gasto" class="btn-fs-add">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+                <div id="gastos-error" class="invalid-feedback" style="display:none">
+                    Seleccione al menos un concepto de gasto.
+                </div>
+                {{ form_errors(form.conceptoGasto) }}
+            </div>
+
+            {# Tabla dinámica — visible cuando hay gastos seleccionados #}
+            <div class="col-12 mb-3" id="gastos-table-wrap" style="display:none">
+                <div class="fs-gastos-table-container">
+                    <table class="fs-gastos-table">
+                        <thead>
+                            <tr>
+                                <th>Concepto de Gasto</th>
+                                <th class="th-center" style="width: 200px;">Asumido por</th>
+                                <th class="th-center" style="width: 120px;">Monto (USD)</th>
+                                <th class="th-action"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="gastos-tbody"></tbody>
+                        <tfoot id="gastos-tfoot" style="display: none;">
+                            <tr>
+                                <td colspan="2" style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL (USD)</td>
+                                <td id="gastos-total-usd" style="text-align: center; font-weight: bold; color: #134679;">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 form-group">
+                <label class="fs-label">Objetivo de la misión</label>
+                {{ form_widget(form.Objetivo, {'attr': {'rows': 3, 'placeholder': 'Describa el objetivo principal de esta salida al exterior...'}}) }}
+                {{ form_errors(form.Objetivo) }}
+            </div>
+            <div class="col-12 form-group">
+                <label class="fs-label">Mandatos de la misión</label>
+                {{ form_widget(form.mandatosMision, {'attr': {'rows': 3, 'placeholder': 'Detalle los mandatos y tareas asignadas...'}}) }}
+                {{ form_errors(form.mandatosMision) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Sección 2 — Fechas #}
+<div class="fs-section">
+    <div class="fs-section-title"><i class="far fa-calendar-alt"></i> Fechas y duración</div>
+    <div class="fs-section-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Fecha de salida prevista <span class="req">*</span></label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                    {{ form_widget(form.fechaSalidaPrevista, {'attr': {'placeholder': 'DD/MM/AAAA', 'autocomplete': 'off'}}) }}
+                </div>
+                {{ form_errors(form.fechaSalidaPrevista) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Fecha de regreso prevista <span class="req">*</span></label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                    {{ form_widget(form.fechaRegresoPrevista, {'attr': {'placeholder': 'DD/MM/AAAA', 'autocomplete': 'off'}}) }}
+                </div>
+                {{ form_errors(form.fechaRegresoPrevista) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 form-group">
+                <label class="fs-label">Tiempo de estancia <small class="text-muted">(días)</small></label>
+                {{ form_widget(form.tiempoEstancia, {'attr': {'placeholder': 'Ej: 15'}}) }}
+                {{ form_errors(form.tiempoEstancia) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Sección 3 — Pasaporte #}
+<div class="fs-section">
+    <div class="fs-section-title"><i class="fas fa-passport"></i> Datos del pasaporte</div>
+    <div class="fs-section-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-3 form-group">
+                <label class="fs-label">Tipo de pasaporte <span class="req">*</span></label>
+                {{ form_widget(form.tipoPasaporte) }}
+                {{ form_errors(form.tipoPasaporte) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 form-group">
+                <label class="fs-label">Número de pasaporte</label>
+                {{ form_widget(form.numeroPasaporte, {'attr': {'placeholder': 'Ej: A1234567'}}) }}
+                {{ form_errors(form.numeroPasaporte) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 form-group">
+                <label class="fs-label">Fecha de emisión</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                    {{ form_widget(form.fechaEmisionPasaporte, {'attr': {'placeholder': 'DD/MM/AAAA', 'autocomplete': 'off'}}) }}
+                </div>
+                {{ form_errors(form.fechaEmisionPasaporte) }}
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 form-group">
+                <label class="fs-label">Fecha de caducidad</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                    {{ form_widget(form.fechaCaducidadPasaporte, {'attr': {'placeholder': 'DD/MM/AAAA', 'autocomplete': 'off'}}) }}
+                </div>
+                {{ form_errors(form.fechaCaducidadPasaporte) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Sección 4 — Adjunto #}
+<div class="fs-section">
+    <div class="fs-section-title"><i class="fas fa-paperclip"></i> Documentación adjunta</div>
+    <div class="fs-section-body">
+        <div class="row">
+            <div class="col-12 form-group">
+                <label class="fs-label">Carta de invitación</label>
+                <div class="fs-file-zone" id="fs-file-zone">
+                    <div class="fs-file-icon"><i class="fas fa-file-upload"></i></div>
+                    <div class="fs-file-info">
+                        <span id="fs-file-text">Ningún archivo seleccionado</span>
+                        <small>Formatos aceptados: PDF, JPG, PNG, DOC</small>
+                    </div>
+                    <button type="button" class="fs-file-btn" id="fs-file-btn">Seleccionar archivo</button>
+                </div>
+                <div style="display:none">{{ form_widget(form.cartaInvitacion) }}</div>
+                {{ form_errors(form.cartaInvitacion) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Acciones #}
+<div class="fs-actions">
+    <a class="btn-fs-cancel btn-cancel"
+       data-url="{{ path('app_ficha_salida_index') }}"
+       data-title=""
+       data-content="¿Está seguro que desea cancelar?"
+       href="#">
+        <i class="fas fa-times mr-1"></i> CANCELAR
+    </a>
+    <button id="btn_aceptar" class="btn-fs-submit">
+        <i class="fas fa-save mr-1"></i> ACEPTAR
+    </button>
+</div>
+
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    /* ── Zona de archivo ── */
+    var $zone  = $('#fs-file-zone');
+    var $input = $('#{{ form.cartaInvitacion.vars.id }}');
+
+    $('#fs-file-btn').on('click', function (e) { e.stopPropagation(); $input.trigger('click'); });
+    $zone.on('click', function () { $input.trigger('click'); });
+
+    $input.on('change', function () {
+        var file = this.files[0];
+        if (file) {
+            $zone.addClass('has-file');
+            $zone.find('.fs-file-icon i').attr('class', 'fas fa-file-check');
+            $('#fs-file-text').text(file.name);
+            $zone.find('small').text((file.size / 1024).toFixed(1) + ' KB');
+            $('#fs-file-btn').text('Cambiar archivo');
+        }
+    });
+
+    $zone.on('dragover', function (e) { e.preventDefault(); $zone.css('border-color', '#134679'); });
+    $zone.on('dragleave', function ()  { $zone.css('border-color', ''); });
+    $zone.on('drop', function (e) {
+        e.preventDefault();
+        $zone.css('border-color', '');
+        var file = e.originalEvent.dataTransfer.files[0];
+        if (file) {
+            var dt = new DataTransfer();
+            dt.items.add(file);
+            $input[0].files = dt.files;
+            $input.trigger('change');
+        }
+    });
+
+    /* ── Validación ── */
+    function setFieldError($el, msg) {
+        $el.addClass('is-invalid');
+        if ($el.next('.invalid-feedback').length === 0) {
+            $el.after('<div class="invalid-feedback">' + msg + '</div>');
+        }
+    }
+    function clearFieldError($el) {
+        $el.removeClass('is-invalid');
+        $el.next('.invalid-feedback').remove();
+    }
+
+    $('#btn_aceptar').on('click', function (e) {
+        e.preventDefault();
+        var valid = true;
+        var msg = 'Este campo es obligatorio.';
+
+        ['#ficha_salida_clasificacion', '#ficha_salida_institucionCubana', '#ficha_salida_pais',
+         '#ficha_salida_conceptoSalida',   '#ficha_salida_tipoPasaporte'].forEach(function (id) {
+            var $el = $(id);
+            if (!$el.val()) { setFieldError($el, msg); valid = false; }
+            else { clearFieldError($el); }
+        });
+
+        var $cg = $('#ficha_salida_conceptoGasto');
+        var selectedGastos = [];
+        $('#gastos-tbody tr').each(function() {
+            selectedGastos.push($(this).find('.td-nombre').text().trim().toLowerCase());
+        });
+
+        if (!$cg.val() || $cg.val().length === 0) {
+            $('#gastos-error').text('Debe seleccionar al menos un concepto de gasto.').show();
+            valid = false;
+        } else {
+            // Validar Hospedaje, Pasaje y Alojamiento
+            var hasHospedaje = selectedGastos.some(g => g.includes('hospedaje') || g.includes('alojamiento'));
+            var hasPasaje = selectedGastos.some(g => g.includes('pasaje'));
+
+            if (!hasHospedaje || !hasPasaje) {
+                $('#gastos-error').html('<strong>Error:</strong> Es obligatorio incluir <strong>Pasaje</strong> y <strong>Hospedaje/Alojamiento</strong> en los conceptos de gasto.').show();
+                valid = false;
+            } else {
+                $('#gastos-error').hide();
+            }
+
+            // Validar 'Asumido por' y montos
+            $('#gastos-tbody tr').each(function() {
+                var id = $(this).data('id');
+                var $row = $(this);
+                var $asumeRadio = $('input[name="gasto_asume_' + id + '"]:checked');
+                var asume = $asumeRadio.val();
+
+                if (!asume) {
+                    $row.find('.td-check').css('border', '1px solid #e53e3e').css('border-radius', '4px');
+                    $('#gastos-error').text('Debe seleccionar quién asume cada gasto.').show();
+                    valid = false;
+                } else {
+                    $row.find('.td-check').css('border', 'none');
+                    if (asume === 'institucion') {
+                        var $monto = $('input[name="gasto_monto_' + id + '"]');
+                        if (!$monto.val() || parseFloat($monto.val()) <= 0) {
+                            setFieldError($monto, 'Requerido');
+                            valid = false;
+                        } else {
+                            clearFieldError($monto);
+                        }
+                    }
+                }
+            });
+        }
+
+        var $fs = $('#ficha_salida_fechaSalidaPrevista');
+        if (!$fs.val() || !$fs.val().trim()) { setFieldError($fs, msg); valid = false; }
+        else { clearFieldError($fs); }
+
+        var $fr = $('#ficha_salida_fechaRegresoPrevista');
+        if (!$fr.val() || !$fr.val().trim()) { setFieldError($fr, msg); valid = false; }
+        else { clearFieldError($fr); }
+
+        if (!valid) {
+            var $first = $('.is-invalid').first();
+            if ($first.length) $('html,body').animate({ scrollTop: $first.offset().top - 100 }, 250);
+            return;
+        }
+
+        var $btn = $('#btn_aceptar');
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+        HoldOn.open({ theme: 'sk-cube-grid', message: 'Guardando...', textColor: 'white' });
+        $('form[name="ficha_salida"]').submit();
+    });
+
+    $(document).on('change', '#ficha_salida_clasificacion,#ficha_salida_institucionCubana,#ficha_salida_pais,#ficha_salida_conceptoSalida,#ficha_salida_tipoPasaporte,#ficha_salida_conceptoGasto', function () {
+        clearFieldError($(this));
+    });
+    $('#ficha_salida_fechaSalidaPrevista,#ficha_salida_fechaRegresoPrevista').on('dp.change change', function () {
+        clearFieldError($(this));
+    });
+
+    /* ── Gastos dinámicos ── */
+    $(document).ready(function () {
+        // Copiar opciones del multi-select oculto al selector visible
+        $('#ficha_salida_conceptoGasto option').each(function () {
+            if ($(this).val()) {
+                $('#gasto-select-visible').append(
+                    $('<option>').val($(this).val()).text($(this).text())
+                );
+            }
+        });
+
+        // Función para agregar fila de gasto
+        function addGastoRow(id, nombre, data = {}) {
+            if ($('#gastos-tbody tr[data-id="' + id + '"]').length > 0) return;
+
+            var asumidoPor = data.asumidoPor || null;
+            var monto = data.monto || '';
+            var isMandatory = (nombre.toLowerCase().includes('hospedaje') || nombre.toLowerCase().includes('pasaje') || nombre.toLowerCase().includes('alojamiento'));
+
+            $('#ficha_salida_conceptoGasto option[value="' + id + '"]').prop('selected', true);
+            $('#gasto-select-visible option[value="' + id + '"]').prop('disabled', true);
+
+            var $toggle = $('<div>').addClass('asume-toggle').append(
+                $('<label>').addClass('asume-opt').append(
+                    $('<input>').attr({ type: 'radio', name: 'gasto_asume_' + id, value: 'extranjera' }).prop('checked', asumidoPor === 'extranjera'),
+                    $('<span>').text('Extranjera')
+                ),
+                $('<label>').addClass('asume-opt').append(
+                    $('<input>').attr({ type: 'radio', name: 'gasto_asume_' + id, value: 'institucion' }).prop('checked', asumidoPor === 'institucion'),
+                    $('<span>').text('Institución')
+                )
+            );
+
+            var $row = $('<tr>').attr('data-id', id).append(
+                $('<td>').addClass('td-nombre').text(nombre),
+                $('<td>').addClass('td-check').append($toggle),
+                $('<td>').addClass('td-monto').append(
+                    $('<input>').attr({
+                        type: 'number',
+                        step: '0.01',
+                        name: 'gasto_monto_' + id,
+                        class: 'form-control form-control-sm text-center input-monto-gasto',
+                        placeholder: '0.00'
+                    }).css('display', asumidoPor === 'institucion' ? 'block' : 'none')
+                      .val(monto)
+                ),
+                $('<td>').addClass('td-action').append(
+                    isMandatory ? '' : $('<button>').attr({ type: 'button', class: 'btn-gasto-delete', 'data-id': id })
+                        .append($('<i>').addClass('fas fa-times'))
+                )
+            );
+
+            $('#gastos-tbody').append($row);
+            $('#gastos-table-wrap').show();
+            $('#gastos-tfoot').show();
+            $('#gastos-error').hide();
+            calculateTotalUsd();
+        }
+
+        $('#btn-add-gasto').on('click', function () {
+            var $sel = $('#gasto-select-visible');
+            var id   = $sel.val();
+            if (!id) return;
+            var nombre = $sel.find('option:selected').text().trim();
+            addGastoRow(id, nombre);
+            $sel.val('');
+        });
+
+        // Auto-agregar Hospedaje/Alojamiento y Pasaje al inicio
+        function autoAddMandatory() {
+            $('#gasto-select-visible option').each(function() {
+                var txt = $(this).text().trim().toLowerCase();
+                if (txt === 'pasaje' || txt === 'alojamiento' || txt === 'hospedaje' || txt.indexOf('pasaje') !== -1 || txt.indexOf('alojamiento') !== -1 || txt.indexOf('hospedaje') !== -1) {
+                    addGastoRow($(this).val(), $(this).text());
+                }
+            });
+        }
+
+        setTimeout(autoAddMandatory, 100);
+
+        $(document).on('change', 'input[type="radio"][name^="gasto_asume_"]', function() {
+            var id = $(this).attr('name').replace('gasto_asume_', '');
+            var $montoInput = $('input[name="gasto_monto_' + id + '"]');
+            if ($(this).val() === 'institucion') {
+                $montoInput.show().attr('required', true);
+            } else {
+                $montoInput.hide().val('').removeAttr('required');
+                calculateTotalUsd();
+            }
+        });
+
+        $(document).on('input', '.input-monto-gasto', function() {
+            calculateTotalUsd();
+        });
+
+        function calculateTotalUsd() {
+            var total = 0;
+            $('.input-monto-gasto:visible').each(function() {
+                var val = parseFloat($(this).val());
+                if (!isNaN(val)) total += val;
+            });
+            $('#gastos-total-usd').text(total.toFixed(2));
+        }
+
+
+
+        $(document).on('click', '.btn-gasto-delete', function () {
+            var id = $(this).data('id');
+            $('#ficha_salida_conceptoGasto option[value="' + id + '"]').prop('selected', false);
+            $('#gasto-select-visible option[value="' + id + '"]').prop('disabled', false);
+            $('#gastos-tbody tr[data-id="' + id + '"]').remove();
+            if ($('#gastos-tbody tr').length === 0) {
+                $('#gastos-table-wrap').hide();
+                $('#gastos-tfoot').hide();
+            }
+            calculateTotalUsd();
+        });
+    });
+
+    /* ── Datepickers ── */
+    $(document).ready(function () {
+        var today = moment();
+
+        $('#ficha_salida_fechaEmisionPasaporte').datetimepicker({ format: 'DD/MM/YYYY', maxDate: today });
+        $('#ficha_salida_fechaCaducidadPasaporte').datetimepicker({ format: 'DD/MM/YYYY', useCurrent: false });
+        $('#ficha_salida_fechaEmisionPasaporte').on('dp.change', function (e) {
+            $('#ficha_salida_fechaCaducidadPasaporte').data('DateTimePicker')
+                .minDate(e.date ? moment(e.date).add(1, 'days') : false);
+        });
+
+        $('#ficha_salida_fechaSalidaPrevista').datetimepicker({ format: 'DD/MM/YYYY', minDate: today });
+        $('#ficha_salida_fechaRegresoPrevista').datetimepicker({ format: 'DD/MM/YYYY', useCurrent: false });
+
+        function calculateStayTime() {
+            var start = $('#ficha_salida_fechaSalidaPrevista').data("DateTimePicker").date();
+            var end = $('#ficha_salida_fechaRegresoPrevista').data("DateTimePicker").date();
+
+            if (start && end) {
+                var days = end.diff(start, 'days');
+                // Generalmente se cuenta el día de llegada como +1 dependiendo de la política,
+                // Pero usaremos la diferencia exacta de días por ahora.
+                $('#ficha_salida_tiempoEstancia').val(days >= 0 ? days : 0);
+            }
+        }
+
+        $('#ficha_salida_fechaSalidaPrevista').on('dp.change', function (e) {
+            if (e.date) {
+                $('#ficha_salida_fechaRegresoPrevista').data('DateTimePicker').minDate(moment(e.date).add(1, 'days'));
+            }
+            calculateStayTime();
+        });
+        $('#ficha_salida_fechaRegresoPrevista').on('dp.change', function (e) {
+            var dep = $('#ficha_salida_fechaSalidaPrevista').data('DateTimePicker').date();
+            if (e.date && dep && e.date.isSameOrBefore(dep)) {
+                toastr.warning('La fecha de regreso debe ser posterior a la fecha de salida.');
+                $('#ficha_salida_fechaRegresoPrevista').data('DateTimePicker').clear();
+            }
+            calculateStayTime();
+        });
+    });
+
+    /* ── País → instituciones extranjeras ── */
+    $('#ficha_salida_pais').on('change', function () {
+        if (!$(this).val()) return;
+        HoldOn.open({ theme: 'sk-cube-grid', message: 'Por favor espere...', textColor: 'white' });
+        var url = "{{ path('app_institucion_extranjera_institucion_dado_pais', {'id':'idP'}) }}".replace('idP', $(this).val());
+        $.get(url, function (data) {
+            var $sel = $('#ficha_salida_institucionExtranjera');
+            $sel.find('option').remove();
+            $sel.append(new Option('Seleccione', ''));
+            data.forEach(function (d) { $sel.append(new Option(d.nombre, d.id)); });
+            HoldOn.close();
+        });
+    });
+
+    /* ── Tipo pasaporte → datos pasaporte ── */
+    $('#ficha_salida_tipoPasaporte').on('change', function () {
+        if (!$(this).val()) return;
+        HoldOn.open({ theme: 'sk-cube-grid', message: 'Por favor espere...', textColor: 'white' });
+        var url = "{{ path('app_pasaporte_get_pasaporte_dado_tipo', {'tipo':'idP', 'idPersona':'userP'}) }}"
+            .replace('idP', $(this).val()).replace('userP', $('#idPersona').val());
+        $.get(url, function (data) {
+            $('#ficha_salida_numeroPasaporte').val('');
+            $('#ficha_salida_fechaEmisionPasaporte').val('');
+            $('#ficha_salida_fechaCaducidadPasaporte').val('');
+            if (data.fechaEmisionPasaporte !== undefined) {
+                var fmt = function (iso) { var p = iso.split('T')[0].split('-'); return p[2]+'/'+p[1]+'/'+p[0]; };
+                $('#ficha_salida_numeroPasaporte').val(data.numeroPasaporte);
+                $('#ficha_salida_fechaEmisionPasaporte').val(fmt(data.fechaEmisionPasaporte));
+                $('#ficha_salida_fechaCaducidadPasaporte').val(fmt(data.fechaCaducidadPasaporte));
+            }
+            HoldOn.close();
+        });
+    });
+</script>
+{% endblock %}

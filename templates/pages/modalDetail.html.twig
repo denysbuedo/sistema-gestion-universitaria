@@ -1,0 +1,31 @@
+<style>
+    #modalDetail .modal-content { border-radius:12px; border:none; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+    #modalDetail .modal-header { background:#134679; color:#fff; border-top-left-radius:12px; border-top-right-radius:12px; padding:18px 24px; border-bottom:none; }
+    #modalDetail .modal-title { font-weight:700; font-size:1rem; }
+    #modalDetail .modal-header .close { color:#fff; opacity:0.8; text-shadow:none; }
+    #modalDetail .modal-header .close:hover { opacity:1; }
+    #modalDetail .modal-footer { background:#f8f9fa; border-bottom-left-radius:12px; border-bottom-right-radius:12px; border-top:1px solid #e9ecef; }
+    #modalDetail .modal-footer .btn-modal-close { background:#f1f5f9; color:#475569; font-weight:700; font-size:0.82rem; padding:8px 20px; border-radius:8px; border:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s; }
+    #modalDetail .modal-footer .btn-modal-close:hover { background:#e2e8f0; color:#1e293b; }
+</style>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetail" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold" id="modalDetailLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modalDetailBody p-4">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-close" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

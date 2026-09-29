@@ -1,0 +1,401 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard | Akademos MES{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --primary-color: #0b2242; /* Deep Navy Blue */
+            --secondary-color: #1a4478; /* Sapphire */
+            --accent-color: #c5a05f; /* Elegant gold */
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            color: white;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(11, 34, 66, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="rgba(255,255,255,0.05)" fill-rule="evenodd"/></svg>');
+            pointer-events: none;
+        }
+
+        .welcome-text h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-text p {
+            font-size: 1.1rem;
+            margin: 0;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .date-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 26px;
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        /* Grid */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card Design */
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2.2rem 2rem;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(11, 34, 66, 0.08);
+            border-color: rgba(11, 34, 66, 0.1);
+        }
+
+        .module-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background: rgba(26, 68, 120, 0.06);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+        
+        .icon-wrapper i {
+            font-size: 1.6rem;
+        }
+
+        .module-card:hover .icon-wrapper {
+            background: var(--secondary-color);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(26, 68, 120, 0.2);
+        }
+
+        .module-info h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .module-info p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            opacity: 0;
+            transform: translateX(-15px);
+            transition: var(--transition);
+        }
+
+        .module-card:hover .card-footer {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .card-footer i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .module-card:hover .card-footer i {
+            transform: translateX(6px);
+        }
+
+        /* Utilities */
+        .sidebar {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+            background: var(--bg-color) !important;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+                padding: 2rem;
+            }
+            .dashboard-wrapper {
+                padding: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-wrapper">
+        
+        <!-- Hero Section -->
+        <div class="welcome-banner">
+            <div class="welcome-text">
+                <h1>Panel de Control Integrado</h1>
+                <p>Akademos MES - Plataforma de Gestión de la Educación Superior</p>
+            </div>
+            <div class="date-badge">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="current-date">--</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Módulos del Sistema</h2>
+
+        <!-- Cards Grid -->
+        <div class="modules-grid">
+            
+            {% if hasRoles('ROLE_HOME_PREGR') %}
+            <!-- Módulo Pregrado -->
+            <div class="module-card" onclick="window.location='{{ path('app_pregrado_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Pregrado</h3>
+                    <p>Gestión integral de programas académicos de pregrado, expedientes de estudiantes, planes de estudio y procesos de matriculación.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_HOME_POSTG') or hasRoles('ROLE_GEST_REPORTE_GRADO_CIENTIFICO') or hasRoles('ROLE_GEST_REPORTE_FORMACION_ACADEMICA')
+                or hasRoles('ROLE_GEST_FORMACION_DOCTORES') or hasRoles('ROLE_GEST_CENTRO_AUTORIZADO') or hasRoles('ROLE_GEST_COMISION') or hasRoles('ROLE_GEST_COPEP')
+                or hasRoles('ROLE_GEST_TIP_SOLICITUD_POST') or hasRoles('ROLE_GEST_ROLESPOS') or hasRoles('ROLE_GEST_RAMCIENC') or hasRoles('ROLE_GEST_TIPPROGRAM') %}
+            <!-- Módulo Posgrado -->
+            <div class="module-card" onclick="window.location='{{ path('app_postgrado_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Posgrado</h3>
+                    <p>Administración avanzada de programas de maestría, doctorado, especialidades de posgrado y cursos de superación profesional.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_HOME_CONVENIO') or hasRoles('ROLE_HOME_TRAMITES') or hasRoles('ROLE_HOME_COOPERACION') or hasRoles('ROLE_HOME_VISITA') or hasRoles('ROLE_HOME_ECONOMIA') %}
+            <!-- Módulo Internacionalización -->
+            <div class="module-card" onclick="window.location='{{ path('app_convenio_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Internacionalización</h3>
+                    <p>Gestión estratégica de convenios, proyectos de cooperación internacional, movilidad académica y relaciones exteriores institucionales.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_GEST_CONVOCATORIA') or hasRoles('ROLE_GEST_SOLICITUD')
+                or hasRoles('ROLE_GEST_PLAN_ANUAL_EVALUACION')
+                or hasRoles('ROLE_GEST_INFORME_AUTOEVALUACION')
+                or hasRoles('ROLE_GEST_ESTADO_SOLICITUD')
+                or hasRoles('ROLE_GEST_ESTADO_APLAZAMIENTO')
+                or hasRoles('ROLE_GEST_COMISION_EVALUADORA')
+                or hasRoles('ROLE_GEST_APLAZAMIENTO')
+                or hasRoles('ROLE_GEST_ROL_COMISION')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_PREGRADO')
+                or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_POSGRADO') %}
+            <!-- Módulo Evaluación y Acreditación -->
+            <div class="module-card" onclick="window.location='{{ path('app_evaluacion_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Evaluación y Acreditación</h3>
+                    <p>Seguimiento de procesos de evaluación institucional, autoestudio, aseguramiento de la calidad y acreditación de programas y entidades.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_GEST_MARCA')
+                or hasRoles('ROLE_GEST_PUBLICO_OBJETIVO')
+                or hasRoles('ROLE_GEST_SISTEMA_OPERATIVO')
+                or hasRoles('ROLE_GEST_TIPO_CONECTIVIDAD')
+                or hasRoles('ROLE_GEST_TIPO_SISTEMA')
+                or hasRoles('ROLE_GEST_VISIBILIDAD')
+                or hasRoles('ROLE_GEST_ENLACE_CONECTIVIDAD')
+                or hasRoles('ROLE_GEST_NAUTA_HOGAR')
+                or hasRoles('ROLE_GEST_LINEA_CELULAR')
+                or hasRoles('ROLE_GEST_TELEFONO_CELULAR')
+                or hasRoles('ROLE_GEST_SISTEMA_INFORMATICO')
+                or hasRoles('ROLE_GEST_CENTRO_DATO_VIRTUAL') %}
+            <!-- Módulo Informatización -->
+            <div class="module-card" onclick="window.location='{{ path('app_informatizacion_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Informatización</h3>
+                    <p>Centro de control para la infraestructura tecnológica, gestión de sistemas informáticos, conectividad y recursos digitales universitarios.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') or hasRoles('ROLE_RRHH_REPORTE_AE2_CONSOLIDADO')
+                or hasRoles('ROLE_RRHH_REPORTE_AE2') or hasRoles('ROLE_RRHH_REPORTE_AE3') or
+                hasRoles('ROLE_RRHH_GEST_ESPECIALIDAD') or
+                hasRoles('ROLE_RRHH_REPORTE_AE2_MES') %}
+            <!-- Módulo Recursos Humanos -->
+            <div class="module-card" onclick="window.location='{{ path('app_rrhh_portada') }}'">
+                <div class="icon-wrapper">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div class="module-info">
+                    <h3>Recursos Humanos</h3>
+                    <p>Administración del capital humano, gestión de categorías docentes, evaluaciones de desempeño y desarrollo profesional del personal.</p>
+                </div>
+                <div class="card-footer">
+                    Acceder al módulo <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date with elegant format
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = new Date().toLocaleDateString('es-ES', dateOptions);
+            const dateElem = document.getElementById('current-date');
+            if (dateElem) {
+                dateElem.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+            }
+        });
+    </script>
+{% endblock %}

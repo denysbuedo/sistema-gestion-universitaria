@@ -1,0 +1,33 @@
+{% import 'pages/_detail_macros.html.twig' as dm %}
+{% include 'pages/_detail_styles.html.twig' %}
+
+<div class="detail-section">
+    <div class="detail-section-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>Datos generales</h3>
+    </div>
+    <div class="detail-section-body">
+        <div class="row">
+            <div class="col-md-4">
+                {{ dm.field('Nombre', item.nombre) }}
+            </div>
+            <div class="col-md-4">
+                {{ dm.field('Código', item.codigo) }}
+            </div>
+            <div class="col-md-4">
+                {{ dm.field('Provincia', item.provincia.nombre) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                {{ dm.field('Descripción', item.descripcion) }}
+            </div>
+            <div class="col-md-4">
+                <div class="detail-field">
+                    <span class="detail-label">Estado</span>
+                    {{ dm.badge_estado(item.activo) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar comisión{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        #map {
+            height: 350px;
+        }
+    </style>
+
+{% endblock %}
+{% block body %}
+    <div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title text-bold text-gray">Asignar comisión</h3>
+    </div>
+        {{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudProgramaAcademico, 'format':'col3' }) }}
+        <!-- /.card-header -->
+        {{ form_start(form) }}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.comisionNacional) }}
+                    {{ form_widget(form.comisionNacional) }}
+                    {{ form_errors(form.comisionNacional) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" id="btn_asociar">
+                    <button style="margin-top: 4%" class="btn btn-primary">Asociar</button>
+                </div>
+            </div>
+        </div>
+
+
+        {{ form_end(form) }}
+        <hr>
+        <div class="card-body">
+            <table class="table table-bordered table-striped dataTable">
+                <thead class="table-custom-header">
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.comisionNacional.nombre }}</td>
+
+                        <td width="15%" class="text-center">
+                            <button title="Eliminar" class="btn btn-outline-danger elementRemove"
+                                    data-url="{{ path('app_solicitud_programa_academico_aprobado_eliminar_comision', {'id': item.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        {% if registros|length > 0 %}
+        $('#btn_asociar').hide();
+        {% else %}
+        $('#btn_asociar').show();
+        {% endif %}
+
+    </script>
+{% endblock %}

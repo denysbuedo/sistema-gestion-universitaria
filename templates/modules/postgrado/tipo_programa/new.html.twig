@@ -1,0 +1,97 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar tipo de programa{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 1.5rem; }
+        .card-luxury .card-header { background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px; }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1.05rem; margin: 0; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+        
+        .fs-section { background: #fff; border-radius: 8px; margin-bottom: 1.5rem; }
+        
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: " *"; color: #ef4444; }
+        
+        .btn-fs-submit { background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+        
+        .btn-fs-cancel { background: #f1f5f9; color: #475569 !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; cursor:pointer;}
+        .btn-fs-cancel:hover { background: #e2e8f0; color: #1e293b !important; transform: translateY(-1px); }
+
+        .estado-toggle { display: flex; align-items: center; justify-content: center; height: 100%; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; padding: 5px; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="card-title text-bold"><i class="fas fa-plus-circle label-icon"></i>Adicionar tipo de programa</h3>
+        </div>
+        
+        {{ form_start(form) }}
+        <div class="card-body px-4 pt-4">
+            <div class="fs-section">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-5 col-lg-5 form-group">
+                        <label for="{{ form.nombre.vars.id }}" class="fs-label required">Nombre</label>
+                        {{ form_widget(form.nombre) }}
+                        {{ form_errors(form.nombre) }}
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-4 form-group">
+                        <label for="{{ form.codigo.vars.id }}" class="fs-label required">Código</label>
+                        {{ form_widget(form.codigo) }}
+                        {{ form_errors(form.codigo) }}
+                    </div>
+                    <div class="col-12 col-md-3 form-group">
+                        <label for="{{ form.activo.vars.id }}" class="fs-label required text-center w-100">Estado</label>
+                        <div class="estado-toggle">
+                            {{ form_widget(form.activo) }}
+                        </div>
+                        {{ form_errors(form.activo) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <label for="{{ form.descripcion.vars.id }}" class="fs-label">Descripción</label>
+                        {{ form_widget(form.descripcion) }}
+                        {{ form_errors(form.descripcion) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer d-flex justify-content-end bg-white border-top-0 px-4 pb-4">
+            <a class="btn-fs-cancel mr-2 btn-cancel" data-url="{{ path('app_tipo_programa_index') }}" data-title=""
+               data-content="¿Está seguro que desea realizar la acción?"><i class="fas fa-times"></i> Cancelar</a>
+            <button class="btn-fs-submit"><i class="fas fa-check"></i> Aceptar</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+        $(document).on('click', '.estado-toggle .et-opt', function() {
+            var $toggle = $(this).closest('.estado-toggle');
+            var cbId    = $toggle.data('cb');
+            var isOn    = $(this).hasClass('et-on');
+            $toggle.find('.et-opt').removeClass('active');
+            $(this).addClass('active');
+            $('#' + cbId).prop('checked', isOn);
+        });
+        });
+
+$('#tipo_programa_codigo').on('keydown keypress', function (e) {
+            if (e.key.length === 1) {
+                if ($(this).val().length < 10) {
+                    $(this).val($(this).val() + e.key);
+                }
+                return false;
+            }
+        });
+    </script>
+{% endblock %}

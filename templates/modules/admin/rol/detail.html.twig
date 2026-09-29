@@ -1,0 +1,100 @@
+<style>
+    .detail-info-card { background:#f8fafc; border-radius:10px; padding:16px 20px; margin-bottom:16px; border:1px solid #e2e8f0; }
+    .detail-label { font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+    .detail-value { font-size:0.9rem; font-weight:600; color:#1a2e44; }
+    .detail-section-title { font-size:0.78rem; font-weight:700; color:#134679; text-transform:uppercase; letter-spacing:0.5px; margin:16px 0 10px; display:flex; align-items:center; gap:6px; }
+    .detail-section-title::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+    .detail-table th { background:#f1f5f9; color:#4a5568; font-size:0.78rem; font-weight:700; border-color:#e2e8f0; padding:7px 10px; }
+    .detail-table td { font-size:0.82rem; color:#1a2e44; border-color:#e2e8f0; padding:6px 10px; vertical-align:middle; }
+    .detail-table tbody tr:hover { background:#f8fafc; }
+    .badge-pill-on { background:#dcfce7; color:#15803d; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px; display:inline-block; }
+    .badge-pill-off { background:#fee2e2; color:#b91c1c; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px; display:inline-block; }
+</style>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="detail-info-card">
+            <div class="detail-label">Nombre</div>
+            <div class="detail-value">{{ item.nombre }}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="detail-info-card">
+            <div class="detail-label">Estado</div>
+            <div class="detail-value">
+                {% if '1' == item.activo %}
+                    <span class="badge-pill-on">Habilitado</span>
+                {% else %}
+                    <span class="badge-pill-off">Deshabilitado</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% if item.descripcion %}
+<div class="detail-info-card">
+    <div class="detail-label">Descripción</div>
+    <div class="detail-value">{{ item.descripcion }}</div>
+</div>
+{% endif %}
+
+<div class="detail-section-title"><i class="fas fa-puzzle-piece"></i> Funcionalidades</div>
+<table class="table detail-table table-bordered table-striped dataTable1">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Funcionalidad</th>
+        <th>Role Key</th>
+        <th>Estado</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for func in item.funcionalidades %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ func.nombre | default('') }}</td>
+            <td><code style="font-size:0.75rem;">{{ func.roleKey | default('') }}</code></td>
+            <td>
+                {% if '1' == func.authorityEnabled %}
+                    <span class="badge-pill-on">Habilitado</span>
+                {% else %}
+                    <span class="badge-pill-off">Deshabilitado</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="detail-section-title"><i class="fas fa-sitemap"></i> Estructuras</div>
+<table class="table detail-table table-bordered table-striped dataTable2">
+    <thead>
+    <tr>
+        <th>No.</th>
+        <th>Estructura</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for est in estructuras %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ est.estructura.nombre | default('') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+var dtOpts = {
+    "lengthMenu": [[5, 25, 50, -1], [5, 25, 50, "All"]],
+    "responsive": true, "lengthChange": true, "autoWidth": false,
+    language: {
+        "sLengthMenu": "Mostrar _MENU_ registros", "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "No existen resultados", "sInfo": "Registros del _START_ al _END_ de _TOTAL_",
+        "sInfoEmpty": "Registros del 0 al 0 de 0", "sSearch": "Buscar:",
+        "oPaginate": { "sNext": "Siguiente", "sPrevious": "Anterior" }
+    }
+};
+$(".dataTable1").DataTable(dtOpts);
+$(".dataTable2").DataTable(dtOpts);
+</script>

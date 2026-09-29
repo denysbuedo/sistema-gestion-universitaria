@@ -1,0 +1,270 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar plan de estudio{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 2rem; }
+        .card-luxury .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 18px 24px; }
+        .fs-title { color: #1a2e44; font-weight: 700; font-size: 1.1rem; margin: 0; }
+        .label-icon { color: #134679; margin-right: 8px; opacity: 0.8; }
+        
+        .fs-section { background: #fff; border-radius: 8px; padding: 0; margin-bottom: 1.5rem; }
+        .fs-section-header { padding: 12px 0; border-bottom: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .fs-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+        .fs-section-title i { font-size: 0.8rem; opacity: 0.7; }
+        
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: " *"; color: #ef4444; font-weight: 700; }
+        
+        .btn-fs-submit { 
+            background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; 
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+        
+        .btn-fs-cancel {
+            background: #f1f5f9; color: #475569 !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px;
+            border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-fs-cancel:hover { background: #e2e8f0; color: #1e293b !important; }
+
+        .custom-file-upload {
+            border: 2px dashed #e2e8f0; border-radius: 10px; padding: 15px; text-align: center;
+            background: #f8fafc; transition: all 0.2s; cursor: pointer; position: relative;
+        }
+        .custom-file-upload:hover { border-color: #134679; background: #f0f7ff; }
+        .file-name { font-size: 0.72rem; color: #134679; font-weight: 600; margin-top: 8px; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+        .upload-icon { font-size: 1.5rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+
+        .config-table th { background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700; border-color: #e2e8f0; padding: 8px 10px; }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="fs-title"><i class="fas fa-edit label-icon"></i>Modificar plan de estudio</h3>
+        </div>
+
+        {{ form_start(form) }}
+        <div class="card-body px-4">
+            
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-info-circle"></i> Datos del Registro</span>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.annoAprobacion) }}</label>
+                        {{ form_widget(form.annoAprobacion, {'attr': {'class': 'form-control shadow-sm'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.fechaAprobacion) }}</label>
+                        <div class="input-group shadow-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0"><i class="far fa-calendar-alt text-primary"></i></span>
+                            </div>
+                            {{ form_widget(form.fechaAprobacion, {'attr': {'class': 'form-control border-left-0'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.carrera) }}</label>
+                        {{ form_widget(form.carrera, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.organismoFormador) }}</label>
+                        {{ form_widget(form.organismoFormador, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.ramaCiencia) }}</label>
+                        {{ form_widget(form.ramaCiencia, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="fs-label required">{{ form_label(form.cursoAcademico) }}</label>
+                        {{ form_widget(form.cursoAcademico, {'attr': {'class': 'form-control select2'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-file-upload"></i> Archivos del Plan</span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group text-center">
+                        <label class="fs-label text-left">{{ form_label(form.planEstudio) }}</label>
+                        <div class="custom-file-upload shadow-sm mb-2" onclick="$('#{{ form.planEstudio.vars.id }}').click()">
+                            <i class="fas fa-file-pdf upload-icon" {% if planEstudio.planEstudio %}style="color: #27ae60;"{% endif %}></i>
+                            <span class="small text-muted">Cambiar archivo Plan (PDF)</span>
+                            <span id="filename-plan" class="file-name">{{ planEstudio.planEstudio | default('Ninguno') }}</span>
+                            <div class="d-none">
+                                {{ form_widget(form.planEstudio) }}
+                            </div>
+                        </div>
+                        {% if planEstudio.planEstudio %}
+                        <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/plan_estudio/{{ planEstudio.planEstudio }}" target="_blank" class="btn btn-xs btn-outline-info rounded-pill px-3">
+                            <i class="fas fa-external-link-alt mr-1"></i> Ver archivo actual
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 form-group text-center">
+                        <label class="fs-label text-left">{{ form_label(form.documentoEjecutivo) }}</label>
+                        <div class="custom-file-upload shadow-sm mb-2" onclick="$('#{{ form.documentoEjecutivo.vars.id }}').click()">
+                            <i class="fas fa-file-word upload-icon" {% if planEstudio.documentoEjecutivo %}style="color: #27ae60;"{% endif %}></i>
+                            <span class="small text-muted">Cambiar Doc. Ejecutivo</span>
+                            <span id="filename-doc" class="file-name">{{ planEstudio.documentoEjecutivo | default('Ninguno') }}</span>
+                            <div class="d-none">
+                                {{ form_widget(form.documentoEjecutivo) }}
+                            </div>
+                        </div>
+                        {% if planEstudio.documentoEjecutivo %}
+                        <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/documento_ejecutivo/{{ planEstudio.documentoEjecutivo }}" target="_blank" class="btn btn-xs btn-outline-info rounded-pill px-3">
+                            <i class="fas fa-external-link-alt mr-1"></i> Ver archivo actual
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-align-left"></i> Descripción del Plan</span>
+                </div>
+                {{ form_widget(form.descripcionPlanEstudio, {'attr': {'class': 'form-control shadow-sm', 'rows': '3'}}) }}
+            </div>
+
+            <div class="fs-section mt-4 pt-4 border-top">
+                <div class="fs-section-header">
+                    <span class="fs-section-title"><i class="fas fa-folder-open"></i> Documentos del expediente</span>
+                </div>
+                <div class="row align-items-end">
+                    <div class="col-md-5 form-group mb-0">
+                        <label class="fs-label required" for="documentoSelec">Tipo de Documento</label>
+                        <select id="documentoSelec" name="documentoSelec" class="form-control select2">
+                            <option value="">Seleccione...</option>
+                            {% for item2 in documentos %}
+                                <option value="{{ item2.id }}">{{ item2.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group mb-0">
+                        <label class="fs-label required">Adjuntar archivo</label>
+                        <div class="custom-file shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                            <input type="file" id="documento" name="documento" class="custom-file-input" lang="es">
+                            <label id="label-extra-doc" for="documento" class="custom-file-label border-0">Seleccionar...</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-0">
+                        <button type="button" id="btn_asociar" class="btn btn-primary w-100 shadow-sm font-weight-bold" style="height: 38px; border-radius: 8px;">
+                            <i class="fa fa-plus mr-1"></i> Asociar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <table class="table config-table table-bordered table-striped mb-0 shadow-sm border-0" style="border-radius: 8px; overflow: hidden;">
+                        <thead>
+                        <tr>
+                            <th width="1%">No.</th>
+                            <th>Documento</th>
+                            <th class="text-center" width="5%">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in registros %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ item.nombre | default('') }}</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger shadow-sm border-0 elementRemove"
+                                            style="background: #fff5f5; color: #ef4444;"
+                                            data-url="{{ path('app_plan_estudio_eliminar_documento_editar', {'id': item.id}) }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <input type="hidden" id="planEstudioId" name="planEstudio" value="{{ planEstudio.id }}">
+
+        <div class="card-footer bg-light px-4 py-3 d-flex justify-content-end gap-3" style="gap: 12px;">
+            <a class="btn-fs-cancel btn-cancel" data-url="{{ path('app_plan_estudio_index') }}" data-content="¿Desea descartar los cambios?">
+                <i class="fas fa-times mr-1"></i> Cancelar
+            </a>
+            <button class="btn-fs-submit" type="submit">
+                <i class="fas fa-save mr-1"></i> Guardar Cambios
+            </button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Select2 init
+            $('.select2').select2({ width: '100%' });
+
+            // Filename updates
+            $('#{{ form.planEstudio.vars.id }}').change(function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#filename-plan').text(filename || 'Ninguno');
+            });
+            $('#{{ form.documentoEjecutivo.vars.id }}').change(function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#filename-doc').text(filename || 'Ninguno');
+            });
+            $('#documento').change(function() {
+                var filename = $(this).val().split('\\').pop();
+                $('#label-extra-doc').text(filename || 'Seleccionar...');
+            });
+
+            // Datepickers
+            $('#{{ form.fechaAprobacion.vars.id }}').datetimepicker({ format: 'DD/MM/YYYY' });
+            $('#{{ form.annoAprobacion.vars.id }}').datetimepicker({ format: 'YYYY' });
+
+            // AJAX Association
+            $('#btn_asociar').click(function (e) {
+                e.preventDefault();
+                if (!$('#documentoSelec').val() || !$('#documento').val()) {
+                    toastr.warning("Seleccione un tipo de documento y adjunte un archivo.");
+                    return;
+                }
+
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Procesando...', textColor: "white" });
+                
+                var data = new FormData();
+                data.append('file', document.getElementById("documento").files[0]);
+                data.append('documento', $('#documentoSelec').val());
+                data.append('plan_estudio', $('#planEstudioId').val());
+
+                $.ajax({
+                    url: '{{ path('app_plan_estudio_registro_temporal_doc_edit') }}',
+                    type: 'POST',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        HoldOn.close();
+                        toastr.success("Documento adicionado.");
+                        setTimeout(() => location.reload(), 600);
+                    },
+                    error: () => { HoldOn.close(); toastr.error("Error al asociar."); }
+                });
+            });
+        });
+    </script>
+{% endblock %}

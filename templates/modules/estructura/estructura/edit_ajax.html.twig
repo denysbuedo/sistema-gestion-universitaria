@@ -1,0 +1,214 @@
+{# Eliminamos extends, block title y block body para carga AJAX #}
+<style>
+    #map {
+        height: 350px;
+        width: 100%;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #555;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h5 class="text-gray">
+                <i class="fa fa-university mr-1"></i>
+                ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
+            </h5>
+            <hr>
+        </div>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'form-estructura-edit'}}) }}
+    <div class="row">
+        <div class="col-md-4 form-group">
+            {{ form_label(form.tipoEstructura) }}
+            {{ form_widget(form.tipoEstructura, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.tipoEstructura) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.nombre) }}
+            {{ form_widget(form.nombre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nombre) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.estructura) }}
+            {{ form_widget(form.estructura, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.estructura) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 form-group">
+            {{ form_label(form.siglas) }}
+            {{ form_widget(form.siglas, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.siglas) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.categoriaEstructura) }}
+            {{ form_widget(form.categoriaEstructura, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.categoriaEstructura) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.fechaActivacion) }}
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                </div>
+                {{ form_widget(form.fechaActivacion, {'attr': {'class': 'form-control datetimepicker-input'}}) }}
+            </div>
+            {{ form_errors(form.fechaActivacion) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 form-group">
+            {{ form_label(form.telefono) }}
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                </div>
+                {{ form_widget(form.telefono, {'attr': {'class': 'form-control', 'data-inputmask': '"mask": "(999) 999-9999"', 'data-mask': ''}}) }}
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.email) }}
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                </div>
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.direccion) }}
+            {{ form_widget(form.direccion, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.direccion) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.provincia) }}
+            {{ form_widget(form.provincia, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.estructura) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.municipio) }}
+            {{ form_widget(form.municipio, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.municipio) }}
+        </div>
+        <div class="col-md-4 form-group">
+            {{ form_label(form.ubicacion) }}
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-map-marked"></i></span>
+                </div>
+                {{ form_widget(form.ubicacion, {'attr': {'class': 'form-control', 'readonly': 'readonly'}}) }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="button" id="btn-open-map"><i
+                                class="fas fa-search-location"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+            {{ form_label(form.activo) }}
+            {{ form_widget(form.activo) }}
+            {{ form_errors(form.activo) }}
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar Cambios</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+
+{# Modal interno para el mapa (Leaflet) #}
+<div class="modal fade" id="modalMapEdit" tabindex="-1" role="dialog" z-index="1060">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Seleccionar ubicación geográfica</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="map"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-location">Confirmar Ubicación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Inicialización de datos
+        var fechaVal = "{{ estructura.fechaActivacion ? estructura.fechaActivacion|date('d/m/Y') : '' }}";
+        $('#estructura_fechaActivacion').val(fechaVal);
+
+        $('#estructura_municipio').val({{ estructura.municipio.id }});
+
+        // Inputmask
+        if ($.fn.inputmask) {
+            $('[data-mask]').inputmask();
+        }
+
+        // DateTimePicker
+        $('#estructura_fechaActivacion').datetimepicker({
+            format: 'DD/MM/YYYY',
+            icons: {time: 'far fa-clock'}
+        });
+
+        // Lógica del Mapa (Leaflet)
+        let mymap = null;
+        let marker = null;
+        let map_current_location = $('#estructura_ubicacion').val() || '22.81258, -82.758293';
+
+        $('#btn-open-map').click(function () {
+            $('#modalMapEdit').modal('show');
+
+            setTimeout(function () {
+                if (mymap === null) {
+                    const coords = map_current_location.split(',').map(v => parseFloat(v));
+                    mymap = L.map('map').setView(coords, 12);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(mymap);
+
+                    marker = L.marker(coords, {draggable: true}).addTo(mymap);
+
+                    mymap.on('click', function (e) {
+                        map_current_location = e.latlng.lat + ', ' + e.latlng.lng;
+                        marker.setLatLng(e.latlng);
+                    });
+                } else {
+                    mymap.invalidateSize();
+                }
+            }, 300);
+        });
+
+        $('#btn-confirm-location').click(function () {
+            $('#estructura_ubicacion').val(map_current_location);
+            $('#modalMapEdit').modal('hide');
+        });
+
+        // Lógica de Provincias/Municipios (Carga dinámica)
+        $('#estructura_provincia').on('change', function () {
+            const provinciaId = $(this).val();
+            if (provinciaId) {
+                $.get("{{ path('app_municipio_dado_provincia', {'id':'idP'}) }}".replace('idP', provinciaId), function (data) {
+                    const $mun = $('#estructura_municipio');
+                    $mun.empty().append('<option value="">Seleccione</option>');
+                    data.forEach(m => $mun.append(new Option(m.nombre, m.id)));
+                });
+            }
+        });
+    });
+</script>

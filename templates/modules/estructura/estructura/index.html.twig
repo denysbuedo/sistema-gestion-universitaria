@@ -1,0 +1,361 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Estructuras{% endblock %}
+
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    {# Modal para asignar Agrupación #}
+    <div class="modal fade" id="modalAsignarGrupo" tabindex="-1" role="dialog" aria-labelledby="modalAsignarGrupoLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAsignarGrupoLabel">Asignar Agrupación a Estructura</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="cargandoGrupos" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Cargando grupos...</span>
+                        </div>
+                        <p class="mt-2">Cargando grupos disponibles...</p>
+                    </div>
+
+                    <form id="formAsignarGrupo" style="display: none;">
+                        <input type="hidden" id="estructuraId" name="estructuraId">
+                        <div class="form-group">
+                            <label for="grupoSelect">Seleccionar grupo existente:</label>
+                            <select class="form-control" id="grupoSelect" name="grupoExistente">
+                                <option value="">-- Seleccione un grupo --</option>
+                                <!-- Los grupos se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="text-center my-2">- O -</div>
+                        <div class="form-group">
+                            <label for="nuevoGrupo">Crear nuevo grupo:</label>
+                            <input type="text" class="form-control" id="nuevoGrupo" name="nuevoGrupo"
+                                   placeholder="Nombre del nuevo grupo">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarGrupo" disabled>Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-sitemap label-icon"></i>Listado de estructuras</h3>
+            <div class="ml-auto d-flex" style="gap:8px;">
+                <a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_estructura_registrar') }}">
+                    <i class="fa fa-plus"></i> Nuevo
+                </a>
+                <a title="Vista de árbol" href="{{ path('app_estructura_index_arbol') }}" class="btn-lux-sm btn-lux-primary">
+                    <i class="fas fa-sitemap"></i> Árbol
+                </a>
+                <a title="Exportar a pdf" class="btn-lux-sm btn-lux-success" target="_blank"
+                   href="{{ path('app_estructura_exportar_pdf') }}">
+                    <i class="fa fa-file-pdf"></i> PDF
+                </a>
+                <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
+                    <i class="fa fa-file-excel"></i> Excel
+                </a>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body px-4">
+            <div class="row mb-4">
+                <div class="col-6 text-gray">
+                    <h5>
+                        <b>
+                            <i class="fa fa-university  "></i>
+                        </b> ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
+                    </h5>
+                </div>
+            </div>
+            <hr>
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Estructura superior</th>
+                    <th>Nombre</th>
+                    <th>Categoría de estructura</th>
+                    <th>Estado</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th><input type="text" placeholder="Filtrar por Estructura superior" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Nombre" class="responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar por Categoría de estructura" class="responsive-input"/>
+                    </th>
+                    <th><input type="text" placeholder="Filtrar por Estado" class="responsive-input"/></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>
+                            {% if item.estructura is not null
+                                and item.estructura.estructura is not null
+                                and item.estructura.estructura.siglas is not empty %}
+                                ({{ item.estructura.estructura.siglas }})
+                            {% endif %}
+                            {{ item.estructura.nombre|default('') }}
+                        </td>
+                        <td>{{ item.nombre | default('') }}</td>
+                        <td>{{ item.categoriaEstructura.nombre | default('') }}</td>
+
+                        <td width="10%">
+                            {% if '1' == item.activo %}
+                                <span class="status-pill -on"><i class="fas fa-circle"></i>Habilitado</span>
+                            {% else %}
+                                <span class="status-pill -off"><i class="fas fa-circle"></i>Deshabilitado</span>
+                            {% endif %}
+                        </td>
+                        <td width="5%">
+                            <div class="dropdown d-flex justify-content-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center actions-dropdown-btn"
+                                        id="actions-{{ item.id }}"
+                                        type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        title="Opciones">
+                                    &#8942;
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="actions-{{ item.id }}" style="border-radius:10px;border:none;min-width:220px;padding:6px 0;font-size:0.85rem;">
+
+                                    {# ── Acciones Principales ── #}
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px; padding: 8px 16px 4px;">Acciones</h6>
+                                    <button class="dropdown-item modalDetailAction"
+                                            data-url="{{ path('app_estructura_detail', {'id' : item.id}) }}"
+                                            data-title="Detalles de la estructura">
+                                        <i class="fa fa-eye fa-fw mr-2 text-info"></i> Ver detalles
+                                    </button>
+
+                                    {% if dataShow[item.id] %}
+                                        <a class="dropdown-item" href="{{ path('app_estructura_modificar', {'id': item.id}) }}">
+                                            <i class="fa fa-edit fa-fw mr-2 text-primary"></i> Modificar datos
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="dropdown-divider my-1"></div>
+
+                                    {# ── Asociaciones y Jerarquía ── #}
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px; padding: 8px 16px 4px;">Asociaciones</h6>
+                                    <a class="dropdown-item" href="{{ path('app_estructura_plaza', {'id': item.id}) }}">
+                                        <i class="fa fa-users-cog fa-fw mr-2 text-success"></i> Asociar composición
+                                    </a>
+                                    <a class="dropdown-item" href="{{ path('app_estructura_registrar_hija', {'id': item.id}) }}">
+                                        <i class="fa fa-plus-circle fa-fw mr-2 text-success"></i> Crear estructura hija
+                                    </a>
+                                    <button class="dropdown-item asignarGrupoAction"
+                                            data-id="{{ item.id }}"
+                                            data-nombre="{{ item.nombre }}">
+                                        <i class="fa fa-layer-group fa-fw mr-2 text-success"></i> Asignar agrupación
+                                    </button>
+
+                                    <div class="dropdown-divider my-1"></div>
+
+                                    {# ── Reportes y Gestión ── #}
+                                    <h6 class="dropdown-header text-uppercase" style="font-size: 0.65rem; font-weight: 700; color: #adb5bd; letter-spacing: 0.5px; padding: 8px 16px 4px;">Gestión</h6>
+                                    <a class="dropdown-item" target="_blank" href="{{ path('app_estructura_exportar_estructuras_hijas', {'id': item.id}) }}">
+                                        <i class="fa fa-file-pdf fa-fw mr-2 text-danger"></i> Exportar hijas (PDF)
+                                    </a>
+
+                                    {% if dataShow[item.id] %}
+                                        <div class="dropdown-divider my-1"></div>
+                                        <button class="dropdown-item text-danger elementRemove"
+                                                data-url="{{ path('app_estructura_eliminar', {'id': item.id}) }}">
+                                            <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% include 'pages/_luxury_list_dropdown_js.html.twig' %}
+    <script>
+        $(document).ready(function () {
+            // Abrir modal para asignar Agrupación
+            $('.asignarGrupoAction').click(function () {
+                var estructuraId = $(this).data('id');
+                var estructuraNombre = $(this).data('nombre');
+
+                $('#estructuraId').val(estructuraId);
+                $('#modalAsignarGrupoLabel').text('Asignar Agrupación a: ' + estructuraNombre);
+
+                // Mostrar modal inmediatamente
+                $('#modalAsignarGrupo').modal('show');
+
+                // Siempre cargar los grupos cuando se abre el modal
+                cargarGrupos(estructuraId);
+            });
+
+            // Función para cargar grupos via AJAX
+            function cargarGrupos(estructuraId) {
+                $.ajax({
+                    url: '{{ path("app_estructura_obtener_grupos_all") }}/' + estructuraId,
+                    method: 'GET',
+                    beforeSend: function () {
+                        // Mostrar cargador y ocultar formulario
+                        $('#cargandoGrupos').show();
+                        $('#formAsignarGrupo').hide();
+                        $('#btnGuardarGrupo').prop('disabled', true);
+
+                        // Limpiar selecciones anteriores
+                        $('#grupoSelect').val('');
+                        $('#nuevoGrupo').val('');
+                    },
+                    success: function (response) {
+                        // Limpiar y poblar el select de grupos
+                        $('#grupoSelect').empty().append('<option value="">-- Seleccione un grupo --</option>');
+
+                        if (response.grupos.length > 0) {
+                            $.each(response.grupos, function (index, grupo) {
+                                $('#grupoSelect').append('<option value="' + grupo.id + '">' + grupo.nombre + '</option>');
+                            });
+
+                            // Seleccionar el grupo actual si existe
+                            if (response.grupoActual) {
+                                $('#grupoSelect').val(response.grupoActual);
+                            }
+                        } else {
+                            $('#grupoSelect').append('<option value="" disabled>No hay grupos disponibles</option>');
+                        }
+
+                        // Ocultar cargador y mostrar formulario
+                        $('#cargandoGrupos').hide();
+                        $('#formAsignarGrupo').show();
+
+                        // Habilitar botón si ya hay una selección
+                        if ($('#grupoSelect').val() || $('#nuevoGrupo').val().trim()) {
+                            $('#btnGuardarGrupo').prop('disabled', false);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al cargar grupos:', error);
+                        $('#cargandoGrupos').html('<div class="alert alert-danger">Error al cargar los grupos. Intente nuevamente.</div>');
+
+                        // Aún así mostrar el formulario para permitir crear nuevo grupo
+                        setTimeout(function () {
+                            $('#cargandoGrupos').hide();
+                            $('#formAsignarGrupo').show();
+                        }, 2000);
+                    }
+                });
+            }
+
+            // Guardar la asignación de grupo
+            $('#btnGuardarGrupo').click(function () {
+                var estructuraId = $('#estructuraId').val();
+                var grupoExistente = $('#grupoSelect').val();
+                var nuevoGrupo = $('#nuevoGrupo').val().trim();
+
+                // Validación
+                if (!grupoExistente && !nuevoGrupo) {
+                    toastr.error('Debe seleccionar un grupo existente o crear uno nuevo');
+                    return;
+                }
+
+                if (grupoExistente && nuevoGrupo) {
+                    toastr.warning('Solo puede seleccionar un grupo existente O crear uno nuevo, no ambos');
+                    return;
+                }
+
+                // Preparar datos para enviar
+                var data = {
+                    estructuraId: estructuraId
+                };
+
+                if (grupoExistente) {
+                    data.grupoId = grupoExistente;
+                } else {
+                    data.nuevoGrupoNombre = nuevoGrupo;
+                }
+
+                // Enviar solicitud AJAX
+                $.ajax({
+                    url: '{{ path("app_estructura_asignar_grupo") }}',
+                    method: 'POST',
+                    data: data,
+                    beforeSend: function () {
+                        $('#btnGuardarGrupo').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...');
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#modalAsignarGrupo').modal('hide');
+                            toastr.success('Grupo asignado correctamente');
+                            // Recargar la página para ver los cambios
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            toastr.error('Error: ' + response.message);
+                            $('#btnGuardarGrupo').prop('disabled', false).html('Guardar');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('Error al asignar el grupo: ' + error);
+                        $('#btnGuardarGrupo').prop('disabled', false).html('Guardar');
+                    }
+                });
+            });
+
+            // Resetear formulario cuando se cierra el modal
+            $('#modalAsignarGrupo').on('hidden.bs.modal', function () {
+                $('#formAsignarGrupo')[0].reset();
+                $('#btnGuardarGrupo').prop('disabled', true);
+            });
+
+            // Habilitar/deshabilitar el botón guardar según la selección
+            $('#grupoSelect, #nuevoGrupo').on('change keyup', function () {
+                var grupoExistente = $('#grupoSelect').val();
+                var nuevoGrupo = $('#nuevoGrupo').val().trim();
+
+                if (grupoExistente || nuevoGrupo) {
+                    $('#btnGuardarGrupo').prop('disabled', false);
+                } else {
+                    $('#btnGuardarGrupo').prop('disabled', true);
+                }
+
+                // Si se selecciona un grupo existente, limpiar el campo de nuevo grupo
+                if (grupoExistente) {
+                    $('#nuevoGrupo').val('');
+                }
+            });
+
+            // Si se escribe en nuevo grupo, limpiar la selección del select
+            $('#nuevoGrupo').on('keyup', function () {
+                if ($(this).val().trim()) {
+                    $('#grupoSelect').val('');
+                }
+            });
+
+            // Cerrar modal con Escape key
+            $(document).keyup(function (e) {
+                if (e.key === "Escape" && $('#modalAsignarGrupo').hasClass('show')) {
+                    $('#modalAsignarGrupo').modal('hide');
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Categorías de acreditación{% endblock %}
+
+{% block body %}
+
+{% include 'pages/modalDetail.html.twig' %}
+
+<style>
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+    .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; color:#fff; cursor:pointer; }
+    .btn-lux-primary { background:#134679; } .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+    .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+    .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+    .config-table tbody tr:hover { background:#f8fafc; }
+    .badge-pill-on { background:#dcfce7; color:#15803d; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px; display:inline-block; }
+    .badge-pill-off { background:#fee2e2; color:#b91c1c; font-size:0.72rem; font-weight:700; padding:2px 9px; border-radius:20px; display:inline-block; }
+    .dropdown-toggle-no-caret::after { display:none !important; }
+</style>
+
+<div class="card card-luxury">
+    <div class="card-header d-flex align-items-center">
+        <h3 class="card-title m-0"><i class="fas fa-award label-icon"></i>Categorías de acreditación</h3>
+        <div class="ml-auto">
+            <a href="{{ path('app_categoria_acreditacion_registrar') }}" class="btn-lux-sm btn-lux-primary">
+                <i class="fas fa-plus"></i> Nueva
+            </a>
+        </div>
+    </div>
+    <div class="card-body px-4">
+        <table class="table config-table table-bordered table-striped dataTable">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nombre</th>
+                <th>Duración</th>
+                <th>Estado</th>
+                <th class="text-center" style="width:60px;">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td width="1%">{{ loop.index }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.duracion }}</td>
+                    <td>
+                        {% if '1' == item.activo %}
+                            <span class="badge-pill-on">Habilitado</span>
+                        {% else %}
+                            <span class="badge-pill-off">Deshabilitado</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle-no-caret"
+                                    data-toggle="dropdown"
+                                    style="border-radius:50%;width:34px;height:34px;padding:0;line-height:34px;font-size:1rem;border-color:#dee2e6;">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right shadow-sm" style="min-width:200px;border-radius:0.5rem;padding:6px 0;">
+                                <h6 class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;text-transform:uppercase;letter-spacing:0.5px;">Acciones</h6>
+                                <button class="dropdown-item modalDetailAction"
+                                        data-url="{{ path('app_categoria_acreditacion_detail', {'id': item.id}) }}"
+                                        data-title="Detalles de la categoría">
+                                    <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                </button>
+                                <a class="dropdown-item" href="{{ path('app_categoria_acreditacion_modificar', {'id': item.id}) }}">
+                                    <i class="fa fa-edit fa-fw mr-2 text-primary"></i> Modificar
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item text-danger elementRemove"
+                                        data-url="{{ path('app_categoria_acreditacion_eliminar', {'id': item.id}) }}">
+                                    <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).on('show.bs.dropdown', function(e) {
+        var $btn = $(e.target).find('[data-toggle="dropdown"]');
+        var $menu = $(e.target).find('.dropdown-menu');
+        $menu.appendTo('body');
+        var offset = $btn.offset();
+        $menu.css({ position:'fixed', top: offset.top + $btn.outerHeight(), left:'auto', right: $(window).width() - offset.left - $btn.outerWidth(), display:'block', zIndex:9999 });
+    }).on('hide.bs.dropdown', function() {
+        $('.dropdown-menu').removeAttr('style').appendTo($(this));
+    });
+</script>
+{% endblock %}

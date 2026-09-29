@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Repository\Personal;
+
+use App\Entity\Personal\Persona;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Persona>
+ *
+ * @method Persona|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Persona|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Persona[]    findAll()
+ * @method Persona[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class PersonaRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Persona::class);
+    }
+
+    public function add(Persona $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function edit(Persona $entity, bool $flush = true): Persona
+    {
+        $this->_em->persist($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
+
+        return $entity;
+    }
+
+    public function remove(Persona $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function getPersonasNoAsignadas($idActividad)
+    {
+        $qb = $this->createQueryBuilder('qb');
+        $subQuery = $this->getEntityManager()->getRepository('App\Entity\PlanActividades\ActividadResponsable')->createQueryBuilder('subQb')
+            ->select('p.id')
+            ->innerJoin('subQb.persona', 'p')
+            ->innerJoin('subQb.actividad', 'e')
+            ->andWhere("e.id = $idActividad");
+        $exp = $qb->expr()->notIn('qb.id', $subQuery->getDQL());
+        $qb->andWhere($exp);
+        $qb->orderBy('qb.primerNombre');
+        $resul = $qb->getQuery()->getResult();
+
+        return $resul;
+    }
+
+
+    public function getPersonasAsignadas($idActividad)
+    {
+        $qb = $this->createQueryBuilder('qb');
+        $subQuery = $this->getEntityManager()->getRepository('App\Entity\PlanActividades\ActividadResponsable')->createQueryBuilder('subQb')
+            ->select('p.id')
+            ->innerJoin('subQb.persona', 'p')
+            ->innerJoin('subQb.actividad', 'e')
+            ->andWhere("e.id = $idActividad");
+        $exp = $qb->expr()->in('qb.id', $subQuery->getDQL());
+        $qb->andWhere($exp);
+        $qb->orderBy('qb.primerNombre');
+        $resul = $qb->getQuery()->getResult();
+
+        return $resul;
+    }
+
+    public function getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdPersons)
+    {
+        $qb = $this->createQueryBuilder('qb');
+        if (count($arrayIdPersons) > 0) {
+            $qb->andWhere('qb.id NOT IN (:string)');
+            $qb->setParameter('string', $arrayIdPersons, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+//        $subQuery = $this->getEntityManager()->getRepository('App\Entity\Postgrado\MiembrosCopep')->createQueryBuilder('subQb')
+//            ->select('p.id')
+//            ->innerJoin('subQb.miembro', 'p')
+//            ->innerJoin('subQb.copep', 'e')
+//            ->andWhere("e.activo = true");
+//        $exp = $qb->expr()->in('qb.id', $subQuery->getDQL());
+//        $qb->andWhere($exp);
+
+        $qb->orderBy('qb.primerNombre');
+        $resul = $qb->getQuery()->getResult();
+
+        return $resul;
+    }
+
+    public function gePersonasDadoArrayEstructuras($estructurasNegocio)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.estructura', 'e')
+            ->addSelect('e')
+            ->leftJoin('e.estructura', 'ep')
+            ->addSelect('ep')
+            ->leftJoin('ep.estructura', 'epp')
+            ->addSelect('epp')
+            ->leftJoin('p.responsabilidad', 'r')
+            ->addSelect('r')
+            ->orderBy('p.primerNombre');
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getExportarListado($estructurasNegocio)
+    {
+        $qb = $this->createQueryBuilder('qb')
+            ->select('qb.id, qb.primerNombre, qb.segundoNombre, qb.primerApellido, qb.segundoApellido, qb.activo, qb.carnetIdentidad');
+        if (count($estructurasNegocio) > 0)
+            $qb->where("qb.activo = '1' and  qb.estructura IN(:valuesItems)")->setParameter('valuesItems', array_values($estructurasNegocio));
+        else
+            $qb->where("qb.activo = '1'");
+        $qb->orderBy('qb.id', 'desc');
+        $resul = $qb->getQuery()->getResult();
+
+        $final = [];
+        foreach ($resul as $value) {
+            $value['nombreCompleto'] = $value['primerNombre'] . ' ' . $value['segundoNombre'] . ' ' . $value['primerApellido'] . ' ' . $value['segundoApellido'];
+            $final[] = $value;
+        }
+        return $final;
+    }
+
+    public function searchByFields(string $term, int $limit = 10, int $offset = 0): array
+    {
+        $term = mb_strtolower($term, 'UTF-8');
+        $qb = $this->createQueryBuilder('p');
+
+        return $qb
+            ->where('LOWER(p.carnetIdentidad) LIKE :term')
+            ->orWhere('LOWER(p.numeroSerieCarnetIdentidad) LIKE :term')
+            ->orWhere('LOWER(p.primerNombre) LIKE :term')
+            ->orWhere('LOWER(p.segundoNombre) LIKE :term')
+            ->orWhere('LOWER(p.primerApellido) LIKE :term')
+            ->orWhere('LOWER(p.segundoApellido) LIKE :term')
+            ->setParameter('term', "%$term%")
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+}

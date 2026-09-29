@@ -1,0 +1,255 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Personas{% endblock %}
+
+{% block body %}
+
+<style>
+    .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+    .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+    .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+    .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+    .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+    .btn-lux-primary { background:#134679; color:#fff; }
+    .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+    .btn-lux-secondary { background:#64748b; color:#fff; }
+    .btn-lux-secondary:hover { background:#475569; color:#fff; transform:translateY(-1px); }
+    .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+    .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+    .config-table tbody tr:hover { background:#f8fafc; }
+    .dropdown-toggle-no-caret::after { display:none !important; }
+    .persona-foto { transition:opacity 0.25s ease-in-out; }
+    .persona-foto.cargando { opacity:0.2; }
+    /* Modal CI */
+    #addModal .modal-content { border-radius:12px; border:none; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+    #addModal .modal-header { background:#134679; color:#fff; border-top-left-radius:12px; border-top-right-radius:12px; padding:18px 24px; border-bottom:none; }
+    #addModal .modal-title { font-weight:700; font-size:1rem; }
+    #addModal .modal-header .close { color:#fff; opacity:0.8; text-shadow:none; }
+    #addModal .modal-header .close:hover { opacity:1; }
+    #addModal .modal-footer { background:#f8f9fa; border-bottom-left-radius:12px; border-bottom-right-radius:12px; border-top:1px solid #e9ecef; }
+    .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); }
+    .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+    .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+    .ci-input-wrap { position:relative; }
+    .ci-input-wrap .ci-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.9rem; pointer-events:none; }
+    .ci-input-wrap input { padding-left:36px; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title m-0"><i class="fas fa-users label-icon"></i>Directorio de personas</h3>
+            <div class="ml-auto" style="display:flex;gap:8px;">
+                <button id="btnAddPersona" class="btn-lux-sm btn-lux-primary">
+                    <i class="fas fa-plus"></i> Nueva persona
+                </button>
+                <button id="exportExcel" class="btn-lux-sm btn-lux-secondary">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Foto</th>
+                    <th>Nombre y apellidos</th>
+                    <th>Estructura superior</th>
+                    <th>Estructura</th>
+                    <th>Responsabilidad</th>
+                    <th class="text-center" style="width:60px;">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td width="1%">
+                            <a href="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %}/assets/images/usuario.png{% endif %}"
+                               target="_blank">
+                                <img src="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %}/assets/images/usuario.png{% endif %}"
+                                     class="img-circle persona-foto"
+                                     style="width:40px;height:40px;object-fit:cover;border:2px solid #e2e8f0;"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.src='/assets/images/usuario.png'">
+                            </a>
+                        </td>
+                        <td width="20%">{{ item.primerNombre ~ ' ' ~ item.segundoNombre ~ ' ' ~ item.primerApellido ~ ' ' ~ item.segundoApellido }}</td>
+                        <td width="20%">
+                            {% if item.estructura.estructura.estructura.nombre is defined %}
+                                {{ item.estructura.estructura.estructura.nombre | default('') }}
+                            {% else %}
+                                {{ item.estructura.estructura.nombre | default('') }}
+                            {% endif %}
+                        </td>
+                        <td width="20%">{{ item.estructura.nombre | default('') }}</td>
+                        <td>{{ item.responsabilidad.nombre | default('') }}</td>
+                        <td class="text-center" style="width:60px;white-space:nowrap;">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle-no-caret"
+                                        id="actions-{{ item.id }}"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style="border-radius:50%;width:34px;height:34px;padding:0;line-height:34px;font-size:1rem;border-color:#dee2e6;">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="actions-{{ item.id }}" style="min-width:220px;border-radius:0.5rem;padding:6px 0;">
+                                    <h6 class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;text-transform:uppercase;letter-spacing:0.5px;">Acciones</h6>
+                                    <button class="dropdown-item modalDetailAction"
+                                            data-url="{{ path('app_persona_detail', {'id': item.id}) }}"
+                                            data-title="Detalles de la persona">
+                                        <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
+                                    </button>
+                                    <a class="dropdown-item modificar-link" id="modificar_{{ item.id }}"
+                                       href="{{ path('app_persona_modificar', {'id': item.id}) }}">
+                                        <i class="fa fa-edit fa-fw mr-2 text-primary"></i> Modificar datos
+                                    </a>
+                                    <a class="dropdown-item modificar-link"
+                                       href="{{ path('app_persona_modificar_estructura_responsabilidad', {'id': item.id}) }}">
+                                        <i class="fa fa-address-card fa-fw mr-2 text-warning"></i> Modificar estructura
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item text-danger elementRemove"
+                                            data-url="{{ path('app_persona_eliminar', {'id': item.id}) }}">
+                                        <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Modal: Buscar persona por CI #}
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:440px;" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">
+                        <i class="fas fa-user-plus mr-2"></i>Adicionar persona
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <p style="font-size:0.85rem;color:#64748b;margin-bottom:18px;">
+                        Ingrese el número de carné de identidad para verificar y registrar la persona.
+                    </p>
+                    <form id="addForm" action="{{ path('app_persona_registrar') }}" method="POST">
+                        <div class="form-group mb-0">
+                            <label for="personaNombre" style="font-size:0.8rem;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:0.4px;">
+                                Número de Identificación (CI)
+                            </label>
+                            <div class="ci-input-wrap mt-1">
+                                <i class="fas fa-id-card ci-icon"></i>
+                                <input type="text" class="form-control" id="personaNombre" name="personaNombre"
+                                       maxlength="11" placeholder="Ej: 90012512345" autocomplete="off"
+                                       style="border-radius:8px;border-color:#e2e8f0;font-size:0.9rem;">
+                            </div>
+                            <div id="errorNombre" class="mt-2" style="display:none;font-size:0.8rem;color:#dc2626;font-weight:600;">
+                                <i class="fas fa-exclamation-circle mr-1"></i>Por favor ingrese un número válido de hasta 11 dígitos.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="cerrar" type="button" class="btn-fs-cancel" data-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-fs-submit" id="saveBtn">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    // Lazy-load fotos
+    document.querySelectorAll('.persona-foto').forEach(function(img) {
+        if (!img.complete || img.naturalWidth === 0) {
+            img.classList.add('cargando');
+            img.addEventListener('load', function() { img.classList.remove('cargando'); });
+            img.addEventListener('error', function() { img.classList.remove('cargando'); });
+        }
+    });
+
+    // HoldOn en links de modificar
+    $('.modificar-link').click(function() {
+        HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+    });
+
+    // Abrir modal al click en "Nueva persona"
+    document.getElementById('btnAddPersona').addEventListener('click', function() {
+        $('#addModal').modal('show');
+    });
+
+    // Reset error al cerrar
+    $('#cerrar').click(function() {
+        document.getElementById('errorNombre').style.display = 'none';
+        document.getElementById('personaNombre').value = '';
+    });
+    $('#addModal').on('hidden.bs.modal', function() {
+        document.getElementById('errorNombre').style.display = 'none';
+        document.getElementById('personaNombre').value = '';
+        $('#saveBtn').prop('disabled', false).html('<i class="fas fa-search"></i> Buscar');
+    });
+
+    // Ocultar error al escribir
+    document.getElementById('personaNombre').addEventListener('input', function() {
+        document.getElementById('errorNombre').style.display = 'none';
+    });
+
+    // Buscar y validar CI
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        var val = document.getElementById('personaNombre').value.trim();
+        var regex = /^[0-9]+$/;
+        if (val === '' || !regex.test(val) || val.length > 11) {
+            document.getElementById('errorNombre').style.display = 'block';
+            return;
+        }
+        document.getElementById('errorNombre').style.display = 'none';
+
+        var $btn = $('#saveBtn');
+        $btn.prop('disabled', true)
+            .html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Buscando...');
+
+        $.post("{{ path('app_persona_validar_fuc') }}", { ci: val }, function(data) {
+            if (data.status == 1) {
+                HoldOn.open({ theme: "sk-cube-grid", message: 'Por favor espere...', textColor: "white" });
+                document.getElementById('addForm').submit();
+            } else {
+                toastr.error(data.msg);
+                $btn.prop('disabled', false)
+                    .html('<i class="fas fa-search"></i> Buscar');
+            }
+        }).fail(function() {
+            toastr.error('Error de conexión. Intente nuevamente.');
+            $btn.prop('disabled', false)
+                .html('<i class="fas fa-search"></i> Buscar');
+        });
+    });
+
+    // Dropdown overflow fix
+    $(document).on('show.bs.dropdown', function(e) {
+        var $btn = $(e.target).find('[data-toggle="dropdown"]');
+        var $menu = $(e.target).find('.dropdown-menu');
+        $menu.appendTo('body');
+        var offset = $btn.offset();
+        $menu.css({ position:'fixed', top: offset.top + $btn.outerHeight(), left:'auto', right: $(window).width() - offset.left - $btn.outerWidth(), display:'block', zIndex:9999 });
+    }).on('hide.bs.dropdown', function() {
+        $('.dropdown-menu').removeAttr('style').appendTo($(this));
+    });
+</script>
+{% endblock %}

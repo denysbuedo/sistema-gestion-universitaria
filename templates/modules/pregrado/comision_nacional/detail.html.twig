@@ -1,0 +1,61 @@
+<style>
+    .pd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .pd-item { display: flex; flex-direction: column; }
+    .pd-label { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .pd-value { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+    .pd-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+    .config-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 0; }
+    .config-table thead th { background: #f8fafc; color: #475569; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; border-bottom: 2px solid #e2e8f0; }
+    .config-table tbody td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.82rem; color: #334155; vertical-align: middle; }
+    .config-table tbody tr:hover { background: #f8fafc; }
+</style>
+
+<div class="pd-section-title"><i class="fas fa-users"></i> Comisión Nacional</div>
+<div class="pd-grid">
+    <div class="pd-item">
+        <span class="pd-label">Nombre</span>
+        <span class="pd-value text-primary">{{ item.nombre | default('-') }}</span>
+    </div>
+    <div class="pd-item">
+        <span class="pd-label">Estado</span>
+        <span class="pd-value">
+            {% if '1' == item.activo %}
+                <span class="badge" style="background:#dcfce7;color:#15803d;border-radius:20px;padding:5px 12px;font-weight:700;">Habilitado</span>
+            {% else %}
+                <span class="badge" style="background:#fee2e2;color:#b91c1c;border-radius:20px;padding:5px 12px;font-weight:700;">Deshabilitado</span>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% if item.descripcion %}
+<div class="mt-1 mb-4">
+    <span class="pd-label">Descripción</span>
+    <div class="pd-value p-3 bg-light border rounded" style="font-weight:400;line-height:1.5;">{{ item.descripcion }}</div>
+</div>
+{% endif %}
+
+<div class="pd-section-title mt-4"><i class="fas fa-users"></i> Miembros de la comisión</div>
+<table id="tbl-asociados" class="config-table">
+    <thead>
+    <tr>
+        <th style="width:2%">No.</th>
+        <th style="width:6%">Foto</th>
+        <th>Nombre y apellidos</th>
+        <th>Rol en la comisión</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in asignadas %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                <a href="{% if item.miembro.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.miembro.foto }}{% else %}/assets/images/usuario.png{% endif %}" target="_blank">
+                    <img src="{% if item.miembro.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.miembro.foto }}{% else %}/assets/images/usuario.png{% endif %}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;" alt="{{ item.miembro.primerNombre }}">
+                </a>
+            </td>
+            <td>{{ item.miembro.primerNombre ~ ' ' ~ item.miembro.segundoNombre ~ ' ' ~ item.miembro.primerApellido ~ ' ' ~ item.miembro.segundoApellido }}</td>
+            <td>{{ item.rolComision.nombre }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

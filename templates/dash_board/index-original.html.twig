@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Akademos - MES{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /*@media (max-width: 575px) {*/
+        /*    .filter-dash-buttom{*/
+        /*        width: 100%;*/
+        /*    }*/
+        /*}*/
+
+
+        @media (min-width: 1200px) and (max-width: 1400px) {
+            .c {
+                min-width: 33.3% !important;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1400px) {
+            .p {
+                min-width: 33.3% !important;
+            }
+        }
+
+        .bg-blue {
+            background-color: #0E375F !important;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="row" style="align-content: center">
+        {% if hasRoles('ROLE_HOME_PREGR') %}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Pregrado</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="nav-icon fa fa-book"></i>
+                    </div>
+                    <a href="{{ path('app_pregrado_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+        {% if hasRoles('ROLE_HOME_POSTG') or hasRoles('ROLE_GEST_REPORTE_GRADO_CIENTIFICO') or hasRoles('ROLE_GEST_REPORTE_FORMACION_ACADEMICA')
+            or hasRoles('ROLE_GEST_FORMACION_DOCTORES')  or hasRoles('ROLE_GEST_CENTRO_AUTORIZADO')  or hasRoles('ROLE_GEST_COMISION')   or hasRoles('ROLE_GEST_COPEP')
+            or hasRoles('ROLE_GEST_TIP_SOLICITUD_POST') or hasRoles('ROLE_GEST_ROLESPOS') or hasRoles('ROLE_GEST_RAMCIENC') or hasRoles('ROLE_GEST_TIPPROGRAM')%}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Posgrado</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-book-reader"></i>
+                    </div>
+                    <a href="{{ path('app_postgrado_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if hasRoles('ROLE_HOME_CONVENIO') or hasRoles('ROLE_HOME_TRAMITES') or  hasRoles('ROLE_HOME_COOPERACION') or hasRoles('ROLE_HOME_VISITA') or hasRoles('ROLE_HOME_ECONOMIA') %}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Internacionalización</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <a href="{{ path('app_convenio_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if hasRoles('ROLE_GEST_CONVOCATORIA') or hasRoles('ROLE_GEST_SOLICITUD')
+            or hasRoles('ROLE_GEST_SOLICITUD')
+            or hasRoles('ROLE_GEST_PLAN_ANUAL_EVALUACION')
+            or hasRoles('ROLE_GEST_INFORME_AUTOEVALUACION')
+            or hasRoles('ROLE_GEST_ESTADO_SOLICITUD')
+            or hasRoles('ROLE_GEST_ESTADO_APLAZAMIENTO')
+            or hasRoles('ROLE_GEST_COMISION_EVALUADORA')
+            or hasRoles('ROLE_GEST_APLAZAMIENTO')
+            or hasRoles('ROLE_GEST_ROL_COMISION')
+            or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION')
+            or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_PREGRADO')
+            or hasRoles('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_POSGRADO') %}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Evaluación y Acreditación</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <a href="{{ path('app_evaluacion_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if hasRoles('ROLE_GEST_MARCA')
+            or hasRoles('ROLE_GEST_PUBLICO_OBJETIVO')
+            or hasRoles('ROLE_GEST_SISTEMA_OPERATIVO')
+            or hasRoles('ROLE_GEST_TIPO_CONECTIVIDAD')
+            or hasRoles('ROLE_GEST_TIPO_SISTEMA')
+            or hasRoles('ROLE_GEST_VISIBILIDAD')
+            or hasRoles('ROLE_GEST_ENLACE_CONECTIVIDAD')
+            or hasRoles('ROLE_GEST_NAUTA_HOGAR')
+            or hasRoles('ROLE_GEST_LINEA_CELULAR')
+            or hasRoles('ROLE_GEST_TELEFONO_CELULAR')
+            or hasRoles('ROLE_GEST_SISTEMA_INFORMATICO')
+            or hasRoles('ROLE_GEST_CENTRO_DATO_VIRTUAL') %}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Informatización</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <a href="{{ path('app_informatizacion_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+        {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') or  hasRoles('ROLE_RRHH_REPORTE_AE2_CONSOLIDADO')
+            or  hasRoles('ROLE_RRHH_REPORTE_AE2') or  hasRoles('ROLE_RRHH_REPORTE_AE3') or
+            hasRoles('ROLE_RRHH_GEST_ESPECIALIDAD') or
+            hasRoles('ROLE_RRHH_REPORTE_AE2_MES') %}
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>Recursos Humanos</h3>
+                        <p><br><br></p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-globe"></i>
+                    </div>
+                    <a href="{{ path('app_rrhh_portada') }}" class="small-box-footer">Entrar <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+
+    </script>
+
+{% endblock %}
+

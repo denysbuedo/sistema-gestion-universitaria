@@ -1,0 +1,442 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Panel de Control - Recursos Humanos{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        :root {
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent-color: #10b981;
+            --bg-glass: rgba(255, 255, 255, 0.9);
+        }
+
+        .dashboard-container {
+            padding: 2rem;
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .kpi-card {
+            border-radius: 20px;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        .kpi-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5.5rem;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+        }
+
+        .chart-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 1.75rem;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .pm-hero {
+            background: linear-gradient(135deg, #071e3d 0%, #134679 55%, #1a5898 100%);
+            padding: 30px 40px; position: relative; overflow: hidden;
+            margin: -10px -15px 24px -15px;
+        }
+        .pm-hero::before {
+            content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 70%);
+            top: -150px; right: -80px; pointer-events: none;
+        }
+        .pm-hero-dot {
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+            background-size: 24px 24px; pointer-events: none;
+        }
+        .pm-hero-inner { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .pm-hero-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,.55); margin-bottom: 6px; }
+        .pm-hero-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.2; }
+        .pm-hero-sub { font-size: 13px; color: rgba(255,255,255,.6); }
+        .pm-btn-white {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 600;
+            background: #fff; color: #134679; border: none; cursor: pointer;
+            transition: background .2s;
+        }
+        .pm-btn-white:hover { background: #f0f7ff; }
+        @media (max-width: 768px) { .pm-hero { padding: 22px 16px; } }
+
+        .glass-header { display: none; }
+
+        .btn-modern {
+            border-radius: 14px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card-title-modern {
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.025em;
+        }
+        
+        .table-personal th {
+            border-top: none;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            padding: 1.25rem 1rem;
+        }
+
+        .table-personal td {
+            font-size: 0.9rem;
+            vertical-align: middle;
+            padding: 1.25rem 1rem;
+            color: #334155;
+        }
+
+        .avatar-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        /* ── White KPI cards (dashboard style) ── */
+        .kpi-card-new {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            border-top: 3px solid var(--kc, #1e3a8a);
+            padding: 20px 22px 18px;
+            position: relative;
+            overflow: hidden;
+            transition: transform .22s cubic-bezier(0.4,0,0.2,1), box-shadow .22s;
+            box-shadow: 0 1px 3px rgba(0,0,0,.07);
+            margin-bottom: 0;
+        }
+        .kpi-card-new:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,.10);
+        }
+        .kpi-card-new::after {
+            content: '';
+            position: absolute;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            bottom: -30px; right: -20px;
+            background: radial-gradient(circle, var(--kc, #1e3a8a) 0%, transparent 70%);
+            opacity: .06;
+            pointer-events: none;
+        }
+        .kci {
+            width: 44px; height: 44px;
+            border-radius: 11px;
+            background: color-mix(in srgb, var(--kc, #1e3a8a) 12%, transparent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            color: var(--kc, #1e3a8a);
+            margin-bottom: 14px;
+        }
+        @supports not (background: color-mix(in srgb, red 10%, transparent)) {
+            .kci { background: rgba(30,58,138,.10); }
+        }
+        .kc-val {
+            font-size: 30px; font-weight: 800;
+            color: #1a2e44; line-height: 1; margin-bottom: 5px;
+        }
+        .kc-lbl {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .7px;
+            color: #94a3b8;
+        }
+        /* Remove old kpi-card styles for this page */
+        .kpi-card { display: none !important; }
+        .kpi-icon-bg { display: none !important; }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <h4 style="color:#1a2e44;font-weight:700;margin:0">Panel de Recursos Humanos</h4>
+        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Personas, grados académicos y categorías docentes</p>
+    </div>
+</div>
+
+<div class="dashboard-container">
+
+    <!-- KPI Section -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="kpi-card-new" style="--kc: #1e3a8a">
+                <div class="kci"><i class="fas fa-users"></i></div>
+                <div class="kc-val">{{ kpis.personal }}</div>
+                <div class="kc-lbl">Personas</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="kpi-card-new" style="--kc: #10b981">
+                <div class="kci"><i class="fas fa-graduation-cap"></i></div>
+                <div class="kc-val">{{ kpis.grados }}</div>
+                <div class="kc-lbl">Grados Académicos</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="kpi-card-new" style="--kc: #8b5cf6">
+                <div class="kci"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="kc-val">{{ kpis.cat_docentes }}</div>
+                <div class="kc-lbl">Categorías Docentes</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="kpi-card-new" style="--kc: #f43f5e">
+                <div class="kci"><i class="fas fa-microscope"></i></div>
+                <div class="kc-val">{{ kpis.cat_inv }}</div>
+                <div class="kc-lbl">Investigadores</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-5">
+        <!-- Bar Chart (Grados Académicos) -->
+        <div class="col-lg-7 mb-4">
+            <div class="card chart-container shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title-modern mb-0"><i class="fas fa-chart-bar mr-3 text-primary"></i> Distribución por Grado Académico</h5>
+                    <div class="btn-group btn-group-sm rounded-pill shadow-sm overflow-hidden border">
+                        <button class="btn btn-primary px-3">Detalle</button>
+                    </div>
+                </div>
+                <div style="height: 380px;">
+                    <canvas id="gradoChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donut Chart (Categoría Docente) -->
+        <div class="col-lg-5 mb-4">
+            <div class="card chart-container shadow-sm border-0">
+                <h5 class="card-title-modern mb-4"><i class="fas fa-chart-pie mr-3 text-purple" style="color: #a855f7;"></i> Composición Docente</h5>
+                <div style="height: 300px;">
+                    <canvas id="docenteChart"></canvas>
+                </div>
+                <div class="mt-4" id="docenteLegend" style="max-height: 150px; overflow-y: auto; padding-right: 10px;">
+                    <!-- Leyenda dinámica -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card chart-container shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title-modern mb-0"><i class="fas fa-user-plus mr-3 text-success"></i> Incorporaciones Recientes</h5>
+                    <a href="{{ path('app_persona_index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-4 font-weight-bold">Gestionar Todo el Personal</a>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-personal mb-0">
+                        <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Identificación</th>
+                                <th>Grado Académico</th>
+                                <th>Categoría Docente</th>
+                                <th>Contacto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in actividad_reciente %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle mr-3" style="background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);">
+                                            {{ p.primerNombre|first|upper }}{{ p.primerApellido|first|upper }}
+                                        </div>
+                                        <div>
+                                            <span class="font-weight-bold text-dark d-block" style="font-size: 1rem;">{{ p.primerNombre }} {{ p.primerApellido }}</span>
+                                            <span class="text-muted small">{{ p.segundoApellido|default('') }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="bg-light px-2 py-1 rounded text-primary font-weight-bold">{{ p.carnetIdentidad }}</code>
+                                </td>
+                                <td>
+                                    {% if p.gradoAcademico %}
+                                        <span class="badge badge-info px-3 py-2 rounded-pill shadow-sm">
+                                            <i class="fas fa-graduation-cap mr-1"></i> {{ p.gradoAcademico.nombre }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted small italic">No definido</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if p.categoriaDocente %}
+                                        <span class="badge badge-purple text-white px-3 py-2 rounded-pill shadow-sm" style="background-color: #a855f7;">
+                                            <i class="fas fa-chalkboard-teacher mr-1"></i> {{ p.categoriaDocente.nombre }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-secondary px-3 py-2 rounded-pill shadow-sm">No aplica</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="small text-muted"><i class="far fa-envelope mr-1"></i> {{ p.email|default('N/A') }}</span>
+                                        <span class="small text-muted"><i class="fas fa-phone-alt mr-1"></i> {{ p.celular|default(p.telefono|default('N/A')) }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center p-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i>
+                                        <p class="mb-0">No se encontraron registros de personal recientes.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Chart.defaults.font.family = "'Inter', 'Segoe UI', 'Roboto', sans-serif";
+            Chart.defaults.color = '#64748b';
+            
+            // 1. Gráfico de Grados Académicos (Bar)
+            const gradoCtx = document.getElementById('gradoChart').getContext('2d');
+            const gradoDataRaw = {{ grado_dist|raw }};
+            
+            const barGradient = gradoCtx.createLinearGradient(0, 0, 0, 400);
+            barGradient.addColorStop(0, 'rgba(59, 130, 246, 0.9)');
+            barGradient.addColorStop(1, 'rgba(59, 130, 246, 0.4)');
+
+            new Chart(gradoCtx, {
+                type: 'bar',
+                data: {
+                    labels: gradoDataRaw.map(d => d.label),
+                    datasets: [{
+                        label: 'Cantidad de Personas',
+                        data: gradoDataRaw.map(d => d.value),
+                        backgroundColor: barGradient,
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
+                            ticks: { stepSize: 1, color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#64748b', font: { weight: '600' } }
+                        }
+                    }
+                }
+            });
+
+            // 2. Gráfico de Categoría Docente (Donut)
+            const docenteCtx = document.getElementById('docenteChart').getContext('2d');
+            const docenteDataRaw = {{ docente_dist|raw }};
+            
+            const vibrantColors = [
+                '#3b82f6', '#a855f7', '#10b981', '#f43f5e', '#f59e0b', '#06b6d4', '#6366f1'
+            ];
+
+            new Chart(docenteCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: docenteDataRaw.map(d => d.label),
+                    datasets: [{
+                        data: docenteDataRaw.map(d => d.value),
+                        backgroundColor: vibrantColors,
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '78%',
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Leyenda dinámica para el Donut
+            const legendContainer = document.getElementById('docenteLegend');
+            docenteDataRaw.forEach((d, i) => {
+                const item = document.createElement('div');
+                item.className = 'd-flex justify-content-between align-items-center mb-2 small';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span class="status-dot" style="background-color: ${vibrantColors[i % vibrantColors.length]}"></span>
+                        <span class="text-slate-600 font-weight-bold">${d.label}</span>
+                    </div>
+                    <span class="badge badge-light border text-dark font-weight-bold px-2">${d.value}</span>
+                `;
+                legendContainer.appendChild(item);
+            });
+
+            $('#btnRefresh').click(function() {
+                $(this).find('i').addClass('fa-spin');
+                setTimeout(() => location.reload(), 600);
+            });
+        });
+    </script>
+{% endblock %}

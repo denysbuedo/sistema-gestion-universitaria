@@ -1,0 +1,122 @@
+{# Sección de Información General #}
+{{ include('modules/convenio/convenio/comun.html.twig', { 'item': item }) }}
+
+<style>
+    .detail-section-title {
+        color: #134679;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-badge-info {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        height: 100%;
+    }
+    .detail-label-sm {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .detail-value {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        font-weight: 600;
+    }
+    .action-table-luxury {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+    .action-table-luxury th {
+        background: #f1f5f9;
+        color: #4a5568;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border: none;
+        padding: 10px 15px;
+    }
+    .action-table-luxury td {
+        font-size: 0.85rem;
+        color: #1a2e44;
+        padding: 10px 15px;
+        border-top: 1px solid #e2e8f0;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="p-3 bg-light rounded-3 border-start border-primary border-4 shadow-sm">
+            <label class="detail-label-sm">Descripción del Convenio</label>
+            <p class="mb-0 text-secondary" style="line-height: 1.6;">{{ item.descripcion | default('Sin descripción disponible.') }}</p>
+        </div>
+    </div>
+</div>
+
+{# Metadatos y Documento #}
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="detail-badge-info">
+            <label class="detail-label-sm"><i class="fas fa-user-edit mr-1"></i> Creado por</label>
+            <span class="detail-value">
+                {% if item.creadoPor is not null %}
+                    {{ item.creadoPor.primerNombre }} {{ item.creadoPor.primerApellido }}
+                {% else %} --- {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="detail-badge-info d-flex justify-content-between align-items-center">
+            <div>
+                <label class="detail-label-sm"><i class="fas fa-file-pdf mr-1"></i> Documento Adjunto</label>
+                <span class="detail-value text-muted small">{{ item.documento | default('No adjunto') }}</span>
+            </div>
+            {% if item.documento %}
+                <a target="_blank" class="btn btn-sm btn-outline-danger font-weight-bold"
+                   href="{{ app.request.getSchemeAndHttpHost() }}/uploads/convenio/intrumento_juridico/documento/{{ item.documento }}">
+                    <i class="fas fa-external-link-alt mr-1"></i> VER PDF
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Tabla de Acciones #}
+<div class="detail-section-title">
+    <i class="fas fa-list-ul"></i> Acciones del Convenio
+</div>
+
+<div class="action-table-luxury">
+    <table class="table mb-0">
+        <thead>
+        <tr>
+            <th width="1%">No.</th>
+            <th>Descripción de la Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for accion in acciones %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td class="font-weight-500">{{ accion.nombre }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2" class="text-center py-4 text-muted">
+                    <i class="fas fa-info-circle mr-2"></i> No existen acciones registradas para este convenio.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

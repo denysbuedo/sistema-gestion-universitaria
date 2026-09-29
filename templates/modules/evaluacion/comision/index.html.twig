@@ -1,0 +1,124 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Comisiones evaluadoras{% endblock %}
+
+{% block body %}
+
+<style>
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+        .btn-lux-primary { background:#134679; color:#fff; }
+        .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+        .btn-lux-success { background:#15803d; color:#fff; }
+        .btn-lux-success:hover { background:#166534; color:#fff; transform:translateY(-1px); }
+        .btn-action-sm { width:28px; height:28px; padding:0; display:inline-flex; justify-content:center; align-items:center; border-radius:6px; font-size:0.75rem; border:none; transition:all 0.2s; color:#fff; margin:0 2px; text-decoration:none; cursor:pointer; }
+        .btn-action-primary { background:#3b82f6; }
+        .btn-action-primary:hover { background:#2563eb; transform:translateY(-1px); }
+        .btn-action-warning { background:#eab308; color:#1e293b !important; }
+        .btn-action-warning:hover { background:#ca8a04; transform:translateY(-1px); }
+        .btn-action-danger { background:#ef4444; }
+        .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
+        .badge-pill-on { background:#dcfce7; color:#15803d; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .badge-pill-off { background:#fee2e2; color:#b91c1c; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .config-table tbody tr:hover { background:#f8fafc; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header">
+            <div class="row" style="display: flex; justify-content: space-between; align-items: center">
+
+                <h3 class="card-title text-bold text-gray">Listado de comisiones evaluadoras</h3>
+{#                <a title="Adicionar" class="btn btn-primary mr-2"#}
+{#                   href="{{ path('app_comision_evaluadora_registrar') }}"><i#}
+{#                            class="fa fa-plus"></i>#}
+{#                </a>#}
+
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead >
+                <tr>
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>Miembros</th>
+                    <th>Estado</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td width="20%">{{ item.nombre }}</td>
+                        <td>
+                            <ul class="list-inline">
+                                {% if item.miembros | length > 0 %}
+                                    {% for item1 in item.miembros %}
+                                        <li class="list-inline-item">
+                                            <img title="{{ item1.miembro.primerNombre ~ ' ' ~ item1.miembro.segundoNombre ~' '~ item1.miembro.primerApellido ~ ' ' ~ item1.miembro.segundoApellido }}"
+                                                 src="{% if item1.miembro.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item1.miembro.foto }}{% else %} /assets/images/usuario.png {% endif %}"
+                                                 class="img-circle" alt="{{ item1.miembro.primerNombre }}"
+                                                 style="width: 40px;height: 40px; object-fit: cover; cursor: pointer">
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </td>
+                        <td width="3%" class="-text-center">
+                            {% if '1' == item.activo %}
+                                <span class="badge-pill-on"><i class="fas fa-check mr-1"></i>Habilitado</span>
+                            {% else %}
+                                <span class="badge-pill-off"><i class="fas fa-times mr-1"></i>Deshabilitado</span>
+                            {% endif %}
+                        </td>
+                        <td width="15%" class="text-center">
+                            <button title="Detalles" class="btn-action-sm btn-action-primary modalDetailAction"
+                                    data-url="{{ path('app_comision_evaluadora_detail', {'id' : item.id}) }}"
+                                    data-title="Detalles de la COPEP">
+                                <i class="fa fa-eye "></i>
+                            </button>
+
+                            <a title="Modificar" href="{{ path('app_comision_evaluadora_modificar', {'id': item.id}) }}"
+                               class="btn-action-sm btn-action-primary"><i
+                                        class="fa fa-edit"></i>
+                            </a>
+                            <button title="Eliminar" class="btn-action-sm btn-action-danger elementRemove"
+                                    data-url="{{ path('app_comision_evaluadora_eliminar', {'id': item.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        localStorage.removeItem('nombre');
+        localStorage.removeItem('descripcion');
+        localStorage.removeItem('activo');
+    </script>
+{% endblock %}

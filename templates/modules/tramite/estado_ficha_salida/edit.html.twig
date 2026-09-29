@@ -1,0 +1,205 @@
+﻿{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar estado de salida{% endblock %}
+
+{% block body %}
+<style>
+    .card-luxury {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 4px solid #134679;
+        margin-bottom: 2rem;
+    }
+    .card-luxury .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 24px;
+    }
+    .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; }
+
+    .form-group label {
+        color: #4a5568;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        display: block;
+        font-size: 0.85rem;
+    }
+    .form-group label.ms-switch-group { display: inline-flex; }
+    .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+    label.required::after { content: '*'; color: #ef4444; margin-left: 4px; }
+
+    .form-control-luxury {
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        padding: 8px 12px;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+    }
+    .form-control-luxury:focus {
+        border-color: #134679;
+        box-shadow: 0 0 0 3px rgba(19,70,121,0.08);
+        outline: none;
+    }
+    .is-invalid-luxury { border-color: #ef4444 !important; background-color: #fffafb; }
+    .invalid-feedback-luxury { color: #ef4444; font-size: 0.7rem; font-weight: 600; margin-top: 4px; display: block; }
+
+    .estado-toggle {
+        display: inline-flex;
+        border-radius: 20px;
+        background: #f1f5f9;
+        padding: 3px;
+        gap: 2px;
+    }
+    .et-opt {
+        padding: 4px 14px;
+        border-radius: 20px;
+        border: none;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: transparent;
+        color: #94a3b8;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all .18s;
+        letter-spacing: .3px;
+    }
+    .et-opt i { font-size: 0.42rem; vertical-align: middle; }
+    .et-opt.et-on.active  { background: #dcfce7; color: #15803d; }
+    .et-opt.et-off.active { background: #fee2e2; color: #b91c1c; }
+    .et-opt:not(.active):hover { color: #64748b; }
+
+    .btn-lux-sm {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-transform: uppercase;
+    }
+    .btn-lux-primary { background: #134679; color: #fff; }
+    .btn-lux-outline-danger { background: #fff; border: 1px solid #fecaca; color: #dc2626; }
+</style>
+
+<div class="card card-luxury">
+    <div class="card-header">
+        <h3 class="card-title text-bold"><i class="fas fa-edit label-icon"></i>Modificar Estado de Salida</h3>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'estado-salida-form'}}) }}
+    <div class="card-body px-4 pt-3">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="form-group">
+                    <label class="required"><i class="fas fa-flag label-icon"></i>Nombre del Estado</label>
+                    {{ form_widget(form.nombre, {'attr': {'class': 'form-control form-control-luxury ' ~ (form.nombre.vars.valid ? '' : 'is-invalid-luxury'), 'placeholder': 'Ej: Aprobado'}}) }}
+                    {% if not form.nombre.vars.valid %}
+                        <span class="invalid-feedback-luxury">{{ form_errors(form.nombre) }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-toggle-on label-icon"></i>Estado Sistema</label>
+                    <input type="checkbox"
+                               id="{{ form.activo.vars.id }}"
+                               name="{{ form.activo.vars.full_name }}"
+                               class="d-none"
+                               {% if form.activo.vars.data %}checked{% endif %}>
+                    <div class="estado-toggle" data-cb="{{ form.activo.vars.id }}">
+                        <button type="button" class="et-opt et-on{% if form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Habilitado
+                        </button>
+                        <button type="button" class="et-opt et-off{% if not form.activo.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Deshabilitado
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt label-icon"></i>Doc. Salida</label>
+                    <input type="checkbox"
+                               id="{{ form.documentoSalida.vars.id }}"
+                               name="{{ form.documentoSalida.vars.full_name }}"
+                               class="d-none"
+                               {% if form.documentoSalida.vars.data %}checked{% endif %}>
+                    <div class="estado-toggle" data-cb="{{ form.documentoSalida.vars.id }}">
+                        <button type="button" class="et-opt et-on{% if form.documentoSalida.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> Sí
+                        </button>
+                        <button type="button" class="et-opt et-off{% if not form.documentoSalida.vars.data %} active{% endif %}">
+                            <i class="fas fa-circle"></i> No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="form-group">
+                    <label><i class="fas fa-paragraph label-icon"></i>Descripción</label>
+                    {{ form_widget(form.descripcion, {'attr': {'class': 'form-control form-control-luxury', 'rows': 3, 'placeholder': 'Breve descripción de este estado...'}}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white px-4 py-3 border-top-0 d-flex justify-content-end" style="gap: 10px;">
+        <button type="button" class="btn-lux-sm btn-lux-outline-danger btn-cancel-confirm">
+            <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button type="submit" id="submit-btn" class="btn-lux-sm btn-lux-primary">
+            <i class="fas fa-check"></i> Aceptar
+        </button>
+    </div>
+    {{ form_row(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            // Estado toggle pill
+            $(document).on('click', '.estado-toggle .et-opt', function() {
+                var $toggle = $(this).closest('.estado-toggle');
+                var cbId    = $toggle.data('cb');
+                var isOn    = $(this).hasClass('et-on');
+                $toggle.find('.et-opt').removeClass('active');
+                $(this).addClass('active');
+                $('#' + cbId).prop('checked', isOn);
+            });
+
+            $('.btn-cancel-confirm').on('click', function() {
+                bootbox.confirm({
+                    title: "<h5 class='font-weight-bold mb-0'>¿Confirmar Cancelación?</h5>",
+                    message: "<p class='mb-0 text-muted'>Se perderán los cambios realizados.</p>",
+                    buttons: {
+                        confirm: { label: 'Sí, cancelar', className: 'btn-danger btn-sm px-3' },
+                        cancel: { label: 'No, mantener', className: 'btn-light btn-sm border px-3' }
+                    },
+                    callback: function (result) {
+                        if (result) { window.location.href = "{{ path('app_estado_ficha_salida_index') }}"; }
+                    }
+                });
+            });
+
+            $form.on('submit', function() {
+                if ($form[0].checkValidity()) {
+                    HoldOn.open({ theme: "sk-cube-grid", message: 'Guardando...', textColor: "white" });
+                }
+            });
+        });
+    </script>
+{% endblock %}

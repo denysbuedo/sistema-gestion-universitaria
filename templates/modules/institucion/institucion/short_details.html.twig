@@ -1,0 +1,46 @@
+<style>
+    .sd-inst-logo { width:64px; height:64px; object-fit:contain; border-radius:8px; border:2px solid #e2e8f0; background:#fff; padding:4px; box-shadow:0 2px 6px rgba(0,0,0,0.07); }
+    .sd-inst-fallback { width:64px; height:64px; border-radius:8px; border:2px solid #dbeafe; background:linear-gradient(135deg,#134679,#1e6fb5); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.6rem; flex-shrink:0; }
+    .sd-info-label { font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:1px; }
+    .sd-info-value { font-size:0.85rem; font-weight:600; color:#1a2e44; }
+</style>
+<div class="px-4 py-3" style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+    <div class="d-flex align-items-center" style="gap:18px;">
+        {% if item.logo != null %}
+            <a href="{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.logo }}" target="_blank">
+                <img src="{{ app.request.getSchemeAndHttpHost() }}/uploads/institucion/logo/{{ item.logo }}"
+                     class="sd-inst-logo"
+                     onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <span class="sd-inst-fallback" style="display:none;"><i class="fas fa-university"></i></span>
+            </a>
+        {% else %}
+            <div class="sd-inst-fallback"><i class="fas fa-university"></i></div>
+        {% endif %}
+        <div style="flex:1; display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:6px 20px;">
+            <div>
+                <div class="sd-info-label">Institución</div>
+                <div class="sd-info-value">{{ item.nombre }}</div>
+            </div>
+            <div>
+                <div class="sd-info-label">Siglas</div>
+                <div class="sd-info-value"><span style="font-family:monospace;background:#e2e8f0;padding:1px 7px;border-radius:4px;">{{ item.siglas }}</span></div>
+            </div>
+            <div>
+                <div class="sd-info-label">Tipo</div>
+                <div class="sd-info-value">{{ item.tipoInstitucion.nombre | default('—') }}</div>
+            </div>
+            <div>
+                <div class="sd-info-label">Rector</div>
+                <div class="sd-info-value">{{ item.gradoAcademicoRector.siglas | default('') }} {{ item.rector }}</div>
+            </div>
+            <div>
+                <div class="sd-info-label">Correo</div>
+                <div class="sd-info-value">{{ item.correo | default('—') }}</div>
+            </div>
+            <div>
+                <div class="sd-info-label">Fundación</div>
+                <div class="sd-info-value">{{ item.fechaFundacion | date('d/m/Y') }}</div>
+            </div>
+        </div>
+    </div>
+</div>

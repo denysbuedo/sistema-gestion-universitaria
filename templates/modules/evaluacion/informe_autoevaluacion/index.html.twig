@@ -1,0 +1,144 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Solicitudes de informes de autoevaluación{% endblock %}
+
+{% block body %}
+
+<style>
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .btn-lux-sm { padding:6px 14px; border-radius:6px; font-weight:700; font-size:0.75rem; border:none; display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; transition:all 0.2s; text-decoration:none; color:#fff; cursor:pointer; }
+        .btn-lux-primary { background:#134679; color:#fff; }
+        .btn-lux-primary:hover { background:#0f3560; color:#fff; transform:translateY(-1px); }
+        .btn-lux-success { background:#15803d; color:#fff; }
+        .btn-lux-success:hover { background:#166534; color:#fff; transform:translateY(-1px); }
+        .btn-action-sm { width:28px; height:28px; padding:0; display:inline-flex; justify-content:center; align-items:center; border-radius:6px; font-size:0.75rem; border:none; transition:all 0.2s; color:#fff; margin:0 2px; text-decoration:none; cursor:pointer; }
+        .btn-action-primary { background:#3b82f6; }
+        .btn-action-primary:hover { background:#2563eb; transform:translateY(-1px); }
+        .btn-action-warning { background:#eab308; color:#1e293b !important; }
+        .btn-action-warning:hover { background:#ca8a04; transform:translateY(-1px); }
+        .btn-action-danger { background:#ef4444; }
+        .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
+        .badge-pill-on { background:#dcfce7; color:#15803d; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .badge-pill-off { background:#fee2e2; color:#b91c1c; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .config-table tbody tr:hover { background:#f8fafc; }
+        .dropdown-toggle-no-caret::after { display:none !important; }
+</style>
+
+    {% include 'pages/modalDetail.html.twig' %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold text-gray">Listado de solicitudes de informes de autoevaluación</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body px-4">
+            <table class="table config-table table-bordered table-striped dataTable">
+                <thead >
+                <tr>
+                    <th>No.</th>
+                    <th>Organismo</th>
+                    <th>Institución</th>
+                    <th>Programa de pregrado</th>
+                    <th>Programa de posgrado</th>
+                    <th>Evaluación actual</th>
+                    <th>Fecha propuesta</th>
+                    {#                    <th>Fecha aprobada</th> #}
+                    <th>Estado</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+
+                        {% if item.tipoSolicitud == 'institucion' %}
+                            <td>{{ item.institucion.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.institucion.nombre | default('') }}</td>
+                        {% elseif  item.tipoSolicitud == 'programa_pregrado' %}
+                            <td>{{ item.programaPregrado.centroRector.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.programaPregrado.centroRector.nombre | default('') }}</td>
+                        {% elseif  item.tipoSolicitud == 'programa_posgrado' %}
+                            <td>{{ item.programaPosgrado.universidad.estructura.estructura.siglas | default('') }}</td>
+                            <td>{{ item.programaPosgrado.universidad.nombre | default('') }}</td>
+                        {% endif %}
+                        <td>{{ item.programaPregrado.nombre | default('') }}</td>
+                        <td>{{ item.programaPosgrado.nombre | default('') }}</td>
+                        <td>{{ item.categoriaAcreditacionActual | default('') }}</td>
+                        <td>{% if item.fechaPropuesta is not null %} {{ item.fechaPropuesta | date('d/m/Y') }} {% else %} {{ '' }} {% endif %}</td>
+                        {#                        <td>{% if item.fechaAprobada is not null %} {{ item.fechaAprobada | date('d/m/Y') }} {% else %} {{ '' }} {% endif %}</td> #}
+                        <td>
+                            <span class="{{ item.classParams }}">{{ item.estadoInformeAutoevaluacion | default('') }}</span>
+                        </td>
+                        <td width="15%" class="text-center">
+                            <a title="Descargar informe de autoevaluación" target="_blank"
+                               class="btn-action-sm btn-action-primary"
+                               href="{{ app.request.getSchemeAndHttpHost() }}/uploads/evaluacion/solicitud/informe/autoevaluacion/{{ item.informeAutoevaluacion }}">
+                                <i
+                                        class="fa fa-file-download"></i>
+                            </a>
+                            {% if item.estadoInformeAutoevaluacion == 'Rechazado' %}
+                                <a title="Descargar motivos de rechazo" target="_blank"
+                                   class="btn-action-sm btn-action-primary"
+                                   href="{{ app.request.getSchemeAndHttpHost() }}/uploads/evaluacion/solicitud/informe/autoevaluacion/motivos_rechazos/{{ item.motivoRechazo }}">
+                                    <i
+                                            class="fa fa-file-archive"></i>
+                                </a>
+                            {% endif %}
+                            {% if item.estadoInformeAutoevaluacion is null %}
+                                <button title="Aceptar" class="btn-action-sm btn-action-primary elementRemove"
+                                        data-url="{{ path('app_informe_autoevaluacion_aprobar', {'id': item.id}) }}">
+                                    <i class="fa fa-calendar-check"></i>
+
+                                </button>
+                                <button title="Rechazar" class="btn-action-sm btn-action-danger elementRemoveTexarea"
+                                        data-url="{{ path('app_informe_autoevaluacion_rechazar', {'id': item.id}) }}"
+                                        data-title="Motivos"
+                                        data-url_redirect="{{ path('app_informe_autoevaluacion_index') }}"
+                                >
+                                    <i class="fa fa-calendar-times"></i>
+                                </button>
+
+                                <button title="Eliminar" class="btn-action-sm btn-action-danger elementRemove"
+                                        data-url="{{ path('app_informe_autoevaluacion_eliminar', {'id': item.id}) }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            {% endif %}
+
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).on('show.bs.dropdown', function(e) {
+    var $btn = $(e.target).find('[data-toggle="dropdown"]');
+    var $menu = $(e.target).find('.dropdown-menu');
+    $menu.appendTo('body');
+    var offset = $btn.offset();
+    $menu.css({ position:'fixed', top: offset.top + $btn.outerHeight(), left:'auto', right: $(window).width() - offset.left - $btn.outerWidth(), display:'block', zIndex:9999 });
+}).on('hide.bs.dropdown', function() {
+    $('.dropdown-menu').removeAttr('style').appendTo($(this));
+});
+</script>
+{% endblock %}

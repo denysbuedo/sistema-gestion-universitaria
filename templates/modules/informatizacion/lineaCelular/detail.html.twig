@@ -1,0 +1,74 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-4">
+            <h5 class="mb-0"><b>Número de teléfono:</b> {{ item.numeroTelefono | default('') }}</h5>
+            <h5 class="mb-0"><b>Plan voz:</b> {{ item.planVoz | default('')  }}min</h5>
+        </div>
+        <div class="col-4">
+            <h5 class="mb-0"><b>Pin:</b> {{ item.pin | default('') }}</h5>
+            <h5 class="mb-0"><b>Plan sms:</b>$ {{ item.planSms | default('') }}</h5>
+        </div>
+        <div class="col-4">
+            <h5 class="mb-0"><b>Puk:</b> {{ item.puk | default('') }}</h5>
+            <h5 class="mb-0"><b>Plan datos:</b> {{ item.planDatos | default('') }}{% if item.planDatos is not null %} Gb {% endif %}</h5>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <h5 class="mb-0"><b>Responsables</b></h5>
+
+    <table id="tbl-asociados" class="table table-bordered table-striped dataTable">
+        <thead class="table-custom-header">
+        <tr>
+            <th>No.</th>
+            <th>Foto</th>
+            <th>Nombre y apellidos</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in asignadas %}
+            <tr>
+                <td width="1%" style="width: 2%">{{ loop.index }}</td>
+                <td width="5%" style="width: 3%"><a
+                            href="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }} {% else %} /assets/images/usuario.png {% endif %}"
+                            target="_blank">
+                        <img src="{% if item.foto != null %}{{ app.request.getSchemeAndHttpHost() }}/uploads/images/personas/{{ item.foto }}{% else %} /assets/images/usuario.png {% endif %}"
+                             class="img-circle" alt="{{ item.primerNombre }}"
+                             style="width: 40px;height: 40px; object-fit: cover">
+                    </a></td>
+                <td style="{% if loop.index == 1 %} color: red;font-weight: bold {% endif %}">{{ item.primerNombre ~ ' ' ~ item.segundoNombre ~' '~ item.primerApellido ~ ' ' ~ item.segundoApellido }}</td>
+
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <h5 class="mb-0"><b>Recargas</b></h5>
+    <table class="table table-bordered table-striped dataTable">
+        <thead class="table-custom-header">
+        <tr>
+            <th>No.</th>
+            <th>Fecha</th>
+            <th>Plan voz</th>
+            <th>Plan SMS</th>
+            <th>Plan Datos</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in recargas %}
+            <tr>
+                <td width="1%">{{ loop.index }}</td>
+                <td>{{ item.creado | date('d/m/Y  h:i a') }}</td>
+                <td>{{ item.planVoz | default('') }}</td>
+                <td>{{ item.planSms | default('') }}</td>
+                <td>{{ item.planDatos | default('') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+

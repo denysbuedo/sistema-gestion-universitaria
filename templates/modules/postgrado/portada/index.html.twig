@@ -1,0 +1,445 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Portada Posgrado{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* ── Layout general ─────────────────────────────── */
+        .pg-wrap { padding: 0 0 32px 0; }
+
+        /* ── Header (legacy — hidden) ── */
+        .pg-header { display: none; }
+
+        /* ── Stat cards ──────────────────────────────────── */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid #e8ecf1;
+            display: flex; align-items: center; gap: 14px;
+            height: 100%;
+            transition: box-shadow .2s ease, border-color .2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.09);
+            border-color: transparent;
+        }
+        .stat-card { position: relative; }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: var(--sc, #7c3aed);
+            border-radius: 14px 14px 0 0;
+        }
+        .stat-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px; flex-shrink: 0;
+        }
+        .si-total      { background: #ede9fe; color: #7c3aed; }
+        .si-aprobados  { background: #d1fae5; color: #059669; }
+        .si-proceso    { background: #dbeafe; color: #2563eb; }
+        .si-rechazados { background: #fee2e2; color: #dc2626; }
+        .si-desactivados{ background: #fef3c7; color: #d97706; }
+        .si-extintos   { background: #f3f4f6; color: #6b7280; }
+
+        .stat-body { flex: 1; min-width: 0; }
+        .stat-label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .6px; color: #9ca3af; margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 30px; font-weight: 800;
+            color: #1e1b4b; line-height: 1;
+        }
+
+        /* ── Chart cards ─────────────────────────────────── */
+        .cc {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e8ecf1;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .cc-head {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .cc-head-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+        .cc-title {
+            font-size: 14px; font-weight: 600; color: #1e1b4b; margin: 0;
+        }
+        .cc-body { padding: 16px; }
+
+        /* ── Distribution rows (below donut charts) ──────── */
+        .dist-row {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dist-row:last-child { border-bottom: none; }
+        .dist-label { font-size: 13px; color: #374151; font-weight: 500; flex: 1; min-width: 0; padding-right: 8px; }
+        .dist-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .dist-count { font-size: 13px; font-weight: 700; color: #1e1b4b; min-width: 28px; text-align: right; }
+        .dist-bar { width: 72px; height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+        .dist-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+
+        /* ── Section separator ───────────────────────────── */
+        .section-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .8px; color: #9ca3af;
+            margin: 8px 0 16px 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="content-header">
+    <div class="container-fluid">
+        <h4 style="color:#1a2e44;font-weight:700;margin:0">Programas de Posgrado</h4>
+        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Visión general de los programas académicos de posgrado</p>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid pg-wrap">
+        <div class="pg-header"></div>
+
+        {# ── Fila 1 de stat cards ────────────────────────── #}
+        <div class="row" style="margin-bottom: 16px;">
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#7c3aed">
+                    <div class="stat-icon si-total"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Total programas</div>
+                        <div class="stat-value">{{ total_programas }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#059669">
+                    <div class="stat-icon si-aprobados"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Aprobados</div>
+                        <div class="stat-value">{{ aprobados }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#2563eb">
+                    <div class="stat-icon si-proceso"><i class="fas fa-spinner"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">En proceso</div>
+                        <div class="stat-value">{{ en_proceso }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Fila 2 de stat cards ────────────────────────── #}
+        <div class="row" style="margin-bottom: 28px;">
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#dc2626">
+                    <div class="stat-icon si-rechazados"><i class="fas fa-times-circle"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Rechazados</div>
+                        <div class="stat-value">{{ rechazados }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#d97706">
+                    <div class="stat-icon si-desactivados"><i class="fas fa-pause-circle"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Desactivados</div>
+                        <div class="stat-value">{{ desactivados }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
+                <div class="stat-card" style="--sc:#6b7280">
+                    <div class="stat-icon si-extintos"><i class="fas fa-archive"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Extintos</div>
+                        <div class="stat-value">{{ extintos }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Fila de gráficos 1: Tipo de programa + Universidad ── #}
+        <div class="section-label">Distribución de programas</div>
+        <div class="row">
+
+            {# Tipo de programa — donut + lista #}
+            <div class="col-12 col-md-5">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-dot" style="background:#7c3aed;"></div>
+                        <h6 class="cc-title">Por tipo de programa</h6>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_tipo_programa" style="height: 220px;"></div>
+                        <div style="margin-top: 6px;">
+                            {% for tipo in tipos_programa %}
+                                {% set pct = total_programas > 0 ? ((tipo.y / total_programas) * 100)|round : 0 %}
+                                <div class="dist-row">
+                                    <span class="dist-label">{{ tipo.name }}</span>
+                                    <div class="dist-right">
+                                        <span class="dist-count">{{ tipo.y }}</span>
+                                        <div class="dist-bar">
+                                            <div class="dist-fill" style="width: {{ pct }}%; background: #7c3aed;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding: 12px 0;">Sin datos disponibles</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Universidad — barras horizontales #}
+            <div class="col-12 col-md-7">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-dot" style="background:#2563eb;"></div>
+                        <h6 class="cc-title">Por universidad (top 10)</h6>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_universidad" style="height: 320px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Fila de gráficos 2: Rama de ciencia + Modalidad ─── #}
+        <div class="row">
+
+            {# Rama de ciencia — barras horizontales #}
+            <div class="col-12 col-md-6">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-dot" style="background:#059669;"></div>
+                        <h6 class="cc-title">Por rama de la ciencia</h6>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_rama_ciencia" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            {# Modalidad — donut + lista #}
+            <div class="col-12 col-md-6">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-dot" style="background:#d97706;"></div>
+                        <h6 class="cc-title">Por modalidad</h6>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_modalidad" style="height: 210px;"></div>
+                        <div style="margin-top: 6px;">
+                            {% set modal_colors = ['#d97706','#7c3aed','#2563eb','#059669','#dc2626','#6b7280'] %}
+                            {% for mod in por_modalidad %}
+                                {% set pct = total_programas > 0 ? ((mod.y / total_programas) * 100)|round : 0 %}
+                                <div class="dist-row">
+                                    <span class="dist-label">{{ mod.name }}</span>
+                                    <div class="dist-right">
+                                        <span class="dist-count">{{ mod.y }}</span>
+                                        <div class="dist-bar">
+                                            <div class="dist-fill" style="width: {{ pct }}%; background: {{ modal_colors[loop.index0 % 6] }};"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding: 12px 0;">Sin datos disponibles</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Fila de gráfico 3: Categoría de acreditación ─────── #}
+        <div class="row">
+            <div class="col-12">
+                <div class="cc">
+                    <div class="cc-head">
+                        <div class="cc-head-dot" style="background:#dc2626;"></div>
+                        <h6 class="cc-title">Por categoría de acreditación</h6>
+                    </div>
+                    <div class="cc-body">
+                        <div id="chart_categoria_acreditacion" style="height: 280px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).ready(function () {
+
+    var COLORS = ['#7c3aed','#2563eb','#059669','#d97706','#dc2626','#0891b2','#be185d','#6b7280'];
+
+    /* ── Opciones base compartidas ── */
+    var baseTooltip = {
+        backgroundColor: '#1e1b4b',
+        style: { color: '#fff', fontSize: '12px' },
+        borderRadius: 8,
+        shadow: false
+    };
+    var baseAxis = {
+        lineWidth: 0, tickWidth: 0,
+        gridLineColor: '#f3f4f6',
+        labels: { style: { color: '#6b7280', fontSize: '12px' } }
+    };
+
+    /* ── 1. Tipo de programa — donut ── */
+    var tiposData = JSON.parse('{{ tipos_programa_json | raw }}');
+    if (tiposData.length > 0) {
+        Highcharts.chart('chart_tipo_programa', {
+            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> programas ({point.percentage:.1f}%)' }),
+            plotOptions: {
+                pie: {
+                    innerSize: '58%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'Programas', data: tiposData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 2. Universidad — barras horizontales ── */
+    var univData = JSON.parse('{{ por_universidad | raw }}');
+    if (univData.length > 0) {
+        Highcharts.chart('chart_universidad', {
+            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category', reserveSpace: true }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' } }),
+            legend: { enabled: false },
+            plotOptions: {
+                bar: {
+                    borderRadius: 5, borderWidth: 0,
+                    color: '#2563eb',
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#1e1b4b', fontSize: '11px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> programas' }),
+            series: [{ name: 'Universidad', data: univData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 3. Rama de ciencia — barras horizontales ── */
+    var ramaData = JSON.parse('{{ por_rama_ciencia | raw }}');
+    if (ramaData.length > 0) {
+        Highcharts.chart('chart_rama_ciencia', {
+            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, { title: { text: '' } }),
+            legend: { enabled: false },
+            plotOptions: {
+                bar: {
+                    borderRadius: 5, borderWidth: 0,
+                    color: '#059669',
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#1e1b4b', fontSize: '11px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> programas' }),
+            series: [{ name: 'Rama', data: ramaData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 4. Modalidad — donut ── */
+    var modalData = JSON.parse('{{ por_modalidad_json | raw }}');
+    if (modalData.length > 0) {
+        Highcharts.chart('chart_modalidad', {
+            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
+            title: { text: '' },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> programas ({point.percentage:.1f}%)' }),
+            plotOptions: {
+                pie: {
+                    innerSize: '55%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    colors: ['#d97706','#7c3aed','#2563eb','#059669','#dc2626','#6b7280'],
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>',
+                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
+                        distance: 8
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{ name: 'Modalidad', data: modalData }],
+            credits: { enabled: false }
+        });
+    }
+
+    /* ── 5. Categoría de acreditación — columnas ── */
+    var catData = JSON.parse('{{ por_categoria_acreditacion | raw }}');
+    if (catData.length > 0) {
+        Highcharts.chart('chart_categoria_acreditacion', {
+            chart: { type: 'column', spacing: [12, 16, 12, 16], animation: { duration: 600 } },
+            title: { text: '' },
+            xAxis: $.extend({}, baseAxis, { type: 'category' }),
+            yAxis: $.extend({}, baseAxis, {
+                title: { text: '' },
+                allowDecimals: false
+            }),
+            legend: { enabled: false },
+            plotOptions: {
+                column: {
+                    borderRadius: 6, borderWidth: 0,
+                    colorByPoint: true,
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true, format: '{point.y:.0f}',
+                        style: { fontWeight: '700', color: '#1e1b4b', fontSize: '12px' }
+                    }
+                }
+            },
+            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> programas' }),
+            series: [{ name: 'Categoría', data: catData }],
+            credits: { enabled: false }
+        });
+    }
+
+});
+</script>
+{% endblock %}

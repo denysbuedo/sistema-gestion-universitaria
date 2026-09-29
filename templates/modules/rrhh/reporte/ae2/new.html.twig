@@ -1,0 +1,198 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar Modelo 223.216 (I) (AE2){% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {% include 'pages/_luxury_form_styles.html.twig' %}
+    <style>
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[readonly] {
+            font-weight: bold;
+            color: #000;
+            background-color: #f8fafc;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-plus-circle label-icon"></i>Adicionar Modelo 223.216 (I) (AE2)</h3>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
+
+        <div class="card-body px-4 pt-3">
+            <div class="row mb-3">
+                <div class="col-12 text-gray">
+                    <h5 class="mb-0">
+                        <b><i class="fa fa-university"></i></b>
+                        ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
+                    </h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 mb-3">
+                    <div class="form-group">
+                        <label class="required"><i class="fas fa-calendar-alt label-icon"></i>Año</label>
+                        {{ form_widget(form.anno, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                        {{ form_errors(form.anno) }}
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 mb-3">
+                    <div class="form-group">
+                        <label class="required"><i class="fas fa-calendar label-icon"></i>Mes</label>
+                        {{ form_widget(form.mes, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                        {{ form_errors(form.mes) }}
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 mb-3">
+                    <div class="form-group">
+                        <label><i class="fas fa-file-upload label-icon"></i>AE-2 firmado</label>
+                        {{ form_widget(form.documento, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                        <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;"
+                              class="cargar-archivo"> </span>
+                        {{ form_errors(form.documento) }}
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="table-responsive">
+                <table class="table config-table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th style="width: 70%">Indicador</th>
+                        <th style="width: 30%">Valor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set fields = [
+                        {'label': 'Total plantilla aprobada', 'field': form.totalPlantillaAprobada},
+                        {'label': 'Total plantilla cubierta', 'field': form.totalPlantillaCubierta},
+                        {'label': 'Total general de contratos (4+7+14)', 'field': form.totalGeneralContratos},
+                        {'label': 'Total contratos profesores tiempo determinado', 'field': form.totalContratosProfesoresTiempoDeterminado},
+                        {'label': 'Profesores tiempo completo', 'field': form.profesoresTiempoCompleto},
+                        {'label': 'Total de contratos no docentes (7+14)', 'field': form.totalContratosNoDocentes},
+                        {'label': 'Contratos no docentes con respaldo de plazas (8 a 13)', 'field': form.contratosNoDocentesConRespaldo},
+                        {'label': 'Contratos por sustitución', 'field': form.contratosPorSustitucion},
+                        {'label': 'Período de prueba', 'field': form.periodoPrueba},
+                        {'label': 'Serenos, auxiliares, limpieza', 'field': form.serenosAuxiliaresLimpieza},
+                        {'label': 'Labores agrícolas', 'field': form.laboresAgricolas},
+                        {'label': 'Jubilados', 'field': form.jubilados},
+                        {'label': 'Otros con respaldo', 'field': form.otrosConRespaldo},
+                        {'label': 'Contratos no docentes sin respaldo de plazas (15 a 19)', 'field': form.contratosNoDocentesSinRespaldo},
+                        {'label': 'Serenos, auxiliares, limpieza sin respaldo', 'field': form.serenosAuxiliaresLimpiezaSinRespaldo},
+                        {'label': 'Labores Agrícolas sin respaldo', 'field': form.laboresAgricolasSinRespaldo},
+                        {'label': 'Jubilados sin respaldo', 'field': form.jubiladosSinRespaldo},
+                        {'label': 'Ejecución de obra', 'field': form.ejecucionObra},
+                        {'label': 'Otros sin respaldo', 'field': form.otrosSinRespaldo},
+                        {'label': 'Reserva científica en preparación', 'field': form.reservaCientificaPreparacion},
+                        {'label': 'Recién graduados en preparación (Nivel Sup.)', 'field': form.recienGraduadosPreparacion},
+                        {'label': 'Reserva dirección provincial de trabajo', 'field': form.reservaDireccionProvincialTrabajo},
+                        {'label': 'Técnicos medios en preparación', 'field': form.tecnicosMediosPreparacion},
+                        {'label': 'Total estudiantes universidad contratados', 'field': form.totalEstudiantesUniversidadContratados},
+                        {'label': 'Estudiantes auxiliares técnicos de docencia', 'field': form.estudiantesAuxiliaresTecnicosDocencia},
+                        {'label': 'Estudiantes en cargos no docentes', 'field': form.estudiantesCargosNoDocentes}
+                    ] %}
+
+                    {% for idx, fieldInfo in fields %}
+                        <tr>
+                            <td><strong>{{ idx + 1 }}.</strong> {{ fieldInfo.label }}</td>
+                            <td>
+                                {{ form_widget(fieldInfo.field, {'attr': {'class': 'form-control form-control-luxury text-right', 'style': 'text-indent: 10px;'}}) }}
+                                {{ form_errors(fieldInfo.field) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white px-4 py-3 border-top-0 d-flex justify-content-end" style="gap: 10px;">
+            <button type="button" class="btn-lux-sm btn-lux-outline-danger btn-cancel-confirm">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="submit" class="btn-lux-sm btn-lux-primary">
+                <i class="fas fa-check"></i> Aceptar
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {% include 'pages/_luxury_form_toggle_js.html.twig' with {
+        cancelUrl: path('app_rrhh_reporte_ae2_index')
+    } %}
+    <script>
+
+        $('#ae2_documento').change(function () {
+            var filename = jQuery(this).val().split('\\').pop();
+            $('.cargar-archivo').html(filename);
+        })
+        $('[data-mask]').inputmask()
+
+        $(document).ready(function () {
+            const fieldSelectors = [];
+
+            // Captura todos los campos en orden
+            $('table tbody tr td:last-child input').each(function (index) {
+                fieldSelectors[index + 1] = $(this); // +1 para que coincida con tu numeración (1 a n)
+                $(this).on('input', function () {
+                    // Validar que solo permita números (float)
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                    updateCalculations();
+                });
+            });
+
+            // Deshabilitar campos que son automáticos
+            fieldSelectors[3]?.prop('readonly', true);
+            fieldSelectors[6]?.prop('readonly', true);
+            fieldSelectors[7]?.prop('readonly', true);
+            fieldSelectors[14]?.prop('readonly', true);
+            fieldSelectors[24]?.prop('readonly', true); // Nuevo campo automático
+
+            function updateCalculations() {
+                const val = n => parseFloat(fieldSelectors[n]?.val()) || 0;
+
+                // 1. Indicador 7 = suma del 8 al 13
+                let sum8to13 = 0;
+                for (let i = 8; i <= 13; i++) {
+                    sum8to13 += val(i);
+                }
+                fieldSelectors[7]?.val(sum8to13.toFixed(0));
+
+                // 2. Indicador 14 = 15 + 16 + 17 + 18 + 19
+                const sum15to19 = val(15) + val(16) + val(17) + val(18) + val(19);
+                fieldSelectors[14]?.val(sum15to19.toFixed(0));
+
+                // 3. Indicador 6 = 7 + 14
+                fieldSelectors[6]?.val((val(7) + val(14)).toFixed(0));
+
+                // 4. Indicador 3 = 4 + 7 + 14
+                fieldSelectors[3]?.val((val(4) + val(7) + val(14)).toFixed(0));
+
+                // 5. Indicador 24 = 25 + 26
+                fieldSelectors[24]?.val((val(25) + val(26)).toFixed(0));
+            }
+
+            // Ejecutar una vez para iniciar
+            updateCalculations();
+        });
+    </script>
+
+
+{% endblock %}

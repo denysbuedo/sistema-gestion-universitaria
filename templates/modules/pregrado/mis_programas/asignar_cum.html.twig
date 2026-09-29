@@ -1,0 +1,242 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Asignar CUM{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury {
+            border-radius: 12px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #134679; margin-bottom: 1.5rem;
+        }
+        .card-luxury .card-header {
+            background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px;
+        }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1rem; margin: 0; float: none !important; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+        
+        .fs-section { background: #fff; border-radius: 8px; margin-bottom: 1.5rem; }
+        .fs-section-header { padding: 12px 0; border-bottom: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .fs-section-title { font-size: 0.85rem; font-weight: 700; color: #134679; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: " *"; color: #ef4444; }
+        
+        .config-table th {
+            background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700;
+            border-color: #e2e8f0; padding: 8px 10px;
+        }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+        
+        .info-pill {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 20px;
+        }
+        .info-pill-item { display: flex; flex-direction: column; }
+        .info-pill-label { font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .info-pill-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+
+        .btn-fs-submit {
+            background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem;
+            padding: 10px 24px; border-radius: 8px; border: none; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header">
+            <h3 class="card-title text-bold"><i class="fas fa-link label-icon"></i>Asignar CUM</h3>
+        </div>
+
+        <div class="card-body px-4">
+            <div class="info-pill">
+                <div class="info-pill-item">
+                    <span class="info-pill-label">Institución</span>
+                    <span class="info-pill-value">
+                        <i class="fa fa-university text-primary mr-1"></i>
+                        ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
+                    </span>
+                </div>
+                <div class="info-pill-item">
+                    <span class="info-pill-label">Programa</span>
+                    <span class="info-pill-value">
+                        <i class="fa fa-book text-primary mr-1"></i> {{ programa | default('') }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="fs-section">
+                <div class="fs-section-header">
+                    <span class="fs-section-title">Nueva Asociación</span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="cum" class="fs-label required">CUM</label>
+                            <select id="cum" name="cum[]" multiple="multiple"
+                                    class="form-control select2" data-placeholder="Seleccione centros universitarios">
+                                {% for item2 in cum %}
+                                    <option value="{{ item2.id }}">{{ item2.nombreFacultad }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="modalidad" class="fs-label required">Tipo de curso</label>
+                            <select id="modalidad" name="modalidad"
+                                    class="form-control select2" data-placeholder="Seleccione un tipo de curso">
+                                <option value=""></option>
+                                {% for item2 in modalidades %}
+                                    <option value="{{ item2.id }}">{{ item2.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="fs-label d-none d-md-block">&nbsp;</label>
+                            <button type="button" id="btn_asociar" class="btn-fs-submit w-100 justify-content-center">
+                                <i class="fa fa-plus-circle"></i> Asociar registros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-2 border-top">
+                <div class="fs-section-header">
+                    <span class="fs-section-title">CUMs Asociados actualmente</span>
+                </div>
+                
+                <table class="table config-table table-bordered table-striped dataTable">
+                    <thead>
+                    <tr>
+                        <th width="1%">No.</th>
+                        <th>CUM</th>
+                        <th>Tipo de curso</th>
+                        <th class="text-center" width="5%">Opciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in registros %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.institucionCum.nombreFacultad | default('-') }}</td>
+                            <td>
+                                <span class="badge badge-light border" style="font-weight: 600; font-size: 0.75rem; color: #4b5563;">
+                                    {{ item.modalidad | default('-') }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="dropdown d-flex justify-content-center">
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm border-0 p-0 d-flex align-items-center justify-content-center"
+                                            style="width:32px;height:32px;background:#f1f5f9;color:#64748b;font-size:1rem;line-height:1;"
+                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        &#8942;
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:150px;padding:6px 0;font-size:0.85rem;">
+                                        <button class="dropdown-item elementRemove text-danger" style="padding:8px 16px;"
+                                                data-url="{{ path('app_pregrado_mis_programas_eliminar_cum', {'id': item.id, 'return': solicitud_programa_academico_institucion_id}) }}">
+                                            <i class="fa fa-trash fa-fw mr-2"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.select2').select2({ width: '100%' });
+
+            // Fix dropdown position
+            $(document).on('show.bs.dropdown', 'table .dropdown', function () {
+                var $btn  = $(this).find('button[data-toggle="dropdown"]');
+                var $menu = $(this).find('.dropdown-menu');
+                var offset = $btn.offset();
+                $menu.appendTo('body').css({
+                    position: 'fixed',
+                    top:   offset.top + $btn.outerHeight() + 2,
+                    left:  'auto',
+                    right: $(window).width() - offset.left - $btn.outerWidth(),
+                    display: 'block',
+                    zIndex: 9999
+                });
+            });
+            $(document).on('hide.bs.dropdown', 'table .dropdown', function () {
+                var $menu = $(this).find('.dropdown-menu');
+                if ($menu.parent().is('body')) {
+                    $menu.appendTo($(this)).css({ position: '', top: '', left: '', right: '', zIndex: '' });
+                }
+            });
+
+            $('#btn_asociar').click(function (e) {
+                e.preventDefault();
+
+                var cum = $('#cum').val();
+                var modalidad = $('#modalidad').val();
+
+                if (!cum || cum.length === 0 || !modalidad || modalidad.length === 0) {
+                    toastr.error('Por favor, complete todos los campos marcados con asterisco (*).');
+                    return false;
+                }
+
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Procesando asociación, por favor espere...',
+                    textColor: "white"
+                });
+
+                $.ajax({
+                    url: '{{ path('app_pregrado_mis_programas_asignar_cum_ajax') }}',
+                    type: 'POST',
+                    data: {
+                        'cum': cum,
+                        'modalidad': modalidad,
+                        'solicitud_programa_academico_institucion_id': '{{ solicitud_programa_academico_institucion_id }}'
+                    },
+                    success: function (response) {
+                        HoldOn.close();
+                        if (response.success) {
+                            toastr.success(response.message);
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        HoldOn.close();
+                        var errorMsg = (xhr.responseJSON && xhr.responseJSON.message)
+                            ? xhr.responseJSON.message
+                            : 'Ocurrió un error al procesar la solicitud.';
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

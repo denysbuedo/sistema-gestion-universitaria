@@ -1,0 +1,106 @@
+<div class="fs-section">
+    <div class="fs-section-header">
+        <span class="fs-section-title"><i class="fas fa-folder-open"></i> Documentos del expediente</span>
+    </div>
+    <div class="fs-section-body">
+        <div class="row align-items-end">
+            <div class="col-md-5 form-group mb-0">
+                <label class="fs-label required" for="documentoSelec">Tipo de Documento</label>
+                <select id="documentoSelec" name="documentoSelec" class="form-control select2">
+                    <option value="">Seleccione un tipo...</option>
+                    {% for item2 in documentos %}
+                        <option value="{{ item2.id }}">{{ item2.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 form-group mb-0">
+                <label class="fs-label required" for="documento">Adjuntar archivo</label>
+                <div class="custom-file shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                    <input type="file" id="documento" name="documento" class="custom-file-input" lang="es">
+                    <label id="label-documento" for="documento" class="custom-file-label border-0" style="padding: 10px 15px;">Seleccionar archivo...</label>
+                </div>
+            </div>
+
+            <div class="col-md-3 form-group mb-0">
+                <button type="button" id="btn_asociar" class="btn btn-primary w-100 shadow-sm" style="height: calc(2.25rem + 10px); border-radius: 8px; font-weight: 700;">
+                    <i class="fa fa-link mr-2"></i> Asociar documento
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <table class="table config-table table-bordered table-striped dataTable mb-0">
+                <thead>
+                <tr>
+                    <th width="1%">No.</th>
+                    <th>Documento</th>
+                    <th class="text-center" width="5%">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.nombre_documento | default('') }}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger shadow-sm elementRemove" 
+                                    style="border-radius: 6px; padding: 4px 10px;"
+                                    data-url="{{ path('app_plan_estudio_eliminar_documento_crear', {'id': item.id | default('-1')}) }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#documento').on('change', function() {
+            var filename = $(this).val().split('\\').pop();
+            $('#label-documento').text(filename || 'Seleccionar archivo...');
+        });
+
+        $('#btn_asociar').on('click', function(e) {
+            e.preventDefault();
+            
+            if (!$('#documentoSelec').val() || !$('#documento').val()) {
+                toastr.warning("Debe seleccionar un tipo de documento y adjuntar un archivo.");
+                return;
+            }
+
+            HoldOn.open({
+                theme: "sk-cube-grid",
+                message: 'Asociando documento, por favor espere...',
+                textColor: "white"
+            });
+
+            var data = new FormData();
+            var inputFile = document.getElementById("documento");
+            data.append('file', inputFile.files[0]);
+            data.append('documento', $('#documentoSelec').val());
+            data.append('id_plan_estudio', $('#id_plan_estudio').val() || '');
+
+            $.ajax({
+                url: '{{ path('app_plan_estudio_registro_temporal_doc') }}',
+                type: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    HoldOn.close();
+                    toastr.success("Documento asociado correctamente.");
+                    setTimeout(function() { location.reload(); }, 800);
+                },
+                error: function() {
+                    HoldOn.close();
+                    toastr.error("Error al asociar el documento.");
+                }
+            });
+        });
+    });
+</script>

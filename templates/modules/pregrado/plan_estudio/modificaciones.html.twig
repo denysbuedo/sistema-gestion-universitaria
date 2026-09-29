@@ -1,0 +1,251 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificaciones del plan de estudio{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .info-panel { background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; padding:20px 24px; margin-bottom:1.5rem; }
+        .info-panel-title { font-size:0.72rem; font-weight:700; color:#134679; text-transform:uppercase; letter-spacing:.6px; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+        .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+        .info-item { display:flex; flex-direction:column; gap:2px; }
+        .info-label { font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.4px; }
+        .info-value { font-size:0.88rem; font-weight:600; color:#1e293b; }
+        .info-value a { color:#134679; text-decoration:none; }
+        .info-value a:hover { text-decoration:underline; }
+        .btn-action-sm { width:28px; height:28px; padding:0; display:inline-flex; justify-content:center; align-items:center; border-radius:6px; font-size:0.75rem; border:none; transition:all 0.2s; color:#fff; margin:0 2px; text-decoration:none; cursor:pointer; }
+        .btn-action-primary { background:#3b82f6; }
+        .btn-action-primary:hover { background:#2563eb; transform:translateY(-1px); }
+        .btn-action-danger { background:#ef4444; }
+        .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-book label-icon"></i>Modificaciones del plan de estudio</h3>
+        </div>
+
+        <div class="px-4 pt-3 pb-1">
+            <div class="info-panel">
+                <div class="info-panel-title"><i class="fas fa-info-circle"></i> Datos del plan de estudio</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Carrera</span>
+                        <span class="info-value">{{ planEstudio.carrera.nombre | default('-') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Curso académico</span>
+                        <span class="info-value">{{ planEstudio.cursoAcademico.nombre | default('-') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Año de aprobación</span>
+                        <span class="info-value">{{ planEstudio.annoAprobacion | default('-') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Organismo formador</span>
+                        <span class="info-value">{{ planEstudio.organismoFormador.nombre | default('-') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Organismo demandante</span>
+                        <span class="info-value">{{ planEstudio.organismoDemandante.nombre | default('-') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Duración Diurno</span>
+                        <span class="info-value">{{ planEstudio.duracionCursoDiurno is not null ? planEstudio.duracionCursoDiurno ~ ' años' : '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Duración Por Encuentro</span>
+                        <span class="info-value">{{ planEstudio.duracionCursoPorEncuentro | default('-') }}{% if planEstudio.duracionCursoPorEncuentro %} años{% endif %}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Duración A Distancia</span>
+                        <span class="info-value">{{ planEstudio.duracionCursoDistancia | default('-') }}</span>
+                    </div>
+                    {% if planEstudio.planEstudio %}
+                    <div class="info-item">
+                        <span class="info-label">Plan de estudio</span>
+                        <span class="info-value">
+                            <a target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/plan_estudio/plan_estudio/{{ planEstudio.planEstudio }}">
+                                <i class="fas fa-file-pdf mr-1"></i>{{ planEstudio.planEstudio }}
+                            </a>
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <hr class="mx-4 my-0">
+
+        {{ form_start(form) }}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.planEstudioDoc) }}
+                    {{ form_widget(form.planEstudioDoc) }}
+                    <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;" class="cargar-archivo"> </span>
+                    {{ form_errors(form.planEstudioDoc) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.dictamen) }}
+                    {{ form_widget(form.dictamen) }}
+                    <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;" class="cargar-archivo1"> </span>
+                    {{ form_errors(form.dictamen) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.documentoEjecutivo) }}
+                    {{ form_widget(form.documentoEjecutivo) }}
+                    <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;" class="cargar-archivo3"> </span>
+                    {{ form_errors(form.documentoEjecutivo) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.fechaAprobacion) }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        {{ form_widget(form.fechaAprobacion) }}
+                        {{ form_errors(form.fechaAprobacion) }}
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.cursoAcademico) }}
+                    {{ form_widget(form.cursoAcademico) }}
+                    {{ form_errors(form.cursoAcademico) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.duracionCursoDiurno) }}
+                    {{ form_widget(form.duracionCursoDiurno) }}
+                    {{ form_errors(form.duracionCursoDiurno) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.duracionCursoPorEncuentro) }}
+                    {{ form_widget(form.duracionCursoPorEncuentro) }}
+                    {{ form_errors(form.duracionCursoPorEncuentro) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.duracionCursoDistancia) }}
+                    {{ form_widget(form.duracionCursoDistancia) }}
+                    {{ form_errors(form.duracionCursoDistancia) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-12 col-lg-12 col-xl-12 form-group">
+                    {{ form_label(form.descripcion) }}
+                    {{ form_widget(form.descripcion) }}
+                    {{ form_errors(form.descripcion) }}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button type="submit" class="btn-fs-submit"><i class="fas fa-save mr-2"></i>Asociar</button>
+        </div>
+        {{ form_end(form) }}
+
+        <hr class="mx-4 my-0">
+
+        <div class="card-body">
+            <table class="table table-bordered config-table dataTable">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Curso académico inicial</th>
+                    <th>Fecha de aprobación</th>
+                    <th>Duración Diurno</th>
+                    <th>Duración Por Encuentro</th>
+                    <th>A Distancia</th>
+                    <th class="text-center">Opciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in registros %}
+                    <tr>
+                        <td width="1%">{{ loop.index }}</td>
+                        <td>{{ item.cursoAcademico.nombre | default('') }}</td>
+                        <td>{{ item.fechaAprobacion | date('d/m/Y') }}</td>
+                        <td>{{ item.duracionCursoDiurno | default('') }}</td>
+                        <td>{{ item.duracionCursoPorEncuentro | default('') }}</td>
+                        <td>{{ item.duracionCursoDistancia | default('') }}</td>
+                        <td width="15%" class="text-center">
+                            <a title="Descargar plan de estudio" target="_blank" class="btn-action-sm btn-action-primary"
+                               href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/modificaciones/plan_estudio/{{ item.planEstudioDoc }}">
+                                <i class="fa fa-file-download"></i>
+                            </a>
+                            <a title="Descargar dictámen" target="_blank" class="btn-action-sm btn-action-primary"
+                               href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/modificaciones/dictamen/{{ item.dictamen }}">
+                                <i class="fa fa-file-alt"></i>
+                            </a>
+                            <a title="Descargar Documento ejecutivo" target="_blank" class="btn-action-sm btn-action-primary"
+                               href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/plan_estudio/modificaciones/documento_ejecutivo/{{ item.documentoEjecutivo }}">
+                                <i class="fa fa-file-contract"></i>
+                            </a>
+                            <button title="Eliminar" class="btn-action-sm btn-action-danger elementRemove"
+                                    data-url="{{ path('app_plan_estudio_eliminar_modificacion', {'id': item.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('#modificacion_plan_estudio_planEstudioDoc').change(function () {
+            var filename = jQuery(this).val().split('\\').pop();
+            $('.cargar-archivo').html(filename);
+        })
+        $('#modificacion_plan_estudio_dictamen').change(function () {
+            var filename = jQuery(this).val().split('\\').pop();
+            $('.cargar-archivo1').html(filename);
+        })
+        $('#modificacion_plan_estudio_documentoEjecutivo').change(function () {
+            var filename = jQuery(this).val().split('\\').pop();
+            $('.cargar-archivo3').html(filename);
+        })
+
+        $('#modificacion_plan_estudio_fechaAprobacion').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+
+        $('#modificacion_plan_estudio_duracionCursoDiurno, #modificacion_plan_estudio_duracionCursoPorEncuentro').on('keydown keypress', function (e) {
+            if (e.key.length === 1) {
+                if ($(this).val().length < 3) {
+                    $(this).val($(this).val() + e.key);
+                }
+                return false;
+            }
+        });
+
+        $("#modificacion_plan_estudio_duracionCursoDiurno, #modificacion_plan_estudio_duracionCursoPorEncuentro").bind("keypress", function (event) {
+            if (event.charCode != 0) {
+                var regex = new RegExp("^[0-9-]*$");
+                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                if (!regex.test(key)) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+        });
+        $("#modificacion_plan_estudio_duracionCursoDistancia option")[0].remove()
+    </script>
+{% endblock %}

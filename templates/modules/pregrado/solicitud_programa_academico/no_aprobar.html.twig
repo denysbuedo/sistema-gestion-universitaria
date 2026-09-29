@@ -1,0 +1,67 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Rechazar programa{% endblock %}
+
+{% block body %}
+<style>
+
+        .card-luxury { border-radius:12px; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.08); border-top:4px solid #134679; margin-bottom:1.5rem; }
+        .card-luxury .card-header { background-color:#fff; border-bottom:1px solid #f1f5f9; padding:15px 24px; }
+        .card-luxury .card-title { color:#1a2e44; font-weight:700; font-size:1rem; margin:0; float:none !important; }
+        .label-icon { color:#134679; margin-right:6px; opacity:0.8; }
+        .fs-label { font-size:0.82rem; font-weight:600; color:#4b5563; margin-bottom:6px; display:block; }
+        .btn-fs-submit { background:#134679; color:#fff !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .btn-fs-submit:hover { background:#0f3560; transform:translateY(-1px); box-shadow:0 4px 12px rgba(19,70,121,0.2); }
+        .btn-fs-cancel { background:#f1f5f9; color:#475569 !important; font-weight:700; font-size:0.85rem; padding:10px 24px; border-radius:8px; border:none; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; cursor:pointer; }
+        .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
+        .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
+        .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+</style>
+
+
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold m-0"><i class="fas fa-times-circle label-icon" style="color:#b91c1c;"></i>Rechazar programa</h3>
+        </div>
+
+        {{ include('modules/pregrado/solicitud_programa_academico/detail-partial.html.twig', { 'item': solicitudPrograma }) }}
+        <!-- /.card-header -->
+        {{ form_start(form) }}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.dictamen) }}
+                    {{ form_widget(form.dictamen) }}
+                    <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;"
+                          class="cargar-archivo1"> </span>
+                    {{ form_errors(form.dictamen) }}
+                    <a id="doc_container" target="_blank"
+                       href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/dictamen/{{ solicitudPrograma.dictamen }}">{{ solicitudPrograma.dictamen }}</a>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-12 col-lg-12 col-xl-12 form-group">
+                    {{ form_label(form.descripcionNoAprobacion) }}
+                    {{ form_widget(form.descripcionNoAprobacion) }}
+                    {{ form_errors(form.descripcionNoAprobacion) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer" style="display: flex; justify-content: flex-end; align-solicitudProgramas: center;">
+            <a class="btn-fs-cancel btn-cancel" data-url="{{ path('app_solicitud_programa_academico_index') }}" data-content="¿Está seguro que desea realizar la acción?"><i class="fas fa-times mr-2"></i>Cancelar</a>
+            <button type="submit" class="btn-fs-submit"><i class="fas fa-check mr-2"></i>Aceptar</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $('#no_aprobar_solicitud_programa_academico_dictamen').change(function () {
+            var filename = jQuery(this).val().split('\\').pop();
+            $('.cargar-archivo1').html(filename);
+        })
+    </script>
+{% endblock %}

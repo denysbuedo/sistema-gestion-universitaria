@@ -1,0 +1,83 @@
+<div class="container-fluid p-2">
+    {# FILA 1: Identidad #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Nombre de la Institución</label>
+            <p class="fs-6 fw-medium text-dark mb-0">{{ item.nombre | default('N/A') }}</p>
+        </div>
+        <div class="col-md-3">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Siglas</label>
+            <p class="fs-6 mb-0">
+                <span class="badge bg-light text-secondary border px-2">{{ item.siglas | default('---') }}</span>
+            </p>
+        </div>
+        <div class="col-md-3">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Estado</label>
+            <p class="fs-6 mb-0">
+                {% if '1' == item.activo %}
+                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3">
+                        <i class="fas fa-check-circle me-1"></i> Habilitado
+                    </span>
+                {% else %}
+                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3">
+                        <i class="fas fa-times-circle me-1"></i> Deshabilitado
+                    </span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {# FILA 2: Ubicación (Añadimos margen superior para separar) #}
+    <div class="row g-4 mb-4 pt-2">
+        <div class="col-md-6">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">País</label>
+            <p class="fs-6 mb-0">
+                <i class="fas fa-globe-americas text-muted me-2"></i>{{ item.pais.nombre | default('No definido') }}
+            </p>
+        </div>
+        <div class="col-md-6">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Provincia / Estado</label>
+            <p class="fs-6 mb-0">{{ item.provincia | default('---') }}</p>
+        </div>
+    </div>
+
+    {# FILA 3: Contacto (Separada y clara) #}
+    <div class="row g-4 mb-4 pt-2">
+        <div class="col-md-4">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Correo Electrónico</label>
+            <p class="fs-6 mb-0">
+                {% if item.correo %}
+                    <a href="mailto:{{ item.correo }}" class="text-decoration-none text-primary fw-medium">
+                        <i class="far fa-envelope me-2"></i>{{ item.correo }}
+                    </a>
+                {% else %} <span class="text-muted">---</span> {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Teléfono</label>
+            <p class="fs-6 mb-0"><i class="fas fa-phone-alt text-muted me-2"></i>{{ item.telefono | default('---') }}</p>
+        </div>
+        <div class="col-md-4">
+            <label class="text-muted small text-uppercase fw-bold mb-1 d-block border-bottom pb-1">Sitio Web</label>
+            <p class="fs-6 mb-0 text-truncate">
+                {% if item.sitioWeb %}
+                    <a href="{{ item.sitioWeb }}" target="_blank" class="text-decoration-none text-info fw-medium">
+                        <i class="fas fa-external-link-alt me-2"></i>Visitar sitio
+                    </a>
+                {% else %} <span class="text-muted small italic">No disponible</span> {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {# FILA 4: Descripción (El bloque que unifica todo el sistema) #}
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="p-3 bg-light rounded-3 border-start border-primary border-4 shadow-sm">
+                <label class="text-muted small text-uppercase fw-bold mb-2 d-block">Descripción / Notas</label>
+                <p class="mb-0 text-secondary" style="line-height: 1.6;">
+                    {{ item.descripcion | default('Sin descripción registrada.') }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

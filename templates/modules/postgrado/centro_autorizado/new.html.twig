@@ -1,0 +1,115 @@
+﻿{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Adicionar Centro Autorizado de Posgrado{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card-luxury { border-radius: 12px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #134679; margin-bottom: 1.5rem; }
+        .card-luxury .card-header { background-color: #fff; border-bottom: 1px solid #f1f5f9; padding: 15px 24px; }
+        .card-luxury .card-title { color: #1a2e44; font-weight: 700; font-size: 1.05rem; margin: 0; }
+        .label-icon { color: #134679; margin-right: 6px; opacity: 0.8; }
+
+        .fs-section { background: #fff; border-radius: 8px; margin-bottom: 1.5rem; }
+        .fs-label { font-size: 0.82rem; font-weight: 600; color: #4b5563; margin-bottom: 6px; display: block; }
+        .required:after { content: ' *'; color: #ef4444; }
+
+        .config-table th { background: #f1f5f9; color: #4a5568; font-size: 0.82rem; font-weight: 700; border-color: #e2e8f0; padding: 8px 10px; text-transform: uppercase; }
+        .config-table td { font-size: 0.85rem; color: #1a2e44; border-color: #e2e8f0; padding: 7px 10px; vertical-align: middle; }
+
+        .btn-lux-sm { padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; border: none; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; transition: all 0.2s; text-decoration: none; color: #fff; cursor: pointer; }
+        .btn-lux-primary { background: #134679; color: #fff; }
+        .btn-lux-primary:hover { background: #0f3560; color: #fff; transform: translateY(-1px); }
+
+        .btn-fs-submit { background: #134679; color: #fff !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-fs-submit:hover { background: #0f3560; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19, 70, 121, 0.2); }
+
+        .btn-fs-cancel { background: #f1f5f9; color: #475569 !important; font-weight: 700; font-size: 0.85rem; padding: 10px 24px; border-radius: 8px; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; cursor:pointer;}
+        .btn-fs-cancel:hover { background: #e2e8f0; color: #1e293b !important; transform: translateY(-1px); }
+
+        .btn-action-sm { width: 28px; height: 28px; padding: 0; display: inline-flex; justify-content: center; align-items: center; border-radius: 6px; font-size: 0.75rem; border: none; transition: all 0.2s; color: #fff; margin: 0 2px; text-decoration: none; }
+        .btn-action-primary { background: #3b82f6; }
+        .btn-action-primary:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-action-warning { background: #eab308; color: #1e293b !important; }
+        .btn-action-warning:hover { background: #ca8a04; transform: translateY(-1px); }
+        .btn-action-danger { background: #ef4444; }
+        .btn-action-danger:hover { background: #dc2626; transform: translateY(-1px); }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title text-bold">Adicionar Centro Autorizado de Posgrado</h3>
+        </div>
+        <!-- /.card-header -->
+        {{ form_start(form) }}
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-6 text-gray">
+                    <h5>
+                        <b>
+                            <i class="fa fa-university  "></i>
+                        </b> ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
+                    </h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.categoriaEstructura) }}
+                    {{ form_widget(form.categoriaEstructura) }}
+                    {{ form_errors(form.categoriaEstructura) }}
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
+                    {{ form_label(form.estructura) }}
+                    {{ form_widget(form.estructura) }}
+                    {{ form_errors(form.estructura) }}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer" style="display: flex; justify-content: flex-end; align-items: center;">
+            <a class="btn-lux-sm" style="background:#f1f5f9;color:#475569;font-weight:700;font-size:0.85rem;padding:10px 24px;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;" href="{{ path('app_postgrado_centro_autorizado_postgrado_index') }}">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" class="btn-lux-sm btn-lux-primary" style="font-size:0.85rem;padding:10px 24px;border-radius:8px;">
+                <i class="fas fa-check"></i> Aceptar
+            </button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('#entidad_categoriaEstructura').on('change', function () {
+            console.log($(this).val());
+            if ($('#entidad_categoriaEstructura').val() != "") {
+                HoldOn.open({
+                    theme: "sk-cube-grid",
+                    message: 'Por favor espere...',
+                    textColor: "white"
+                });
+                var url = "{{ path('app_estructura_dado_categoria', {'id':'idP'}) }}";
+                url = url.replace('idP', $(this).val());
+                $.get(url, function (data) {
+                    $('#entidad_estructura option').remove();
+                    $('#entidad_estructura').append(new Option('Seleccione', ""));
+                    for (var i = 0; i < data.length; i++) {
+                        $('#entidad_estructura').append(new Option(data[i].nombre, data[i].id));
+                    }
+                    HoldOn.close()
+                });
+            } else {
+                $('#entidad_estructura option').remove();
+                $('#entidad_estructura').append(new Option('Seleccione', ""));
+
+                $('#plantilla_responsabilidad option').remove();
+                $('#plantilla_responsabilidad').append(new Option('Seleccione', ""));
+            }
+        });
+
+    </script>
+{% endblock %}
