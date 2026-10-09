@@ -56,11 +56,20 @@ class AppFixtures extends Fixture
 {
     private $passwordEncoder;
     private $em;
+    private $fixtureAdminEmail;
+    private $fixtureAdminPassword;
 
-    public function __construct(UserPasswordEncoderInterface $encoder, EntityManagerInterface $em)
+    public function __construct(
+        UserPasswordEncoderInterface $encoder,
+        EntityManagerInterface $em,
+        string $fixtureAdminEmail,
+        string $fixtureAdminPassword
+    )
     {
         $this->em = $em;
         $this->passwordEncoder = $encoder;
+        $this->fixtureAdminEmail = $fixtureAdminEmail;
+        $this->fixtureAdminPassword = $fixtureAdminPassword;
     }
 
     private $csvParsingOptionsProvince = array(
@@ -192,11 +201,11 @@ class AppFixtures extends Fixture
         $manager->persist($rol);
 
         $user = new User();
-        $user->setEmail('admin@admin.cu');
+        $user->setEmail($this->fixtureAdminEmail);
         $user->setRole('ROLE_ADMIN');
         $user->setActivo(true);
-        $user->setPasswordPlainText('123');
-        $encodedPassword = $this->passwordEncoder->encodePassword($user, '123');
+        $user->setPasswordPlainText($this->fixtureAdminPassword);
+        $encodedPassword = $this->passwordEncoder->encodePassword($user, $this->fixtureAdminPassword);
         $user->setPassword($encodedPassword);
         $user->setPasswordChangeFirstTime(true);
         $user->setUserRoles([$rol]);
@@ -283,7 +292,7 @@ class AppFixtures extends Fixture
         $persona->setResponsabilidad($resp);
 
         $persona->setActivo(true);
-        $persona->setEmail('admin@admin.cu');
+        $persona->setEmail($this->fixtureAdminEmail);
         $persona->setCarnetIdentidad('00000000000');
         $persona->setNumeroSerieCarnetIdentidad('FDA000');
         $persona->setProvincia($provinciaInial);

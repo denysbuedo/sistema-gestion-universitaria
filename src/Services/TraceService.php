@@ -10,7 +10,6 @@ use App\Entity\Traza\TipoTraza;
 use App\Entity\Traza\Traza;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -45,7 +44,7 @@ class TraceService
     {
 //        pr($serializer->deserialize($va, CategoriaDocente::class,'json')->getNombre());
         try {
-            $session = new Session();
+            $session = $this->request->getSession();
             $idPersona = $session->get('id_persona_usuario_autenticado');
             $configuracionTraza = $this->em->getRepository(ConfiguracionTraza::class)->findOneBy(['persona' => $idPersona]);
 

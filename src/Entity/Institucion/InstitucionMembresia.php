@@ -21,7 +21,7 @@ class InstitucionMembresia extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idMembresia = null;
+    private ?int $idMembresia = null;
 
 
     /**
@@ -33,7 +33,7 @@ class InstitucionMembresia extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idTipoMembresia = null;
+    private ?int $idTipoMembresia = null;
 
     /**
      * @ORM\Column(type="string", nullable=false, length="255")
@@ -58,23 +58,23 @@ class InstitucionMembresia extends BaseEntity
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getIdMembresia(): ?string
+    public function getIdMembresia(): ?int
     {
         return $this->idMembresia;
     }
 
     /**
-     * @param string|null $idMembresia
+     * @param int|null $idMembresia
      */
-    public function setIdMembresia(?string $idMembresia): void
+    public function setIdMembresia(?int $idMembresia): void
     {
         $this->idMembresia = $idMembresia;
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
     public function getNombreMembresia(): ?string
     {
@@ -92,15 +92,15 @@ class InstitucionMembresia extends BaseEntity
     /**
      * @return string|null
      */
-    public function getIdTipoMembresia(): ?string
+    public function getIdTipoMembresia(): ?int
     {
         return $this->idTipoMembresia;
     }
 
     /**
-     * @param string|null $idTipoMembresia
+     * @param int|null $idTipoMembresia
      */
-    public function setIdTipoMembresia(?string $idTipoMembresia): void
+    public function setIdTipoMembresia(?int $idTipoMembresia): void
     {
         $this->idTipoMembresia = $idTipoMembresia;
     }

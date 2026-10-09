@@ -122,7 +122,7 @@ class Estructura extends BaseEntity
      */
     private int $orden = 0;
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\RRHH\Grupo")
+     * @ORM\ManyToOne(targetEntity="App\Entity\RRHH\Grupo", inversedBy="estructuras")
      * @ORM\JoinColumn(name="grupo_id", referencedColumnName="id", nullable=true)
      */
     private $grupo;

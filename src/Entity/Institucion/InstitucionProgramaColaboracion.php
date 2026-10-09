@@ -21,7 +21,7 @@ class InstitucionProgramaColaboracion extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idPrograma = null;
+    private ?int $idPrograma = null;
 
 
     /**
@@ -33,7 +33,7 @@ class InstitucionProgramaColaboracion extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idPatrocinador = null;
+    private ?int $idPatrocinador = null;
 
     /**
      * @ORM\Column(type="string", nullable=false, length="255")
@@ -58,23 +58,23 @@ class InstitucionProgramaColaboracion extends BaseEntity
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getIdPrograma(): ?string
+    public function getIdPrograma(): ?int
     {
         return $this->idPrograma;
     }
 
     /**
-     * @param string|null $idPrograma
+     * @param int|null $idPrograma
      */
-    public function setIdPrograma(?string $idPrograma): void
+    public function setIdPrograma(?int $idPrograma): void
     {
         $this->idPrograma = $idPrograma;
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
     public function getNombrePrograma(): ?string
     {
@@ -92,15 +92,15 @@ class InstitucionProgramaColaboracion extends BaseEntity
     /**
      * @return string|null
      */
-    public function getIdPatrocinador(): ?string
+    public function getIdPatrocinador(): ?int
     {
         return $this->idPatrocinador;
     }
 
     /**
-     * @param string|null $idPatrocinador
+     * @param int|null $idPatrocinador
      */
-    public function setIdPatrocinador(?string $idPatrocinador): void
+    public function setIdPatrocinador(?int $idPatrocinador): void
     {
         $this->idPatrocinador = $idPatrocinador;
     }

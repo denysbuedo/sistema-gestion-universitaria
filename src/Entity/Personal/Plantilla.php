@@ -16,7 +16,7 @@ class Plantilla extends BaseEntity
     /**
      * @ORM\Column(type="string", length=36, nullable=false)
      */
-    private ?bool $idExpediente = true; 
+    private ?string $idExpediente = '1';
 
     /**
      * @ORM\ManyToOne(targetEntity="Persona")

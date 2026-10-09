@@ -95,6 +95,8 @@ services:
       $host: '%env(resolve:DB_HOST)%'
       $driver: 'pdo_pgsql'
       $port: '%env(resolve:DB_PORT)%'
+      $fixtureAdminEmail: '%env(FIXTURE_ADMIN_EMAIL)%'
+      $fixtureAdminPassword: '%env(FIXTURE_ADMIN_PASSWORD)%'
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
   App\:

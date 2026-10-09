@@ -27,7 +27,7 @@ class InstitucionRecursoHumano extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false, length="100")
      */
-    private ?string $cantidad = null;
+    private ?int $cantidad = null;
 
 
     /**
@@ -64,17 +64,17 @@ class InstitucionRecursoHumano extends BaseEntity
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getCantidad(): ?string
+    public function getCantidad(): ?int
     {
         return $this->cantidad;
     }
 
     /**
-     * @param string|null $cantidad
+     * @param int|null $cantidad
      */
-    public function setCantidad(?string $cantidad): void
+    public function setCantidad(?int $cantidad): void
     {
         $this->cantidad = $cantidad;
     }

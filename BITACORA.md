@@ -1,0 +1,193 @@
+# Bitácora del proyecto
+
+Contexto operativo para futuras sesiones de Codex y nuevas incorporaciones. Mantener este archivo breve, actualizado y libre de secretos.
+
+## Identidad
+
+- **Proyecto:** Sistema de Gestión Universitaria.
+- **Repositorio:** `https://github.com/denysbuedo/sistema-gestion-universitaria.git`
+- **Directorio local:** `D:\01.DEVOP\Proyectos\sistema-gestion-universitaria`
+- **Rama de trabajo y predeterminada:** `dev`.
+- **Rama estable:** `main`.
+- **GitHub Project:** [Evolución del Sistema de Gestión Universitaria](https://github.com/users/denysbuedo/projects/2).
+
+## Origen
+
+El código procede de una copia saneada del proyecto legado `symfony_akademos`. Se creó este repositorio con historial independiente para evolucionar el sistema sin modificar el original.
+
+Commit inicial:
+
+```text
+aba37e2 Initial sanitized import
+```
+
+No se importó el historial anterior porque contenía secretos versionados.
+
+## Decisiones vigentes
+
+1. El desarrollo se realiza sobre `dev`.
+2. `main` representa la línea estable.
+3. El despliegue objetivo será en una VM convencional, sin Docker.
+4. No reincorporar Dockerfile ni CI orientada a imágenes salvo decisión expresa.
+5. Nunca versionar secretos ni claves privadas.
+6. Las migraciones de Doctrine sí deben versionarse.
+7. Evolucionar progresivamente; no se plantea una reescritura completa.
+8. Crear pruebas antes de refactorizaciones amplias.
+9. No hacer commit, push o pull request sin autorización explícita del usuario.
+
+## Estado técnico inicial
+
+- Monolito Symfony 5.4.
+- Doctrine ORM con anotaciones.
+- Twig y formularios Symfony.
+- Autenticación web y API JWT.
+- PDF mediante Dompdf y Apache FOP.
+- Aproximadamente 683 clases PHP, 152 controladores, 165 entidades, 162 repositorios, 139 formularios y 550 plantillas Twig.
+- Sin suite de pruebas al momento de la importación.
+- Sin migraciones versionadas al momento de la importación.
+- La CI anterior solo construía una imagen Docker y no fue importada.
+- La imagen anterior usaba PHP 7.4, ya fuera de soporte.
+
+## Saneamiento realizado
+
+- Se excluyó `.env` con credenciales reales.
+- Se excluyeron las claves JWT anteriores.
+- Se añadió `.env.example` con valores neutros.
+- `config/jwt/*.pem` quedó protegido por `.gitignore`.
+- `migrations/` dejó de estar ignorado.
+- Se excluyeron Dockerfile y CI Docker.
+- Se retiró un token Mapbox hardcodeado de cinco ubicaciones.
+- Mapbox se configura mediante `MAPBOX_ACCESS_TOKEN` y Twig.
+
+### Seguridad pendiente
+
+Todo secreto presente alguna vez en el repositorio de origen debe considerarse comprometido y rotarse:
+
+- Credenciales de base de datos.
+- Par de claves y passphrase JWT.
+- Token Mapbox.
+- Credenciales de APIs externas.
+
+No escribir valores reales en esta bitácora, issues, commits o conversaciones.
+
+## Hallazgos arquitectónicos
+
+- 146 de 152 controladores referenciaban repositorios.
+- Varios controladores contienen lógica de negocio extensa.
+- No existe una capa de aplicación consistente, aunque el README original indicaba que los controladores no debían acceder directamente a repositorios.
+- Hay clases especialmente grandes en Institución, Posgrado, Pregrado, Trámites y RR. HH.
+- Refactorizar por flujos verticales, con pruebas previas y sin cambios masivos simultáneos.
+
+Patrón objetivo gradual:
+
+```text
+HTTP / Controller
+        ↓
+Servicio de aplicación
+        ↓
+Reglas de dominio
+        ↓
+Repositorios / Doctrine
+```
+
+## Trabajo inicial en GitHub
+
+Issues vinculados al Project:
+
+1. Rotar y externalizar secretos.
+2. Documentar y preparar despliegue en VM.
+3. Establecer estrategia y línea base de migraciones.
+4. Crear pipeline de validación sin Docker.
+5. Crear pruebas de humo de autenticación y autorización.
+6. Actualizar Symfony 5.4 y preparar PHP moderno.
+7. Seleccionar módulo piloto para extraer lógica de negocio.
+8. Auditar binarios, frontend y distribución de FOP.
+
+## Integración Akademos–SIGEP
+
+Se realizó un levantamiento estático preliminar del módulo de Posgrado. El documento se mantiene deliberadamente fuera del repositorio:
+
+```text
+D:\01.DEVOP\Proyectos\levantamiento-modulo-posgrado-akademos-sigep.md
+```
+
+Conclusiones:
+
+- Akademos gestiona solicitud, revisión, dictámenes, votación y aprobación de programas de posgrado.
+- No existe una API específica de Posgrado.
+- Las APIs actuales son genéricas y no tienen OpenAPI.
+- No se encontraron ediciones/cohortes, matrícula, estudiantes, evaluaciones académicas, créditos obtenidos o graduación dentro de Posgrado.
+- La frontera propuesta es que Akademos sea maestro del programa aprobado y SIGEP comience en sus ediciones.
+- Antes de integrar hacen falta IDs públicos, versiones, estados estables y una regla explícita de autorización para abrir ediciones.
+
+### Riesgo de estados de Posgrado
+
+- Fixtures: IDs 1 a 6 para Nuevo, En revisión, Analizado por comisión, Revisado, Aprobado y Rechazado.
+- El controlador y varias consultas usan el ID 7 como aprobado.
+- Algunos tableros interpretan otros IDs como aprobados o rechazados.
+
+No diseñar integraciones basadas en esos IDs. Primero verificar producción y adoptar códigos estables.
+
+### Decisión sobre la plataforma de interoperabilidad
+
+- El 2026-10-08 se decidió pausar el desarrollo de la plataforma de interoperabilidad y concentrar los esfuerzos en Akademos, por ser el sistema núcleo del Ministerio.
+- Se retoma la hoja de ruta interna de estabilización, seguridad, pruebas, migraciones, despliegue y evolución gradual de Akademos.
+- La interoperabilidad queda como requisito arquitectónico futuro, no como iniciativa activa inmediata.
+- Las mejoras de Akademos deben favorecer una integración posterior: identificadores públicos estables, códigos funcionales en lugar de IDs internos, fechas/versiones confiables de actualización, contratos de solo lectura y separación de datos sensibles.
+- No implementar todavía la API específica de Posgrado ni comprometer una especificación OpenAPI o un entorno piloto hasta que la base técnica y funcional de Akademos esté estabilizada y autorizada.
+
+## Instrucciones para futuras sesiones de Codex
+
+1. Confirmar que el directorio activo sea `D:\01.DEVOP\Proyectos\sistema-gestion-universitaria`.
+2. Ejecutar `git status --short --branch`.
+3. Confirmar `dev`, salvo instrucción expresa.
+4. Leer esta bitácora antes de proponer cambios amplios.
+5. Revisar el issue correspondiente antes de implementar una iniciativa.
+6. Preservar cambios del usuario y archivos no relacionados.
+7. No recuperar secretos desde el repositorio legado.
+8. No publicar cambios sin autorización explícita.
+9. Guardar aquí decisiones e hitos; dejar el detalle diario en issues y commits.
+
+## Próximo paso recomendado
+
+1. Confirmar rotación de los secretos anteriores.
+2. Revisar todas las variables de `.env.example`.
+3. Documentar instalación y despliegue en VM.
+4. Definir la versión objetivo de PHP.
+5. Crear pruebas mínimas de arranque, autenticación y autorización.
+
+## Historial
+
+### 2026-09-29
+
+- Creación del repositorio nuevo con historial saneado.
+- Creación y publicación de `dev` como rama predeterminada.
+- Creación del GitHub Project y ocho tareas iniciales.
+- Levantamiento preliminar de Posgrado para SIGEP.
+- Creación de esta bitácora.
+
+### 2026-10-08
+
+- Se pausó la iniciativa de plataforma de interoperabilidad para priorizar la evolución de Akademos como sistema núcleo del Ministerio.
+- La interoperabilidad se conserva como condicionante de diseño futuro, sin alterar la prioridad inmediata de la hoja de ruta existente.
+- Se inició la consolidación de la línea base de desarrollo en Windows.
+- Se confirmó PostgreSQL como motor de la aplicación y se corrigió su configuración de ejemplo.
+- Se documentó el procedimiento local validado y se retiró del README el procedimiento de producción no verificado.
+- Se inició la actividad 1 de seguridad con un inventario de secretos y credenciales.
+- Se externalizó el usuario administrador de fixtures y se reforzó la exclusión de backups.
+- El escaneo del historial saneado no encontró claves privadas ni tokens reconocibles.
+- `composer audit --locked` detectó 63 avisos en 19 paquetes y dos paquetes abandonados; la corrección queda como bloqueo de seguridad antes de cerrar la actividad.
+- Se creó la base aislada `gestion_universitaria_test`, con configuración y claves JWT exclusivas para pruebas; la suite verifica el nombre de la base antes de cada caso.
+- Se incorporaron 9 pruebas funcionales con 48 aserciones para arranque, autenticación web, sesiones, cierre de sesión, JWT y autorización por rol. La batería completa quedó en verde.
+- Se corrigió el uso de sesiones nativas creadas manualmente en el autenticador y el servicio de trazas; ambos reutilizan ahora la sesión de la petición.
+- Las validaciones de contenedor, YAML y Twig quedaron correctas. La validación Doctrine confirmó que el esquema está sincronizado, pero detectó ocho entidades con inconsistencias de tipos o asociaciones en sus metadatos.
+- `composer validate` confirmó uso simple válido y señaló deuda existente: restricción abierta de `dompdf/dompdf` y metadatos de paquete ausentes.
+- El procedimiento reproducible quedó documentado en `docs/pruebas.md`. Nunca ejecutar fixtures sobre la copia de la base real.
+- Se actualizaron 65 dependencias directas y transitivas dentro de las restricciones compatibles, incluyendo Dompdf 3.1.6, Guzzle 7.15.5, PhpSpreadsheet 1.30.7, PHPUnit 9.6.38, Twig 3.30.0 y los últimos parches disponibles de Symfony 5.4.
+- `composer audit --locked` pasó de 63 avisos en 19 paquetes a cero avisos conocidos. La suite permaneció en verde con 9 pruebas y 48 aserciones.
+- Composer reporta ahora cinco paquetes abandonados: `behat/transliterator`, `doctrine/annotations`, `doctrine/cache`, `sensio/framework-extra-bundle` y `symfony/security-guard`; su sustitución forma parte de la evolución tecnológica.
+- Se detectaron dos clases de exportación omitidas por el autoloader debido a que declaran `App\\Service` dentro de `src/Services`; deben corregirse con pruebas específicas del flujo de exportación.
+- Se corrigieron las ocho inconsistencias detectadas por Doctrine: siete entidades alinearon sus tipos PHP con columnas enteras o de texto y la relación `Grupo`–`Estructura` quedó correctamente declarada y sincronizada en ambos sentidos.
+- `doctrine:schema:validate` informa ahora mapeos correctos y esquema sincronizado. La suite creció a 11 pruebas y 61 aserciones.
+- Se corrigieron los namespaces de `ExportListHeader` y `ExportListMultiple`; `composer dump-autoload --strict-psr` finaliza sin clases omitidas.
+- Se añadieron pruebas reales de generación XLSX con PhpSpreadsheet y PDF con Dompdf. La regresión completa quedó en 14 pruebas y 68 aserciones.

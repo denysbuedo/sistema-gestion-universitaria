@@ -1,55 +1,25 @@
-## How to install for develop
+## Desarrollo local
 
-```
-cp .env .env.local
-```
+La aplicación utiliza Symfony 5.4 y PostgreSQL. La guía validada para preparar
+un entorno de desarrollo en Windows está en
+[`docs/desarrollo-windows.md`](docs/desarrollo-windows.md).
 
-```
-export APP_ENV=dev
-```
+El repositorio todavía no contiene una línea base de migraciones. Hasta que se
+complete esa iniciativa, no debe asumirse que
+`doctrine:migrations:migrate` puede construir una base nueva.
 
-```
-composer install
-```
+## Despliegue en producción
 
-```
-composer dump-env
-```
+El procedimiento de producción todavía no está definido ni validado. Se
+documentará como parte de la iniciativa de despliegue reproducible en VM y de
+la línea base de migraciones.
 
-```
-php bin/console doctrine:migrations:migrate
-```
+Hasta completar esas iniciativas:
 
-```
-php bin/console cache:clear
-```
-
-## How to install for production
-
-```
-cp .env .env.local
-```
-
-```
-export APP_ENV=prod
-```
-
-```
-composer install --no-dev -o --no-scripts
-```
-
-```
-composer dump-env prod
-```
-
-```
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:schema:update --dump-sql
-```
-
-```
-php bin/console --env=prod cache:clear
-```
+- no utilizar esta guía de desarrollo para preparar producción;
+- no ejecutar `doctrine:schema:update --force`;
+- no copiar credenciales ni claves de otros entornos;
+- no desplegar sin un procedimiento comprobado de backup y rollback.
 
 ## Scaffolding
 
@@ -151,6 +121,8 @@ Se programará la lógica de negocio. Ya que puede ser reutilizada por cada uno 
 
 
 ## How To Configure LexikJWTAuthenticationBundle?
+
+La preparación y ejecución de las pruebas automatizadas se documenta en [docs/pruebas.md](docs/pruebas.md).
 
 View [Documentation](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#installation).
 

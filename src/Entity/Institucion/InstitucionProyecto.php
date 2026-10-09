@@ -21,7 +21,7 @@ class InstitucionProyecto extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idProyecto = null;
+    private ?int $idProyecto = null;
 
 
     /**
@@ -47,17 +47,17 @@ class InstitucionProyecto extends BaseEntity
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getIdProyecto(): ?string
+    public function getIdProyecto(): ?int
     {
         return $this->idProyecto;
     }
 
     /**
-     * @param string|null $idProyecto
+     * @param int|null $idProyecto
      */
-    public function setIdProyecto(?string $idProyecto): void
+    public function setIdProyecto(?int $idProyecto): void
     {
         $this->idProyecto = $idProyecto;
     }

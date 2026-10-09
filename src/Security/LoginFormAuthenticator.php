@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -90,7 +89,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
         $persona = $this->entityManager->getRepository(Persona::class)->findOneBy(['usuario' => $user->getId()]);
 
-        $session = new Session();
+        $session = $this->requestStack->getSession();
         if ($persona instanceof Persona) {
             $afilicacion = $this->entityManager->getRepository(PersonaOrganizacion::class)->findBy(['persona' => $persona->getId()]);
             $personsAfiliacion = [];
@@ -112,12 +111,15 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
                 $responsabilidad && method_exists($responsabilidad, 'getNombre') ? $responsabilidad->getNombre() : null
             );
 
-            $session->set('estructura_usuario_autenticado', $persona->getEstructura()->getId());
-            $session->set('nombre_estructura_usuario_autenticado', $persona->getEstructura()->getNombre());
-            $session->set('estructura_padre_usuario_autenticado', method_exists($persona->getEstructura(), 'getEstructura') ? $persona->getEstructura()->getEstructura()->getNombre() : null);
+            $estructura = $persona->getEstructura();
+            $estructuraPadre = $estructura ? $estructura->getEstructura() : null;
+
+            $session->set('estructura_usuario_autenticado', $estructura ? $estructura->getId() : null);
+            $session->set('nombre_estructura_usuario_autenticado', $estructura ? $estructura->getNombre() : null);
+            $session->set('estructura_padre_usuario_autenticado', $estructuraPadre ? $estructuraPadre->getNombre() : null);
             $session->set('id_persona_usuario_autenticado', $persona->getId());
-            $session->set('provincia_usuario_autenticado', $persona->getProvincia()->getNombre());
-            $session->set('municipio_usuario_autenticado', $persona->getMunicipio()->getNombre());
+            $session->set('provincia_usuario_autenticado', $persona->getProvincia() ? $persona->getProvincia()->getNombre() : null);
+            $session->set('municipio_usuario_autenticado', $persona->getMunicipio() ? $persona->getMunicipio()->getNombre() : null);
             $gradoAcademico = $persona->getGradoAcademico();
             $session->set('grado_cientifico_usuario_autenticado', $gradoAcademico && method_exists($gradoAcademico, 'getNombre') ? $gradoAcademico->getNombre() : null);
             $session->set('afiliaciones_usuario_autenticado', implode(", ", $personsAfiliacion));

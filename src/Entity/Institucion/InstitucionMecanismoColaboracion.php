@@ -21,7 +21,7 @@ class InstitucionMecanismoColaboracion extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idMecanismo = null;
+    private ?int $idMecanismo = null;
 
 
     /**
@@ -33,7 +33,7 @@ class InstitucionMecanismoColaboracion extends BaseEntity
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private ?string $idTipoMecanismo = null;
+    private ?int $idTipoMecanismo = null;
 
     /**
      * @ORM\Column(type="string", nullable=false, length="255")
@@ -58,23 +58,23 @@ class InstitucionMecanismoColaboracion extends BaseEntity
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getIdMecanismo(): ?string
+    public function getIdMecanismo(): ?int
     {
         return $this->idMecanismo;
     }
 
     /**
-     * @param string|null $idMecanismo
+     * @param int|null $idMecanismo
      */
-    public function setIdMecanismo(?string $idMecanismo): void
+    public function setIdMecanismo(?int $idMecanismo): void
     {
         $this->idMecanismo = $idMecanismo;
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
     public function getNombreMecanismo(): ?string
     {
@@ -92,15 +92,15 @@ class InstitucionMecanismoColaboracion extends BaseEntity
     /**
      * @return string|null
      */
-    public function getIdTipoMecanismo(): ?string
+    public function getIdTipoMecanismo(): ?int
     {
         return $this->idTipoMecanismo;
     }
 
     /**
-     * @param string|null $idTipoMecanismo
+     * @param int|null $idTipoMecanismo
      */
-    public function setIdTipoMecanismo(?string $idTipoMecanismo): void
+    public function setIdTipoMecanismo(?int $idTipoMecanismo): void
     {
         $this->idTipoMecanismo = $idTipoMecanismo;
     }

@@ -14,7 +14,7 @@ class CategoriaAcreditacion extends BaseNomenclator
     /**
      * @ORM\Column(type="integer", nullable=true, length="10")
      */
-    private ?string $duracion = null;
+    private ?int $duracion = null;
 
 
 
@@ -24,12 +24,12 @@ class CategoriaAcreditacion extends BaseNomenclator
     private ?string $color=null;
 
 
-    public function getDuracion()
+    public function getDuracion(): ?int
     {
         return $this->duracion;
     }
 
-    public function setDuracion($duracion)
+    public function setDuracion(?int $duracion): self
     {
         $this->duracion = $duracion;
 

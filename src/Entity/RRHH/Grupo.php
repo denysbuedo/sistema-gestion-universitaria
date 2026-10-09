@@ -88,7 +88,7 @@ class Grupo
     {
         if (!$this->estructuras->contains($estructura)) {
             $this->estructuras[] = $estructura;
-            $estructura->addGrupo($this);
+            $estructura->setGrupo($this);
         }
 
         return $this;
@@ -98,7 +98,9 @@ class Grupo
     {
         if ($this->estructuras->contains($estructura)) {
             $this->estructuras->removeElement($estructura);
-            $estructura->removeGrupo($this);
+            if ($estructura->getGrupo() === $this) {
+                $estructura->setGrupo(null);
+            }
         }
 
         return $this;

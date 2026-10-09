@@ -6,7 +6,6 @@ nbproject
 .idea
 .vscode
 .env
-.env.test
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -20,6 +19,12 @@ nbproject
 
 # Local secrets and generated authentication keys
 /config/jwt/*.pem
+
+# Database backups and local exports
+/backups/
+*.backup
+*.dump
+*.pgdump
 
 ###> symfony/phpunit-bridge ###
 .phpunit

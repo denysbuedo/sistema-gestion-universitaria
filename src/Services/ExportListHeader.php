@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
-use App\Service\ReportFop;
-use App\Services\ReportFilterTrait;
 
 abstract class ExportListHeader implements ReportFop
 {
