@@ -150,11 +150,11 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 ## Próximo paso recomendado
 
-1. Confirmar rotación de los secretos anteriores.
-2. Revisar todas las variables de `.env.example`.
-3. Documentar instalación y despliegue en VM.
-4. Definir la versión objetivo de PHP.
-5. Crear pruebas mínimas de arranque, autenticación y autorización.
+1. Iniciar la actividad 3: establecer la estrategia y línea base de migraciones de Doctrine.
+2. Inventariar el esquema de la copia de prueba y compararlo con los metadatos actuales, sin modificar la base real.
+3. Definir cómo adoptar una línea base en instalaciones existentes y cómo crear instalaciones nuevas de forma reproducible.
+4. Probar migración, reversión y reconstrucción completa únicamente sobre bases efímeras o copias autorizadas.
+5. Mantener como tareas transversales la rotación institucional de secretos y la sustitución gradual de dependencias abandonadas.
 
 ## Historial
 
@@ -200,3 +200,7 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - Se añadió una validación reproducible basada en Ubuntu 24.04 y PostgreSQL efímero para comprobar PHP 8.3, dependencias, esquema, fixtures, pruebas, FOP, Nginx y PHP-FPM sin acceder a datos reales.
 - La validación Ubuntu se integró en GitHub Actions para `dev`, con permisos de solo lectura y sin secretos. La ejecución local quedó pendiente porque Docker Desktop entró en modo de solo lectura al agotarse completamente el espacio de `C:`.
 - Las comprobaciones locales de la actividad 2 quedaron en 18 pruebas y 81 aserciones; también validan sintaxis de scripts, Compose y las plantillas de despliegue.
+- Se adaptó el entorno efímero al diseño de datos de PostgreSQL 18 y se generó `.env` dentro de la imagen exclusivamente desde `.env.example`.
+- La auditoría conserva el informe de cinco paquetes abandonados y falla ante avisos de seguridad, sin tratar ambas categorías como equivalentes en Composer 2.7 de Ubuntu.
+- La ejecución `37913609338` de GitHub Actions completó correctamente la validación real sobre Ubuntu 24.04: PHP 8.3, PostgreSQL 18 efímero, fixtures, 18 pruebas con 86 aserciones, contenedor, 22 archivos YAML, 550 plantillas Twig, mapeo y esquema Doctrine, auditoría sin vulnerabilidades, PHP-FPM y Nginx.
+- Con esta ejecución queda cerrada la preparación técnica reproducible de la actividad 2; el despliegue productivo continúa sujeto a aprovisionamiento, secretos rotados, respaldo y ventana de cambio autorizada.
