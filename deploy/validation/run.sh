@@ -18,7 +18,7 @@ php bin/console lint:container --env=test
 php bin/console lint:yaml config
 php bin/console lint:twig templates
 php bin/console doctrine:schema:validate --env=test
-composer audit --locked --abandoned=report
+composer audit --locked
 
 php-fpm8.3 -t
 nginx -t

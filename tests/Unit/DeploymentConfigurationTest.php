@@ -44,6 +44,10 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringNotContainsString('/var/lib/postgresql/data', $compose);
         self::assertStringNotContainsString('gestion_universitaria_real', $compose);
         self::assertStringContainsString('cp .env.example .env', $dockerfile);
+
+        $validationScript = file_get_contents($this->projectDir . '/deploy/validation/run.sh');
+        self::assertStringContainsString('composer audit --locked', $validationScript);
+        self::assertStringNotContainsString('--abandoned', $validationScript);
     }
 
     public function testUbuntuWorkflowIsRestrictedAndDoesNotRequireSecrets(): void
