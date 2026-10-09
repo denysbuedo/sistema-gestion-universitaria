@@ -39,6 +39,8 @@ class DeploymentConfigurationTest extends TestCase
 
         self::assertStringContainsString('gestion_universitaria_test', $compose);
         self::assertStringContainsString('tmpfs:', $compose);
+        self::assertStringContainsString('- /var/lib/postgresql', $compose);
+        self::assertStringNotContainsString('/var/lib/postgresql/data', $compose);
         self::assertStringNotContainsString('gestion_universitaria_real', $compose);
     }
 

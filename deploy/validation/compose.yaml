@@ -11,7 +11,7 @@ services:
       timeout: 5s
       retries: 30
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql
 
   app:
     build:
