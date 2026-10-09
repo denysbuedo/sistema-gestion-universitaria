@@ -1,0 +1,13 @@
+.git
+.idea
+.vscode
+.env.local
+.env.*.local
+.phpunit
+backups
+codex.txt
+config/jwt/*.pem
+node_modules
+public/uploads
+var
+vendor

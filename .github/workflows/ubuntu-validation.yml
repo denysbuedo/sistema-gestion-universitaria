@@ -1,0 +1,35 @@
+name: Ubuntu validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ubuntu-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build and validate Ubuntu environment
+        run: >-
+          docker compose -f deploy/validation/compose.yaml up
+          --build --abort-on-container-exit --exit-code-from app
+
+      - name: Remove ephemeral environment
+        if: always()
+        run: docker compose -f deploy/validation/compose.yaml down --volumes --remove-orphans

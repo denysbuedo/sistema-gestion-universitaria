@@ -191,3 +191,12 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - `doctrine:schema:validate` informa ahora mapeos correctos y esquema sincronizado. La suite creció a 11 pruebas y 61 aserciones.
 - Se corrigieron los namespaces de `ExportListHeader` y `ExportListMultiple`; `composer dump-autoload --strict-psr` finaliza sin clases omitidas.
 - Se añadieron pruebas reales de generación XLSX con PhpSpreadsheet y PDF con Dompdf. La regresión completa quedó en 14 pruebas y 68 aserciones.
+- Se inició la actividad 2 con Ubuntu 24.04 LTS, Nginx y PHP 8.3-FPM como plataforma objetivo; Windows queda limitado al desarrollo.
+- Se añadieron plantillas de Nginx, pool PHP-FPM, carga de entorno mediante systemd, configuración externa sin secretos y una comprobación operativa de requisitos.
+- FOP dejó de depender de `cmd /c` y `fop.bat`: el ejecutable se configura mediante `FOP_EXECUTABLE` y se invoca con argumentos seguros en Windows o Linux.
+- Los temporales de exportación se movieron fuera de `public/` hacia `var/tmp/export/`.
+- La guía `docs/despliegue-ubuntu.md` define instalación, permisos, versiones inmutables, activación por enlace simbólico, validación y reversión. No autoriza todavía un despliegue productivo ni cambios de esquema.
+- Se añadieron pruebas que mantienen sincronizadas las variables del entorno productivo y las plantillas Nginx/PHP-FPM. La suite queda en 16 pruebas y 74 aserciones.
+- Se añadió una validación reproducible basada en Ubuntu 24.04 y PostgreSQL efímero para comprobar PHP 8.3, dependencias, esquema, fixtures, pruebas, FOP, Nginx y PHP-FPM sin acceder a datos reales.
+- La validación Ubuntu se integró en GitHub Actions para `dev`, con permisos de solo lectura y sin secretos. La ejecución local quedó pendiente porque Docker Desktop entró en modo de solo lectura al agotarse completamente el espacio de `C:`.
+- Las comprobaciones locales de la actividad 2 quedaron en 18 pruebas y 81 aserciones; también validan sintaxis de scripts, Compose y las plantillas de despliegue.

@@ -19,9 +19,9 @@ parameters:
   estado_inicial_plan: '%env(ESTADO_INICIAL_PLAN)%'
 
   xsl_path: '%kernel.project_dir%/public/xsl/'
-  xml_temp: '%kernel.project_dir%/public/temp/'
-  pdf_temp: '%kernel.project_dir%/public/temp/'
-  fop_exc: '%kernel.project_dir%/bin/fop/fop.bat'
+  xml_temp: '%kernel.project_dir%/var/tmp/export/'
+  pdf_temp: '%kernel.project_dir%/var/tmp/export/'
+  fop_exc: '%env(resolve:FOP_EXECUTABLE)%'
 
   accion_registrar: '%env(accion_registrar)%'
   accion_modificar: '%env(accion_modificar)%'

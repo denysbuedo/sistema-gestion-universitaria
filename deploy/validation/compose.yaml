@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: gestion_universitaria_test
+      POSTGRES_USER: sgu_test
+      POSTGRES_PASSWORD: test-only-password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgu_test -d gestion_universitaria_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  app:
+    build:
+      context: ../..
+      dockerfile: deploy/validation/Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: test
+      DATABASE_URL: postgresql://sgu_test:test-only-password@database:5432/gestion_universitaria_test
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: gestion_universitaria_test
+      DB_USER: sgu_test
+      DB_PASS: test-only-password
+      JWT_PASSPHRASE: ubuntu-validation-only
+      FIXTURE_ADMIN_EMAIL: admin-ubuntu-test@example.invalid
+      FIXTURE_ADMIN_PASSWORD: ubuntu-validation-only
+      FOP_EXECUTABLE: /usr/bin/fop
+      SYMFONY_DEPRECATIONS_HELPER: disabled

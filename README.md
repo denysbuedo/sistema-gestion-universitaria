@@ -124,6 +124,8 @@ Se programará la lógica de negocio. Ya que puede ser reutilizada por cada uno 
 
 La preparación y ejecución de las pruebas automatizadas se documenta en [docs/pruebas.md](docs/pruebas.md).
 
+El despliegue objetivo en Ubuntu se documenta en [docs/despliegue-ubuntu.md](docs/despliegue-ubuntu.md). Windows queda reservado para desarrollo local.
+
 View [Documentation](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#installation).
 
 > URL API

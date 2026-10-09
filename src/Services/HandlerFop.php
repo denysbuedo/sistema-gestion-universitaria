@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use App\Services\ReportFop;
+use Symfony\Component\Process\Process;
 
 /**
  * Clase para la generacion de documentos PDF usando FOP
@@ -110,6 +110,8 @@ class HandlerFop
     {
         set_time_limit('180');
         ini_set('memory_limit', '512M');
+        $this->ensureDirectory($this->XMLTMPPATH);
+        $this->ensureDirectory($this->PDFTMPPATH);
         $file_name = $this->escapeFileName($file_name);
 
         $tmp_time = ($download) ? time() : '';
@@ -144,13 +146,17 @@ class HandlerFop
         $xml->asXML($xml_path);
         //generar el documento en el formato especificado
 
-        $execute = 'cmd /c "' . $this->FOPPATH . '" -xml "' . $xml_path . '" -xsl "' . $xsl_path . '" -' . $outpu_format_comand . ' "' . $export_path . '"';
+        $arguments = ['-xml', $xml_path, '-xsl', $xsl_path, '-' . $outpu_format_comand, $export_path];
+        $command = DIRECTORY_SEPARATOR === '\\'
+            ? array_merge(['cmd', '/c', $this->FOPPATH], $arguments)
+            : array_merge([$this->FOPPATH], $arguments);
 
-//        echo $execute;die;
-        exec($execute, $salida, $retorno);
+        $process = new Process($command);
+        $process->setTimeout(180);
+        $process->run();
 
-        if (!file_exists($export_path)) {
-            throw new \Exception('SYS006');
+        if (!$process->isSuccessful() || !file_exists($export_path)) {
+            throw new \RuntimeException('SYS006: no se pudo generar el documento con FOP.');
         }
 
         //obtener el contenido del documento generado
@@ -194,11 +200,20 @@ class HandlerFop
         $svg = str_replace('undefined', '1', $post_xml['svg']);
         $name_saved = uniqid() . ".svg";
         $this->container->get('session')->set($post_xml['name'], $name_saved);
-        $file = fopen($this->XMLTMPPATH . "temp/" . $name_saved, "w");
+        $svgDirectory = $this->XMLTMPPATH . 'temp/';
+        $this->ensureDirectory($svgDirectory);
+        $file = fopen($svgDirectory . $name_saved, "w");
         fwrite($file, $svg);
         fclose($file);
 
         return $svg;
+    }
+
+    private function ensureDirectory(string $directory): void
+    {
+        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
+            throw new \RuntimeException(sprintf('No se pudo crear el directorio temporal "%s".', $directory));
+        }
     }
 
 }
