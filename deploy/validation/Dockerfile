@@ -13,7 +13,8 @@ WORKDIR /app
 
 COPY . /app
 
-RUN composer install --no-interaction --no-scripts --prefer-dist \
+RUN cp .env.example .env \
+    && composer install --no-interaction --no-scripts --prefer-dist \
     && mkdir -p /run/php /var/www/akademos \
     && ln -s /app /var/www/akademos/current \
     && cp deploy/php-fpm/akademos.conf /etc/php/8.3/fpm/pool.d/akademos.conf \

@@ -36,12 +36,14 @@ class DeploymentConfigurationTest extends TestCase
     public function testUbuntuValidationUsesAnEphemeralTestDatabase(): void
     {
         $compose = file_get_contents($this->projectDir . '/deploy/validation/compose.yaml');
+        $dockerfile = file_get_contents($this->projectDir . '/deploy/validation/Dockerfile');
 
         self::assertStringContainsString('gestion_universitaria_test', $compose);
         self::assertStringContainsString('tmpfs:', $compose);
         self::assertStringContainsString('- /var/lib/postgresql', $compose);
         self::assertStringNotContainsString('/var/lib/postgresql/data', $compose);
         self::assertStringNotContainsString('gestion_universitaria_real', $compose);
+        self::assertStringContainsString('cp .env.example .env', $dockerfile);
     }
 
     public function testUbuntuWorkflowIsRestrictedAndDoesNotRequireSecrets(): void
