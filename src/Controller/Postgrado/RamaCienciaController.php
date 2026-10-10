@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/rama_ciencia")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RAMCIENC")
  */
+#[Route('/postgrado/rama_ciencia')]
 class RamaCienciaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rama_ciencia_index", methods={"GET"})
      * @param RamaCienciaRepository $ramaCienciaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_rama_ciencia_index', methods: ['GET'])]
     public function index(RamaCienciaRepository $ramaCienciaRepository)
     {
         return $this->render('modules/postgrado/rama_ciencia/index.html.twig', [
@@ -33,11 +33,11 @@ class RamaCienciaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_rama_ciencia_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param RamaCienciaRepository $ramaCienciaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rama_ciencia_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, RamaCienciaRepository $ramaCienciaRepository)
     {
         try {
@@ -61,12 +61,12 @@ class RamaCienciaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_rama_ciencia_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $ramaCiencia
      * @param RamaCienciaRepository $ramaCienciaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rama_ciencia_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, RamaCiencia $ramaCiencia, RamaCienciaRepository $ramaCienciaRepository)
     {
         try {
@@ -90,12 +90,12 @@ class RamaCienciaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_rama_ciencia_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $ramaCiencia
      * @param RamaCienciaRepository $ramaCienciaRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rama_ciencia_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, RamaCiencia $ramaCiencia)
     {
         return $this->render('modules/postgrado/rama_ciencia/detail.html.twig', [
@@ -104,12 +104,12 @@ class RamaCienciaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rama_ciencia_eliminar", methods={"GET"})
      * @param Request $request
      * @param RamaCiencia $ramaCiencia
      * @param RamaCienciaRepository $ramaCienciaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rama_ciencia_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, RamaCiencia $ramaCiencia, RamaCienciaRepository $ramaCienciaRepository)
     {
         try {

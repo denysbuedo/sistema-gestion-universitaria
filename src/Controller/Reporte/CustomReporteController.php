@@ -14,16 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/reporte/custom")
  * @IsGranted("ROLE_ADMIN", "ROLE_CUSTOM_REP")
  */
+#[Route('/reporte/custom')]
 class CustomReporteController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_reporte_custom", methods={"GET", "POST"})
      * @return Response
      */
+    #[Route('', name: 'app_reporte_custom', methods: ['GET', 'POST'])]
     public function index(InformePersonalizadoRepository $informePersonalizadoRepository, Utils $utils)
     {
         $registros = [];
@@ -50,11 +50,11 @@ class CustomReporteController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_reporte_custom_create", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoActividadRepository $tipoActividadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_reporte_custom_create', methods: ['GET', 'POST'])]
     public function registrar(Request $request, InformePersonalizadoRepository $informePersonalizadoRepository)
     {
 //        try {
@@ -78,11 +78,11 @@ class CustomReporteController extends AbstractController
     }
 
     /**
-     * @Route("/modificar/{id}", name="app_reporte_custom_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoActividadRepository $tipoActividadRepository
      * @return Response
      */
+    #[Route('/modificar/{id}', name: 'app_reporte_custom_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, InformePersonalizadoRepository $informePersonalizadoRepository, InformePersonalizado $informePersonalizado)
     {
         try {
@@ -105,11 +105,11 @@ class CustomReporteController extends AbstractController
     }
 
     /**
-     * @Route("/detalles/{id}", name="app_reporte_custom_detalles", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoActividadRepository $tipoActividadRepository
      * @return Response
      */
+    #[Route('/detalles/{id}', name: 'app_reporte_custom_detalles', methods: ['GET', 'POST'])]
     public function detalles(Request $request, InformePersonalizadoRepository $informePersonalizadoRepository, InformePersonalizado $informePersonalizado)
     {
         try {
@@ -125,12 +125,12 @@ class CustomReporteController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_reporte_custom_eliminar", methods={"GET"})
      * @param Request $request
      * @param InformePersonalizadoRepository $informePersonalizadoRepository
      * @param InformePersonalizado $id
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_reporte_custom_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, InformePersonalizadoRepository $informePersonalizadoRepository, InformePersonalizado $id)
     {
         try {

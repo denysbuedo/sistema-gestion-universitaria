@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/oace")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CATDOC")
  */
+#[Route('/pregrado/oace')]
 class OaceController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_oace_index", methods={"GET"})
      * @param OaceRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_oace_index', methods: ['GET'])]
     public function index(OaceRepository $tipoProgramaRepository)
     {
         return $this->render('modules/pregrado/oace/index.html.twig', [
@@ -32,11 +32,11 @@ class OaceController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_oace_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param OaceRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_oace_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, OaceRepository $tipoProgramaRepository)
     {
         try {
@@ -60,12 +60,12 @@ class OaceController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_oace_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Oace $oace
      * @param OaceRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_oace_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Oace $oace, OaceRepository $oaceRepository)
     {
         try {
@@ -89,11 +89,11 @@ class OaceController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_oace_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Oace $tipoPrograma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_oace_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Oace $tipoProgramaAcademico)
     {
         return $this->render('modules/pregrado/oace/detail.html.twig', [
@@ -102,12 +102,12 @@ class OaceController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_oace_eliminar", methods={"GET"})
      * @param Request $request
      * @param Oace $tipoPrograma
      * @param OaceRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_oace_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Oace $tipoPrograma, OaceRepository $tipoProgramaRepository)
     {
         try {

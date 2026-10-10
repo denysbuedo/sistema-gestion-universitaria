@@ -16,9 +16,9 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
- * @Route("/rrhh/claustro_drc_pt")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_CLAUSTRO_DRC_PT")
  */
+#[Route('/rrhh/claustro_drc_pt')]
 class DrcVsClaustroController extends AbstractController
 {
     private ObjectNormalizer $normalizer;
@@ -31,13 +31,13 @@ class DrcVsClaustroController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_rrhh_reporte_drc_vs_claustro_index",  methods={"GET", "POST"})
      * @param Request $request
      * @param AE3Repository $ae3Repository
      * @param GrupoRepository $grupoRepository
      * @return Response
      * @throws ExceptionInterface
      */
+    #[Route('/', name: 'app_rrhh_reporte_drc_vs_claustro_index',  methods: ['GET', 'POST'])]
     public function index(Request $request, AE3Repository $ae3Repository, GrupoRepository $grupoRepository): Response
     {
         $allPost = $request->request->all();

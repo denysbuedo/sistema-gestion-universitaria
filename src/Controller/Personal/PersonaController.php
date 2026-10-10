@@ -45,17 +45,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/persona")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PERSON")
  */
+#[Route('/personal/persona')]
 class PersonaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_persona_index", methods={"GET"})
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_persona_index', methods: ['GET'])]
     public function index(Request $request, PersonaRepository $personaRepository, ResponsableRepository $responsableRepository, Utils $utils)
     {
         try {
@@ -78,7 +78,6 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/{origin}/registrar", name="app_persona_registrar", methods={"GET", "POST"}, defaults={"origin":"default"})
      * @param Utils $utils
      * @param TipoOrganizacionRepository $tipoOrganizacionRepository
      * @param $origin
@@ -94,6 +93,7 @@ class PersonaController extends AbstractController
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      */
+    #[Route('/{origin}/registrar', name: 'app_persona_registrar', methods: ['GET', 'POST'], defaults: ['origin' => 'default'])]
     public function registrar(Utils $utils, TipoOrganizacionRepository $tipoOrganizacionRepository, $origin, ProvinciaRepository $provinciaRepository, OrganizacionRepository $organizacionRepository, SexoRepository $sexoRepository, EntityManagerInterface $em, Request $request, UserPasswordHasherInterface $encoder, PersonaRepository $personaRepository, MunicipioRepository $municipioRepository, EstructuraRepository $estructuraRepository, ResponsabilidadRepository $responsabilidadRepository)
     {
         $datosFuc = $request->getSession()->get('datos_fuc');
@@ -246,7 +246,6 @@ class PersonaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_persona_modificar", methods={"GET", "POST"})
      * @param TipoOrganizacionRepository $tipoOrganizacionRepository
      * @param OrganizacionRepository $organizacionRepository
      * @param UserRepository $userRepository
@@ -261,6 +260,7 @@ class PersonaController extends AbstractController
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_persona_modificar', methods: ['GET', 'POST'])]
     public function modificar(PersonaOrganizacionRepository $personaOrganizacionRepository, TipoOrganizacionRepository $tipoOrganizacionRepository,
                               OrganizacionRepository        $organizacionRepository, UserRepository $userRepository, PlantillaRepository $plantillaRepository,
                               UserPasswordHasherInterface  $encoder, EntityManagerInterface $em, Request $request, Persona $persona, PersonaRepository $personaRepository,
@@ -375,11 +375,11 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_persona_eliminar", methods={"GET"})
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_persona_eliminar', methods: ['GET'])]
     public function eliminar(Persona $persona, PersonaRepository $personaRepository, PlantillaRepository $plantillaRepository)
     {
         try {
@@ -406,12 +406,12 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_persona_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $persona
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_persona_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Persona $persona, PlantillaRepository $plantillaRepository)
     {
         $plantillas = $plantillaRepository->findBy(['persona' => $persona], ['activo' => 'desc']);
@@ -422,11 +422,11 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/existe_ci", name="app_persona_existe_ci", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/existe_ci', name: 'app_persona_existe_ci', methods: ['GET', 'POST'])]
     public function existeCI(Request $request, PersonaRepository $personaRepository)
     {
         try {
@@ -438,11 +438,11 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/existe_serie_ci", name="app_persona_existe_serie_ci", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/existe_serie_ci', name: 'app_persona_existe_serie_ci', methods: ['GET', 'POST'])]
     public function existeSerieCI(Request $request, PersonaRepository $personaRepository)
     {
         try {
@@ -454,11 +454,11 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/existe_usuario", name="app_persona_existe_usuario", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/existe_usuario', name: 'app_persona_existe_usuario', methods: ['GET', 'POST'])]
     public function existeUsuario(Request $request, UserRepository $userRepository)
     {
         try {
@@ -471,13 +471,13 @@ class PersonaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar_estructura_responsabilidad", name="app_persona_modificar_estructura_responsabilidad", methods={"GET", "POST"})
      * @param PlantillaRepository $plantillaRepository
      * @param EntityManagerInterface $em
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/modificar_estructura_responsabilidad', name: 'app_persona_modificar_estructura_responsabilidad', methods: ['GET', 'POST'])]
     public function modificarEstructuraResponsabiliadd(CategoriaEstructuraRepository $categoriaEstructuraRepository, PlantillaRepository $plantillaRepository, EntityManagerInterface $em, Request $request, Persona $persona, EstructuraRepository $estructuraRepository, ResponsabilidadRepository $responsabilidadRepository)
     {
         $plantilla = new Plantilla();
@@ -517,13 +517,13 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/definir_responsable", name="app_persona_definir_responsable", methods={"GET"})
      * @param Request $request
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @param Responsable $responsableRepository
      * @return Response
      */
+    #[Route('/{id}/definir_responsable', name: 'app_persona_definir_responsable', methods: ['GET'])]
     public function definirResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, ResponsableRepository $responsableRepository)
     {
         try {
@@ -545,11 +545,11 @@ class PersonaController extends AbstractController
     }
 
     /**
-     * @Route("/validar_usuario", name="app_persona_validar_usuario", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/validar_usuario', name: 'app_persona_validar_usuario', methods: ['GET', 'POST'])]
     public function validarUsuario(Request $request, PersonaRepository $personaRepository)
     {
         try {
@@ -566,12 +566,12 @@ class PersonaController extends AbstractController
 
 
     /**
-     * @Route("/exportar_pdf", name="app_persona_exportar_pdf", methods={"GET", "POST"})
      * @param HandlerFop $handFop
      * @param PersonaRepository $personaRepository
      * @param Utils $utils
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_persona_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(HandlerFop $handFop, PersonaRepository $personaRepository, Utils $utils)
     {
         $estructurasNegocio = $utils->procesarRolesUsuarioAutenticado($this->getUser()->getId());
@@ -582,10 +582,10 @@ class PersonaController extends AbstractController
 
 
     /**
-     * @Route("/validar_fuc", name="app_persona_validar_fuc", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/validar_fuc', name: 'app_persona_validar_fuc', methods: ['GET', 'POST'])]
     public function validarFUC(Request $request, Utils $utils, PersonaRepository $personaRepository)
     {
         try {

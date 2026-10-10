@@ -66,16 +66,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/evaluacion/categoria_acreditacion_pregrado")
  * @IsGranted("ROLE_ADMIN", "ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION_PREGRADO")
  */
+#[Route('/evaluacion/categoria_acreditacion_pregrado')]
 class CategoriaAcreditacionPregradoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_evaluacion_categoria_acreditacion_pregrado_index", methods={"GET"})
      * @return Response
      */
+    #[Route('/', name: 'app_evaluacion_categoria_acreditacion_pregrado_index', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         return $this->render('modules/evaluacion/categoria_acreditacion_pregrado/index.html.twig', [
@@ -85,7 +85,6 @@ class CategoriaAcreditacionPregradoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/{idProgrInst}/modificar", name="app_evaluacion_categoria_acreditacion_pregrado_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademico
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
@@ -93,6 +92,7 @@ class CategoriaAcreditacionPregradoController extends AbstractController
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository
      * @return Response
      */
+    #[Route('/{id}/{idProgrInst}/modificar', name: 'app_evaluacion_categoria_acreditacion_pregrado_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request,$id, $idProgrInst, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, CategoriaAcreditacionPregradoRepository $categoriaAcreditacionPregradoRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         try {

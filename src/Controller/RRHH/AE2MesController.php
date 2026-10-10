@@ -30,18 +30,18 @@ use Symfony\Component\Serializer\SerializerInterface;
 use function Symfony\Component\String\u;
 
 /**
- * @Route("/rrhh/ae2/mes")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_AE2_MES")
  */
+#[Route('/rrhh/ae2/mes')]
 class AE2MesController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rrhh_reporte_ae2_mes_index", methods={"GET", "POST"})
      * @param Request $request
      * @param AE2Repository $ae2Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_ae2_mes_index', methods: ['GET', 'POST'])]
     public function index(Request $request, AE2Repository $ae2Repository, Utils $utils)
     {
         $session = $request->getSession();
@@ -110,8 +110,8 @@ class AE2MesController extends AbstractController
     }
 
     /**
-     * @Route("/tabla1-2", name="app_rrhh_reporte_ae2_mes_detalle", methods={"POST"})
      */
+    #[Route('/tabla1-2', name: 'app_rrhh_reporte_ae2_mes_detalle', methods: ['POST'])]
     public function detalleMes(Request $request, Utils $utils, AE2Repository $aE2Repository): Response
     {
         $mes = $request->request->get('mes');
@@ -130,8 +130,8 @@ class AE2MesController extends AbstractController
 
 
     /**
-     * @Route("/tabla1-3", name="app_rrhh_reporte_ae2_mes_detalle2", methods={"POST"})
      */
+    #[Route('/tabla1-3', name: 'app_rrhh_reporte_ae2_mes_detalle2', methods: ['POST'])]
     public function detalleMes2(Request $request, AE2Repository $ae2Repository, Utils $utils): Response
     {
         $mes = $request->request->get('mes');

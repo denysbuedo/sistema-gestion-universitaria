@@ -34,17 +34,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/informe_autoevaluacion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_INFORME_AUTOEVALUACION")
  */
+#[Route('/evaluacion/informe_autoevaluacion')]
 class InformeAutoevaluacionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_informe_autoevaluacion_index", methods={"GET"})
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_informe_autoevaluacion_index', methods: ['GET'])]
     public function index(SolicitudRepository $solicitudRepository)
     {
         $registros = $solicitudRepository->getInformeAutoevaluacion();
@@ -68,11 +68,11 @@ class InformeAutoevaluacionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar", name="app_informe_autoevaluacion_aprobar", methods={"GET"})
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/aprobar', name: 'app_informe_autoevaluacion_aprobar', methods: ['GET'])]
     public function aprobar(Solicitud $solicitud, EntityManagerInterface $entityManager, EstadoSolicitudRepository $estadoSolicitudRepository, SolicitudRepository $solicitudRepository)
     {
         try {
@@ -89,12 +89,12 @@ class InformeAutoevaluacionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/rechazar", name="app_informe_autoevaluacion_rechazar", methods={"POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/rechazar', name: 'app_informe_autoevaluacion_rechazar', methods: ['POST'])]
     public function rechazar(Request $request, EntityManagerInterface $entityManager, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -120,11 +120,11 @@ class InformeAutoevaluacionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_informe_autoevaluacion_eliminar", methods={"GET"})
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_informe_autoevaluacion_eliminar', methods: ['GET'])]
     public function eliminar(Solicitud $solicitud, SolicitudRepository $solicitudRepository)
     {
         try {

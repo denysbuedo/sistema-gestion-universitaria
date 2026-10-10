@@ -21,17 +21,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/tramite/plan_mision_detalles")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PLAN_MISION_DETALLES")
  */
+#[Route('/tramite/plan_mision_detalles')]
 class PlanMisionDetallesController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_plan_mision_detalles_index", methods={"GET"})
      * @param planMisionRepository $planMisionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_plan_mision_detalles_index', methods: ['GET'])]
     public function index(Request $request, PlanMisionRepository $planMisionRepository, PlanMisionDetallesRepository $planMisionDetallesRepository)
     {
         $planesMision = $planMisionRepository->findBy([], ['activo' => 'desc', 'id' => 'desc']);
@@ -49,11 +49,11 @@ class PlanMisionDetallesController extends AbstractController
 
 
     /**
-     * @Route("/cambio/filtro/plan_plan/{id}", name="app_cambio_filtro_plan")
      * @param Request $request
      * @param $id
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
+    #[Route('/cambio/filtro/plan_plan/{id}', name: 'app_cambio_filtro_plan')]
     public function cambiarFiltroPlan(Request $request, $id)
     {
         $request->getSession()->set('filter_plan_mision', $id);

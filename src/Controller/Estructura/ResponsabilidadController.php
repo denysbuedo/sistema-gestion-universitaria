@@ -15,18 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
-/**
- * @Route("/rrhh/responsabilidad") *
- */
+#[Route('/rrhh/responsabilidad')]
 class ResponsabilidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_responsabilidad_index", methods={"GET"})
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
      */
+    #[Route('/', name: 'app_responsabilidad_index', methods: ['GET'])]
     public function index(ResponsabilidadRepository $responsabilidadRepository)
     {
         try {
@@ -40,12 +38,12 @@ class ResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_responsabilidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
      */
+    #[Route('/registrar', name: 'app_responsabilidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ResponsabilidadRepository $responsabilidadRepository)
     {
         try {
@@ -69,13 +67,13 @@ class ResponsabilidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_responsabilidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $responsabilidad
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
      */
+    #[Route('/{id}/modificar', name: 'app_responsabilidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Responsabilidad $responsabilidad, ResponsabilidadRepository $responsabilidadRepository)
     {
         try {
@@ -98,13 +96,13 @@ class ResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_responsabilidad_eliminar", methods={"GET"})
      * @param Request $request
      * @param Responsabilidad $responsabilidad
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
      */
+    #[Route('/{id}/eliminar', name: 'app_responsabilidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Responsabilidad $responsabilidad, ResponsabilidadRepository $responsabilidadRepository)
     {
         try {
@@ -122,12 +120,12 @@ class ResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_responsabilidad_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Responsabilidad $responsabilidad
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
      */
+    #[Route('/{id}/detail', name: 'app_responsabilidad_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Responsabilidad $responsabilidad)
     {
         return $this->render('modules/estructura/responsabilidad/detail.html.twig', [
@@ -138,13 +136,13 @@ class ResponsabilidadController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/responsabilidad_dado_estructura", name="app_responsabilidad_dado_estructura", methods={"GET"})
      * @param Request $request
      * @param $id
      * @param PlazaRepository $plazaRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/{id}/responsabilidad_dado_estructura', name: 'app_responsabilidad_dado_estructura', methods: ['GET'])]
     public function getResponsabilidadDadoEstructura(Request $request, $id, PlazaRepository $plazaRepository, Utils $utils): JsonResponse
     {
         try {

@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/servicio")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_SERVICIO")
  */
+#[Route('/informatizacion/servicio')]
 class ServicioController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_servicio_index", methods={"GET"})
      * @param ServicioRepository $ServicioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_servicio_index', methods: ['GET'])]
     public function index(ServicioRepository $ServicioRepository)
     {
         return $this->render('modules/informatizacion/servicio/index.html.twig', [
@@ -32,11 +32,11 @@ class ServicioController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_servicio_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ServicioRepository $servicioRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_servicio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, ServicioRepository $servicioRepository)
     {
         try {
@@ -60,12 +60,12 @@ class ServicioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_servicio_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Servicio $servicio
      * @param ServicioRepository $servicioRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_servicio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, Servicio $servicio, ServicioRepository $servicioRepository)
     {
         try {
@@ -90,10 +90,10 @@ class ServicioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_servicio_detail", methods={"GET", "POST"})
      * @param servicio $servicio
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_servicio_detail', methods: ['GET', 'POST'])]
     public function detail(Servicio $servicio)
     {
         return $this->render('modules/informatizacion/servicio/detail.html.twig', [
@@ -102,11 +102,11 @@ class ServicioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_servicio_eliminar", methods={"GET"})
      * @param Servicio $servicio
      * @param ServicioRepository $servicioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_servicio_eliminar', methods: ['GET'])]
     public function eliminar(Servicio $servicio, ServicioRepository $servicioRepository)
     {
         try {

@@ -13,17 +13,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api")
  */
+#[Route('/api')]
 class ApiEstructuraController extends AbstractController
 {
 
     /**
-     * @Route("/listar_estructuras", name="api_listar_estructuras", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param EstructuraRepository $estructuraRepository
      * @return JsonResponse
      */
+    #[Route('/listar_estructuras', name: 'api_listar_estructuras', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarEstructuras(Request $request, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -43,11 +43,11 @@ class ApiEstructuraController extends AbstractController
 
 
     /**
-     * @Route("/get_estructuras_dado_id_categoria", name="api_get_estructuras_dado_id_categoria", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param EstructuraRepository $estructuraRepository
      * @return JsonResponse
      */
+    #[Route('/get_estructuras_dado_id_categoria', name: 'api_get_estructuras_dado_id_categoria', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function getEstructurasDadoIdCategoria(Request $request, EstructuraRepository $estructuraRepository)
     {
         try {

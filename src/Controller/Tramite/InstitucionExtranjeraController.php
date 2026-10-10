@@ -16,17 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/convenio/institucion_extranjera")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_INST_EXTRANJERA")
  */
+#[Route('/convenio/institucion_extranjera')]
 class InstitucionExtranjeraController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_institucion_extranjera_index", methods={"GET"})
      * @param institucionExtranjeraRepository $institucionExtranjeraRepository
      * @return Response
      */
+    #[Route('/', name: 'app_institucion_extranjera_index', methods: ['GET'])]
     public function index(InstitucionExtranjeraRepository $institucionExtranjeraRepository)
     {
         return $this->render('modules/tramite/institucion_extranjera/index.html.twig', [
@@ -35,11 +35,11 @@ class InstitucionExtranjeraController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_institucion_extranjera_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param institucionExtranjeraRepository $institucionExtranjeraRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_institucion_extranjera_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, InstitucionExtranjeraRepository $institucionExtranjeraRepository)
     {
         try {
@@ -63,12 +63,12 @@ class InstitucionExtranjeraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_institucion_extranjera_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param InstitucionExtranjera $institucionExtranjera
      * @param institucionExtranjeraRepository $institucionExtranjeraRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_institucion_extranjera_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, InstitucionExtranjera $institucionExtranjera, InstitucionExtranjeraRepository $institucionExtranjeraRepository)
     {
         try {
@@ -92,10 +92,10 @@ class InstitucionExtranjeraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_institucion_extranjera_detail", methods={"GET", "POST"})
      * @param institucionExtranjera $institucionExtranjera
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_institucion_extranjera_detail', methods: ['GET', 'POST'])]
     public function detail(InstitucionExtranjera $institucionExtranjera)
     {
         return $this->render('modules/tramite/institucion_extranjera/detail.html.twig', [
@@ -104,11 +104,11 @@ class InstitucionExtranjeraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_institucion_extranjera_eliminar", methods={"GET"})
      * @param institucionExtranjera $institucionExtranjera
      * @param institucionExtranjeraRepository $institucionExtranjeraRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_institucion_extranjera_eliminar', methods: ['GET'])]
     public function eliminar(InstitucionExtranjera $institucionExtranjera, InstitucionExtranjeraRepository $institucionExtranjeraRepository)
     {
         try {
@@ -128,12 +128,12 @@ class InstitucionExtranjeraController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/institucion_dado_pais", name="app_institucion_extranjera_institucion_dado_pais", methods={"GET"})
      * @param Request $request
      * @param $id
      * @param InstitucionExtranjeraRepository $institucionExtranjeraRepository
      * @return JsonResponse
      */
+    #[Route('/{id}/institucion_dado_pais', name: 'app_institucion_extranjera_institucion_dado_pais', methods: ['GET'])]
     public function getInstitucionDadoPais(Request $request, $id, InstitucionExtranjeraRepository $institucionExtranjeraRepository): JsonResponse
     {
         try {

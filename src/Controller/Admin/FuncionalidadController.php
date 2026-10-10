@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/administracion/funcionalidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_FUNC")
  */
+#[Route('/administracion/funcionalidad')]
 class FuncionalidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_funcionalidad_index", methods={"GET"})
      * @param FuncionalidadRepository $funcionalidadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_funcionalidad_index', methods: ['GET'])]
     public function index(FuncionalidadRepository $funcionalidadRepository)
     {
         try {
@@ -37,12 +37,12 @@ class FuncionalidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_funcionalidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Funcionalidad $funcionalidad
      * @param FuncionalidadRepository $funcionalidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_funcionalidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Funcionalidad $funcionalidad, FuncionalidadRepository $funcionalidadRepository)
     {
         try {
@@ -65,12 +65,12 @@ class FuncionalidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_funcionalidad_eliminar", methods={"GET"})
      * @param Request $request
      * @param Funcionalidad $funcionalidad
      * @param FuncionalidadRepository $funcionalidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_funcionalidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Funcionalidad $funcionalidad, FuncionalidadRepository $funcionalidadRepository)
     {
         try {
@@ -88,12 +88,12 @@ class FuncionalidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_funcionalidad_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $funcionalidad
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_funcionalidad_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Funcionalidad $funcionalidad)
     {
         return $this->render('modules/admin/funcionalidad/detail.html.twig', [

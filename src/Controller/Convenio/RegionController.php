@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/convenio/region")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_REGION")
  */
+#[Route('/convenio/region')]
 class RegionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_region_index", methods={"GET"})
      * @param RegionRepository $regionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_region_index', methods: ['GET'])]
     public function index(RegionRepository $regionRepository)
     {
         return $this->render('modules/convenio/region/index.html.twig', [
@@ -32,11 +32,11 @@ class RegionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_region_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param RegionRepository $regionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_region_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, RegionRepository $regionRepository)
     {
         try {
@@ -60,12 +60,12 @@ class RegionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_region_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Region $region
      * @param RegionRepository $regionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_region_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Region $region, RegionRepository $regionRepository)
     {
         try {
@@ -90,10 +90,10 @@ class RegionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_region_detail", methods={"GET", "POST"})
      * @param Region $region
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_region_detail', methods: ['GET', 'POST'])]
     public function detail(Region $region)
     {
         return $this->render('modules/convenio/region/detail.html.twig', [
@@ -102,11 +102,11 @@ class RegionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_region_eliminar", methods={"GET"})
      * @param Region $region
      * @param RegionRepository $regionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_region_eliminar', methods: ['GET'])]
     public function eliminar(Region $region, RegionRepository $regionRepository)
     {
         try {

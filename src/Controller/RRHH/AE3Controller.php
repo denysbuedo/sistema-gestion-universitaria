@@ -14,9 +14,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
- * @Route("/rrhh/ae3")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_AE3")
  */
+#[Route('/rrhh/ae3')]
 class AE3Controller extends AbstractController
 {
 
@@ -28,10 +28,10 @@ class AE3Controller extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_rrhh_reporte_ae3_index", methods={"GET"})
      * @param AE3Repository $AE3Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_ae3_index', methods: ['GET'])]
     public function index(AE3Repository $AE3Repository, PersonaRepository $personaRepository)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -42,11 +42,11 @@ class AE3Controller extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_rrhh_reporte_ae3_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param AE3Repository $aE3Repository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rrhh_reporte_ae3_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, AE3Repository $aE3Repository, PersonaRepository $personaRepository)
     {
         try {
@@ -102,12 +102,12 @@ class AE3Controller extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_rrhh_reporte_ae3_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param AE3 $ae3
      * @param AE3Repository $ae3Repository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae3_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, AE3 $ae3, AE3Repository $ae3Repository, PersonaRepository $personaRepository)
     {
         try {
@@ -142,11 +142,11 @@ class AE3Controller extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_reporte_ae3_detail", methods={"GET", "POST"})
      * @param AE3 $ae3
      * @return Response
      * @throws ExceptionInterface
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae3_detail', methods: ['GET', 'POST'])]
     public function detail(AE3 $ae3)
     {
         $ae3Array = $this->normalizer->normalize($ae3, null, [
@@ -161,12 +161,12 @@ class AE3Controller extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rrhh_reporte_ae3_eliminar", methods={"GET"})
      * @param Request $request
      * @param AE3 $ae3
      * @param AE3Repository $ae3Repository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rrhh_reporte_ae3_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, AE3 $ae3, AE3Repository $ae3Repository)
     {
         try {

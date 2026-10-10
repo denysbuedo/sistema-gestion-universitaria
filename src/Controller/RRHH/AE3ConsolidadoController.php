@@ -15,9 +15,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
- * @Route("/rrhh/ae3/consolidado")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_AE3_CONSOLIDADO")
  */
+#[Route('/rrhh/ae3/consolidado')]
 class AE3ConsolidadoController extends AbstractController
 {
     private ObjectNormalizer $normalizer;
@@ -28,10 +28,10 @@ class AE3ConsolidadoController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_rrhh_reporte_ae3_consolidado_index", methods={"GET", "POST"})
      * @param AE3Repository $AE3Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_ae3_consolidado_index', methods: ['GET', 'POST'])]
     public function index(Request $request, AE3Repository $AE3Repository, Utils $utils)
     {
         $allPost = $request->request->all();
@@ -72,11 +72,11 @@ class AE3ConsolidadoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_reporte_ae3_consolidado_detail", methods={"GET", "POST"})
      * @param AE3 $ae3
      * @return Response
      * @throws ExceptionInterface
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae3_consolidado_detail', methods: ['GET', 'POST'])]
     public function detail($id, AE3Repository $ae3Repository)
     {
         $ae3 = $ae3Repository->findBy(['entidad' => $id], ['mes' => 'asc']);
@@ -101,8 +101,8 @@ class AE3ConsolidadoController extends AbstractController
     }
 
     /**
-     * @Route("/ae3/cargar-datos", name="ae3_cargar_datos", methods={"POST"})
      */
+    #[Route('/ae3/cargar-datos', name: 'ae3_cargar_datos', methods: ['POST'])]
     public function cargarDatos(Request $request, Utils $utils)
     {
         $mes = (int)$request->request->get('mes');

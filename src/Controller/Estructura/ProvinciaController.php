@@ -12,16 +12,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/provincia")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROVIN")
  */
+#[Route('/rrhh/provincia')]
 class ProvinciaController extends AbstractController
 {
     /**
-     * @Route("/", name="app_provincia_index", methods={"GET"})
      * @param ProvinciaRepository $provinciaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_provincia_index', methods: ['GET'])]
     public function index(ProvinciaRepository $provinciaRepository): Response
     {
         try {
@@ -35,13 +35,13 @@ class ProvinciaController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="app_provincia_new", methods={"GET", "POST"})
      * @param Request $request
      * @param ProvinciaRepository $provinciaRepository
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
+    #[Route('/new', name: 'app_provincia_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ProvinciaRepository $provinciaRepository): Response
     {
         try {
@@ -67,12 +67,12 @@ class ProvinciaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/edit", name="app_provincia_edit", methods={"GET", "POST"})
      * @param Request $request
      * @param Provincia $provincia
      * @param ProvinciaRepository $provinciaRepository
      * @return Response
      */
+    #[Route('/{id}/edit', name: 'app_provincia_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Provincia $provincia, ProvinciaRepository $provinciaRepository): Response
     {
         try {
@@ -96,12 +96,12 @@ class ProvinciaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_provincia_delete", methods={"GET"})
      * @param Request $request
      * @param Provincia $provincia
      * @param ProvinciaRepository $provinciaRepository
      * @return Response
      */
+    #[Route('/{id}', name: 'app_provincia_delete', methods: ['GET'])]
     public function delete(Request $request, Provincia $provincia, ProvinciaRepository $provinciaRepository): Response
     {
         try {
@@ -119,11 +119,11 @@ class ProvinciaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_provincia_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $provincia
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_provincia_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Provincia $provincia)
     {
         return $this->render('modules/estructura/provincia/detail.html.twig', [

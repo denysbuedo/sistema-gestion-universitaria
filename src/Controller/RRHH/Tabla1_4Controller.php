@@ -14,9 +14,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
- * @Route("/rrhh/tabla1-4")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_1_4")
  */
+#[Route('/rrhh/tabla1-4')]
 class Tabla1_4Controller extends AbstractController
 {
     private ObjectNormalizer $normalizer;
@@ -28,10 +28,10 @@ class Tabla1_4Controller extends AbstractController
 
 
     /**
-     * @Route("/", name="app_rrhh_reporte_1_4_index",  methods={"GET", "POST"})
      * @param AE3Repository $AE3Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_1_4_index',  methods: ['GET', 'POST'])]
     public function index(Request $request, AE3Repository $ae3Repository)
     {
         $allPost = $request->request->all();

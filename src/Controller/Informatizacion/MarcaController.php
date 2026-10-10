@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/marca")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MARCA")
  */
+#[Route('/informatizacion/marca')]
 class MarcaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_marca_index", methods={"GET"})
      * @param MarcaRepository $MarcaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_marca_index', methods: ['GET'])]
     public function index(MarcaRepository $MarcaRepository)
     {
         return $this->render('modules/informatizacion/marca/index.html.twig', [
@@ -31,11 +31,11 @@ class MarcaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_marca_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param MarcaRepository $marcaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_marca_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, MarcaRepository $marcaRepository)
     {
         try {
@@ -59,12 +59,12 @@ class MarcaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_marca_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Marca $marca
      * @param MarcaRepository $marcaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_marca_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Marca $marca, MarcaRepository $marcaRepository)
     {
         try {
@@ -89,10 +89,10 @@ class MarcaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_marca_detail", methods={"GET", "POST"})
      * @param marca $marca
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_marca_detail', methods: ['GET', 'POST'])]
     public function detail(Marca $marca)
     {
         return $this->render('modules/informatizacion/marca/detail.html.twig', [
@@ -101,11 +101,11 @@ class MarcaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_marca_eliminar", methods={"GET"})
      * @param Marca $marca
      * @param MarcaRepository $marcaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_marca_eliminar', methods: ['GET'])]
     public function eliminar(Marca $marca, MarcaRepository $marcaRepository)
     {
         try {

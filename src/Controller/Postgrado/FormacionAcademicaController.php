@@ -23,18 +23,18 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/programas_aprobados")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_FORMACION_ACADEMICA")
  */
+#[Route('/postgrado/programas_aprobados')]
 class FormacionAcademicaController extends AbstractController
 {
 
 
     /**
-     * @Route("/formacion_academica", name="app_posgrado_formacion_academica_index", methods={"GET"})
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/formacion_academica', name: 'app_posgrado_formacion_academica_index', methods: ['GET'])]
     public function indexFormacionAcademica(SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         return $this->render('modules/postgrado/programas_aprobados/index.html.twig', [

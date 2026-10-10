@@ -45,14 +45,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
- * @Route("/tramite/documento_salida")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_DOCUMENTO_SALIDA")
  */
+#[Route('/tramite/documento_salida')]
 class DocumentoSalidaController extends AbstractController
 {
     /**
-     * @Route("/{id}/historial-documentos", name="app_documento_salida_historial_documentos", methods={"GET"})
      */
+    #[Route('/{id}/historial-documentos', name: 'app_documento_salida_historial_documentos', methods: ['GET'])]
     public function listHistorial(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaHistorialDocumentoRepository $repoDoc, FichaSalidaHistorialDocumentoRepository $repoFicha): JsonResponse
     {
         $host = $request->getSchemeAndHttpHost();
@@ -118,10 +118,10 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_documento_salida_index", methods={"GET", "POST"})
      * @param documentoSalidaRepository $documentoSalidaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_documento_salida_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DocumentoSalidaRepository $documentoSalidaRepository, EntityManagerInterface $entityManager, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         $allPost = $request->request->all();
@@ -163,13 +163,13 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/asignar_tramite", name="app_documento_salida_asignar_tramite", methods={"GET", "POST"})
      * @param Request $request
      * @param DocumentoSalida $documentoSalida
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @param EstadoFichaSalidaRepository $estadoFichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_tramite', name: 'app_documento_salida_asignar_tramite', methods: ['GET', 'POST'])]
     public function asignarTramites(Request $request, PasaporteRepository $pasaporteRepository, TramiteRepository $tramiteRepository, DocumentoSalida $documentoSalida, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, DocumentoSalidaRepository $documentoSalidaRepository)
     {
         try {
@@ -231,8 +231,8 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/datos_asignar_tramite", name="app_documento_salida_datos_asignar_tramite", methods={"GET"})
      */
+    #[Route('/{id}/datos_asignar_tramite', name: 'app_documento_salida_datos_asignar_tramite', methods: ['GET'])]
     public function datosAsignarTramite(DocumentoSalida $documentoSalida, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, PasaporteRepository $pasaporteRepository)
     {
         $data = $documentoSalidaTramiteRepository->findBy(['documentoSalida' => $documentoSalida]);
@@ -253,12 +253,12 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/enviar_a_tramite", name="app_documento_salida_enviarA_tramite", methods={"GET"})
      * @param DocumentoSalida $documentoSalida
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @param EstadoFichaSalidaRepository $estadoFichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/enviar_a_tramite', name: 'app_documento_salida_enviarA_tramite', methods: ['GET'])]
     public function enviarATramites(DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         try {
@@ -278,13 +278,13 @@ class DocumentoSalidaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_fecha_salida_regreso", name="app_documento_salida_asignar_fecha_salida_regreso", methods={"GET", "POST"})
      * @param Request $request
      * @param DocumentoSalida $documentoSalida
      * @param EstadoFichaSalidaRepository $estadoFichaSalidaRepository
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_fecha_salida_regreso', name: 'app_documento_salida_asignar_fecha_salida_regreso', methods: ['GET', 'POST'])]
     public function asignarFechaSalidaRegreso(Request $request, DocumentoSalida $documentoSalida, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, DocumentoSalidaRepository $documentoSalidaRepository)
     {
         try {
@@ -323,10 +323,10 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar_tramites", name="app_documento_salida_aprobar_tramites", methods={"GET", "POST"})
      * @param DocumentoSalida $documentoSalida
      * @return Response
      */
+    #[Route('/{id}/aprobar_tramites', name: 'app_documento_salida_aprobar_tramites', methods: ['GET', 'POST'])]
     public function aprobarTramites(DocumentoSalida $documentoSalida, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository)
     {
         try {
@@ -351,8 +351,8 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/datos_aprobar_tramites", name="app_documento_salida_datos_aprobar_tramites", methods={"GET"})
      */
+    #[Route('/{id}/datos_aprobar_tramites', name: 'app_documento_salida_datos_aprobar_tramites', methods: ['GET'])]
     public function datosAprobarTramites(DocumentoSalida $documentoSalida, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, PasaporteRepository $pasaporteRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, EntityManagerInterface $entityManager)
     {
         $tramites = $documentoSalidaTramiteRepository->findBy(['documentoSalida' => $documentoSalida], ['id' => 'asc']);
@@ -399,10 +399,10 @@ class DocumentoSalidaController extends AbstractController
 
 
     /**
-     * @Route("/guardar_estado_tramite", name="app_documento_salida_aprobar_tramites_guardar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/guardar_estado_tramite', name: 'app_documento_salida_aprobar_tramites_guardar', methods: ['GET', 'POST'])]
     public function guardarFiltro(Request $request, EntityManagerInterface $entityManager, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, PasaporteRepository $pasaporteRepository)
     {
         try {
@@ -448,13 +448,13 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/finalizar_salida", name="app_documento_salida_finalizar_salida", methods={"GET", "POST"})
      * @param Request $request
      * @param DocumentoSalida $documentoSalida
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @param EstadoFichaSalidaRepository $estadoFichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/finalizar_salida', name: 'app_documento_salida_finalizar_salida', methods: ['GET', 'POST'])]
     public function finalizarSalida(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         try {
@@ -481,8 +481,8 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/adjuntar_informe_ejecutivo", name="app_documento_salida_adjuntar_informe", methods={"GET", "POST"})
      */
+    #[Route('/{id}/adjuntar_informe_ejecutivo', name: 'app_documento_salida_adjuntar_informe', methods: ['GET', 'POST'])]
     public function adjuntarInformeEjecutivo(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         try {
@@ -519,12 +519,12 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/viajando", name="app_documento_salida_viajando", methods={"GET"})
      * @param DocumentoSalida $documentoSalida
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @param EstadoFichaSalidaRepository $estadoFichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/viajando', name: 'app_documento_salida_viajando', methods: ['GET'])]
     public function viajando(DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         try {
@@ -544,12 +544,12 @@ class DocumentoSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/firmar", name="app_documento_salida_firmar", methods={"GET"})
      * @param Request $request
      * @param DocumentoSalida $documentoSalida
      * @param DocumentoSalidaRepository $documentoSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/firmar', name: 'app_documento_salida_firmar', methods: ['GET'])]
     public function firmar(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository)
     {
         try {

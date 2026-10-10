@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/categoria_investigativa")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CATINVST")
  */
+#[Route('/personal/categoria_investigativa')]
 class CategoriaInvestigativaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_categoria_investigativa_index", methods={"GET"})
      * @param CategoriaInvestigativaRepository $categoriaInvestigativaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_categoria_investigativa_index', methods: ['GET'])]
     public function index(CategoriaInvestigativaRepository $categoriaInvestigativaRepository)
     {
         try {
@@ -37,11 +37,11 @@ class CategoriaInvestigativaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_categoria_investigativa_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CategoriaInvestigativaRepository $categoriaInvestigativaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_categoria_investigativa_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, CategoriaInvestigativaRepository $categoriaInvestigativaRepository)
     {
         try {
@@ -65,12 +65,12 @@ class CategoriaInvestigativaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_categoria_investigativa_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaInvestigativa
      * @param CategoriaInvestigativaRepository $categoriaInvestigativaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_categoria_investigativa_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, CategoriaInvestigativa $categoriaInvestigativa, CategoriaInvestigativaRepository $categoriaInvestigativaRepository)
     {
         try {
@@ -93,12 +93,12 @@ class CategoriaInvestigativaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_categoria_investigativa_eliminar", methods={"GET"})
      * @param Request $request
      * @param CategoriaInvestigativa $categoriaInvestigativa
      * @param CategoriaInvestigativaRepository $categoriaInvestigativaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_categoria_investigativa_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, CategoriaInvestigativa $categoriaInvestigativa, CategoriaInvestigativaRepository $categoriaInvestigativaRepository)
     {
         try {
@@ -116,12 +116,12 @@ class CategoriaInvestigativaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_categoria_investigativa_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaInvestigativa
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_categoria_investigativa_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, CategoriaInvestigativa $categoriaInvestigativa)
     {
         return $this->render('modules/personal/categoria_investigativa/detail.html.twig', [

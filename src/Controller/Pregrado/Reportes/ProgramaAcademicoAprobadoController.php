@@ -48,17 +48,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/reporte/programa_academico_aprobado")
  * @IsGranted("ROLE_ADMIN", "ROLE_PREGRADO_REPORTE_PROG_APROBADOS")
  */
+#[Route('/pregrado/reporte/programa_academico_aprobado')]
 class ProgramaAcademicoAprobadoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_reporte_programa_academico_aprobado_index", methods={"GET"})
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_reporte_programa_academico_aprobado_index', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository)
     {
         $response = [];

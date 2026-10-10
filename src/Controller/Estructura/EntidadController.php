@@ -17,19 +17,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/entidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ENTITY")
  */
+#[Route('/rrhh/entidad')]
 class EntidadController extends AbstractController
 {
 
 
     /**
-     * @Route("/", name="app_estructura_entidad_index", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/', name: 'app_estructura_entidad_index', methods: ['GET'])]
     public function indexEstructurasEntidades(EstructuraRepository $estructuraRepository, Utils $utils)
     {
         try {
@@ -45,12 +45,12 @@ class EntidadController extends AbstractController
 
 
     /**
-     * @Route("/registrar", name="app_entidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EntidadRepository $entidadRepository
      * @param MunicipioRepository $municipioRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_entidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, EntidadRepository $entidadRepository, MunicipioRepository $municipioRepository)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);

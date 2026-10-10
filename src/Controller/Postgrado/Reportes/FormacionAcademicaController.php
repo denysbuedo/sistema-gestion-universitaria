@@ -10,17 +10,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/postgrado/reporte/formacion_academica")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_REPORTE_FORMACION_ACADEMICA")
  */
+#[Route('/postgrado/reporte/formacion_academica')]
 class FormacionAcademicaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_reporte_postgrado_formacion_academica_index", methods={"GET"})
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_reporte_postgrado_formacion_academica_index', methods: ['GET'])]
     public function indexFormacionAcademica(SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         return $this->render('modules/postgrado/reportes/formacion_academica/index.html.twig', [

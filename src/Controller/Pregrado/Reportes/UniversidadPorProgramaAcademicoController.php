@@ -48,20 +48,20 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/reporte/universidad_por_programa_academico")
  * @IsGranted("ROLE_ADMIN", "ROLE_PREGRADO_REPORTE_UNIVERSIDAD_POR_PROG")
  */
+#[Route('/pregrado/reporte/universidad_por_programa_academico')]
 class UniversidadPorProgramaAcademicoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_reporte_universidad_por_programa_academico_index", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @param SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_reporte_universidad_por_programa_academico_index', methods: ['GET', 'POST'])]
     public function index(Request $request, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository)
     {
         $idPrograma = $request->getSession()->has('universidad_por_pregrado_programa') ? $request->getSession()->get('universidad_por_pregrado_programa') : [];
@@ -81,9 +81,9 @@ class UniversidadPorProgramaAcademicoController extends AbstractController
 
 
     /**
-     * @Route("/filter", name="app_reporte_universidad_por_programa_academico_filter", methods={"POST"})
      * @return Response
      */
+    #[Route('/filter', name: 'app_reporte_universidad_por_programa_academico_filter', methods: ['POST'])]
     public function filter(Request $request)
     {
         $allPost = $request->request->all();

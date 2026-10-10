@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/convocatoria")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CONVOCATORIA")
  */
+#[Route('/evaluacion/convocatoria')]
 class ConvocatoriaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_convocatoria_index", methods={"GET"})
      * @param ConvocatoriaRepository $convocatoriaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_convocatoria_index', methods: ['GET'])]
     public function index(ConvocatoriaRepository $convocatoriaRepository)
     {
         return $this->render('modules/evaluacion/convocatoria/index.html.twig', [
@@ -32,11 +32,11 @@ class ConvocatoriaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_convocatoria_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ConvocatoriaRepository $convocatoriaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_convocatoria_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ConvocatoriaRepository $convocatoriaRepository)
     {
         try {
@@ -75,12 +75,12 @@ class ConvocatoriaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_convocatoria_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Convocatoria $convocatoria
      * @param ConvocatoriaRepository $convocatoriaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_convocatoria_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Convocatoria $convocatoria, ConvocatoriaRepository $convocatoriaRepository)
     {
         try {
@@ -125,11 +125,11 @@ class ConvocatoriaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_convocatoria_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Convocatoria $convocatoria
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_convocatoria_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Convocatoria $convocatoria)
     {
         return $this->render('modules/evaluacion/convocatoria/detail.html.twig', [
@@ -138,12 +138,12 @@ class ConvocatoriaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_convocatoria_eliminar", methods={"GET"})
      * @param Request $request
      * @param Convocatoria $tipoPrograma
      * @param ConvocatoriaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_convocatoria_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Convocatoria $tipoPrograma, ConvocatoriaRepository $tipoProgramaRepository)
     {
         try {

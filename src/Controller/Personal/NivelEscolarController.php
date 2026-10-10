@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/nivel_escolar")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_NIVESC")
  */
+#[Route('/personal/nivel_escolar')]
 class NivelEscolarController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_nivel_escolar_index", methods={"GET"})
      * @param NivelEscolarRepository $nivelEscolarRepository
      * @return Response
      */
+    #[Route('/', name: 'app_nivel_escolar_index', methods: ['GET'])]
     public function index(NivelEscolarRepository $nivelEscolarRepository)
     {
 
@@ -34,11 +34,11 @@ class NivelEscolarController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_nivel_escolar_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param NivelEscolarRepository $nivelEscolarRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_nivel_escolar_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, NivelEscolarRepository $nivelEscolarRepository)
     {
         try {
@@ -62,12 +62,12 @@ class NivelEscolarController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_nivel_escolar_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $nivelEscolar
      * @param NivelEscolarRepository $nivelEscolarRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_nivel_escolar_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, NivelEscolar $nivelEscolar, NivelEscolarRepository $nivelEscolarRepository)
     {
         try {
@@ -91,12 +91,12 @@ class NivelEscolarController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_nivel_escolar_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $nivelEscolar
      * @param NivelEscolarRepository $nivelEscolarRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_nivel_escolar_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, NivelEscolar $nivelEscolar)
     {
         return $this->render('modules/personal/nivel_escolar/detail.html.twig', [
@@ -105,12 +105,12 @@ class NivelEscolarController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_nivel_escolar_eliminar", methods={"GET"})
      * @param Request $request
      * @param NivelEscolar $nivelEscolar
      * @param NivelEscolarRepository $nivelEscolarRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_nivel_escolar_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, NivelEscolar $nivelEscolar, NivelEscolarRepository $nivelEscolarRepository)
     {
         try {

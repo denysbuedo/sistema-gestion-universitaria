@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/sistema_operativo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_SISTEMA_OPERATIVO")
  */
+#[Route('/informatizacion/sistema_operativo')]
 class SistemaOperativoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_sistema_operativo_index", methods={"GET"})
      * @param SistemaOperativoRepository $SistemaOperativoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_sistema_operativo_index', methods: ['GET'])]
     public function index(SistemaOperativoRepository $SistemaOperativoRepository)
     {
         return $this->render('modules/informatizacion/sistemaOperativo/index.html.twig', [
@@ -31,11 +31,11 @@ class SistemaOperativoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_sistema_operativo_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param SistemaOperativoRepository $sistemaOperativoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_sistema_operativo_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, SistemaOperativoRepository $sistemaOperativoRepository)
     {
         try {
@@ -59,12 +59,12 @@ class SistemaOperativoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_sistema_operativo_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param SistemaOperativo $sistemaOperativo
      * @param SistemaOperativoRepository $sistemaOperativoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_sistema_operativo_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, SistemaOperativo $sistemaOperativo, SistemaOperativoRepository $sistemaOperativoRepository)
     {
         try {
@@ -89,10 +89,10 @@ class SistemaOperativoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_sistema_operativo_detail", methods={"GET", "POST"})
      * @param sistemaOperativo $sistemaOperativo
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_sistema_operativo_detail', methods: ['GET', 'POST'])]
     public function detail(SistemaOperativo $sistemaOperativo)
     {
         return $this->render('modules/informatizacion/sistemaOperativo/detail.html.twig', [
@@ -101,11 +101,11 @@ class SistemaOperativoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_sistema_operativo_eliminar", methods={"GET"})
      * @param SistemaOperativo $sistemaOperativo
      * @param SistemaOperativoRepository $sistemaOperativoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_sistema_operativo_eliminar', methods: ['GET'])]
     public function eliminar(SistemaOperativo $sistemaOperativo, SistemaOperativoRepository $sistemaOperativoRepository)
     {
         try {

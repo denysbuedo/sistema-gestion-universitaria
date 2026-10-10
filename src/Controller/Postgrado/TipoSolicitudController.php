@@ -20,17 +20,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/tipo_solicitud")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIP_SOLICITUD_POST")
  */
+#[Route('/postgrado/tipo_solicitud')]
 class TipoSolicitudController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_solicitud_index", methods={"GET"})
      * @param TipoSolicitudRepository $tipoSolicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_solicitud_index', methods: ['GET'])]
     public function index(TipoSolicitudRepository $tipoSolicitudRepository, TipoSolicitudClasificacionRepository $tipoSolicitudClasificacionRepository)
     {
         $registros = $tipoSolicitudRepository->findBy([], ['activo' => 'desc', 'id' => 'desc']);
@@ -53,11 +53,11 @@ class TipoSolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_solicitud_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoSolicitudRepository $tipoSolicitudRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_solicitud_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoSolicitudRepository $tipoSolicitudRepository)
     {
         try {
@@ -81,12 +81,12 @@ class TipoSolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_solicitud_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoSolicitud $tipoSolicitud
      * @param TipoSolicitudRepository $tipoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_solicitud_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoSolicitud $tipoSolicitud, TipoSolicitudRepository $tipoSolicitudRepository)
     {
         try {
@@ -110,10 +110,10 @@ class TipoSolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_solicitud_detail", methods={"GET", "POST"})
      * @param TipoSolicitud $tipoSolicitud
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_solicitud_detail', methods: ['GET', 'POST'])]
     public function detail(TipoSolicitud $tipoSolicitud)
     {
         return $this->render('modules/postgrado/tipo_solicitud/detail.html.twig', [
@@ -122,11 +122,11 @@ class TipoSolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_solicitud_eliminar", methods={"GET"})
      * @param TipoSolicitud $tipoSolicitud
      * @param TipoSolicitudRepository $tipoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_solicitud_eliminar', methods: ['GET'])]
     public function eliminar(TipoSolicitud $tipoSolicitud, TipoSolicitudRepository $tipoSolicitudRepository)
     {
         try {
@@ -145,10 +145,10 @@ class TipoSolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/config_clasificacion", name="app_tipo_solicitud_config_clasificacion", methods={"GET", "POST"})
      * @param TipoSolicitud $tipoSolicitud
      * @return Response
      */
+    #[Route('/{id}/config_clasificacion', name: 'app_tipo_solicitud_config_clasificacion', methods: ['GET', 'POST'])]
     public function configurarClasificacion(Request $request, TipoSolicitud $tipoSolicitud, TipoSolicitudClasificacionRepository $tipoSolicitudClasificacionRepository)
     {
         try {
@@ -176,11 +176,11 @@ class TipoSolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_nivel", name="app_tipo_solicitud_eliminar_nivel", methods={"GET"})
      * @param TipoSolicitudClasificacion $TipoSolicitudClasificacion
      * @param TipoSolicitudClasificacionRepository $TipoSolicitudClasificacionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_nivel', name: 'app_tipo_solicitud_eliminar_nivel', methods: ['GET'])]
     public function eliminarNivel(TipoSolicitudClasificacion $TipoSolicitudClasificacion, TipoSolicitudClasificacionRepository $TipoSolicitudClasificacionRepository)
     {
         try {

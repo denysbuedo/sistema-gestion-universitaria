@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/evaluacion/estado_solicitud")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTADO_SOLICITUD")
  */
+#[Route('/evaluacion/estado_solicitud')]
 class EstadoSolicitudController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_estado_solicitud_index", methods={"GET"})
      * @param EstadoSolicitudRepository $estadoSolicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_estado_solicitud_index', methods: ['GET'])]
     public function index(EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         return $this->render('modules/evaluacion/estado_solicitud/index.html.twig', [
@@ -33,11 +33,11 @@ class EstadoSolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_estado_solicitud_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoSolicitudRepository $estadoSolicitudRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_estado_solicitud_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -61,12 +61,12 @@ class EstadoSolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_estado_solicitud_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $estadoSolicitud
      * @param EstadoSolicitudRepository $estadoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_estado_solicitud_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, EstadoSolicitud $estadoSolicitud, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -90,12 +90,12 @@ class EstadoSolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_estado_solicitud_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $estadoSolicitud
      * @param EstadoSolicitudRepository $estadoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_estado_solicitud_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, EstadoSolicitud $estadoSolicitud)
     {
         return $this->render('modules/evaluacion/estado_solicitud/detail.html.twig', [
@@ -104,12 +104,12 @@ class EstadoSolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_estado_solicitud_eliminar", methods={"GET"})
      * @param Request $request
      * @param EstadoSolicitud $estadoSolicitud
      * @param EstadoSolicitudRepository $estadoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_estado_solicitud_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, EstadoSolicitud $estadoSolicitud, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {

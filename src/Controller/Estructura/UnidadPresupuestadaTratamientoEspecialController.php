@@ -17,19 +17,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/unidad_presupuestada/tratamiento_especial")
  * @IsGranted("ROLE_ADMIN", "ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA_TRATAMIENTO_ESPECIAL")
  */
+#[Route('/rrhh/unidad_presupuestada/tratamiento_especial')]
 class UnidadPresupuestadaTratamientoEspecialController extends AbstractController
 {
 
 
     /**
-     * @Route("/", name="app_estructura_unidad_presupuestada_tratamiento_especial_index", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/', name: 'app_estructura_unidad_presupuestada_tratamiento_especial_index', methods: ['GET'])]
     public function index(EstructuraRepository $estructuraRepository, Utils $utils)
     {
         try {

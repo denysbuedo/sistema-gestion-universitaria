@@ -59,17 +59,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/institucion/institucion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_INSTIT")
  */
+#[Route('/institucion/institucion')]
 class InstitucionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_institucion_index", methods={"GET"})
      * @param InstitucionRepository $institucionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_institucion_index', methods: ['GET'])]
     public function index(InstitucionRepository $institucionRepository)
     {
         return $this->render('modules/institucion/institucion/index.html.twig', [
@@ -78,7 +78,6 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_institucion_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param InstitucionRepository $institucionRepository
      * @param SerializerInterface $serializer
@@ -86,6 +85,7 @@ class InstitucionController extends AbstractController
      * @param RequestStack $requestStack
      * @return Response
      */
+    #[Route('/registrar', name: 'app_institucion_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, InstitucionRepository $institucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         try {
@@ -135,7 +135,6 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_institucion_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionRepository $tipoInstitucionRepository
@@ -144,6 +143,7 @@ class InstitucionController extends AbstractController
      * @param RequestStack $requestStack
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_institucion_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Institucion $institucion, InstitucionRepository $tipoInstitucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         try {
@@ -212,7 +212,6 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_institucion_detail", methods={"GET", "POST"})
      * @param InstitucionFacultadesRepository $institucionFacultadesRepository
      * @param InstitucionRedesRepository $institucionRedesRepository
      * @param InstitucionRedesSocialesRepository $institucionRedesSocialesRepository
@@ -223,6 +222,7 @@ class InstitucionController extends AbstractController
      * @param InstitucionEditorialRepository $institucionEditorialRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_institucion_detail', methods: ['GET', 'POST'])]
     public function detail(SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, SolicitudProgramaRepository $solicitudProgramaRepository, InstitucionCumRepository $institucionCumRepository, InstitucionFumRepository $institucionFumRepository, InstitucionRecursoHumanoRepository $institucionRecursoHumanoRepository, InstitucionRedesRepository $institucionRedesRepository, InstitucionRedesSocialesRepository $institucionRedesSocialesRepository, InstitucionSedesRepository $institucionSedesRepository, InstitucionRevistaCientificaRepository $institucionRevistaCientificaRepository, InstitucionCentrosEstudiosRepository $institucionCentrosEstudiosRepository, Institucion $institucion, InstitucionEditorialRepository $institucionEditorialRepository, InstitucionFacultadesRepository $institucionFacultadesRepository)
     {
         return $this->render('modules/institucion/institucion/detail.html.twig', [
@@ -244,12 +244,12 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_institucion_eliminar", methods={"GET"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_institucion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Institucion $institucion, InstitucionRepository $tipoInstitucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         try {
@@ -273,12 +273,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_facultades", name="app_institucion_asignar_facultades", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionFacultadesRepository $institucionFacultadesRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_facultades', name: 'app_institucion_asignar_facultades', methods: ['GET', 'POST'])]
     public function asignarFacultad(Request $request, Institucion $institucion, InstitucionFacultadesRepository $institucionFacultadesRepository, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -312,12 +312,12 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_facultad", name="app_institucion_eliminar_facultad", methods={"GET"})
      * @param Request $request
      * @param InstitucionFacultades $institucionFacultades
      * @param InstitucionRepository $institucionFacultadesRepositoryy
      * @return Response
      */
+    #[Route('/{id}/eliminar_facultad', name: 'app_institucion_eliminar_facultad', methods: ['GET'])]
     public function eliminarFacultad(Request $request, InstitucionFacultades $institucionFacultades, InstitucionFacultadesRepository $institucionFacultadesRepositoryy)
     {
         try {
@@ -336,12 +336,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_centros_estudio", name="app_institucion_asignar_centros_estudio", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionCentrosEstudiosRepository $institucionCentrosEstudiosRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_centros_estudio', name: 'app_institucion_asignar_centros_estudio', methods: ['GET', 'POST'])]
     public function asignarCentrosEstudios(Request $request, Institucion $institucion, InstitucionCentrosEstudiosRepository $institucionCentrosEstudiosRepository)
     {
         try {
@@ -374,11 +374,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_centro_estudio", name="app_institucion_eliminar_centro_estudio", methods={"GET"})
      * @param InstitucionCentrosEstudios $institucionCentroEstudio
      * @param InstitucionCentrosEstudiosRepository $institucionCentrosEstudiosRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_centro_estudio', name: 'app_institucion_eliminar_centro_estudio', methods: ['GET'])]
     public function eliminarCentroEstudio(InstitucionCentrosEstudios $institucionCentroEstudio, InstitucionCentrosEstudiosRepository $institucionCentrosEstudiosRepository)
     {
         try {
@@ -397,12 +397,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_sede", name="app_institucion_asignar_sede", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionSedesRepository $institucionSedeRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_sede', name: 'app_institucion_asignar_sede', methods: ['GET', 'POST'])]
     public function asignarSedes(Request $request, Institucion $institucion, InstitucionSedesRepository $institucionSedeRepository)
     {
         try {
@@ -435,11 +435,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_sede", name="app_institucion_eliminar_sede", methods={"GET"})
      * @param InstitucionSedes $institucionSedes
      * @param InstitucionSedesRepository $institucionSedesRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_sede', name: 'app_institucion_eliminar_sede', methods: ['GET'])]
     public function eliminarSede(InstitucionSedes $institucionSedes, InstitucionSedesRepository $institucionSedesRepository)
     {
         try {
@@ -458,12 +458,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_redes_sociales", name="app_institucion_asignar_redes_sociales", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionRedesSocialesRepository $redesSocialesRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_redes_sociales', name: 'app_institucion_asignar_redes_sociales', methods: ['GET', 'POST'])]
     public function asignarRedSocial(Request $request, Institucion $institucion, InstitucionRedesSocialesRepository $redesSocialesRepository)
     {
         try {
@@ -497,12 +497,12 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_red_social", name="app_institucion_eliminar_red_social", methods={"GET"})
      * @param Request $request
      * @param InstitucionRedesSociales $institucionRedesSociales
      * @param InstitucionRedesSocialesRepository $institucionRedesSocialesRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_red_social', name: 'app_institucion_eliminar_red_social', methods: ['GET'])]
     public function eliminarRedSocial(Request $request, InstitucionRedesSociales $institucionRedesSociales, InstitucionRedesSocialesRepository $institucionRedesSocialesRepository)
     {
         try {
@@ -521,12 +521,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_editoriales", name="app_institucion_asignar_editoriales", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionEditorialRepository $institucionEditorialRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_editoriales', name: 'app_institucion_asignar_editoriales', methods: ['GET', 'POST'])]
     public function asignarEditorial(Request $request, Institucion $institucion, InstitucionEditorialRepository $institucionEditorialRepository)
     {
         try {
@@ -559,11 +559,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_editorial", name="app_institucion_eliminar_editorial", methods={"GET"})
      * @param InstitucionEditorial $institucionEditorial
      * @param InstitucionEditorialRepository $institucionEditorialRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_editorial', name: 'app_institucion_eliminar_editorial', methods: ['GET'])]
     public function eliminarEditorial(InstitucionEditorial $institucionEditorial, InstitucionEditorialRepository $institucionEditorialRepository)
     {
         try {
@@ -582,12 +582,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_redes", name="app_institucion_asignar_redes", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionRedesRepository $redesRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_redes', name: 'app_institucion_asignar_redes', methods: ['GET', 'POST'])]
     public function asignarRedes(Request $request, Institucion $institucion, InstitucionRedesRepository $redesRepository)
     {
         try {
@@ -621,11 +621,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_red", name="app_institucion_eliminar_red", methods={"GET"})
      * @param InstitucionRedes $institucionRedes
      * @param InstitucionRedesRepository $institucionRedesRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_red', name: 'app_institucion_eliminar_red', methods: ['GET'])]
     public function eliminarRed(InstitucionRedes $institucionRedes, InstitucionRedesRepository $institucionRedesRepository)
     {
         try {
@@ -644,12 +644,12 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_revistas", name="app_institucion_asignar_revistas", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionRevistaCientificaRepository $institucionRevistaCientificaRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_revistas', name: 'app_institucion_asignar_revistas', methods: ['GET', 'POST'])]
     public function asignarRevistas(Request $request, Institucion $institucion, InstitucionRevistaCientificaRepository $institucionRevistaCientificaRepository)
     {
         try {
@@ -682,11 +682,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_revista", name="app_institucion_eliminar_revista", methods={"GET"})
      * @param InstitucionRevistaCientifica $institucionRevistaCientifica
      * @param InstitucionRevistaCientificaRepository $institucionRevistaCientificaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_revista', name: 'app_institucion_eliminar_revista', methods: ['GET'])]
     public function eliminarRevista(InstitucionRevistaCientifica $institucionRevistaCientifica, InstitucionRevistaCientificaRepository $institucionRevistaCientificaRepository)
     {
         try {
@@ -704,10 +704,10 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/programas_formacion/{option}", name="app_institucion_programas_formacion", methods={"GET", "POST"})
      * @param Institucion $institucion
      * @return Response
      */
+    #[Route('/{id}/programas_formacion/{option}', name: 'app_institucion_programas_formacion', methods: ['GET', 'POST'])]
     public function programasFormacion(Institucion $institucion, $option, SolicitudProgramaRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         try {
@@ -732,13 +732,13 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/asignar_recursos_humanos", name="app_institucion_asignar_recursos_humanos", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param RecursosHumanosRepository $recursosHumanosRepository
      * @param InstitucionRecursoHumanoRepository $institucionRecursoHumanoRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_recursos_humanos', name: 'app_institucion_asignar_recursos_humanos', methods: ['GET', 'POST'])]
     public function asignarRecursosHumanos(Request $request, Institucion $institucion, RecursosHumanosRepository $recursosHumanosRepository, InstitucionRecursoHumanoRepository $institucionRecursoHumanoRepository)
     {
         try {
@@ -775,11 +775,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/{tab}/internacionalizacion", name="app_institucion_internacionalizacion", methods={"GET", "POST"})
      * @param Utils $utils
      * @param Institucion $institucion
      * @return Response
      */
+    #[Route('/{id}/{tab}/internacionalizacion', name: 'app_institucion_internacionalizacion', methods: ['GET', 'POST'])]
     public function internacionalizacion($tab, Institucion $institucion, Utils $utils)
     {
         try {
@@ -822,10 +822,10 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/exportar_pdf", name="app_institucion_exportar_pdf", methods={"GET", "POST"})
      * @param User $user
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_institucion_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(HandlerFop $handFop, InstitucionRepository $institucionRepository)
     {
         $export = $institucionRepository->getInstituciones();
@@ -835,13 +835,13 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_cum", name="app_institucion_asignar_cum", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionCumRepository $institucionCumRepository
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_cum', name: 'app_institucion_asignar_cum', methods: ['GET', 'POST'])]
     public function asignarCum(Request $request, Institucion $institucion, InstitucionCumRepository $institucionCumRepository, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -875,11 +875,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_cum", name="app_institucion_eliminar_cum", methods={"GET"})
      * @param InstitucionFacultades $institucionCum
      * @param InstitucionRepository $institucionCumRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_cum', name: 'app_institucion_eliminar_cum', methods: ['GET'])]
     public function eliminarCum(InstitucionCum $institucionCum, InstitucionCumRepository $institucionCumRepository)
     {
         try {
@@ -898,13 +898,13 @@ class InstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_fum", name="app_institucion_asignar_fum", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param InstitucionFumRepository $institucionFumRepository
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_fum', name: 'app_institucion_asignar_fum', methods: ['GET', 'POST'])]
     public function asignarFum(Request $request, Institucion $institucion, InstitucionFumRepository $institucionFumRepository, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -938,11 +938,11 @@ class InstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_fum", name="app_institucion_eliminar_fum", methods={"GET"})
      * @param InstitucionFum $institucionFum
      * @param InstitucionFumRepository $institucionFumRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_fum', name: 'app_institucion_eliminar_fum', methods: ['GET'])]
     public function eliminarFum(InstitucionFum $institucionFum, InstitucionFumRepository $institucionFumRepository)
     {
         try {

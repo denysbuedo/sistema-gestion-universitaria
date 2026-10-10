@@ -28,17 +28,17 @@ use Symfony\Component\Serializer\SerializerInterface;
 use function Symfony\Component\String\u;
 
 /**
- * @Route("/rrhh/ae2/consolidado")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_AE2_CONSOLIDADO")
  */
+#[Route('/rrhh/ae2/consolidado')]
 class AE2ConsolidadoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rrhh_reporte_ae2_consolidado_index", methods={"GET", "POST"})
      * @param AE2Repository $AE2Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_ae2_consolidado_index', methods: ['GET', 'POST'])]
     public function index(Request $request, AE2Repository $AE2Repository, Utils $utils)
     {
         $allPost = $request->request->all();
@@ -81,11 +81,11 @@ class AE2ConsolidadoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_reporte_ae2_consolidado_detail", methods={"GET", "POST"})
      * @param $id
      * @param AE2Repository $ae2Repository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae2_consolidado_detail', methods: ['GET', 'POST'])]
     public function detail($id, AE2Repository $ae2Repository)
     {
         $temp = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];

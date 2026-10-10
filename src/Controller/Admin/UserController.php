@@ -17,17 +17,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 //use Export\Admin\ExportListUsersToPdf;
 
 /**
- * @Route("/administracion/usuario")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_USER")
  */
+#[Route('/administracion/usuario')]
 class UserController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_usuario_index", methods={"GET"})
      * @param UserRepository $usuarioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_usuario_index', methods: ['GET'])]
     public function index(UserRepository $usuarioRepository)
     {
         try {
@@ -41,12 +41,12 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_usuario_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param UserRepository $usuarioRepository
      * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
+    #[Route('/registrar', name: 'app_usuario_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
@@ -74,13 +74,13 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_usuario_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $usuario
      * @param UserRepository $usuarioRepository
      * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_usuario_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
@@ -110,11 +110,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_usuario_eliminar", methods={"GET"})
      * @param User $usuario
      * @param UserRepository $usuarioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_usuario_eliminar', methods: ['GET'])]
     public function eliminar(User $usuario, UserRepository $usuarioRepository)
     {
         try {
@@ -132,10 +132,10 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_usuario_detail", methods={"GET", "POST"})
      * @param User $user
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_usuario_detail', methods: ['GET', 'POST'])]
     public function detail(User $user)
     {
         return $this->render('modules/admin/usuario/detail.html.twig', [
@@ -144,11 +144,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_usuario_exportar_pdf", methods={"GET", "POST"})
      * @param User $user
      *
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_usuario_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(HandlerFop $handFop, UserRepository $usuarioRepository)
     {
         $export = $usuarioRepository->findBy([], ['id' => 'desc']);
@@ -160,11 +160,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_excel", name="app_usuario_exportar_excel", methods={"GET", "POST"})
      * @param HandlerFop $handFop
      * @param UserRepository $usuarioRepository
      * @return void
      */
+    #[Route('/exportar_excel', name: 'app_usuario_exportar_excel', methods: ['GET', 'POST'])]
     public function exportarExcel(HandlerFop $handFop, UserRepository $usuarioRepository)
     {
         $export = $usuarioRepository->findBy([], ['id' => 'desc']);

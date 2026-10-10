@@ -31,18 +31,18 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/formacion_doctores")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_FORMACION_DOCTORES")
  */
+#[Route('/postgrado/formacion_doctores')]
 class FormacionDoctoresController extends AbstractController
 {
 
     /**
-     * @Route("/index", name="app_postgrado_formacion_doctores_index", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/index', name: 'app_postgrado_formacion_doctores_index', methods: ['GET'])]
     public function indexEstructurasCAP(EstructuraRepository $estructuraRepository, Utils $utils)
     {
         try {
@@ -58,12 +58,12 @@ class FormacionDoctoresController extends AbstractController
 
 
     /**
-     * @Route("/registrar", name="app_postgrado_formacion_doctores_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EntidadRepository $entidadRepository
      * @param MunicipioRepository $municipioRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_postgrado_formacion_doctores_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, EntidadRepository $entidadRepository, MunicipioRepository $municipioRepository)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);

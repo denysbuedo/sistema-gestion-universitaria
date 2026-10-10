@@ -12,16 +12,16 @@ use App\Repository\Traza\TipoTrazaRepository;
 use App\Repository\Traza\AccionRepository;
 
 /**
- * @Route("/traza/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_TRAZAS")
  */
+#[Route('/traza/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_traza_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_traza_portada', methods: ['GET'])]
     public function index(
         TrazaRepository $trazaRepo,
         TipoTrazaRepository $tipoRepo,

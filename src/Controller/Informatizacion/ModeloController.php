@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/modelo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MODELO")
  */
+#[Route('/informatizacion/modelo')]
 class ModeloController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_modelo_index", methods={"GET"})
      * @param ModeloRepository $ModeloRepository
      * @return Response
      */
+    #[Route('/', name: 'app_modelo_index', methods: ['GET'])]
     public function index(ModeloRepository $ModeloRepository)
     {
         return $this->render('modules/informatizacion/modelo/index.html.twig', [
@@ -31,11 +31,11 @@ class ModeloController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_modelo_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ModeloRepository $modeloRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_modelo_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ModeloRepository $modeloRepository)
     {
         try {
@@ -59,12 +59,12 @@ class ModeloController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_modelo_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Modelo $modelo
      * @param ModeloRepository $modeloRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_modelo_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Modelo $modelo, ModeloRepository $modeloRepository)
     {
         try {
@@ -89,10 +89,10 @@ class ModeloController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_modelo_detail", methods={"GET", "POST"})
      * @param modelo $modelo
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_modelo_detail', methods: ['GET', 'POST'])]
     public function detail(Modelo $modelo)
     {
         return $this->render('modules/informatizacion/modelo/detail.html.twig', [
@@ -101,11 +101,11 @@ class ModeloController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_modelo_eliminar", methods={"GET"})
      * @param Modelo $modelo
      * @param ModeloRepository $modeloRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_modelo_eliminar', methods: ['GET'])]
     public function eliminar(Modelo $modelo, ModeloRepository $modeloRepository)
     {
         try {

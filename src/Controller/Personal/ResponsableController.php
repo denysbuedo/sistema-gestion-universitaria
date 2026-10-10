@@ -15,19 +15,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/responsable")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPONS")
  */
+#[Route('/personal/responsable')]
 class ResponsableController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_responsable_index", methods={"GET"})
      * @param Request $request
      * @param ResponsableRepository $responsableRepository
      * @param Utils $utils
      * @return Response
      */
+    #[Route('/', name: 'app_responsable_index', methods: ['GET'])]
     public function index(Request $request, ResponsableRepository $responsableRepository, Utils $utils)
     {
         try {
@@ -44,12 +44,12 @@ class ResponsableController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_responsable_eliminar", methods={"GET"})
      * @param Request $request
      * @param Responsable $responsable
      * @param ResponsableRepository $responsableRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_responsable_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Responsable $responsable, ResponsableRepository $responsableRepository)
     {
         try {
@@ -68,11 +68,11 @@ class ResponsableController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_responsable_exportar_pdf", methods={"GET", "POST"})
      * @param Request $request
      * @param User $user
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_responsable_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, \App\Services\HandlerFop $handFop, ResponsableRepository $responsableRepository, Utils $utils)
     {
         $estructurasNegocio = $utils->procesarRolesUsuarioAutenticado($this->getUser()->getId());

@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/visibilidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_VISIBILIDAD")
  */
+#[Route('/informatizacion/visibilidad')]
 class VisibilidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_visibilidad_index", methods={"GET"})
      * @param VisibilidadRepository $VisibilidadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_visibilidad_index', methods: ['GET'])]
     public function index(VisibilidadRepository $VisibilidadRepository)
     {
         return $this->render('modules/informatizacion/visibilidad/index.html.twig', [
@@ -31,11 +31,11 @@ class VisibilidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_visibilidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param VisibilidadRepository $visibilidadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_visibilidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, VisibilidadRepository $visibilidadRepository)
     {
         try {
@@ -59,12 +59,12 @@ class VisibilidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_visibilidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Visibilidad $visibilidad
      * @param VisibilidadRepository $visibilidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_visibilidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Visibilidad $visibilidad, VisibilidadRepository $visibilidadRepository)
     {
         try {
@@ -89,10 +89,10 @@ class VisibilidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_visibilidad_detail", methods={"GET", "POST"})
      * @param visibilidad $visibilidad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_visibilidad_detail', methods: ['GET', 'POST'])]
     public function detail(Visibilidad $visibilidad)
     {
         return $this->render('modules/informatizacion/visibilidad/detail.html.twig', [
@@ -101,11 +101,11 @@ class VisibilidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_visibilidad_eliminar", methods={"GET"})
      * @param Visibilidad $visibilidad
      * @param VisibilidadRepository $visibilidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_visibilidad_eliminar', methods: ['GET'])]
     public function eliminar(Visibilidad $visibilidad, VisibilidadRepository $visibilidadRepository)
     {
         try {

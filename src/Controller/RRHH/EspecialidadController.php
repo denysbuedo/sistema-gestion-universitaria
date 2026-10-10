@@ -15,16 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/especialidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_GEST_ESPECIALIDAD")
  */
+#[Route('/rrhh/especialidad')]
 class EspecialidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rrhh_especialidad_index", methods={"GET"})
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_especialidad_index', methods: ['GET'])]
     public function index(EspecialidadRepository $especialidadRepository)
     {
         try {
@@ -38,11 +38,11 @@ class EspecialidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_rrhh_especialidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EspecialidadRepository $especialidadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rrhh_especialidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EspecialidadRepository $especialidadRepository)
     {
         try {
@@ -66,12 +66,12 @@ class EspecialidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_rrhh_especialidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Especialidad $especialidad
      * @param EspecialidadRepository $especialidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rrhh_especialidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Especialidad $especialidad, EspecialidadRepository $especialidadRepository)
     {
         try {
@@ -94,12 +94,12 @@ class EspecialidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rrhh_especialidad_eliminar", methods={"GET"})
      * @param Request $request
      * @param Especialidad $especialidad
      * @param EspecialidadRepository $especialidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rrhh_especialidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Especialidad $especialidad, EspecialidadRepository $especialidadRepository)
     {
         try {
@@ -117,10 +117,10 @@ class EspecialidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_especialidad_detail", methods={"GET", "POST"})
      * @param Especialidad $especialidad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_especialidad_detail', methods: ['GET', 'POST'])]
     public function detail(Especialidad $especialidad)
     {
         return $this->render('modules/rrhh/especialidad/detail.html.twig', [

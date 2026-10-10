@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/traza/objeto")
  * @IsGranted("ROLE_ADMIN", "ROLE_OBJ_TRZ")
  */
+#[Route('/traza/objeto')]
 class ObjetoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_objeto_index", methods={"GET"})
      * @param ObjetoRepository $objetoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_objeto_index', methods: ['GET'])]
     public function index(ObjetoRepository $objetoRepository)
     {
 
@@ -34,11 +34,11 @@ class ObjetoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_objeto_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ObjetoRepository $objetoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_objeto_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ObjetoRepository $objetoRepository)
     {
         try {
@@ -62,12 +62,12 @@ class ObjetoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_objeto_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Objeto $objeto
      * @param ObjetoRepository $objetoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_objeto_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Objeto $objeto, ObjetoRepository $objetoRepository)
     {
         try {
@@ -91,12 +91,12 @@ class ObjetoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_objeto_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $objeto
      * @param ObjetoRepository $objetoRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_objeto_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Objeto $objeto)
     {
         return $this->render('modules/traza/objeto/detail.html.twig', [
@@ -105,12 +105,12 @@ class ObjetoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_objeto_eliminar", methods={"GET"})
      * @param Request $request
      * @param Objeto $objeto
      * @param ObjetoRepository $objetoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_objeto_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Objeto $objeto, ObjetoRepository $objetoRepository)
     {
         try {

@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/tipo_conectividad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPO_CONECTIVIDAD")
  */
+#[Route('/informatizacion/tipo_conectividad')]
 class TipoConectividadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_conectividad_index", methods={"GET"})
      * @param TipoConectividadRepository $TipoConectividadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_conectividad_index', methods: ['GET'])]
     public function index(TipoConectividadRepository $TipoConectividadRepository)
     {
         return $this->render('modules/informatizacion/tipoConectividad/index.html.twig', [
@@ -31,11 +31,11 @@ class TipoConectividadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_conectividad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoConectividadRepository $tipoConectividadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_conectividad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoConectividadRepository $tipoConectividadRepository)
     {
         try {
@@ -59,12 +59,12 @@ class TipoConectividadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_conectividad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoConectividad $tipoConectividad
      * @param TipoConectividadRepository $tipoConectividadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_conectividad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoConectividad $tipoConectividad, TipoConectividadRepository $tipoConectividadRepository)
     {
         try {
@@ -89,10 +89,10 @@ class TipoConectividadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_conectividad_detail", methods={"GET", "POST"})
      * @param tipoConectividad $tipoConectividad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_conectividad_detail', methods: ['GET', 'POST'])]
     public function detail(TipoConectividad $tipoConectividad)
     {
         return $this->render('modules/informatizacion/tipoConectividad/detail.html.twig', [
@@ -101,11 +101,11 @@ class TipoConectividadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_conectividad_eliminar", methods={"GET"})
      * @param TipoConectividad $tipoConectividad
      * @param TipoConectividadRepository $tipoConectividadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_conectividad_eliminar', methods: ['GET'])]
     public function eliminar(TipoConectividad $tipoConectividad, TipoConectividadRepository $tipoConectividadRepository)
     {
         try {

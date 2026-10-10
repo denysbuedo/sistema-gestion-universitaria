@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/evaluacion/estado_aplazamiento")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTADO_APLAZAMIENTO")
  */
+#[Route('/evaluacion/estado_aplazamiento')]
 class EstadoAplazamientoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_estado_aplazamiento_index", methods={"GET"})
      * @param EstadoAplazamientoRepository $estadoAplazamientoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_estado_aplazamiento_index', methods: ['GET'])]
     public function index(EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         return $this->render('modules/evaluacion/estado_aplazamiento/index.html.twig', [
@@ -33,11 +33,11 @@ class EstadoAplazamientoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_estado_aplazamiento_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoAplazamientoRepository $estadoAplazamientoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_estado_aplazamiento_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {
@@ -61,12 +61,12 @@ class EstadoAplazamientoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_estado_aplazamiento_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $estadoAplazamiento
      * @param EstadoAplazamientoRepository $estadoAplazamientoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_estado_aplazamiento_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, EstadoAplazamiento $estadoAplazamiento, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {
@@ -90,12 +90,12 @@ class EstadoAplazamientoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_estado_aplazamiento_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $estadoAplazamiento
      * @param EstadoAplazamientoRepository $estadoAplazamientoRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_estado_aplazamiento_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, EstadoAplazamiento $estadoAplazamiento)
     {
         return $this->render('modules/evaluacion/estado_aplazamiento/detail.html.twig', [
@@ -104,12 +104,12 @@ class EstadoAplazamientoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_estado_aplazamiento_eliminar", methods={"GET"})
      * @param Request $request
      * @param EstadoAplazamiento $estadoAplazamiento
      * @param EstadoAplazamientoRepository $estadoAplazamientoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_estado_aplazamiento_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, EstadoAplazamiento $estadoAplazamiento, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {

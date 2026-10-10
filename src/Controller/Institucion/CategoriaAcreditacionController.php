@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/institucion/categoria_acreditacion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CATACRED")
  */
+#[Route('/institucion/categoria_acreditacion')]
 class CategoriaAcreditacionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_categoria_acreditacion_index", methods={"GET"})
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_categoria_acreditacion_index', methods: ['GET'])]
     public function index(CategoriaAcreditacionRepository $categoriaAcreditacionRepository)
     {
         return $this->render('modules/institucion/categoria_acreditacion/index.html.twig', [
@@ -33,11 +33,11 @@ class CategoriaAcreditacionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_categoria_acreditacion_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_categoria_acreditacion_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, CategoriaAcreditacionRepository $categoriaAcreditacionRepository)
     {
         try {
@@ -61,12 +61,12 @@ class CategoriaAcreditacionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_categoria_acreditacion_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaAcreditacion
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_categoria_acreditacion_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, CategoriaAcreditacion $categoriaAcreditacion, CategoriaAcreditacionRepository $categoriaAcreditacionRepository)
     {
         try {
@@ -90,12 +90,12 @@ class CategoriaAcreditacionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_categoria_acreditacion_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaAcreditacion
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_categoria_acreditacion_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, CategoriaAcreditacion $categoriaAcreditacion)
     {
         return $this->render('modules/institucion/categoria_acreditacion/detail.html.twig', [
@@ -104,12 +104,12 @@ class CategoriaAcreditacionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_categoria_acreditacion_eliminar", methods={"GET"})
      * @param Request $request
      * @param CategoriaAcreditacion $categoriaAcreditacion
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_categoria_acreditacion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, CategoriaAcreditacion $categoriaAcreditacion, CategoriaAcreditacionRepository $categoriaAcreditacionRepository)
     {
         try {

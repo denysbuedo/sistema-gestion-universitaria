@@ -12,17 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api")
  */
+#[Route('/api')]
 class ApiInstitucionesController extends AbstractController
 {
 
     /**
-     * @Route("/listar_instituciones", name="api_listarInstituciones", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param InstitucionRepository $institucionRepository
      * @return JsonResponse
      */
+    #[Route('/listar_instituciones', name: 'api_listarInstituciones', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarInstituciones(Request $request, InstitucionRepository $institucionRepository)
     {
         try {
@@ -41,11 +41,11 @@ class ApiInstitucionesController extends AbstractController
     }
 
     /**
-     * @Route("/listar_revistas", name="api_listarRevistas", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param InstitucionRevistaCientificaRepository $revistaCientifica
      * @return JsonResponse
      */
+    #[Route('/listar_revistas', name: 'api_listarRevistas', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarRevistas(Request $request, InstitucionRevistaCientificaRepository $revistaCientifica)
     {
         try {
@@ -64,11 +64,11 @@ class ApiInstitucionesController extends AbstractController
 
 
     /**
-     * @Route("/listar_editorial", name="api_listarEditorial", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param InstitucionEditorialRepository $editorial
      * @return JsonResponse
      */
+    #[Route('/listar_editorial', name: 'api_listarEditorial', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarEditorial(Request $request, InstitucionEditorialRepository $editorial)
     {
         try {

@@ -15,17 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/convenio/tipo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPO")
  */
+#[Route('/convenio/tipo')]
 class TipoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_index", methods={"GET"})
      * @param TipoRepository $TipoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_index', methods: ['GET'])]
     public function index(TipoRepository $TipoRepository)
     {
         return $this->render('modules/convenio/tipo/index.html.twig', [
@@ -34,11 +34,11 @@ class TipoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoRepository $tipoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoRepository $tipoRepository)
     {
         try {
@@ -62,12 +62,12 @@ class TipoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Tipo $tipo
      * @param TipoRepository $tipoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Tipo $tipo, TipoRepository $tipoRepository)
     {
         try {
@@ -92,10 +92,10 @@ class TipoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_detail", methods={"GET", "POST"})
      * @param Convenio $tipoPrograma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_detail', methods: ['GET', 'POST'])]
     public function detail(Tipo $tipo)
     {
         return $this->render('modules/convenio/tipo/detail.html.twig', [
@@ -104,11 +104,11 @@ class TipoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_eliminar", methods={"GET"})
      * @param Tipo $tipo
      * @param TipoRepository $tipoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_eliminar', methods: ['GET'])]
     public function eliminar(Tipo $tipo, TipoRepository $tipoRepository)
     {
         try {

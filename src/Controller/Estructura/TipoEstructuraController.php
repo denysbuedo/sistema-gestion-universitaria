@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/tipo_estructura")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TYPEESTR")
  */
+#[Route('/rrhh/tipo_estructura')]
 class TipoEstructuraController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_estructura_index", methods={"GET"})
      * @param TipoEstructuraRepository $tipoEstructuraRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_estructura_index', methods: ['GET'])]
     public function index(TipoEstructuraRepository $tipoEstructuraRepository)
     {
         try {
@@ -37,11 +37,11 @@ class TipoEstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_estructura_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoEstructuraRepository $tipoEstructuraRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_estructura_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoEstructuraRepository $tipoEstructuraRepository)
     {
         try {
@@ -65,12 +65,12 @@ class TipoEstructuraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_estructura_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoEstructura
      * @param TipoEstructuraRepository $tipoEstructuraRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_estructura_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoEstructura $tipoEstructura, TipoEstructuraRepository $tipoEstructuraRepository)
     {
         try {
@@ -93,12 +93,12 @@ class TipoEstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_estructura_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoEstructura $tipoEstructura
      * @param TipoEstructuraRepository $tipoEstructuraRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_estructura_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoEstructura $tipoEstructura, TipoEstructuraRepository $tipoEstructuraRepository)
     {
         try {
@@ -116,12 +116,12 @@ class TipoEstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_estructura_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoEstructura
      * @param TipoDocenteRepository $tipoDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_estructura_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoEstructura $tipoEstructura)
     {
         return $this->render('modules/estructura/tipo_estructura/detail.html.twig', [

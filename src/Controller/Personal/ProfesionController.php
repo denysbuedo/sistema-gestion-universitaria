@@ -14,17 +14,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/profesion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROF")
  */
+#[Route('/personal/profesion')]
 class ProfesionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_profesion_index", methods={"GET"})
      * @param ProfesionRepository $profesionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_profesion_index', methods: ['GET'])]
     public function index(ProfesionRepository $profesionRepository)
     {
         try {
@@ -38,11 +38,11 @@ class ProfesionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_profesion_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ProfesionRepository $profesionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_profesion_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ProfesionRepository $profesionRepository, Utils $utils)
     {
         try {
@@ -69,13 +69,13 @@ class ProfesionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_profesion_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Profesion $profesion
      * @param ProfesionRepository $profesionRepository
      * @param Utils $utils
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_profesion_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Profesion $profesion, ProfesionRepository $profesionRepository, Utils $utils)
     {
         try {
@@ -101,12 +101,12 @@ class ProfesionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_profesion_eliminar", methods={"GET"})
      * @param Request $request
      * @param Profesion $profesion
      * @param ProfesionRepository $profesionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_profesion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Profesion $profesion, ProfesionRepository $profesionRepository, Utils $utils)
     {
         try {
@@ -127,12 +127,12 @@ class ProfesionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_profesion_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $profesion
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_profesion_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Profesion $profesion)
     {
         return $this->render('modules/personal/profesion/detail.html.twig', [

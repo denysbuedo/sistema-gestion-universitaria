@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/tipo_sistema")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPO_SISTEMA")
  */
+#[Route('/informatizacion/tipo_sistema')]
 class TipoSistemaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_sistema_index", methods={"GET"})
      * @param TipoSistemaRepository $TipoSistemaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_sistema_index', methods: ['GET'])]
     public function index(TipoSistemaRepository $TipoSistemaRepository)
     {
         return $this->render('modules/informatizacion/tipoSistema/index.html.twig', [
@@ -31,11 +31,11 @@ class TipoSistemaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_sistema_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoSistemaRepository $tipoSistemaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_sistema_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoSistemaRepository $tipoSistemaRepository)
     {
         try {
@@ -59,12 +59,12 @@ class TipoSistemaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_sistema_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoSistema $tipoSistema
      * @param TipoSistemaRepository $tipoSistemaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_sistema_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoSistema $tipoSistema, TipoSistemaRepository $tipoSistemaRepository)
     {
         try {
@@ -89,10 +89,10 @@ class TipoSistemaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_sistema_detail", methods={"GET", "POST"})
      * @param tipoSistema $tipoSistema
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_sistema_detail', methods: ['GET', 'POST'])]
     public function detail(TipoSistema $tipoSistema)
     {
         return $this->render('modules/informatizacion/tipoSistema/detail.html.twig', [
@@ -101,11 +101,11 @@ class TipoSistemaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_sistema_eliminar", methods={"GET"})
      * @param TipoSistema $tipoSistema
      * @param TipoSistemaRepository $tipoSistemaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_sistema_eliminar', methods: ['GET'])]
     public function eliminar(TipoSistema $tipoSistema, TipoSistemaRepository $tipoSistemaRepository)
     {
         try {

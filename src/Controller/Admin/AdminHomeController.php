@@ -13,16 +13,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 class AdminHomeController extends AbstractController
 {
     /**
-     * @Route("/relaciones_internacionales/home", name="app_admin_home_ri")
      */
+    #[Route('/relaciones_internacionales/home', name: 'app_admin_home_ri')]
     public function indexRi(): Response
     {
         return $this->render('modules/admin/ri.html.twig');
     }
 
     /**
-     * @Route("/akademos/home", name="app_admin_home")
      */
+    #[Route('/akademos/home', name: 'app_admin_home')]
     public function index(): Response
     {
         return $this->render('modules/admin/akademos.html.twig');
@@ -30,19 +30,19 @@ class AdminHomeController extends AbstractController
 
 
     /**
-     * @Route("/akademos/perfil", name="app_admin_perfil")
      */
+    #[Route('/akademos/perfil', name: 'app_admin_perfil')]
     public function perfil(): Response
     {
         return $this->render('modules/admin/perfil/index.html.twig');
     }
 
     /**
-     * @Route("/eliminar/{id}", name="eliminar_todo_admin_dash")
      * @param EntityManagerInterface $entityManager
      * @param TodoLista $id
      * @return Response
      */
+    #[Route('/eliminar/{id}', name: 'eliminar_todo_admin_dash')]
     public function eliminar(EntityManagerInterface $entityManager, TodoLista $id): Response
     {
 

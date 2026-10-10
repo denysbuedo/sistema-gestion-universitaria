@@ -33,8 +33,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/rrhh/estructura")
  */
+#[Route('/rrhh/estructura')]
 class EstructuraController extends AbstractController
 {
 
@@ -75,11 +75,11 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_estructura_index", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/', name: 'app_estructura_index', methods: ['GET'])]
     public function index(EstructuraRepository $estructuraRepository, Utils $utils, PersonaRepository $personaRepository)
     {
         try {
@@ -112,11 +112,11 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/arbol", name="app_estructura_index_arbol", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/arbol', name: 'app_estructura_index_arbol', methods: ['GET'])]
     public function indexArbol(EstructuraRepository $estructuraRepository, Utils $utils, PersonaRepository $personaRepository): Response
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -155,8 +155,8 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/estructura/detalles-arbol", name="app_estructura_detalles_arbol", methods={"POST"})
      */
+    #[Route('/estructura/detalles-arbol', name: 'app_estructura_detalles_arbol', methods: ['POST'])]
     public function detallesArbol(Request $request, EstructuraRepository $estructuraRepository): Response
     {
         if (!$request->isXmlHttpRequest()) {
@@ -179,11 +179,11 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/estructuras/mapa", name="app_estructura_index_mapa", methods={"GET"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/estructuras/mapa', name: 'app_estructura_index_mapa', methods: ['GET'])]
     public function indexMapa(EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository): Response
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -205,12 +205,12 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_estructura_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/registrar', name: 'app_estructura_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, MunicipioRepository $municipioRepository, Utils $utils)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -262,13 +262,13 @@ class EstructuraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_estructura_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT" )
      */
+    #[Route('/{id}/modificar', name: 'app_estructura_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Estructura $estructura, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, MunicipioRepository $municipioRepository, Utils $utils)
     {
         try {
@@ -310,13 +310,13 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_estructura_eliminar", methods={"GET"})
      * @param Request $request
      * @param Estructura $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT", "ROLE_GEST_CENTRO_AUTORIZADO", "ROLE_GEST_FORMACION_DOCTORES")
      */
+    #[Route('/{id}/eliminar', name: 'app_estructura_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Estructura $estructura, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -334,13 +334,13 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_estructura_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Estructura $estructura
      * @param Plaza $plazaRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT", "ROLE_GEST_CENTRO_AUTORIZADO", "ROLE_GEST_FORMACION_DOCTORES")
      */
+    #[Route('/{id}/detail', name: 'app_estructura_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Estructura $estructura, PlazaRepository $plazaRepository)
     {
         return $this->render('modules/estructura/estructura/detail.html.twig', [
@@ -350,13 +350,13 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/plaza", name="app_estructura_plaza", methods={"GET", "POST"})
      * @param Request $request
      * @param Estructura $estructura
      * @param PlazaRepository $plazaRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/{id}/plaza', name: 'app_estructura_plaza', methods: ['GET', 'POST'])]
     public function plaza(Request $request, Estructura $estructura, PlazaRepository $plazaRepository)
     {
         try {
@@ -384,13 +384,13 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar-plaza", name="app_estructura_eliminar_plaza", methods={"GET"})
      * @param Request $request
      * @param Plaza $plaza
      * @param PlazaRepository $plazaRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/{id}/eliminar-plaza', name: 'app_estructura_eliminar_plaza', methods: ['GET'])]
     public function eliminarPlaza(Request $request, Plaza $plaza, PlazaRepository $plazaRepository)
     {
         try {
@@ -409,13 +409,13 @@ class EstructuraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/registrar-estructura-hija", name="app_estructura_registrar_hija", methods={"GET", "POST"})
      * @param Request $request
      * @param Estructura $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/{id}/registrar-estructura-hija', name: 'app_estructura_registrar_hija', methods: ['GET', 'POST'])]
     public function registrarEstructuraHija(Request $request, ProvinciaRepository $provinciaRepository, MunicipioRepository $municipioRepository, TipoEstructuraRepository $tipoEstructuraRepository, CategoriaEstructuraRepository $categoriaEstructuraRepository, Estructura $estructura, EstructuraRepository $estructuraRepository, EntityManagerInterface $entityManager, Utils $utils)
     {
         try {
@@ -461,12 +461,12 @@ class EstructuraController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/estructura_dado_categoria", name="app_estructura_dado_categoria", methods={"GET"})
      * @param $id
      * @param EstructuraRepository $estructuraRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/{id}/estructura_dado_categoria', name: 'app_estructura_dado_categoria', methods: ['GET'])]
     public function getEstructuraDadoCategoria($id, EstructuraRepository $estructuraRepository, Utils $utils): JsonResponse
     {
         try {
@@ -482,12 +482,12 @@ class EstructuraController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/estructura_dado_entidad", name="app_estructura_dado_entidad", methods={"GET"})
      * @param $id
      * @param EstructuraRepository $estructuraRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/{id}/estructura_dado_entidad', name: 'app_estructura_dado_entidad', methods: ['GET'])]
     public function getEstructuraDadoEntidad($id, EstructuraRepository $estructuraRepository, Utils $utils): JsonResponse
     {
         try {
@@ -501,12 +501,12 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_estructura_exportar_pdf", methods={"GET", "POST"})
      * @param Request $request
      * @param User $user
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/exportar_pdf', name: 'app_estructura_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, HandlerFop $handFop, EstructuraRepository $estructuraRepository)
     {
         $export = $estructuraRepository->getExportarListado();
@@ -517,13 +517,13 @@ class EstructuraController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/estructura_dado_id", name="app_estructura_dado_id", methods={"GET"})
      * @param Request $request
      * @param $id
      * @param MunicipioRepository $estructuraRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/{id}/estructura_dado_id', name: 'app_estructura_dado_id', methods: ['GET'])]
     public function getEstructuraDadoId(Request $request, $id, EstructuraRepository $estructuraRepository, Utils $utils): JsonResponse
     {
         try {
@@ -535,11 +535,11 @@ class EstructuraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/exportar-estructuras-hijas", name="app_estructura_exportar_estructuras_hijas", methods={"GET", "POST"})
      * @param EstructuraRepository $estructuraRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
      */
+    #[Route('/{id}/exportar-estructuras-hijas', name: 'app_estructura_exportar_estructuras_hijas', methods: ['GET', 'POST'])]
     public function exportarEstructurasHija($id, HandlerFop $handFop, EstructuraRepository $estructuraRepository)
     {
         try {
@@ -553,8 +553,8 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/asignar-grupo", name="app_estructura_asignar_grupo", methods={"POST"})
      */
+    #[Route('/asignar-grupo', name: 'app_estructura_asignar_grupo', methods: ['POST'])]
     public function asignarGrupo(Request $request, EntityManagerInterface $entityManager): Response
     {
         $estructuraId = $request->request->get('estructuraId');
@@ -592,8 +592,8 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/grupos", name="app_grupos_index")
      */
+    #[Route('/grupos', name: 'app_grupos_index')]
     public function listarGrupos(EntityManagerInterface $entityManager): Response
     {
         $grupos = $entityManager->getRepository(Grupo::class)->findAll();
@@ -604,8 +604,8 @@ class EstructuraController extends AbstractController
     }
 
     /**
-     * @Route("/obtener-grupos", name="app_estructura_obtener_grupos_all", methods={"GET"})
      */
+    #[Route('/obtener-grupos', name: 'app_estructura_obtener_grupos_all', methods: ['GET'])]
     public function obtenerGrupos(EntityManagerInterface $entityManager): JsonResponse
     {
         $grupos = $entityManager->getRepository(Grupo::class)->findBy(['activo' => true]);
@@ -623,8 +623,8 @@ class EstructuraController extends AbstractController
 
 
     /**
-     * @Route("/obtener-grupos/{idEstructura}", name="app_estructura_obtener_grupos", methods={"GET"})
      */
+    #[Route('/obtener-grupos/{idEstructura}', name: 'app_estructura_obtener_grupos', methods: ['GET'])]
     public function obtenerGruposDadoId(EntityManagerInterface $entityManager, $idEstructura = null): JsonResponse
     {
         $grupos = $entityManager->getRepository(Grupo::class)->findBy(['activo' => true]);

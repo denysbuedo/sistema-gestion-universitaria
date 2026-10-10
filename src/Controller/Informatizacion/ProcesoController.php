@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/proceso")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MARCA")
  */
+#[Route('/informatizacion/proceso')]
 class ProcesoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_proceso_index", methods={"GET"})
      * @param ProcesoRepository $ProcesoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_proceso_index', methods: ['GET'])]
     public function index(ProcesoRepository $ProcesoRepository)
     {
         return $this->render('modules/informatizacion/proceso/index.html.twig', [
@@ -31,11 +31,11 @@ class ProcesoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_proceso_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ProcesoRepository $procesoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_proceso_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ProcesoRepository $procesoRepository)
     {
         try {
@@ -59,12 +59,12 @@ class ProcesoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_proceso_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Proceso $proceso
      * @param ProcesoRepository $procesoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_proceso_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Proceso $proceso, ProcesoRepository $procesoRepository)
     {
         try {
@@ -89,10 +89,10 @@ class ProcesoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_proceso_detail", methods={"GET", "POST"})
      * @param proceso $proceso
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_proceso_detail', methods: ['GET', 'POST'])]
     public function detail(Proceso $proceso)
     {
         return $this->render('modules/informatizacion/proceso/detail.html.twig', [
@@ -101,11 +101,11 @@ class ProcesoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_proceso_eliminar", methods={"GET"})
      * @param Proceso $proceso
      * @param ProcesoRepository $procesoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_proceso_eliminar', methods: ['GET'])]
     public function eliminar(Proceso $proceso, ProcesoRepository $procesoRepository)
     {
         try {

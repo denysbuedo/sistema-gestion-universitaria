@@ -16,17 +16,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api")
  */
+#[Route('/api')]
 class ApiResponsabilidadController extends AbstractController
 {
 
     /**
-     * @Route("//api/listar_responsabilides", name="api_listar_responsabilides", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return JsonResponse
      */
+    #[Route('//api/listar_responsabilides', name: 'api_listar_responsabilides', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarResponsabilidades(Request $request, ResponsabilidadRepository $responsabilidadRepository)
     {
         try {
@@ -46,11 +46,11 @@ class ApiResponsabilidadController extends AbstractController
 
 
     /**
-     * @Route("/get_responsabilidad_dado_id_estructura", name="api_get_responsabilidad_dado_id_estructura", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param PlazaRepository $plazaRepository
      * @return JsonResponse
      */
+    #[Route('/get_responsabilidad_dado_id_estructura', name: 'api_get_responsabilidad_dado_id_estructura', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function getResponsabilidadesDadoIdEstructura(Request $request, PlazaRepository $plazaRepository)
     {
         try {

@@ -20,13 +20,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 //use Export\Admin\ExportListUsersToPdf;
 
 /**
- * @Route("/administracion/cambio_clave")
  */
+#[Route('/administracion/cambio_clave')]
 class CambioClaveController extends AbstractController
 {
 
     /**
-     * @Route("/{id}/ejecutar", name="app_usuario_cambiar_clave", methods={"GET", "POST"})
      * @param Request $request
      * @param User $usuario
      * @param UserRepository $usuarioRepository
@@ -35,6 +34,7 @@ class CambioClaveController extends AbstractController
      * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
+    #[Route('/{id}/ejecutar', name: 'app_usuario_cambiar_clave', methods: ['GET', 'POST'])]
     public function cambiarContrasenna(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {

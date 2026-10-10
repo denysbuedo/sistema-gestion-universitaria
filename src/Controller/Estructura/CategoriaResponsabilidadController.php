@@ -14,17 +14,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/categoria_responsabilidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CATRESP")
  */
+#[Route('/rrhh/categoria_responsabilidad')]
 class CategoriaResponsabilidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_categoria_responsabilidad_index", methods={"GET"})
      * @param CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_categoria_responsabilidad_index', methods: ['GET'])]
     public function index(CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository)
     {
         try {
@@ -38,11 +38,11 @@ class CategoriaResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_categoria_responsabilidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_categoria_responsabilidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository, Utils $utils)
     {
         try {
@@ -69,12 +69,12 @@ class CategoriaResponsabilidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_categoria_responsabilidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param CategoriaResponsabilidad $categoriaResponsabilidad
      * @param CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_categoria_responsabilidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, CategoriaResponsabilidad $categoriaResponsabilidad, CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository, Utils $utils)
     {
         try {
@@ -100,12 +100,12 @@ class CategoriaResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_categoria_responsabilidad_eliminar", methods={"GET"})
      * @param Request $request
      * @param CategoriaResponsabilidad $categoriaResponsabilidad
      * @param CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_categoria_responsabilidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, CategoriaResponsabilidad $categoriaResponsabilidad, CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository, Utils $utils)
     {
         try {
@@ -125,12 +125,12 @@ class CategoriaResponsabilidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_categoria_responsabilidad_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaResponsabilidad
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_categoria_responsabilidad_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, CategoriaResponsabilidad $categoriaResponsabilidad)
     {
         return $this->render('modules/estructura/categoria_responsabilidad/detail.html.twig', [

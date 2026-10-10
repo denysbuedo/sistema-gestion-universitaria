@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/tipo_programa_academico")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPOPROGACAD")
  */
+#[Route('/pregrado/tipo_programa_academico')]
 class TipoProgramaAcademicoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_programa_academico_index", methods={"GET"})
      * @param TipoProgramaAcademicoRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_programa_academico_index', methods: ['GET'])]
     public function index(TipoProgramaAcademicoRepository $tipoProgramaRepository)
     {
         return $this->render('modules/pregrado/tipo_programa_academico/index.html.twig', [
@@ -32,11 +32,11 @@ class TipoProgramaAcademicoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_programa_academico_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoProgramaAcademicoRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_programa_academico_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoProgramaAcademicoRepository $tipoProgramaRepository)
     {
         try {
@@ -60,12 +60,12 @@ class TipoProgramaAcademicoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_programa_academico_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoPrograma
      * @param TipoProgramaAcademicoRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_programa_academico_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoProgramaAcademico $tipoPrograma, TipoProgramaAcademicoRepository $tipoProgramaRepository)
     {
         try {
@@ -89,11 +89,11 @@ class TipoProgramaAcademicoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_programa_academico_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoProgramaAcademico $tipoPrograma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_programa_academico_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoProgramaAcademico $tipoProgramaAcademico)
     {
         return $this->render('modules/pregrado/tipo_programa_academico/detail.html.twig', [
@@ -102,12 +102,12 @@ class TipoProgramaAcademicoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_programa_academico_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoProgramaAcademico $tipoPrograma
      * @param TipoProgramaAcademicoRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_programa_academico_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoProgramaAcademico $tipoPrograma, TipoProgramaAcademicoRepository $tipoProgramaRepository)
     {
         try {

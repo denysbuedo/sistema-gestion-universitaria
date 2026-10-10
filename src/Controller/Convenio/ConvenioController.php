@@ -21,17 +21,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/convenio/convenio")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CONVENIO")
  */
+#[Route('/convenio/convenio')]
 class ConvenioController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_convenio_index", methods={"GET"})
      * @param ConvenioRepository $convenioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_convenio_index', methods: ['GET'])]
     public function index(Utils $utils, EntityManagerInterface $entityManager, ConvenioRepository $convenioRepository)
     {
         // 1. Validar usuario autenticado
@@ -61,11 +61,11 @@ class ConvenioController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_convenio_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ConvenioRepository $convenioRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_convenio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -101,12 +101,12 @@ class ConvenioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_convenio_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Convenio $convenio
      * @param ConvenioRepository $convenioRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_convenio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Convenio $convenio, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -153,11 +153,11 @@ class ConvenioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_convenio_detail", methods={"GET", "POST"})
      * @param Convenio $convenio
      * @param ConvenioAccionRepository $convenioAccionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_convenio_detail', methods: ['GET', 'POST'])]
     public function detail(Convenio $convenio, ConvenioAccionRepository $convenioAccionRepository)
     {
         return $this->render('modules/convenio/convenio/detail.html.twig', [
@@ -167,12 +167,12 @@ class ConvenioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_convenio_eliminar", methods={"GET"})
      * @param Request $request
      * @param Convenio $convenio
      * @param ConvenioRepository $convenioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_convenio_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Convenio $convenio, ConvenioRepository $convenioRepository)
     {
         try {
@@ -190,12 +190,12 @@ class ConvenioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/acciones", name="app_convenio_acciones", methods={"GET", "POST"})
      * @param Request $request
      * @param Convenio $convenio
      * @param ConvenioAccionRepository $convenioAccionRepository
      * @return Response
      */
+    #[Route('/{id}/acciones', name: 'app_convenio_acciones', methods: ['GET', 'POST'])]
     public function acciones(Request $request, Convenio $convenio, ConvenioAccionRepository $convenioAccionRepository)
     {
         try {
@@ -223,12 +223,12 @@ class ConvenioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_accion", name="app_convenio_eliminar_accion", methods={"GET"})
      * @param Request $request
      * @param ConvenioAccion $convenioAccion
      * @param ConvenioAccionRepository $convenioAccionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_accion', name: 'app_convenio_eliminar_accion', methods: ['GET'])]
     public function eliminarAccion(Request $request, ConvenioAccion $convenioAccion, ConvenioAccionRepository $convenioAccionRepository)
     {
         $id = $convenioAccion->getConvenio()->getId();

@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/tramite/tramite")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TRAMITE")
  */
+#[Route('/tramite/tramite')]
 class TramiteController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tramite_index", methods={"GET"})
      * @param tramiteRepository $tramiteRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tramite_index', methods: ['GET'])]
     public function index(TramiteRepository $tramiteRepository)
     {
         return $this->render('modules/tramite/tramite/index.html.twig', [
@@ -32,11 +32,11 @@ class TramiteController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tramite_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param tramiteRepository $tramiteRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tramite_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TramiteRepository $tramiteRepository)
     {
         try {
@@ -60,12 +60,12 @@ class TramiteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tramite_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tramite
      * @param tramiteRepository $tramiteRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tramite_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Tramite $tramite, TramiteRepository $tramiteRepository)
     {
 //        try {
@@ -89,11 +89,11 @@ class TramiteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tramite_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param tramite $tramite
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tramite_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Tramite $tramite)
     {
         return $this->render('modules/tramite/tramite/detail.html.twig', [
@@ -102,12 +102,12 @@ class TramiteController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tramite_eliminar", methods={"GET"})
      * @param Request $request
      * @param tramite $tramite
      * @param tramiteRepository $tramiteRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tramite_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Tramite $tramite, TramiteRepository $tramiteRepository)
     {
         try {

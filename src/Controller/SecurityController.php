@@ -16,10 +16,10 @@ use App\Security\OidcClient;
 class SecurityController extends AbstractController
 {
     /**
-     * @Route("/home", name="home")
      * @param Request $request
      * @return Response
      */
+    #[Route('/home', name: 'home')]
     public function home(Request $request): Response
     {
         return $this->render('pages/dashboard-v2.html.twig');
@@ -27,10 +27,10 @@ class SecurityController extends AbstractController
 
 
     /**
-     * @Route("/login", name="app_login")
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
      */
+    #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, OidcClient $oidc): Response
     {
         // if ($this->getUser()) {
@@ -47,7 +47,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /** @Route("/oidc/login", name="oidc_login", methods={"GET"}) */
+    #[Route('/oidc/login', name: 'oidc_login', methods: ['GET'])]
     public function oidcLogin(Request $request, OidcClient $oidc): Response
     {
         $start = $oidc->begin('login');
@@ -55,7 +55,7 @@ class SecurityController extends AbstractController
         return $this->redirect($start['url']);
     }
 
-    /** @Route("/oidc/link", name="oidc_link", methods={"GET"}) */
+    #[Route('/oidc/link', name: 'oidc_link', methods: ['GET'])]
     public function oidcLink(Request $request, OidcClient $oidc): Response
     {
         $start = $oidc->begin('link', $this->getUser()->getId());
@@ -63,27 +63,27 @@ class SecurityController extends AbstractController
         return $this->redirect($start['url']);
     }
 
-    /** @Route("/oidc/check", name="oidc_callback", methods={"GET"}) */
+    #[Route('/oidc/check', name: 'oidc_callback', methods: ['GET'])]
     public function oidcCallback(): Response
     {
         throw new \LogicException('La respuesta OIDC debe ser procesada por el autenticador.');
     }
 
     /**
-     * @Route("/logout", name="app_logout")
      */
+    #[Route('/logout', name: 'app_logout')]
     public function logout()
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     /**
-     * @Route("/chgpsw", name="app_usuario_cambiar_contrasena", methods={"GET", "POST"})
      * @param Request $request
      * @param UserRepository $usuarioRepository
      * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
+    #[Route('/chgpsw', name: 'app_usuario_cambiar_contrasena', methods: ['GET', 'POST'])]
     public function chgpsw(Request $request, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {

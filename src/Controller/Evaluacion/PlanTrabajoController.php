@@ -34,17 +34,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/plan_trabajo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PLAN_TRABAJO")
  */
+#[Route('/evaluacion/plan_trabajo')]
 class PlanTrabajoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_plan_trabajo_index", methods={"GET"})
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_plan_trabajo_index', methods: ['GET'])]
     public function index(SolicitudRepository $solicitudRepository)
     {
         $registros = $solicitudRepository->getPlanTrabajo();
@@ -68,11 +68,11 @@ class PlanTrabajoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar", name="app_plan_trabajo_aprobar", methods={"GET"})
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/aprobar', name: 'app_plan_trabajo_aprobar', methods: ['GET'])]
     public function aprobar(Solicitud $solicitud, EntityManagerInterface $entityManager, EstadoSolicitudRepository $estadoSolicitudRepository, SolicitudRepository $solicitudRepository)
     {
         try {
@@ -89,12 +89,12 @@ class PlanTrabajoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/rechazar", name="app_plan_trabajo_rechazar", methods={"POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/rechazar', name: 'app_plan_trabajo_rechazar', methods: ['POST'])]
     public function rechazar(Request $request, EntityManagerInterface $entityManager, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -120,11 +120,11 @@ class PlanTrabajoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_plan_trabajo_eliminar", methods={"GET"})
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_plan_trabajo_eliminar', methods: ['GET'])]
     public function eliminar(Solicitud $solicitud, SolicitudRepository $solicitudRepository)
     {
         try {

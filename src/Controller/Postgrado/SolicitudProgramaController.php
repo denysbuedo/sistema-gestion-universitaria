@@ -46,17 +46,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/solicitud_programa")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_SOLPROGRAM")
  */
+#[Route('/postgrado/solicitud_programa')]
 class SolicitudProgramaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_solicitud_programa_index", methods={"GET"})
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_solicitud_programa_index', methods: ['GET'])]
     public function index(SolicitudProgramaRepository $solicitudProgramaRepository, PersonaRepository $personaRepository, MiembrosCopepRepository $miembrosCopepRepository)
     {
         $registros = $solicitudProgramaRepository->getSolicitudes();
@@ -77,13 +77,13 @@ class SolicitudProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_solicitud_programa_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TraceService $traceService
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @param EstadoProgramaRepository $estadoProgramaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_solicitud_programa_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository)
     {
         try {
@@ -182,13 +182,13 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_solicitud_programa_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TraceService $traceService
      * @param SolicitudPrograma $solicitudPrograma
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_solicitud_programa_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, PresencialidadProgramaRepository $presencialidadProgramaRepository, EntityManagerInterface $entityManager, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         try {
@@ -295,10 +295,10 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_solicitud_programa_detail", methods={"GET", "POST"})
      * @param SolicitudPrograma $solicitudPrograma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_solicitud_programa_detail', methods: ['GET', 'POST'])]
     public function detail(SolicitudPrograma $solicitudPrograma, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository)
     {
         $presencialidadesArray = [];
@@ -314,12 +314,12 @@ class SolicitudProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_solicitud_programa_eliminar", methods={"GET"})
      * @param SolicitudPrograma $solicitudPrograma
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @param TraceService $traceService
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_solicitud_programa_eliminar', methods: ['GET'])]
     public function eliminar(SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, TraceService $traceService)
     {
         try {
@@ -339,13 +339,13 @@ class SolicitudProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar", name="app_solicitud_programa_aprobar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoProgramaRepository $estadoProgramaRepository
      * @param SolicitudPrograma $solicitudPrograma
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/aprobar', name: 'app_solicitud_programa_aprobar', methods: ['GET', 'POST'])]
     public function aprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         try {
@@ -421,13 +421,13 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/no-aprobar", name="app_solicitud_programa_no_aprobar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoProgramaRepository $estadoProgramaRepository
      * @param SolicitudPrograma $solicitudPrograma
      * @param SolicitudProgramaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/no-aprobar', name: 'app_solicitud_programa_no_aprobar', methods: ['GET', 'POST'])]
     public function noAprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         try {
@@ -472,7 +472,6 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/{tipo}/asignar_comision", name="app_solicitud_programa_asignar_comision", methods={"GET", "POST"}, defaults={"tipo"=1})
      * @param Request $request
      * @param MiembrosComisionRepository $miembrosComisionRepository
      * @param NotificacionesUsuarioRepository $notificacionesUsuarioRepository
@@ -483,6 +482,7 @@ class SolicitudProgramaController extends AbstractController
      * @param SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository
      * @return Response
      */
+    #[Route('/{id}/{tipo}/asignar_comision', name: 'app_solicitud_programa_asignar_comision', methods: ['GET', 'POST'], defaults: ['tipo' => 1])]
     public function asignarComision(Request $request, MiembrosComisionRepository $miembrosComisionRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, ComisionRepository $comisionRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, $tipo = '1')
     {
         try {
@@ -555,7 +555,6 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asociar_dictamen", name="app_solicitud_programa_asociar_dictamen", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository
      * @param PersonaRepository $personaRepository
@@ -566,6 +565,7 @@ class SolicitudProgramaController extends AbstractController
      * @param SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository
      * @return Response
      */
+    #[Route('/{id}/asociar_dictamen', name: 'app_solicitud_programa_asociar_dictamen', methods: ['GET', 'POST'])]
     public function asociarDictamen(Request $request, MiembrosCopepRepository $miembrosCopepRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, PersonaRepository $personaRepository, ComisionRepository $comisionRepository, RolComisionRepository $rolComisionRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository)
     {
         try {
@@ -646,12 +646,12 @@ class SolicitudProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_dictamen", name="app_solicitud_programa_eliminar_dictamen", methods={"GET"})
      * @param Request $request
      * @param SolicitudProgramaDictamen $solicitudProgramaDictamen
      * @param SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_dictamen', name: 'app_solicitud_programa_eliminar_dictamen', methods: ['GET'])]
     public function eliminarDictamen(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaDictamen $solicitudProgramaDictamen, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository)
     {
         try {
@@ -679,11 +679,11 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/revisar_dictamenes", name="app_solicitud_programa_revisar_dictamenes", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudPrograma $solicitudPrograma
      * @return Response
      */
+    #[Route('/{id}/revisar_dictamenes', name: 'app_solicitud_programa_revisar_dictamenes', methods: ['GET', 'POST'])]
     public function revisionDictamen(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaRepository $solicitudProgramaRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudPrograma $solicitudPrograma, MiembrosCopepRepository $miembrosCopepRepository)
     {
         try {
@@ -735,11 +735,11 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/votacion", name="app_solicitud_programa_votacion", methods={"GET", "POST"})
      * @param SolicitudProgramaVotacionRepository $solicitudProgramaVotacionRepository
      * @param SolicitudPrograma $solicitudPrograma
      * @return Response
      */
+    #[Route('/{id}/votacion', name: 'app_solicitud_programa_votacion', methods: ['GET', 'POST'])]
     public function votacion(SolicitudProgramaVotacionRepository $solicitudProgramaVotacionRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, PersonaRepository $personaRepository, SolicitudPrograma $solicitudPrograma, MiembrosCopepRepository $miembrosCopepRepository)
     {
         try {
@@ -767,10 +767,10 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/votar", name="app_solicitud_programa_votacion_guardar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/votar', name: 'app_solicitud_programa_votacion_guardar', methods: ['GET', 'POST'])]
     public function votar(Request $request, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaVotacionRepository $solicitudProgramaVotacionRepository, SolicitudProgramaRepository $solicitudProgramaRepository, MiembrosCopepRepository $miembrosCopepRepository)
     {
         try {
@@ -812,10 +812,10 @@ class SolicitudProgramaController extends AbstractController
 
 
     /**
-     * @Route("/get-programa-detalles", name="app_solicitud_programa_get_programa", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/get-programa-detalles', name: 'app_solicitud_programa_get_programa', methods: ['GET', 'POST'])]
     public function asociarPersona(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         try {

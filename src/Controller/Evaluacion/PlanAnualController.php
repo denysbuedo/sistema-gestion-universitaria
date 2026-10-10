@@ -40,17 +40,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/plan_anual_evaluacion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PLAN_ANUAL_EVALUACION")
  */
+#[Route('/evaluacion/plan_anual_evaluacion')]
 class PlanAnualController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_plan_anual_evaluacion_index", methods={"GET"})
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_plan_anual_evaluacion_index', methods: ['GET'])]
     public function index(SolicitudRepository $solicitudRepository, ComisionRepository $comisionRepository, AplazamientoSolicitudRepository $aplazamientoSolicitudRepository)
     {
         $response = [];
@@ -86,12 +86,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/informe_autoevaluacion", name="app_plan_anual_evaluacion_informe_autoevaluacion", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/informe_autoevaluacion', name: 'app_plan_anual_evaluacion_informe_autoevaluacion', methods: ['GET', 'POST'])]
     public function informeAutoevaluacion(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -129,12 +129,12 @@ class PlanAnualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/plan_trabajo", name="app_plan_anual_evaluacion_plan_trabajo", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/plan_trabajo', name: 'app_plan_anual_evaluacion_plan_trabajo', methods: ['GET', 'POST'])]
     public function planTrabajo(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -172,12 +172,12 @@ class PlanAnualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aplazar", name="app_comision_evaluadora_aplazar", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/aplazar', name: 'app_comision_evaluadora_aplazar', methods: ['GET', 'POST'])]
     public function aplazar(Request $request, Solicitud $solicitud, AplazamientoSolicitudRepository $aplazamientoSolicitudRepository, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {
@@ -207,12 +207,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/dictamen_comision", name="app_plan_anual_evaluacion_dictamen_comision", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/dictamen_comision', name: 'app_plan_anual_evaluacion_dictamen_comision', methods: ['GET', 'POST'])]
     public function dictamenComision(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository)
     {
         try {
@@ -245,12 +245,12 @@ class PlanAnualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_dictamen", name="app_plan_anual_evaluacion_eliminar_dictamen", methods={"GET"})
      * @param Request $request
      * @param SolicitudDictamenComision $solicitudDictamenComision
      * @param SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_dictamen', name: 'app_plan_anual_evaluacion_eliminar_dictamen', methods: ['GET'])]
     public function eliminarDictamen(Request $request, SolicitudDictamenComision $solicitudDictamenComision, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository)
     {
         try {
@@ -265,12 +265,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/dictamen_cte", name="app_plan_anual_evaluacion_dictamen_cte", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/dictamen_cte', name: 'app_plan_anual_evaluacion_dictamen_cte', methods: ['GET', 'POST'])]
     public function dictamenCTE(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -307,12 +307,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/dictamen_jan", name="app_plan_anual_evaluacion_dictamen_jan", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/dictamen_jan', name: 'app_plan_anual_evaluacion_dictamen_jan', methods: ['GET', 'POST'])]
     public function dictamenJAN(Request                              $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository,
                                 EstadoSolicitudRepository            $estadoSolicitudRepository, InstitucionRepository $institucionRepository,
                                 SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository,
@@ -369,12 +369,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar", name="app_plan_anual_evaluacion_eliminar", methods={"GET"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_plan_anual_evaluacion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository)
     {
         try {
@@ -393,12 +393,12 @@ class PlanAnualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/iniciar_proceso", name="app_plan_anual_evaluacion_iniciar_proceso", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/iniciar_proceso', name: 'app_plan_anual_evaluacion_iniciar_proceso', methods: ['GET', 'POST'])]
     public function iniciarProceso(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -413,12 +413,12 @@ class PlanAnualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/en_evaluacion", name="app_plan_anual_evaluacion_en_evaluacion", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/en_evaluacion', name: 'app_plan_anual_evaluacion_en_evaluacion', methods: ['GET', 'POST'])]
     public function enEvaluacionPorElComiteTecnico(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -433,11 +433,11 @@ class PlanAnualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_plan_anual_evaluacion_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_plan_anual_evaluacion_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Solicitud $solicitud, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository)
     {
         $dictamentes = $solicitudDictamenComisionRepository->findBy(['solicitud' => $solicitud->getId()], ['id' => 'desc']);

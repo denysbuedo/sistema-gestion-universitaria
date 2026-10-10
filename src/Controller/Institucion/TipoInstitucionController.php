@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/institucion/tipo_institucion")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPINST")
  */
+#[Route('/institucion/tipo_institucion')]
 class TipoInstitucionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_institucion_index", methods={"GET"})
      * @param TipoInstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_institucion_index', methods: ['GET'])]
     public function index(TipoInstitucionRepository $tipoInstitucionRepository)
     {
         return $this->render('modules/institucion/tipo_institucion/index.html.twig', [
@@ -33,11 +33,11 @@ class TipoInstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_institucion_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoInstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_institucion_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoInstitucionRepository $tipoInstitucionRepository)
     {
         try {
@@ -61,12 +61,12 @@ class TipoInstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_institucion_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoInstitucion
      * @param TipoInstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_institucion_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoInstitucion $tipoInstitucion, TipoInstitucionRepository $tipoInstitucionRepository)
     {
         try {
@@ -90,12 +90,12 @@ class TipoInstitucionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_institucion_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoInstitucion
      * @param TipoInstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_institucion_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoInstitucion $tipoInstitucion)
     {
         return $this->render('modules/institucion/tipo_institucion/detail.html.twig', [
@@ -104,12 +104,12 @@ class TipoInstitucionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_institucion_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoInstitucion $tipoInstitucion
      * @param TipoInstitucionRepository $tipoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_institucion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoInstitucion $tipoInstitucion, TipoInstitucionRepository $tipoInstitucionRepository)
     {
         try {

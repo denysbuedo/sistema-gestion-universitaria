@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/economia/obsequio")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_OBSEQUIOS")
  */
+#[Route('/economia/obsequio')]
 class ObsequioController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_obsequio_index", methods={"GET"})
      * @param obsequioRepository $obsequioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_obsequio_index', methods: ['GET'])]
     public function index(ObsequioRepository $obsequioRepository)
     {
         return $this->render('modules/economia/obsequio/index.html.twig', [
@@ -32,11 +32,11 @@ class ObsequioController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_obsequio_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param obsequioRepository $obsequioRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_obsequio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ObsequioRepository $obsequioRepository)
     {
         try {
@@ -59,12 +59,12 @@ class ObsequioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_obsequio_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $obsequio
      * @param obsequioRepository $obsequioRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_obsequio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Obsequio $obsequio, ObsequioRepository $obsequioRepository)
     {
         try {
@@ -88,11 +88,11 @@ class ObsequioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_obsequio_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param obsequio $obsequio
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_obsequio_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Obsequio $obsequio)
     {
         return $this->render('modules/economia/obsequio/detail.html.twig', [
@@ -101,12 +101,12 @@ class ObsequioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_obsequio_eliminar", methods={"GET"})
      * @param Request $request
      * @param obsequio $obsequio
      * @param obsequioRepository $obsequioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_obsequio_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Obsequio $obsequio, ObsequioRepository $obsequioRepository)
     {
         try {

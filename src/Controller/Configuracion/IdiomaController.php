@@ -22,18 +22,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/administracion/configuracion")
  * @IsGranted("ROLE_ADMIN")
  */
+#[Route('/administracion/configuracion')]
 class IdiomaController extends AbstractController
 {
 
 
     /**
-     * @Route("/listar", name="app_configuracion_idioma_index", methods={"GET"})
      * @param IdiomaRepository $idiomaRepository
      * @return Response
      */
+    #[Route('/listar', name: 'app_configuracion_idioma_index', methods: ['GET'])]
     public function listar(IdiomaRepository $idiomaRepository)
     {
         try {
@@ -51,11 +51,11 @@ class IdiomaController extends AbstractController
 
 
     /**
-     * @Route("/registrar", name="app_configuracion_idioma_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param IdiomaRepository $idiomaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_configuracion_idioma_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, IdiomaRepository $idiomaRepository)
     {
         try {
@@ -79,12 +79,12 @@ class IdiomaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_configuracion_idioma_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Idioma $idioma
      * @param IdiomaRepository $idiomaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_configuracion_idioma_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Idioma $idioma, IdiomaRepository $idiomaRepository)
     {
         try {
@@ -108,10 +108,10 @@ class IdiomaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_configuracion_idioma_detail", methods={"GET", "POST"})
      * @param Idioma $idioma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_configuracion_idioma_detail', methods: ['GET', 'POST'])]
     public function detail(Idioma $idioma)
     {
         return $this->render('modules/admin/configuracion/idioma/detail.html.twig', [
@@ -120,11 +120,11 @@ class IdiomaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_configuracion_idioma_eliminar", methods={"GET"})
      * @param Idioma $idioma
      * @param IdiomaRepository $idiomaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_configuracion_idioma_eliminar', methods: ['GET'])]
     public function eliminar(Idioma $idioma, IdiomaRepository $idiomaRepository)
     {
         try {

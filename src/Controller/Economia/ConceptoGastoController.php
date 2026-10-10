@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/economia/concepto_gasto")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CONCEPTO_GASTO")
  */
+#[Route('/economia/concepto_gasto')]
 class ConceptoGastoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_concepto_gasto_index", methods={"GET"})
      * @param conceptoGastoRepository $conceptoGastoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_concepto_gasto_index', methods: ['GET'])]
     public function index(ConceptoGastoRepository $conceptoGastoRepository)
     {
         return $this->render('modules/economia/concepto_gasto/index.html.twig', [
@@ -32,11 +32,11 @@ class ConceptoGastoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_concepto_gasto_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param conceptoGastoRepository $conceptoGastoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_concepto_gasto_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ConceptoGastoRepository $conceptoGastoRepository)
     {
         try {
@@ -60,12 +60,12 @@ class ConceptoGastoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_concepto_gasto_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $conceptoGasto
      * @param conceptoGastoRepository $conceptoGastoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_concepto_gasto_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, ConceptoGasto $conceptoGasto, ConceptoGastoRepository $conceptoGastoRepository)
     {
         try {
@@ -89,11 +89,11 @@ class ConceptoGastoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_concepto_gasto_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param conceptoGasto $conceptoGasto
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_concepto_gasto_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, ConceptoGasto $conceptoGasto)
     {
         return $this->render('modules/economia/concepto_gasto/detail.html.twig', [
@@ -102,12 +102,12 @@ class ConceptoGastoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_concepto_gasto_eliminar", methods={"GET"})
      * @param Request $request
      * @param conceptoGasto $conceptoGasto
      * @param conceptoGastoRepository $conceptoGastoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_concepto_gasto_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, ConceptoGasto $conceptoGasto, ConceptoGastoRepository $conceptoGastoRepository)
     {
         try {

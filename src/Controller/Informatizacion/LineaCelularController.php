@@ -27,17 +27,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/linea_celular")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_LINEA_CELULAR")
  */
+#[Route('/informatizacion/linea_celular')]
 class LineaCelularController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_linea_celular_index", methods={"GET"})
      * @param LineaCelularRepository $LineaCelularRepository
      * @return Response
      */
+    #[Route('/', name: 'app_linea_celular_index', methods: ['GET'])]
     public function index(LineaCelularRepository $LineaCelularRepository)
     {
         return $this->render('modules/informatizacion/lineaCelular/index.html.twig', [
@@ -46,11 +46,11 @@ class LineaCelularController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_linea_celular_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param LineaCelularRepository $lineaCelularRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_linea_celular_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository)
     {
         try {
@@ -74,12 +74,12 @@ class LineaCelularController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_linea_celular_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param LineaCelular $lineaCelular
      * @param LineaCelularRepository $lineaCelularRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_linea_celular_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository)
     {
         try {
@@ -104,10 +104,10 @@ class LineaCelularController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_linea_celular_detail", methods={"GET", "POST"})
      * @param lineaCelular $lineaCelular
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_linea_celular_detail', methods: ['GET', 'POST'])]
     public function detail(LineaCelular $lineaCelular, LineaCelularRecargasRepository $lineaCelularRecargasRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository)
     {
         $asignadas = [];
@@ -125,11 +125,11 @@ class LineaCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_linea_celular_eliminar", methods={"GET"})
      * @param LineaCelular $lineaCelular
      * @param LineaCelularRepository $lineaCelularRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_linea_celular_eliminar', methods: ['GET'])]
     public function eliminar(LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository)
     {
         try {
@@ -147,12 +147,12 @@ class LineaCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/recargar", name="app_linea_celular_recargar", methods={"GET", "POST"})
      * @param Request $request
      * @param LineaCelular $lineaCelular
      * @param LineaCelularRepository $lineaCelularRepository
      * @return Response
      */
+    #[Route('/{id}/recargar', name: 'app_linea_celular_recargar', methods: ['GET', 'POST'])]
     public function recargar(Request $request, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository)
     {
         try {
@@ -191,12 +191,12 @@ class LineaCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/responsable", name="app_linea_celular_responsable", methods={"GET", "POST"})
      * @param Request $request
      * @param LineaCelular $lineaCelular
      * @param LineaCelularRepository $lineaCelularRepository
      * @return Response
      */
+    #[Route('/{id}/responsable', name: 'app_linea_celular_responsable', methods: ['GET', 'POST'])]
     public function responsable(Request $request, LineaCelular $lineaCelular, LineaCelularResponsableRepository $lineaCelularResopnsableRepository, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository)
     {
         try {
@@ -222,12 +222,12 @@ class LineaCelularController extends AbstractController
 
 
     /**
-     * @Route("/asociar_responsable", name="app_linea_celular_asociar_responsable", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param EntityManagerInterface $em
      * @return Response
      */
+    #[Route('/asociar_responsable', name: 'app_linea_celular_asociar_responsable', methods: ['GET', 'POST'])]
     public function asociarResponsable(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, EntityManagerInterface $em)
     {
         try {
@@ -248,13 +248,13 @@ class LineaCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_responsable", name="app_linea_celular_eliminar_responsable", methods={"GET"})
      * @param Request $request
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @param LineaCelularResponsableRepository $lineaCelularResponsableRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_responsable', name: 'app_linea_celular_eliminar_responsable', methods: ['GET'])]
     public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository)
     {
         try {

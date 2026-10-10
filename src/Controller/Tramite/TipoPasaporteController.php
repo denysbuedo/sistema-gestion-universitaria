@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/tramite/tipo_pasaporte")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPO_PASAPORTE")
  */
+#[Route('/tramite/tipo_pasaporte')]
 class TipoPasaporteController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_pasaporte_index", methods={"GET"})
      * @param tipoPasaporteRepository $tipoPasaporteRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_pasaporte_index', methods: ['GET'])]
     public function index(TipoPasaporteRepository $tipoPasaporteRepository)
     {
         return $this->render('modules/tramite/tipo_pasaporte/index.html.twig', [
@@ -32,11 +32,11 @@ class TipoPasaporteController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_pasaporte_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param tipoPasaporteRepository $tipoPasaporteRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_pasaporte_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoPasaporteRepository $tipoPasaporteRepository)
     {
         try {
@@ -60,12 +60,12 @@ class TipoPasaporteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_pasaporte_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoPasaporte $tipoPasaporte
      * @param tipoPasaporteRepository $tipoPasaporteRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_pasaporte_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoPasaporte $tipoPasaporte, TipoPasaporteRepository $tipoPasaporteRepository)
     {
         try {
@@ -89,11 +89,11 @@ class TipoPasaporteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_pasaporte_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param tipoPasaporte $tipoPasaporte
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_pasaporte_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoPasaporte $tipoPasaporte)
     {
         return $this->render('modules/tramite/tipo_pasaporte/detail.html.twig', [
@@ -102,11 +102,11 @@ class TipoPasaporteController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_pasaporte_eliminar", methods={"GET"})
      * @param tipoPasaporte $tipoPasaporte
      * @param tipoPasaporteRepository $tipoPasaporteRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_pasaporte_eliminar', methods: ['GET'])]
     public function eliminar(TipoPasaporte $tipoPasaporte, TipoPasaporteRepository $tipoPasaporteRepository)
     {
         try {

@@ -14,10 +14,10 @@ class NotificationController extends AbstractController
 {
 
     /**
-     * @Route("/notificaciones/usuario", name="app_notificaciones_usuario")
      * @param NotificacionesUsuarioRepository $notificacionesUsuarioRepository
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
+    #[Route('/notificaciones/usuario', name: 'app_notificaciones_usuario')]
     public function index(NotificacionesUsuarioRepository $notificacionesUsuarioRepository): Response
     {
 
@@ -29,9 +29,9 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * @Route("/notificaciones/usuario/todas", name="app_notificaciones_usuario_todas")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
+    #[Route('/notificaciones/usuario/todas', name: 'app_notificaciones_usuario_todas')]
     public function todas(NotificacionesUsuarioRepository $notificacionesUsuarioRepository): Response
     {
 
@@ -43,9 +43,9 @@ class NotificationController extends AbstractController
     }
 
     /**
-     * @Route("/notificaciones/usuario/eliminar/{id}", name="app_notificaciones_usuario_eliminar")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
+    #[Route('/notificaciones/usuario/eliminar/{id}', name: 'app_notificaciones_usuario_eliminar')]
     public function eliminar(EntityManagerInterface $entityManager, NotificacionesUsuario $id)
     {
 

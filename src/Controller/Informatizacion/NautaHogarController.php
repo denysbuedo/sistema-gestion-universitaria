@@ -15,16 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/nauta_hogar")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_NAUTA_HOGAR")
  */
+#[Route('/informatizacion/nauta_hogar')]
 class NautaHogarController extends AbstractController
 {
     /**
-     * @Route("/", name="app_nauta_hogar_index", methods={"GET", "POST"})
      * @param nautaHogarRepository $nautaHogarRepository
      * @return Response
      */
+    #[Route('/', name: 'app_nauta_hogar_index', methods: ['GET', 'POST'])]
     public function index(Request $request, NautaHogarRepository $nautaHogarRepository)
     {
         return $this->render('modules/informatizacion/nautaHogar/index.html.twig', [
@@ -34,11 +34,11 @@ class NautaHogarController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_nauta_hogar_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_nauta_hogar_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository)
     {
         try {
@@ -59,11 +59,11 @@ class NautaHogarController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/registrar-v2", name="app_nauta_hogar_registrar_v2", methods={"GET", "POST"})
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/registrar-v2', name: 'app_nauta_hogar_registrar_v2', methods: ['GET', 'POST'])]
     public function registrarV2(Request $request, PersonaRepository $personaRepository, Persona $persona, NautaHogarRepository $nautaHogarRepository)
     {
         try {
@@ -89,12 +89,12 @@ class NautaHogarController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_nauta_hogar_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param NautaHogar $nautaHogar
      * @param nautaHogarRepository $nautaHogarRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_nauta_hogar_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository)
     {
         try {
@@ -119,10 +119,10 @@ class NautaHogarController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_nauta_hogar_detail", methods={"GET", "POST"})
      * @param nautaHogar $nautaHogar
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_nauta_hogar_detail', methods: ['GET', 'POST'])]
     public function detail(NautaHogar $nautaHogar)
     {
         return $this->render('modules/informatizacion/nautaHogar/detail.html.twig', [
@@ -131,11 +131,11 @@ class NautaHogarController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_nauta_hogar_eliminar", methods={"GET"})
      * @param nautaHogar $nautaHogar
      * @param nautaHogarRepository $nautaHogarRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_nauta_hogar_eliminar', methods: ['GET'])]
     public function eliminar(NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository)
     {
         try {

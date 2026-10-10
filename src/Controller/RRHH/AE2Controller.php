@@ -28,17 +28,17 @@ use Symfony\Component\Serializer\SerializerInterface;
 use function Symfony\Component\String\u;
 
 /**
- * @Route("/rrhh/ae2")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_REPORTE_AE2")
  */
+#[Route('/rrhh/ae2')]
 class AE2Controller extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rrhh_reporte_ae2_index", methods={"GET"})
      * @param AE2Repository $AE2Repository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_reporte_ae2_index', methods: ['GET'])]
     public function index(AE2Repository $AE2Repository, PersonaRepository $personaRepository)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -50,11 +50,11 @@ class AE2Controller extends AbstractController
 
 
     /**
-     * @Route("/registrar", name="app_rrhh_reporte_ae2_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param AE2Repository $aE2Repository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rrhh_reporte_ae2_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository)
     {
         try {
@@ -109,12 +109,12 @@ class AE2Controller extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_rrhh_reporte_ae2_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param AE2 $ae2
      * @param AE2Repository $ae2Repository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae2_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository)
     {
         try {
@@ -150,10 +150,10 @@ class AE2Controller extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_reporte_ae2_detail", methods={"GET", "POST"})
      * @param AE2 $ae2
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae2_detail', methods: ['GET', 'POST'])]
     public function detail(AE2 $ae2)
     {
         return $this->render('modules/rrhh/reporte/ae2/detail.html.twig', [
@@ -162,12 +162,12 @@ class AE2Controller extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rrhh_reporte_ae2_eliminar", methods={"GET"})
      * @param Request $request
      * @param AE2 $ae2
      * @param AE2Repository $ae2Repository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rrhh_reporte_ae2_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, AE2 $ae2, AE2Repository $ae2Repository)
     {
         try {

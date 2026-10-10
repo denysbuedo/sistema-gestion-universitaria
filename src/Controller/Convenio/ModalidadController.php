@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/convenio/modalidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MODALIDAD")
  */
+#[Route('/convenio/modalidad')]
 class ModalidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_modalidad_index", methods={"GET"})
      * @param ModalidadRepository $modalidadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_modalidad_index', methods: ['GET'])]
     public function index(ModalidadRepository $modalidadRepository)
     {
         return $this->render('modules/convenio/modalidad/index.html.twig', [
@@ -32,11 +32,11 @@ class ModalidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_modalidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ModalidadRepository $modalidadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_modalidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ModalidadRepository $modalidadRepository)
     {
         try {
@@ -60,12 +60,12 @@ class ModalidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_modalidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Modalidad $modalidad
      * @param ModalidadRepository $modalidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_modalidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Modalidad $modalidad, ModalidadRepository $modalidadRepository)
     {
         try {
@@ -90,10 +90,10 @@ class ModalidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_modalidad_detail", methods={"GET", "POST"})
      * @param Modalidad $modalidad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_modalidad_detail', methods: ['GET', 'POST'])]
     public function detail(Modalidad $modalidad)
     {
         return $this->render('modules/convenio/modalidad/detail.html.twig', [
@@ -102,11 +102,11 @@ class ModalidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_modalidad_eliminar", methods={"GET"})
      * @param Modalidad $modalidad
      * @param ModalidadRepository $modalidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_modalidad_eliminar', methods: ['GET'])]
     public function eliminar(Modalidad $modalidad, ModalidadRepository $modalidadRepository)
     {
         try {

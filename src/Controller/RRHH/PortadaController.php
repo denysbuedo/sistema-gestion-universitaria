@@ -10,16 +10,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_RRHH")
  */
+#[Route('/rrhh/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_rrhh_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_rrhh_portada', methods: ['GET'])]
     public function index(AE2Repository $ae2Repo, AE3Repository $ae3Repo)
     {
         $mesesNombres = [

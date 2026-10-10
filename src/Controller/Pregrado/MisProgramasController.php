@@ -54,18 +54,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/mis_programas")
  * @IsGranted("ROLE_ADMIN", "ROLE_PREGRADO_MIS_PROGRAMAS")
  * @ORM\Entity
  * @ORM\Table(name="solicitud_programa_academico_aprobado_controller")
  */
+#[Route('/pregrado/mis_programas')]
 class MisProgramasController extends AbstractController
 {
 
     /**
-     * @Route("/asignados", name="app_pregrado_mis_programas_asignados", methods={"GET"})
      * @return Response
      */
+    #[Route('/asignados', name: 'app_pregrado_mis_programas_asignados', methods: ['GET'])]
     public function misProgramasAsignados(Utils $utils, EntityManagerInterface $entityManager, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         // 1. Validar usuario autenticado
@@ -100,9 +100,9 @@ class MisProgramasController extends AbstractController
     }
 
     /**
-     * @Route("/asignados_en_cum", name="app_pregrado_mis_programas_asignados_en_cum", methods={"GET"})
      * @return Response
      */
+    #[Route('/asignados_en_cum', name: 'app_pregrado_mis_programas_asignados_en_cum', methods: ['GET'])]
     public function misProgramasAsignadosEnCum(
         Utils                                              $utils,
         EntityManagerInterface                             $entityManager,
@@ -133,11 +133,11 @@ class MisProgramasController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/asignar_cum", name="app_pregrado_mis_programas_asignados_cum", methods={"GET", "POST"})
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademicoInstitucion
      * @return Response
      */
+    #[Route('/{id}/asignar_cum', name: 'app_pregrado_mis_programas_asignados_cum', methods: ['GET', 'POST'])]
     public function asignarCum(Utils $utils, SolicitudProgramaAcademicoInstitucionCumRepository $solicitudProgramaAcademicoInstitucionCumRepository, EntityManagerInterface $entityManager, InstitucionCumRepository $institucionCumRepository, SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         $datosEstructuraUsuarioAutenticado = $utils->obtenerDatosEstructuraUsuarioAutenticado($this->getUser()->getId());
@@ -180,8 +180,8 @@ class MisProgramasController extends AbstractController
 
 
     /**
-     * @Route("/pregrado/mis-programas/asignar-cum-ajax", name="app_pregrado_mis_programas_asignar_cum_ajax", methods={"POST"})
      */
+    #[Route('/pregrado/mis-programas/asignar-cum-ajax', name: 'app_pregrado_mis_programas_asignar_cum_ajax', methods: ['POST'])]
     public function asignarCumAjax(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $cumIds = $request->request->get('cum');
@@ -256,8 +256,8 @@ class MisProgramasController extends AbstractController
 
 
     /**
-     * @Route("/pregrado/mis-programas/eliminar-cum/{id}/{return}", name="app_pregrado_mis_programas_eliminar_cum")
      */
+    #[Route('/pregrado/mis-programas/eliminar-cum/{id}/{return}', name: 'app_pregrado_mis_programas_eliminar_cum')]
     public function eliminarUniversidadAjax(int $id, $return, EntityManagerInterface $em)
     {
 

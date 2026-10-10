@@ -15,17 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/municipio")
  */
+#[Route('/rrhh/municipio')]
 class MunicipioController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_municipio_index", methods={"GET"})
      * @param MunicipioRepository $municipioRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
      */
+    #[Route('/', name: 'app_municipio_index', methods: ['GET'])]
     public function index(MunicipioRepository $municipioRepository)
     {
         try {
@@ -39,12 +39,12 @@ class MunicipioController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_municipio_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param MunicipioRepository $municipioRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
      */
+    #[Route('/registrar', name: 'app_municipio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, MunicipioRepository $municipioRepository)
     {
         try {
@@ -68,13 +68,13 @@ class MunicipioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_municipio_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $municipio
      * @param MunicipioRepository $municipioRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
      */
+    #[Route('/{id}/modificar', name: 'app_municipio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Municipio $municipio, MunicipioRepository $municipioRepository)
     {
         try {
@@ -98,13 +98,13 @@ class MunicipioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar", name="app_municipio_eliminar", methods={"GET"})
      * @param Request $request
      * @param Municipio $municipio
      * @param MunicipioRepository $municipioRepository
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
      */
+    #[Route('/{id}/eliminar', name: 'app_municipio_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Municipio $municipio, MunicipioRepository $municipioRepository)
     {
         try {
@@ -122,12 +122,12 @@ class MunicipioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_municipio_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Municipio $municipio
      * @return Response
      * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
      */
+    #[Route('/{id}/detail', name: 'app_municipio_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Municipio $municipio)
     {
         return $this->render('modules/estructura/municipio/detail.html.twig', [
@@ -138,13 +138,13 @@ class MunicipioController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{id}/municipio_dado_provinvia", name="app_municipio_dado_provincia", methods={"GET"})
      * @param Request $request
      * @param $id
      * @param MunicipioRepository $municipioRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/{id}/municipio_dado_provinvia', name: 'app_municipio_dado_provincia', methods: ['GET'])]
     public function getMunicipiosDadoProvincia(Request $request, $id, MunicipioRepository $municipioRepository, Utils $utils): JsonResponse
     {
         try {

@@ -14,16 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/carrera")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CARRERA")
  */
+#[Route('/personal/carrera')]
 class CarreraController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_carrera_index", methods={"GET"})
      * @return Response
      */
+    #[Route('/', name: 'app_carrera_index', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
 //        try {
@@ -37,11 +37,11 @@ class CarreraController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_carrera_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CarreraRepository $carreraRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_carrera_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, CarreraRepository $carreraRepository)
     {
         try {
@@ -65,12 +65,12 @@ class CarreraController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_carrera_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $carrera
      * @param CarreraRepository $carreraRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_carrera_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Carrera $carrera, CarreraRepository $carreraRepository)
     {
         try {
@@ -93,12 +93,12 @@ class CarreraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_carrera_eliminar", methods={"GET"})
      * @param Request $request
      * @param Carrera $carrera
      * @param CarreraRepository $carreraRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_carrera_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Carrera $carrera, CarreraRepository $carreraRepository)
     {
         try {
@@ -116,12 +116,12 @@ class CarreraController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_carrera_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $carrera
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_carrera_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Carrera $carrera)
     {
         return $this->render('modules/personal/carrera/detail.html.twig', [

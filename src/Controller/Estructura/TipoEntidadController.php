@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/tipoEntidad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TYPENTY")
  */
+#[Route('/rrhh/tipoEntidad')]
 class TipoEntidadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_entidad_index", methods={"GET"})
      * @param TipoEntidadRepository $tipoEntidadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_entidad_index', methods: ['GET'])]
     public function index(TipoEntidadRepository $tipoEntidadRepository)
     {
         try {
@@ -37,11 +37,11 @@ class TipoEntidadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_entidad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoEntidadRepository $tipoEntidadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_entidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoEntidadRepository $tipoEntidadRepository)
     {
         try {
@@ -65,12 +65,12 @@ class TipoEntidadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_entidad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoEntidad
      * @param TipoEntidadRepository $tipoEntidadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_entidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoEntidad $tipoEntidad, TipoEntidadRepository $tipoEntidadRepository)
     {
         try {
@@ -93,12 +93,12 @@ class TipoEntidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_entidad_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoEntidad $tipoEntidad
      * @param TipoEntidadRepository $tipoEntidadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_entidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoEntidad $tipoEntidad, TipoEntidadRepository $tipoEntidadRepository)
     {
         try {
@@ -116,11 +116,11 @@ class TipoEntidadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_entidad_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoEntidad $tipoEntidad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_entidad_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoEntidad $tipoEntidad)
     {
         return $this->render('modules/estructura/tipo_entidad/detail.html.twig', [

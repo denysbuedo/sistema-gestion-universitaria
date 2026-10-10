@@ -15,14 +15,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/grupos")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_GEST_GRUPOS")
  */
+#[Route('/rrhh/grupos')]
 class GrupoController extends AbstractController
 {
     /**
-     * @Route("/", name="app_grupo_index")
      */
+    #[Route('/', name: 'app_grupo_index')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $registros = $entityManager->getRepository(Grupo::class)->findAll();
@@ -33,8 +33,8 @@ class GrupoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_grupo_registrar")
      */
+    #[Route('/registrar', name: 'app_grupo_registrar')]
     public function registrar(Request $request, EntityManagerInterface $entityManager): Response
     {
         $grupo = new Grupo();
@@ -60,8 +60,8 @@ class GrupoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_grupo_modificar")
      */
+    #[Route('/{id}/modificar', name: 'app_grupo_modificar')]
     public function modificar(Request $request, Grupo $grupo, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(GrupoType::class, $grupo);
@@ -99,8 +99,8 @@ class GrupoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_grupo_detail")
      */
+    #[Route('/{id}/detail', name: 'app_grupo_detail')]
     public function detail(Grupo $grupo): Response
     {
         return $this->render('modules/rrhh/grupo/detail.html.twig', [
@@ -109,8 +109,8 @@ class GrupoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_grupo_eliminar")
      */
+    #[Route('/{id}/eliminar', name: 'app_grupo_eliminar')]
     public function eliminar(Grupo $grupo, EntityManagerInterface $entityManager): Response
     {
         if ($grupo->getEstructuras()->count() > 0) {

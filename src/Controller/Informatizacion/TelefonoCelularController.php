@@ -24,17 +24,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/telefono_celular")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TELEFONO_CELULAR")
  */
+#[Route('/informatizacion/telefono_celular')]
 class TelefonoCelularController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_telefono_celular_index", methods={"GET"})
      * @param TelefonoCelularRepository $telefonoCelularRepository
      * @return Response
      */
+    #[Route('/', name: 'app_telefono_celular_index', methods: ['GET'])]
     public function index(TelefonoCelularRepository $telefonoCelularRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
     {
         $registros = $telefonoCelularRepository->findBy([], ['id' => 'desc']);
@@ -58,11 +58,11 @@ class TelefonoCelularController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_telefono_celular_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TelefonoCelularRepository $telefonoCelularRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_telefono_celular_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository)
     {
 //        try {
@@ -88,12 +88,12 @@ class TelefonoCelularController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_telefono_celular_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TelefonoCelular $telefonoCelular
      * @param TelefonoCelularRepository $telefonoCelularRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_telefono_celular_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository)
     {
         try {
@@ -122,10 +122,10 @@ class TelefonoCelularController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_telefono_celular_detail", methods={"GET", "POST"})
      * @param telefonoCelular $telefonoCelular
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_telefono_celular_detail', methods: ['GET', 'POST'])]
     public function detail(TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
     {
         $asignadas = [];
@@ -141,11 +141,11 @@ class TelefonoCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_telefono_celular_eliminar", methods={"GET"})
      * @param TelefonoCelular $telefonoCelular
      * @param TelefonoCelularRepository $telefonoCelularRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_telefono_celular_eliminar', methods: ['GET'])]
     public function eliminar(TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository)
     {
         try {
@@ -163,11 +163,11 @@ class TelefonoCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/responsable", name="app_telefono_celular_responsable", methods={"GET", "POST"})
      * @param Request $request
      * @param TelefonoCelular $telefonoCelular
      * @return Response
      */
+    #[Route('/{id}/responsable', name: 'app_telefono_celular_responsable', methods: ['GET', 'POST'])]
     public function responsable(Request $request, TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResopnsableRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -193,12 +193,12 @@ class TelefonoCelularController extends AbstractController
 
 
     /**
-     * @Route("/asociar_responsable", name="app_telefono_celular_asociar_responsable", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param EntityManagerInterface $em
      * @return Response
      */
+    #[Route('/asociar_responsable', name: 'app_telefono_celular_asociar_responsable', methods: ['GET', 'POST'])]
     public function asociarResponsable(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository, EntityManagerInterface $em)
     {
         try {
@@ -219,13 +219,13 @@ class TelefonoCelularController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_responsable", name="app_telefono_celular_eliminar_responsable", methods={"GET"})
      * @param Request $request
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @param TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_responsable', name: 'app_telefono_celular_eliminar_responsable', methods: ['GET'])]
     public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
     {
         try {

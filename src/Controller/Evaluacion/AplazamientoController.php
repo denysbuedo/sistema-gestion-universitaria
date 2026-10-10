@@ -32,17 +32,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/aplazamiento")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_APLAZAMIENTO")
  */
+#[Route('/evaluacion/aplazamiento')]
 class AplazamientoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_aplazamiento_index", methods={"GET"})
      * @param AplazamientoSolicitudRepository $aplazamientoSolicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_aplazamiento_index', methods: ['GET'])]
     public function index(AplazamientoSolicitudRepository $aplazamientoSolicitudRepository)
     {
         $registros = $aplazamientoSolicitudRepository->findBy([], ['id' => 'desc']);
@@ -69,12 +69,12 @@ class AplazamientoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar", name="app_aplazamiento_aprobar", methods={"GET"})
      * @param Request $request
      * @param AplazamientoSolicitud $aplazamientoSolicitud
      * @param AplazamientoSolicitudRepository $aplazamientoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/aprobar', name: 'app_aplazamiento_aprobar', methods: ['GET'])]
     public function aprobar(Request $request, EstadoSolicitudRepository $estadoSolicitudRepository, SolicitudRepository $solicitudRepository, AplazamientoSolicitud $aplazamientoSolicitud, AplazamientoSolicitudRepository $aplazamientoSolicitudRepository, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {
@@ -97,12 +97,12 @@ class AplazamientoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/rechazar", name="app_aplazamiento_rechazar", methods={"GET"})
      * @param Request $request
      * @param AplazamientoSolicitud $aplazamientoSolicitud
      * @param AplazamientoSolicitudRepository $aplazamientoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/rechazar', name: 'app_aplazamiento_rechazar', methods: ['GET'])]
     public function rechazar(Request $request, AplazamientoSolicitud $aplazamientoSolicitud, AplazamientoSolicitudRepository $aplazamientoSolicitudRepository, EstadoAplazamientoRepository $estadoAplazamientoRepository)
     {
         try {
@@ -120,12 +120,12 @@ class AplazamientoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar", name="app_aplazamiento_eliminar", methods={"GET"})
      * @param Request $request
      * @param AplazamientoSolicitud $aplazamientoSolicitud
      * @param AplazamientoSolicitudRepository $aplazamientoSolicitudRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_aplazamiento_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, AplazamientoSolicitud $aplazamientoSolicitud, AplazamientoSolicitudRepository $aplazamientoSolicitudRepository)
     {
         try {

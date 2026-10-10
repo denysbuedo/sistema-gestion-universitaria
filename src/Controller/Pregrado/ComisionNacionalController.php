@@ -20,18 +20,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/comision_nacional")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_COMNACION")
  */
+#[Route('/pregrado/comision_nacional')]
 class ComisionNacionalController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_comision_nacional_index", methods={"GET"})
      * @param Request $request
      * @param ComisionNacionalRepository $comisionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_comision_nacional_index', methods: ['GET'])]
     public function index(Request $request, ComisionNacionalRepository $comisionRepository, MiembrosComisionNacionalRepository $miembrosComisionRepository)
     {
         $request->getSession()->remove('array_personas_asignadas');
@@ -49,7 +49,6 @@ class ComisionNacionalController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_comision_nacional_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param ComisionNacionalRepository $comisionRepository
@@ -57,6 +56,7 @@ class ComisionNacionalController extends AbstractController
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_comision_nacional_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EntityManagerInterface $em, ComisionNacionalRepository $comisionRepository, RolComisionRepository $rolComisionRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -109,10 +109,10 @@ class ComisionNacionalController extends AbstractController
 
 
     /**
-     * @Route("/asociar_persona", name="app_comision_nacional_asociar_persona_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/asociar_persona', name: 'app_comision_nacional_asociar_persona_registrar', methods: ['GET', 'POST'])]
     public function asociarPersona(Request $request)
     {
         try {
@@ -134,11 +134,11 @@ class ComisionNacionalController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar_persona_asociada", name="app_comision_nacional_eliminar_persona_asignada_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/eliminar_persona_asociada', name: 'app_comision_nacional_eliminar_persona_asignada_registrar', methods: ['GET', 'POST'])]
     public function eliminarPersonaAsociada(Request $request, Persona $persona)
     {
         try {
@@ -156,7 +156,6 @@ class ComisionNacionalController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_comision_nacional_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param MiembrosComisionRepository $miembrosComisionRepository
      * @param Comision $comision
@@ -165,6 +164,7 @@ class ComisionNacionalController extends AbstractController
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_comision_nacional_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, MiembrosComisionNacionalRepository $miembrosComisionRepository, ComisionNacional $comision, ComisionNacionalRepository $comisionRepository, RolComisionRepository $rolComisionRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -203,7 +203,6 @@ class ComisionNacionalController extends AbstractController
 
 
     /**
-     * @Route("/asociar_persona_modificar", name="app_comision_nacional_asociar_persona_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param RolComisionRepository $rolComisionRepository
@@ -211,6 +210,7 @@ class ComisionNacionalController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
+    #[Route('/asociar_persona_modificar', name: 'app_comision_nacional_asociar_persona_modificar', methods: ['GET', 'POST'])]
     public function asociarPersonaModificar(Request $request, PersonaRepository $personaRepository, RolComisionRepository $rolComisionRepository, ComisionNacionalRepository $comisionRepository, EntityManagerInterface $em)
     {
         try {
@@ -232,13 +232,13 @@ class ComisionNacionalController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_persona_asignada_modificar", name="app_comision_nacional_eliminar_persona_asignada_modificar", methods={"GET"})
      * @param Request $request
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @param MiembrosComisionRepository $miembrosComisionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_persona_asignada_modificar', name: 'app_comision_nacional_eliminar_persona_asignada_modificar', methods: ['GET'])]
     public function eliminarPersonaAsignadaModificar(Request $request, Persona $persona, PersonaRepository $personaRepository, MiembrosComisionNacionalRepository $miembrosComisionRepository)
     {
         try {
@@ -258,11 +258,11 @@ class ComisionNacionalController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_comision_nacional_detail", methods={"GET", "POST"})
      * @param ComisionNacional $comision
      * @param MiembrosComisionNacionalRepository $miembrosComisionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_comision_nacional_detail', methods: ['GET', 'POST'])]
     public function detail(ComisionNacional $comision, MiembrosComisionNacionalRepository $miembrosComisionRepository)
     {
         return $this->render('modules/pregrado/comision_nacional/detail.html.twig', [
@@ -272,12 +272,12 @@ class ComisionNacionalController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_comision_nacional_eliminar", methods={"GET"})
      * @param Request $request
      * @param Comision $comision
      * @param ComisionNacionalRepository $comisionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_comision_nacional_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, ComisionNacional $comision, ComisionNacionalRepository $comisionRepository)
     {
         try {

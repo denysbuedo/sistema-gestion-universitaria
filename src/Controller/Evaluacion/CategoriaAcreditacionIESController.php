@@ -63,16 +63,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/evaluacion/categoria_acreditacion_ies")
  * @IsGranted("ROLE_ADMIN", "ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION")
  */
+#[Route('/evaluacion/categoria_acreditacion_ies')]
 class CategoriaAcreditacionIESController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_evaluacion_categoria_acreditacion_ies_index", methods={"GET"})
      * @return Response
      */
+    #[Route('/', name: 'app_evaluacion_categoria_acreditacion_ies_index', methods: ['GET'])]
     public function index(InstitucionRepository $institucionRepository)
     {
         return $this->render('modules/evaluacion/categoria_acreditacion_ies/index.html.twig', [
@@ -82,12 +82,12 @@ class CategoriaAcreditacionIESController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_evaluacion_categoria_acreditacion_ies_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Institucion $institucion
      * @param CategoriaAcreditacionIESRepository $categoriaAcreditacionIESRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_evaluacion_categoria_acreditacion_ies_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Institucion $institucion, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, CategoriaAcreditacionIESRepository $categoriaAcreditacionIESRepository, InstitucionRepository $institucionRepository)
     {
         try {

@@ -12,17 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/publico_objetivo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PUBLICO_OBJETIVO")
  */
+#[Route('/informatizacion/publico_objetivo')]
 class PublicoObjetivoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_publico_objetivo_index", methods={"GET"})
      * @param PublicoObjetivoRepository $PublicoObjetivoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_publico_objetivo_index', methods: ['GET'])]
     public function index(PublicoObjetivoRepository $PublicoObjetivoRepository)
     {
         return $this->render('modules/informatizacion/publicoObjetivo/index.html.twig', [
@@ -31,11 +31,11 @@ class PublicoObjetivoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_publico_objetivo_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param PublicoObjetivoRepository $publicoObjetivoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_publico_objetivo_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PublicoObjetivoRepository $publicoObjetivoRepository)
     {
         try {
@@ -59,12 +59,12 @@ class PublicoObjetivoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_publico_objetivo_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param PublicoObjetivo $publicoObjetivo
      * @param PublicoObjetivoRepository $publicoObjetivoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_publico_objetivo_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PublicoObjetivo $publicoObjetivo, PublicoObjetivoRepository $publicoObjetivoRepository)
     {
         try {
@@ -89,10 +89,10 @@ class PublicoObjetivoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_publico_objetivo_detail", methods={"GET", "POST"})
      * @param publicoObjetivo $publicoObjetivo
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_publico_objetivo_detail', methods: ['GET', 'POST'])]
     public function detail(PublicoObjetivo $publicoObjetivo)
     {
         return $this->render('modules/informatizacion/publicoObjetivo/detail.html.twig', [
@@ -101,11 +101,11 @@ class PublicoObjetivoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_publico_objetivo_eliminar", methods={"GET"})
      * @param PublicoObjetivo $publicoObjetivo
      * @param PublicoObjetivoRepository $publicoObjetivoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_publico_objetivo_eliminar', methods: ['GET'])]
     public function eliminar(PublicoObjetivo $publicoObjetivo, PublicoObjetivoRepository $publicoObjetivoRepository)
     {
         try {

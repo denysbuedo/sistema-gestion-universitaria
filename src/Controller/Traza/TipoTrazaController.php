@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/traza/tipo_traza")
  * @IsGranted("ROLE_ADMIN", "ROLE_TYPTRZ")
  */
+#[Route('/traza/tipo_traza')]
 class TipoTrazaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_traza_index", methods={"GET"})
      * @param TipoTrazaRepository $tipoTrazaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_traza_index', methods: ['GET'])]
     public function index(TipoTrazaRepository $tipoTrazaRepository)
     {
 
@@ -34,11 +34,11 @@ class TipoTrazaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_traza_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoTrazaRepository $tipoTrazaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_traza_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoTrazaRepository $tipoTrazaRepository)
     {
         try {
@@ -62,12 +62,12 @@ class TipoTrazaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_traza_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoTraza $tipoTraza
      * @param TipoTrazaRepository $tipoTrazaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_traza_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoTraza $tipoTraza, TipoTrazaRepository $tipoTrazaRepository)
     {
         try {
@@ -92,12 +92,12 @@ class TipoTrazaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_traza_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoTraza
      * @param TipoTrazaRepository $tipoTrazaRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_traza_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoTraza $tipoTraza)
     {
         return $this->render('modules/traza/tipo_traza/detail.html.twig', [
@@ -106,12 +106,12 @@ class TipoTrazaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_traza_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoTraza $tipoTraza
      * @param TipoTrazaRepository $tipoTrazaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_traza_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoTraza $tipoTraza, TipoTrazaRepository $tipoTrazaRepository)
     {
         try {

@@ -49,19 +49,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/solicitud_programa_academico_aprobado")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROGAPROB")
  * @ORM\Entity
  * @ORM\Table(name="solicitud_programa_academico_aprobado_controller")
  */
+#[Route('/pregrado/solicitud_programa_academico_aprobado')]
 class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_solicitud_programa_academico_aprobado_index", methods={"GET"})
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_solicitud_programa_academico_aprobado_index', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository)
     {
         $response = [];
@@ -83,7 +83,6 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     /**
      *
      * /**
-     * @Route("/{id}/detail", name="app_solicitud_programa_academico_aprobado_detail", methods={"GET", "POST"})
      * @param ProgramaAcademicoReabiertoInstitucionRepository $programaAcademicoReabiertoInstitucionRepository
      * @param SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
      * @param ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository
@@ -91,6 +90,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_solicitud_programa_academico_aprobado_detail', methods: ['GET', 'POST'])]
     public function detail(ProgramaAcademicoReabiertoRepository                 $programaAcademicoReabiertoRepository,
                            ProgramaAcademicoReabiertoInstitucionRepository      $programaAcademicoReabiertoInstitucionRepository,
                            SolicitudProgramaAcademicoPlanEstudioRepository      $solicitudProgramaAcademicoPlanEstudioRepository,
@@ -131,12 +131,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_universidad", name="app_solicitud_programa_academico_aprobado_asignar_universidad", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademico
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_universidad', name: 'app_solicitud_programa_academico_aprobado_asignar_universidad', methods: ['GET', 'POST'])]
     public function asignarUniversidad(Request $request, Utils $utils, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         $datosEstructuraUsuarioAutenticado = $utils->obtenerDatosEstructuraUsuarioAutenticado($this->getUser()->getId());
@@ -239,11 +239,11 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_universidad", name="app_solicitud_programa_academico_aprobado_eliminar_universidad", methods={"GET"})
      * @param SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_universidad', name: 'app_solicitud_programa_academico_aprobado_eliminar_universidad', methods: ['GET'])]
     public function eliminarUniversidad(SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         try {
@@ -262,12 +262,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_plan_estudio", name="app_solicitud_programa_academico_aprobado_asignar_plan_estudio", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademico
      * @param SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_plan_estudio', name: 'app_solicitud_programa_academico_aprobado_asignar_plan_estudio', methods: ['GET', 'POST'])]
     public function asignarPlanEstudio(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         try {
@@ -304,11 +304,11 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_plan_estudio", name="app_solicitud_programa_academico_aprobado_eliminar_plan_estudio", methods={"GET"})
      * @param SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
      * @param SolicitudProgramaAcademicoPlanEstudio $solicitudProgramaAcademicoPlanEstudio
      * @return Response
      */
+    #[Route('/{id}/eliminar_plan_estudio', name: 'app_solicitud_programa_academico_aprobado_eliminar_plan_estudio', methods: ['GET'])]
     public function eliminarPlanEstudio(Utils $utils, SolicitudProgramaAcademicoPlanEstudio $solicitudProgramaAcademicoPlanEstudio, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         try {
@@ -334,12 +334,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/asignar_comision", name="app_solicitud_programa_academico_aprobado_asignar_comision", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademico
      * @param SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository
      * @return Response
      */
+    #[Route('/{id}/asignar_comision', name: 'app_solicitud_programa_academico_aprobado_asignar_comision', methods: ['GET', 'POST'])]
     public function asignarComision(Request $request, Utils $utils, MiembrosComisionNacionalRepository $miembrosComisionNacionalRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         try {
@@ -388,11 +388,11 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_comision", name="app_solicitud_programa_academico_aprobado_eliminar_comision", methods={"GET"})
      * @param SolicitudProgramaAcademicoComisionNacional $solicitudProgramaAcademicoComisionNacional
      * @param SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_comision', name: 'app_solicitud_programa_academico_aprobado_eliminar_comision', methods: ['GET'])]
     public function eliminarComision(Utils $utils, SolicitudProgramaAcademicoComisionNacional $solicitudProgramaAcademicoComisionNacional, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository)
     {
         try {
@@ -418,13 +418,13 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/reabrir", name="app_solicitud_programa_academico_aprobado_reabrir", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoProgramaAcademicoRepository $estadoProgramaRepository
      * @param SolicitudProgramaAcademico $solicitudPrograma
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/reabrir', name: 'app_solicitud_programa_academico_aprobado_reabrir', methods: ['GET', 'POST'])]
     public function reabrir(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoReabiertoRepository $programaAcademicoReabiertoRepository, ProgramaAcademicoReabiertoInstitucionRepository $programaAcademicoReabiertoInstitucionRepository, InstitucionRepository $institucionRepository)
     {
         try {
@@ -517,13 +517,13 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/desactivar", name="app_solicitud_programa_academico_aprobado_desactivar", methods={"GET", "POST"})
      * @param Request $request
      * @param EstadoProgramaAcademicoRepository $estadoProgramaRepository
      * @param SolicitudProgramaAcademico $solicitudPrograma
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/desactivar', name: 'app_solicitud_programa_academico_aprobado_desactivar', methods: ['GET', 'POST'])]
     public function desactivar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository)
     {
         try {
@@ -608,12 +608,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_solicitud_programa_academico_aprobar_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademico $solicitudPrograma
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_solicitud_programa_academico_aprobar_modificar', methods: ['GET', 'POST'])]
     public function aprobarModificar(Request $request, SolicitudProgramaAcademico $solicitudPrograma, EntityManagerInterface $em, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         try {
@@ -667,13 +667,13 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/cambio_categoria_acreditacion", name="app_solicitud_programa_academico_aprobar_guardar_cambio_categoria_acreditacion", methods={"POST"})
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param CategoriaAcreditacionRepository $categoriaAcreditacionRepository
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return JsonResponse
      */
+    #[Route('/cambio_categoria_acreditacion', name: 'app_solicitud_programa_academico_aprobar_guardar_cambio_categoria_acreditacion', methods: ['POST'])]
     public function guardarConfiguracion(Request $request, EntityManagerInterface $em, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
         try {
@@ -699,10 +699,10 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_solicitud_programa_academico_aprobar_universidades_asignadas_exportar_pdf", methods={"GET", "POST"})
      * @param HandlerFop $handFop
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_solicitud_programa_academico_aprobar_universidades_asignadas_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, HandlerFop $handFop)
     {
         $export = $request->getSession()->get('universidades_asignadas_' . $this->getUser()->getId());

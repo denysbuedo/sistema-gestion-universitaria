@@ -16,17 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/organismo_formador")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ORGFORMA")
  */
+#[Route('/pregrado/organismo_formador')]
 class OrganismoFormadorController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_organismo_formador_index", methods={"GET"})
      * @param OrganismoFormadorRepository $organismoFormadorRepository
      * @return Response
      */
+    #[Route('/', name: 'app_organismo_formador_index', methods: ['GET'])]
     public function index(OrganismoFormadorRepository $organismoFormadorRepository)
     {
         return $this->render('modules/pregrado/organismo_formador/index.html.twig', [
@@ -35,11 +35,11 @@ class OrganismoFormadorController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_organismo_formador_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param OrganismoFormadorRepository $organismoFormadorRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_organismo_formador_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, OrganismoFormadorRepository $organismoFormadorRepository)
     {
         try {
@@ -63,12 +63,12 @@ class OrganismoFormadorController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_organismo_formador_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param OrganismoFormador $organismoFormador
      * @param OrganismoFormadorRepository $organismoFormadorRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_organismo_formador_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, OrganismoFormador $organismoFormador, OrganismoFormadorRepository $organismoFormadorRepository)
     {
         try {
@@ -92,11 +92,11 @@ class OrganismoFormadorController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_organismo_formador_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param OrganismoFormador $organismoFormador
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_organismo_formador_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, OrganismoFormador $organismoFormador)
     {
         return $this->render('modules/pregrado/organismo_formador/detail.html.twig', [
@@ -105,11 +105,11 @@ class OrganismoFormadorController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_organismo_formador_eliminar", methods={"GET"})
      * @param OrganismoFormador $organismoFormador
      * @param OrganismoFormadorRepository $organismoFormadorRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_organismo_formador_eliminar', methods: ['GET'])]
     public function eliminar(OrganismoFormador $organismoFormador, OrganismoFormadorRepository $organismoFormadorRepository)
     {
         try {

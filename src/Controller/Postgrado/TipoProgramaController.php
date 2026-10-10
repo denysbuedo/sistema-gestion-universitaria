@@ -15,17 +15,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/tipo_programa")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_TIPPROGRAM")
  */
+#[Route('/postgrado/tipo_programa')]
 class TipoProgramaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_tipo_programa_index", methods={"GET"})
      * @param TipoProgramaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_tipo_programa_index', methods: ['GET'])]
     public function index(TipoProgramaRepository $tipoProgramaRepository)
     {
         return $this->render('modules/postgrado/tipo_programa/index.html.twig', [
@@ -34,11 +34,11 @@ class TipoProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_tipo_programa_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param TipoProgramaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_tipo_programa_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, TipoProgramaRepository $tipoProgramaRepository)
     {
         try {
@@ -62,12 +62,12 @@ class TipoProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_tipo_programa_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoPrograma
      * @param TipoProgramaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_tipo_programa_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, TipoPrograma $tipoPrograma, TipoProgramaRepository $tipoProgramaRepository)
     {
         try {
@@ -91,12 +91,12 @@ class TipoProgramaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_tipo_programa_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $tipoPrograma
      * @param TipoProgramaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_tipo_programa_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, TipoPrograma $tipoPrograma)
     {
         return $this->render('modules/postgrado/tipo_programa/detail.html.twig', [
@@ -105,12 +105,12 @@ class TipoProgramaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_tipo_programa_eliminar", methods={"GET"})
      * @param Request $request
      * @param TipoPrograma $tipoPrograma
      * @param TipoProgramaRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_tipo_programa_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, TipoPrograma $tipoPrograma, TipoProgramaRepository $tipoProgramaRepository)
     {
         try {

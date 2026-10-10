@@ -9,16 +9,16 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Psr\Log\LoggerInterface;
 
 /**
- * @Route("/profile")
  */
+#[Route('/profile')]
 class ProfileController extends AbstractController
 {
    
     /**
-     * @Route("/gotochat", name="app_chat_redirect", methods={"GET"})
      * @param ContainerInterface $container
      * @return Response
      */
+    #[Route('/gotochat', name: 'app_chat_redirect', methods: ['GET'])]
     public function gotoChar(ContainerInterface $container)
     {            
         $url = $container->getParameter('fullLoginUrlChat');

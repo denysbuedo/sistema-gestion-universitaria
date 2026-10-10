@@ -20,20 +20,20 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/traza/traza")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_TRAZAS")
  */
+#[Route('/traza/traza')]
 class TrazaController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_traza_index", methods={"GET"})
      * @param TrazaRepository $trazaRepository
      * @param PersonaRepository $personaRepository
      * @param UserRepository $userRepository
      * @param ConfiguracionTrazaRepository $configuracionTrazaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_traza_index', methods: ['GET'])]
     public function index(TrazaRepository $trazaRepository, PersonaRepository $personaRepository, UserRepository $userRepository, ConfiguracionTrazaRepository $configuracionTrazaRepository)
     {
         $persona = $personaRepository->findOneBy(['usuario' => $userRepository->find($this->getUser()->getId())]);
@@ -52,10 +52,10 @@ class TrazaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_traza_detail", methods={"GET", "POST"})
      * @param Traza $traza
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_traza_detail', methods: ['GET', 'POST'])]
     public function detail(Traza $traza, Utils $utils)
     {
        $registros = $utils->procesarTraza(json_decode($traza->getDataAnterior(), true), json_decode($traza->getData(), true));
@@ -69,12 +69,12 @@ class TrazaController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_traza_exportar_pdf", methods={"GET", "POST"})
      * @param Request $request
      * @param \App\Services\HandlerFop $handFop
      * @param TrazaRepository $trazaRepository
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_traza_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, \App\Services\HandlerFop $handFop, TrazaRepository $trazaRepository)
     {
         $export = $trazaRepository->getExportarListado();
@@ -86,12 +86,12 @@ class TrazaController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/configurar_traza", name="app_traza_configuracion", methods={"GET", "POST"})
      * @param PersonaRepository $personaRepository
      * @param UserRepository $userRepository
      * @param ConfiguracionTrazaRepository $configuracionTrazaRepository
      * @return JsonResponse
      */
+    #[Route('/configurar_traza', name: 'app_traza_configuracion', methods: ['GET', 'POST'])]
     public function configurarTraza(PersonaRepository $personaRepository, UserRepository $userRepository, ConfiguracionTrazaRepository $configuracionTrazaRepository)
     {
         try {

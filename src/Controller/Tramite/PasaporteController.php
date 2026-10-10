@@ -33,17 +33,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/tramite/pasaporte")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PASAPORTE")
  */
+#[Route('/tramite/pasaporte')]
 class PasaporteController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_pasaporte_index", methods={"GET"})
      * @param pasaporteRepository $pasaporteRepository
      * @return Response
      */
+    #[Route('/', name: 'app_pasaporte_index', methods: ['GET'])]
     public function index(PasaporteRepository $pasaporteRepository, DocumentoSalidaRepository $documentoSalidaRepository)
     {
         $pasaportes = $pasaporteRepository->findBy([], ['activo' => 'desc', 'id' => 'desc']);
@@ -62,13 +62,13 @@ class PasaporteController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_pasaporte_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param ResponsableRepository $responsableRepository
      * @param Utils $utils
      * @return Response
      */
+    #[Route('/registrar', name: 'app_pasaporte_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, ResponsableRepository $responsableRepository, Utils $utils)
     {
         try {
@@ -90,11 +90,11 @@ class PasaporteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/registrar-v2", name="app_pasaporte_registrar_v2", methods={"GET", "POST"})
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/registrar-v2', name: 'app_pasaporte_registrar_v2', methods: ['GET', 'POST'])]
     public function registrarV2(Request $request, Persona $persona, PasaporteRepository $pasaporteRepository, FichaSalidaRepository $fichaSalidaRepository)
     {
         try {
@@ -155,12 +155,12 @@ class PasaporteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_pasaporte_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Pasaporte $pasaporte
      * @param pasaporteRepository $pasaporteRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_pasaporte_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Pasaporte $pasaporte, PasaporteRepository $pasaporteRepository, DocumentoSalidaRepository $documentoSalidaRepository)
     {
         try {
@@ -217,11 +217,11 @@ class PasaporteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_pasaporte_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param pasaporte $pasaporte
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_pasaporte_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Pasaporte $pasaporte)
     {
         return $this->render('modules/tramite/pasaporte/detail.html.twig', [
@@ -230,12 +230,12 @@ class PasaporteController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_pasaporte_eliminar", methods={"GET"})
      * @param Request $request
      * @param Pasaporte $pasaporte $pasaporte
      * @param PasaporteRepository $pasaporteRepository $pasaporteRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_pasaporte_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Pasaporte $pasaporte, PasaporteRepository $pasaporteRepository)
     {
         try {
@@ -255,13 +255,13 @@ class PasaporteController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/{tipo}/{idPersona}/get_pasaporte_dado_tipo", name="app_pasaporte_get_pasaporte_dado_tipo", methods={"GET"})
      * @param Request $request
      * @param $tipo
      * @param $idPersona
      * @param PasaporteRepository $pasaporteRepository
      * @return JsonResponse
      */
+    #[Route('/{tipo}/{idPersona}/get_pasaporte_dado_tipo', name: 'app_pasaporte_get_pasaporte_dado_tipo', methods: ['GET'])]
     public function getPasaporteDadoTipo(Request $request, $tipo, $idPersona, PasaporteRepository $pasaporteRepository, PersonaRepository $personaRepository, TipoPasaporteRepository $tipoPasaporteRepository): JsonResponse
     {
         try {
@@ -286,10 +286,10 @@ class PasaporteController extends AbstractController
 
 
     /**
-     * @Route("/asignar_pasaporte", name="app_tramites_asignar_pasaporte", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/asignar_pasaporte', name: 'app_tramites_asignar_pasaporte', methods: ['GET', 'POST'])]
     public function asignarPasaporteTramites(Request $request, EntityManagerInterface $entityManager, DocumentoSalidaRepository $documentoSalidaRepository, PasaporteRepository $pasaporteRepository)
     {
         try {
@@ -319,10 +319,10 @@ class PasaporteController extends AbstractController
 
 
     /**
-     * @Route("/get_documentos_salida", name="app_tramites_get_documentos_salida", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/get_documentos_salida', name: 'app_tramites_get_documentos_salida', methods: ['GET', 'POST'])]
     public function getDocumentosSalidasDadoId(Request $request, EntityManagerInterface $entityManager, DocumentoSalidaRepository $documentoSalidaRepository, PasaporteRepository $pasaporteRepository)
     {
         try {

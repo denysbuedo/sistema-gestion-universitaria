@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/postgrado/rol_comision")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ROLESPOS")
  */
+#[Route('/postgrado/rol_comision')]
 class RolComisionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rol_comision_index", methods={"GET"})
      * @param RolComisionRepository $rolComisionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_rol_comision_index', methods: ['GET'])]
     public function index(RolComisionRepository $rolComisionRepository)
     {
         return $this->render('modules/postgrado/rol_comision/index.html.twig', [
@@ -33,11 +33,11 @@ class RolComisionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_rol_comision_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param RolComisionRepository $rolComisionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rol_comision_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, RolComisionRepository $rolComisionRepository)
     {
         try {
@@ -61,12 +61,12 @@ class RolComisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_rol_comision_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $rolComision
      * @param RolComisionRepository $rolComisionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rol_comision_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, RolComision $rolComision, RolComisionRepository $rolComisionRepository)
     {
         try {
@@ -90,12 +90,12 @@ class RolComisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_rol_comision_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $rolComision
      * @param RolComisionRepository $rolComisionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rol_comision_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, RolComision $rolComision)
     {
         return $this->render('modules/postgrado/rol_comision/detail.html.twig', [
@@ -104,12 +104,12 @@ class RolComisionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rol_comision_eliminar", methods={"GET"})
      * @param Request $request
      * @param RolComision $rolComision
      * @param RolComisionRepository $rolComisionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rol_comision_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, RolComision $rolComision, RolComisionRepository $rolComisionRepository)
     {
         try {

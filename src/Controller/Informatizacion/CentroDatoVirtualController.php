@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/centro_dato_virtual")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CENTRO_DATO_VIRTUAL")
  */
+#[Route('/informatizacion/centro_dato_virtual')]
 class CentroDatoVirtualController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_centro_dato_virtual_index", methods={"GET"})
      * @param CentroDatoVirtualRepository $centroDatoVirtualRepository
      * @return Response
      */
+    #[Route('/', name: 'app_centro_dato_virtual_index', methods: ['GET'])]
     public function index(CentroDatoVirtualRepository $centroDatoVirtualRepository)
     {
         return $this->render('modules/informatizacion/centroDatoVirtual/index.html.twig', [
@@ -32,11 +32,11 @@ class CentroDatoVirtualController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_centro_dato_virtual_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CentroDatoVirtualRepository $centroDatoVirtualRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_centro_dato_virtual_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, CentroDatoVirtualRepository $centroDatoVirtualRepository)
     {
         try {
@@ -60,12 +60,12 @@ class CentroDatoVirtualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_centro_dato_virtual_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param CentroDatoVirtual $centroDatoVirtual
      * @param CentroDatoVirtualRepository $centroDatoVirtualRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_centro_dato_virtual_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, CentroDatoVirtual $centroDatoVirtual, CentroDatoVirtualRepository $centroDatoVirtualRepository)
     {
         try {
@@ -90,10 +90,10 @@ class CentroDatoVirtualController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_centro_dato_virtual_detail", methods={"GET", "POST"})
      * @param centroDatoVirtual $centroDatoVirtual
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_centro_dato_virtual_detail', methods: ['GET', 'POST'])]
     public function detail(CentroDatoVirtual $centroDatoVirtual)
     {
         return $this->render('modules/informatizacion/centroDatoVirtual/detail.html.twig', [
@@ -102,11 +102,11 @@ class CentroDatoVirtualController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_centro_dato_virtual_eliminar", methods={"GET"})
      * @param CentroDatoVirtual $centroDatoVirtual
      * @param CentroDatoVirtualRepository $centroDatoVirtualRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_centro_dato_virtual_eliminar', methods: ['GET'])]
     public function eliminar(CentroDatoVirtual $centroDatoVirtual, CentroDatoVirtualRepository $centroDatoVirtualRepository)
     {
         try {

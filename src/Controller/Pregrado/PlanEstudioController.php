@@ -30,17 +30,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
- * @Route("/pregrado/plan_estudio")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PLANEST")
  */
+#[Route('/pregrado/plan_estudio')]
 class PlanEstudioController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_plan_estudio_index", methods={"GET"})
      * @param PlanEstudioRepository $planEstudioRepository
      * @return Response
      */
+    #[Route('/', name: 'app_plan_estudio_index', methods: ['GET'])]
     public function index(PlanEstudioRepository $planEstudioRepository, RequestStack $requestStack)
     {
         $requestStack->getSession()->remove('documentosPlanEstudio');
@@ -50,10 +50,10 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_plan_estudio_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/registrar', name: 'app_plan_estudio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EntityManagerInterface $em, RequestStack $requestStack, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, DocumentoRepository $documentoRepository, CursoAcademicoRepository $cursoAcademicoRepository)
     {
         try {
@@ -118,10 +118,10 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/registo-temporal-doc", name="app_plan_estudio_registro_temporal_doc", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/registo-temporal-doc', name: 'app_plan_estudio_registro_temporal_doc', methods: ['GET', 'POST'])]
     public function registroTemporalDeDocumento(Request $request, RequestStack $requestStack)
     {
         try {
@@ -153,12 +153,12 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_plan_estudio_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param PlanEstudio $planEstudio
      * @param PlanEstudioRepository $planEstudioRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_plan_estudio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, RequestStack $requestStack, planEstudio $planEstudio, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
     {
         try {
@@ -211,10 +211,10 @@ class PlanEstudioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_plan_estudio_detail", methods={"GET", "POST"})
      * @param PlanEstudio $tipoPrograma
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_plan_estudio_detail', methods: ['GET', 'POST'])]
     public function detail(PlanEstudio $planEstudio, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
     {
         return $this->render('modules/pregrado/plan_estudio/detail.html.twig', [
@@ -224,11 +224,11 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_plan_estudio_eliminar", methods={"GET"})
      * @param planEstudio $planEstudio
      * @param PlanEstudioRepository $planEstudioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_plan_estudio_eliminar', methods: ['GET'])]
     public function eliminar(PlanEstudio $planEstudio, PlanEstudioRepository $planEstudioRepository)
     {
         try {
@@ -246,12 +246,12 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificaciones", name="app_plan_estudio_modificaciones", methods={"GET", "POST"})
      * @param Request $request
      * @param PlanEstudio $planEstudio
      * @param ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository
      * @return Response
      */
+    #[Route('/{id}/modificaciones', name: 'app_plan_estudio_modificaciones', methods: ['GET', 'POST'])]
     public function modificaciones(Request $request, planEstudio $planEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository)
     {
         try {
@@ -299,11 +299,11 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_modificacion", name="app_plan_estudio_eliminar_modificacion", methods={"GET"})
      * @param ModificacionPlanEstudio $modificacionPlanEstudio
      * @param ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_modificacion', name: 'app_plan_estudio_eliminar_modificacion', methods: ['GET'])]
     public function eliminarModificacion(ModificacionPlanEstudio $modificacionPlanEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository)
     {
         try {
@@ -321,10 +321,10 @@ class PlanEstudioController extends AbstractController
     }
 
     /**
-     * @Route("/exportar_pdf", name="app_plan_estudio_exportar_pdf", methods={"GET", "POST"})
      * @param User $user
      * @return Response
      */
+    #[Route('/exportar_pdf', name: 'app_plan_estudio_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(HandlerFop $handFop, PlanEstudioRepository $planEstudioRepository)
     {
         $export = $planEstudioRepository->getPlanesEstudio();
@@ -333,11 +333,11 @@ class PlanEstudioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar-documento-editar", name="app_plan_estudio_eliminar_documento_editar", methods={"GET"})
      * @param PlanEstudioDocumento $planEstudioDocumento
      * @param PlanEstudioDocumentoRepository $planEstudioDocumentoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar-documento-editar', name: 'app_plan_estudio_eliminar_documento_editar', methods: ['GET'])]
     public function eliminarDocumentoEditar(PlanEstudioDocumento $planEstudioDocumento, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
     {
         try {
@@ -356,10 +356,10 @@ class PlanEstudioController extends AbstractController
 
 
     /**
-     * @Route("/registo-temporal-doc-edit", name="app_plan_estudio_registro_temporal_doc_edit", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/registo-temporal-doc-edit', name: 'app_plan_estudio_registro_temporal_doc_edit', methods: ['GET', 'POST'])]
     public function registroTemporalDeDocumentoEdit(Request $request, RequestStack $requestStack, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
     {
         try {
@@ -391,9 +391,9 @@ class PlanEstudioController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar-documento-crear", name="app_plan_estudio_eliminar_documento_crear", methods={"GET", "POST"})
      * @return Response
      */
+    #[Route('/{id}/eliminar-documento-crear', name: 'app_plan_estudio_eliminar_documento_crear', methods: ['GET', 'POST'])]
     public function eliminarDocumentoCrear($id, RequestStack $requestStack)
     {
         try {

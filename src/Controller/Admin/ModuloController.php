@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/administracion/modulo")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MODULE")
  */
+#[Route('/administracion/modulo')]
 class ModuloController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_modulo_index", methods={"GET"})
      * @param ModuloRepository $moduloRepository
      * @return Response
      */
+    #[Route('/', name: 'app_modulo_index', methods: ['GET'])]
     public function index(ModuloRepository $moduloRepository)
     {
         try {
@@ -37,11 +37,11 @@ class ModuloController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_modulo_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param ModuloRepository $moduloRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_modulo_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ModuloRepository $moduloRepository)
     {
         try {
@@ -65,12 +65,12 @@ class ModuloController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_modulo_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Modulo $modulo
      * @param ModuloRepository $moduloRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_modulo_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Modulo $modulo, ModuloRepository $moduloRepository)
     {
         try {
@@ -93,12 +93,12 @@ class ModuloController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_modulo_eliminar", methods={"GET"})
      * @param Request $request
      * @param Modulo $modulo
      * @param ModuloRepository $moduloRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_modulo_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Modulo $modulo, ModuloRepository $moduloRepository)
     {
         try {
@@ -116,11 +116,11 @@ class ModuloController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_modulo_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Modulo $modulo
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_modulo_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Modulo $modulo)
     {
         return $this->render('modules/admin/modulo/detail.html.twig', [

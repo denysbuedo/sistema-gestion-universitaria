@@ -35,17 +35,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/evaluacion/solicitud")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_SOLICITUD")
  */
+#[Route('/evaluacion/solicitud')]
 class SolicitudController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_solicitud_index", methods={"GET"})
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/', name: 'app_solicitud_index', methods: ['GET'])]
     public function index(SolicitudRepository $solicitudRepository)
     {
         return $this->render('modules/evaluacion/solicitud/index.html.twig', [
@@ -54,11 +54,11 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_solicitud_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_solicitud_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, InstitucionRepository $institucionRepository, SolicitudRepository $solicitudRepository, PersonaRepository $personaRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -134,12 +134,12 @@ class SolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_solicitud_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_solicitud_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository)
     {
         try {
@@ -179,12 +179,12 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/aprobar", name="app_solicitud_aprobar", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/aprobar', name: 'app_solicitud_aprobar', methods: ['GET', 'POST'])]
     public function aprobar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -212,12 +212,12 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/rechazar", name="app_solicitud_rechazar", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/rechazar', name: 'app_solicitud_rechazar', methods: ['GET', 'POST'])]
     public function rechazar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
     {
         try {
@@ -243,11 +243,11 @@ class SolicitudController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_solicitud_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_solicitud_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Solicitud $solicitud)
     {
         return $this->render('modules/evaluacion/solicitud/detail2.html.twig', [
@@ -256,12 +256,12 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_solicitud_eliminar", methods={"GET"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $tipoProgramaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_solicitud_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Solicitud $solicitud, SolicitudRepository $tipoProgramaRepository)
     {
         try {
@@ -279,12 +279,12 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/cambiar_estado", name="app_solicitud_cambiar_estado", methods={"GET"})
      * @param Request $request
      * @param Solicitud $solicitud
      * @param SolicitudRepository $solicitudRepository
      * @return Response
      */
+    #[Route('/{id}/cambiar_estado', name: 'app_solicitud_cambiar_estado', methods: ['GET'])]
     public function cambiarEstado(Request $request, Solicitud $solicitud, EstadoSolicitudRepository $estadoSolicitudRepository, SolicitudRepository $solicitudRepository)
     {
         try {
@@ -303,11 +303,11 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/get_categoria_acreditacion_institucion", name="app_solicitud_get_categoria_acreditacion_institucion", methods={"GET", "POST"})
      * @param Request $request
      * @param InstitucionRepository $institucionRepository
      * @return Response
      */
+    #[Route('/get_categoria_acreditacion_institucion', name: 'app_solicitud_get_categoria_acreditacion_institucion', methods: ['GET', 'POST'])]
     public function obtenerCategoriaAcreditacion(Request $request, InstitucionRepository $institucionRepository)
     {
         try {
@@ -330,11 +330,11 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/get_categoria_acreditacion_pregrado", name="app_solicitud_get_categoria_acreditacion_pregrado", methods={"GET", "POST"})
      * @param Request $request
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository
      * @return Response
      */
+    #[Route('/get_categoria_acreditacion_pregrado', name: 'app_solicitud_get_categoria_acreditacion_pregrado', methods: ['GET', 'POST'])]
     public function obtenerCategoriaAcreditacionPregrado(Request $request, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         try {
@@ -347,11 +347,11 @@ class SolicitudController extends AbstractController
     }
 
     /**
-     * @Route("/get_categoria_acreditacion_posgrado", name="app_solicitud_get_categoria_acreditacion_posgrado", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/get_categoria_acreditacion_posgrado', name: 'app_solicitud_get_categoria_acreditacion_posgrado', methods: ['GET', 'POST'])]
     public function obtenerCategoriaAcreditacionPosgrado(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         try {
@@ -366,12 +366,12 @@ class SolicitudController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/get_programas_pregrado", name="app_solicitud_get_programas_pregrado", methods={"GET"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param InstitucionRepository $institucionRepository
      * @return JsonResponse
      */
+    #[Route('/get_programas_pregrado', name: 'app_solicitud_get_programas_pregrado', methods: ['GET'])]
     public function getProgramasPregrado(Request $request, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository, PersonaRepository $personaRepository, InstitucionRepository $institucionRepository): JsonResponse
     {
         try {
@@ -405,12 +405,12 @@ class SolicitudController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/get_programas_posgrado", name="app_solicitud_get_programas_posgrado", methods={"GET"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param InstitucionRepository $institucionRepository
      * @return JsonResponse
      */
+    #[Route('/get_programas_posgrado', name: 'app_solicitud_get_programas_posgrado', methods: ['GET'])]
     public function getProgramasPosgrado(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, PersonaRepository $personaRepository, InstitucionRepository $institucionRepository): JsonResponse
     {
         try {
@@ -442,12 +442,12 @@ class SolicitudController extends AbstractController
     /**
      * Add package entity.
      *
-     * @Route("/get_convocatoria", name="app_solicitud_get_convocatoria", methods={"POST"})
      * @param Request $request
      * @param ConvocatoriaRepository $convocatoriaRepository
      * @param Utils $utils
      * @return JsonResponse
      */
+    #[Route('/get_convocatoria', name: 'app_solicitud_get_convocatoria', methods: ['POST'])]
     public function getConvocatoria(Request $request, ConvocatoriaRepository $convocatoriaRepository, Utils $utils): JsonResponse
     {
         try {

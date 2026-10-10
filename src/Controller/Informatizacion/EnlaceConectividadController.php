@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/enlace_conectividad")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ENLACE_CONECTIVIDAD")
  */
+#[Route('/informatizacion/enlace_conectividad')]
 class EnlaceConectividadController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_enlace_conectividad_index", methods={"GET"})
      * @param EnlaceConectividadRepository $EnlaceConectividadRepository
      * @return Response
      */
+    #[Route('/', name: 'app_enlace_conectividad_index', methods: ['GET'])]
     public function index(EnlaceConectividadRepository $EnlaceConectividadRepository)
     {
         return $this->render('modules/informatizacion/enlaceConectividad/index.html.twig', [
@@ -32,11 +32,11 @@ class EnlaceConectividadController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_enlace_conectividad_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EnlaceConectividadRepository $enlaceConectividadRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_enlace_conectividad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, EnlaceConectividadRepository $enlaceConectividadRepository)
     {
         try {
@@ -61,12 +61,12 @@ class EnlaceConectividadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_enlace_conectividad_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param EnlaceConectividad $enlaceConectividad
      * @param EnlaceConectividadRepository $enlaceConectividadRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_enlace_conectividad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PersonaRepository $personaRepository, EnlaceConectividad $enlaceConectividad, EnlaceConectividadRepository $enlaceConectividadRepository)
     {
         try {
@@ -91,10 +91,10 @@ class EnlaceConectividadController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_enlace_conectividad_detail", methods={"GET", "POST"})
      * @param enlaceConectividad $enlaceConectividad
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_enlace_conectividad_detail', methods: ['GET', 'POST'])]
     public function detail(EnlaceConectividad $enlaceConectividad)
     {
         return $this->render('modules/informatizacion/enlaceConectividad/detail.html.twig', [
@@ -103,11 +103,11 @@ class EnlaceConectividadController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_enlace_conectividad_eliminar", methods={"GET"})
      * @param EnlaceConectividad $enlaceConectividad
      * @param EnlaceConectividadRepository $enlaceConectividadRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_enlace_conectividad_eliminar', methods: ['GET'])]
     public function eliminar(EnlaceConectividad $enlaceConectividad, EnlaceConectividadRepository $enlaceConectividadRepository)
     {
         try {

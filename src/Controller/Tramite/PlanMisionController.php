@@ -21,17 +21,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/tramite/plan_mision")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PLAN_MISION")
  */
+#[Route('/tramite/plan_mision')]
 class PlanMisionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_plan_mision_index", methods={"GET"})
      * @param planMisionRepository $planMisionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_plan_mision_index', methods: ['GET'])]
     public function index(PlanMisionRepository $planMisionRepository)
     {
         return $this->render('modules/tramite/plan_mision/index.html.twig', [
@@ -40,11 +40,11 @@ class PlanMisionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_plan_mision_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param planMisionRepository $planMisionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_plan_mision_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PlanMisionRepository $planMisionRepository)
     {
         try {
@@ -68,12 +68,12 @@ class PlanMisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_plan_mision_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param PlanMision $planMision
      * @param planMisionRepository $planMisionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_plan_mision_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, PlanMision $planMision, PlanMisionRepository $planMisionRepository)
     {
         try {
@@ -97,10 +97,10 @@ class PlanMisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_plan_mision_detail", methods={"GET", "POST"})
      * @param PlanMision $planMision
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_plan_mision_detail', methods: ['GET', 'POST'])]
     public function detail(PlanMision $planMision, PlanMisionDetallesRepository $planMisionDetallesRepository)
     {
         return $this->render('modules/tramite/plan_mision/detail.html.twig', [
@@ -111,11 +111,11 @@ class PlanMisionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_plan_mision_eliminar", methods={"GET"})
      * @param PlanMision $planMision
      * @param planMisionRepository $planMisionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_plan_mision_eliminar', methods: ['GET'])]
     public function eliminar(PlanMision $planMision, PlanMisionRepository $planMisionRepository)
     {
         try {
@@ -134,11 +134,11 @@ class PlanMisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/configurar", name="app_plan_mision_configurar", methods={"GET", "POST"})
      * @param Request $request
      * @param PlanMision $planMision
      * @return Response
      */
+    #[Route('/{id}/configurar', name: 'app_plan_mision_configurar', methods: ['GET', 'POST'])]
     public function configurar(Request $request, PaisRepository $paisRepository, PersonaRepository $personaRepository, PlanMision $planMision, PlanMisionDetallesRepository $planMisionDetallesRepository)
     {
         try {
@@ -175,10 +175,10 @@ class PlanMisionController extends AbstractController
     }
 
     /**
-     * @Route("/asociar_persona", name="app_plan_mision_persona_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/asociar_persona', name: 'app_plan_mision_persona_registrar', methods: ['GET', 'POST'])]
     public function asociarPersona(Request $request, EntityManagerInterface $em, PersonaRepository $personaRepository, PaisRepository $paisRepository, PlanMisionRepository $planMisionRepository)
     {
         try {
@@ -208,10 +208,10 @@ class PlanMisionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar_persona_asociada", name="app_plan_mision_eliminar_persona_asignada_registrar", methods={"GET", "POST"})
      * @param Persona $planMisionDetalles
      * @return Response
      */
+    #[Route('/{id}/eliminar_persona_asociada', name: 'app_plan_mision_eliminar_persona_asignada_registrar', methods: ['GET', 'POST'])]
     public function eliminarPersonaAsociada(EntityManagerInterface $em, PlanMisionDetalles $planMisionDetalles)
     {
         try {
@@ -224,11 +224,11 @@ class PlanMisionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/exportar_excel", name="app_plan_mision_exportar_excel", methods={"GET", "POST"})
      * @param HandlerFop $handFop
      * @param PlanMision $planMision
      * @return void
      */
+    #[Route('/{id}/exportar_excel', name: 'app_plan_mision_exportar_excel', methods: ['GET', 'POST'])]
     public function exportarExcel(HandlerFop $handFop, PlanMision $planMision, PlanMisionDetallesRepository $planMisionDetallesRepository)
     {
         $export = $planMisionDetallesRepository->findBy(['planMision' => $planMision->getId()], ['id' => 'desc']);

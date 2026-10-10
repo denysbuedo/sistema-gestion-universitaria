@@ -18,17 +18,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/postgrado/copep")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_COPEP")
  */
+#[Route('/postgrado/copep')]
 class CopepController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_copep_index", methods={"GET"})
      * @param CopepRepository $copepRepository
      * @return Response
      */
+    #[Route('/', name: 'app_copep_index', methods: ['GET'])]
     public function index(Request $request, CopepRepository $copepRepository, MiembrosCopepRepository $miembrosCopepRepository)
     {
         $request->getSession()->remove('array_personas_asignadas');
@@ -46,7 +46,6 @@ class CopepController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_copep_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param CopepRepository $copepRepository
@@ -54,6 +53,7 @@ class CopepController extends AbstractController
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_copep_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EntityManagerInterface $em, CopepRepository $copepRepository, RolComisionRepository $rolComisionRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -114,10 +114,10 @@ class CopepController extends AbstractController
 
 
     /**
-     * @Route("/asociar_persona", name="app_copep_asociar_persona_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @return Response
      */
+    #[Route('/asociar_persona', name: 'app_copep_asociar_persona_registrar', methods: ['GET', 'POST'])]
     public function asociarPersona(Request $request)
     {
         try {
@@ -139,11 +139,11 @@ class CopepController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar_persona_asociada", name="app_copep_eliminar_persona_asignada_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/eliminar_persona_asociada', name: 'app_copep_eliminar_persona_asignada_registrar', methods: ['GET', 'POST'])]
     public function eliminarPersonaAsociada(Request $request, Persona $persona)
     {
         try {
@@ -161,7 +161,6 @@ class CopepController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/modificar", name="app_copep_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param MiembrosCopepRepository $miembrosCopepRepository
      * @param Copep $copep
@@ -170,6 +169,7 @@ class CopepController extends AbstractController
      * @param PersonaRepository $personaRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_copep_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, MiembrosCopepRepository $miembrosCopepRepository, Copep $copep, CopepRepository $copepRepository, RolComisionRepository $rolComisionRepository, PersonaRepository $personaRepository)
     {
         try {
@@ -208,7 +208,6 @@ class CopepController extends AbstractController
 
 
     /**
-     * @Route("/asociar_persona_modificar", name="app_copep_asociar_persona_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param RolComisionRepository $rolComisionRepository
@@ -216,6 +215,7 @@ class CopepController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
+    #[Route('/asociar_persona_modificar', name: 'app_copep_asociar_persona_modificar', methods: ['GET', 'POST'])]
     public function asociarPersonaModificar(Request $request, PersonaRepository $personaRepository, RolComisionRepository $rolComisionRepository, CopepRepository $copepRepository, EntityManagerInterface $em)
     {
         try {
@@ -237,13 +237,13 @@ class CopepController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar_persona_asignada_modificar", name="app_copep_eliminar_persona_asignada_modificar", methods={"GET"})
      * @param Request $request
      * @param Persona $persona
      * @param PersonaRepository $personaRepository
      * @param MiembrosCopepRepository $miembrosCopepRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar_persona_asignada_modificar', name: 'app_copep_eliminar_persona_asignada_modificar', methods: ['GET'])]
     public function eliminarPersonaAsignadaModificar(Request $request, Persona $persona, PersonaRepository $personaRepository, MiembrosCopepRepository $miembrosCopepRepository)
     {
         try {
@@ -263,11 +263,11 @@ class CopepController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/detail", name="app_copep_detail", methods={"GET", "POST"})
      * @param Copep $copep
      * @param MiembrosCopepRepository $miembrosCopepRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_copep_detail', methods: ['GET', 'POST'])]
     public function detail(Copep $copep, MiembrosCopepRepository $miembrosCopepRepository)
     {
         return $this->render('modules/postgrado/copep/detail.html.twig', [
@@ -277,12 +277,12 @@ class CopepController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_copep_eliminar", methods={"GET"})
      * @param Request $request
      * @param Copep $copep
      * @param CopepRepository $copepRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_copep_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Copep $copep, CopepRepository $copepRepository)
     {
         try {

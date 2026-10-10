@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/personal/grado_academico")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_GRADAKAD")
  */
+#[Route('/personal/grado_academico')]
 class GradoAcademicoController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_grado_academico_index", methods={"GET"})
      * @param GradoAcademicoRepository $gradoAcademicoRepository
      * @return Response
      */
+    #[Route('/', name: 'app_grado_academico_index', methods: ['GET'])]
     public function index(GradoAcademicoRepository $gradoAcademicoRepository)
     {
         return $this->render('modules/personal/grado_academico/index.html.twig', [
@@ -32,11 +32,11 @@ class GradoAcademicoController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_grado_academico_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param GradoAcademicoRepository $gradoAcademicoRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_grado_academico_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, GradoAcademicoRepository $gradoAcademicoRepository)
     {
         try {
@@ -60,12 +60,12 @@ class GradoAcademicoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_grado_academico_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $gradoAcademico
      * @param GradoAcademicoRepository $gradoAcademicoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_grado_academico_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, GradoAcademico $gradoAcademico, GradoAcademicoRepository $gradoAcademicoRepository)
     {
         try {
@@ -89,12 +89,12 @@ class GradoAcademicoController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_grado_academico_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $gradoAcademico
      * @param GradoAcademicoRepository $gradoAcademicoRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_grado_academico_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, GradoAcademico $gradoAcademico)
     {
         return $this->render('modules/personal/grado_academico/detail.html.twig', [
@@ -103,12 +103,12 @@ class GradoAcademicoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_grado_academico_eliminar", methods={"GET"})
      * @param Request $request
      * @param GradoAcademico $gradoAcademico
      * @param GradoAcademicoRepository $gradoAcademicoRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_grado_academico_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, GradoAcademico $gradoAcademico, GradoAcademicoRepository $gradoAcademicoRepository)
     {
         try {

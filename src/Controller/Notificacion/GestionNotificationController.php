@@ -15,18 +15,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/administracion/notificaciones")
  * @IsGranted("ROLE_ADMIN")
  */
+#[Route('/administracion/notificaciones')]
 class GestionNotificationController extends AbstractController
 {
 
 
     /**
-     * @Route("/listar", name="app_notificaciones_usuario_listar", methods={"GET"})
      * @param NotificacionesUsuarioRepository $notificacionesUsuarioRepository
      * @return Response
      */
+    #[Route('/listar', name: 'app_notificaciones_usuario_listar', methods: ['GET'])]
     public function listar(NotificacionesUsuarioRepository $notificacionesUsuarioRepository)
     {
         try {
@@ -45,12 +45,12 @@ class GestionNotificationController extends AbstractController
 
 
     /**
-     * @Route("/registrar", name="app_notificaciones_usuario_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param NotificacionesUsuarioRepository $notificacionesUsuarioRepository
      * @param UserRepository $userRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_notificaciones_usuario_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, UserRepository $userRepository)
     {
         try {
@@ -83,12 +83,12 @@ class GestionNotificationController extends AbstractController
 
 
     /**
-     * @Route("/{id}/eliminar", name="app_notificaciones_usuario_eliminar2", methods={"GET"})
      * @param Request $request
      * @param NotificacionesUsuario $notificacionesUsuario
      * @param NotificacionesUsuarioRepository $notificacionesUsuarioRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_notificaciones_usuario_eliminar2', methods: ['GET'])]
     public function eliminar(Request $request, NotificacionesUsuario $notificacionesUsuario, NotificacionesUsuarioRepository $notificacionesUsuarioRepository)
     {
         try {

@@ -14,17 +14,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/rrhh/categoria_docente_especial")
  * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_GEST_CAT_DOC")
  */
+#[Route('/rrhh/categoria_docente_especial')]
 class CategoriaDocenteController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_rrhh_categoria_docente_index", methods={"GET"})
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/', name: 'app_rrhh_categoria_docente_index', methods: ['GET'])]
     public function index(CategoriaDocenteRepository $categoriaDocenteRepository)
     {
         return $this->render('modules/rrhh/categoria_docente/index.html.twig', [
@@ -33,11 +33,11 @@ class CategoriaDocenteController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_rrhh_categoria_docente_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_rrhh_categoria_docente_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, CategoriaDocenteRepository $categoriaDocenteRepository, SerializerInterface $serializer)
     {
         try {
@@ -61,12 +61,12 @@ class CategoriaDocenteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_rrhh_categoria_docente_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaDocente
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_rrhh_categoria_docente_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, CategoriaDocente $categoriaDocente, CategoriaDocenteRepository $categoriaDocenteRepository)
     {
         try {
@@ -90,12 +90,12 @@ class CategoriaDocenteController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_rrhh_categoria_docente_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $categoriaDocente
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_rrhh_categoria_docente_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, CategoriaDocente $categoriaDocente)
     {
         return $this->render('modules/rrhh/categoria_docente/detail.html.twig', [
@@ -104,12 +104,12 @@ class CategoriaDocenteController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_rrhh_categoria_docente_eliminar", methods={"GET"})
      * @param Request $request
      * @param CategoriaDocente $categoriaDocente
      * @param CategoriaDocenteRepository $categoriaDocenteRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_rrhh_categoria_docente_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, CategoriaDocente $categoriaDocente, CategoriaDocenteRepository $categoriaDocenteRepository)
     {
         try {

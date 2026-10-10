@@ -13,17 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/traza/accion")
  * @IsGranted("ROLE_ADMIN", "ROLE_ACCTION_TRZ")
  */
+#[Route('/traza/accion')]
 class AccionController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_accion_index", methods={"GET"})
      * @param AccionRepository $accionRepository
      * @return Response
      */
+    #[Route('/', name: 'app_accion_index', methods: ['GET'])]
     public function index(AccionRepository $accionRepository)
     {
 
@@ -34,11 +34,11 @@ class AccionController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_accion_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param AccionRepository $accionRepository
      * @return Response
      */
+    #[Route('/registrar', name: 'app_accion_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, AccionRepository $accionRepository)
     {
         try {
@@ -62,12 +62,12 @@ class AccionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_accion_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param Accion $accion
      * @param AccionRepository $accionRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_accion_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Accion $accion, AccionRepository $accionRepository)
     {
         try {
@@ -91,12 +91,12 @@ class AccionController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_accion_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param User $accion
      * @param AccionRepository $accionRepository
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_accion_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Accion $accion)
     {
         return $this->render('modules/traza/accion/detail.html.twig', [
@@ -105,12 +105,12 @@ class AccionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_accion_eliminar", methods={"GET"})
      * @param Request $request
      * @param Accion $accion
      * @param AccionRepository $accionRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_accion_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Accion $accion, AccionRepository $accionRepository)
     {
         try {

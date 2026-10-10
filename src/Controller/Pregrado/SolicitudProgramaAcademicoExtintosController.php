@@ -38,17 +38,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/pregrado/solicitud_programa_academico_extinto")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROGEXTINT")
  */
+#[Route('/pregrado/solicitud_programa_academico_extinto')]
 class SolicitudProgramaAcademicoExtintosController extends AbstractController
 {
 
     /**
-     * @Route("/", name="app_solicitud_programa_academico_extinto_index", methods={"GET"})
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_solicitud_programa_academico_extinto_index', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository)
     {
         $registros = $solicitudProgramaRepository->getSolicitudProgramaAcademicoAprobado([8]);
@@ -58,7 +58,6 @@ class SolicitudProgramaAcademicoExtintosController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/activar", name="app_solicitud_programa_academico_extinto_activar", methods={"GET"})
      * @param Utils $utils
      * @param ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository
      * @param SolicitudProgramaAcademico $solicitudPrograma
@@ -66,6 +65,7 @@ class SolicitudProgramaAcademicoExtintosController extends AbstractController
      * @param EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository
      * @return Response
      */
+    #[Route('/{id}/activar', name: 'app_solicitud_programa_academico_extinto_activar', methods: ['GET'])]
     public function activar(Utils $utils, ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository)
     {
         try {
@@ -96,10 +96,10 @@ class SolicitudProgramaAcademicoExtintosController extends AbstractController
     /**
      *
      * /**
-     * @Route("/{id}/detail", name="app_solicitud_programa_academico_extinto_detail", methods={"GET", "POST"})
      * @param SolicitudProgramaAcademico $solicitudProgramaAcademico
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_solicitud_programa_academico_extinto_detail', methods: ['GET', 'POST'])]
     public function detail(HistoricoEstadoProgramaAcademicoRepository $historicoEstadoProgramaAcademicoRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico)
     {
         return $this->render('modules/pregrado/solicitud_programa_academico_extinto/detail.html.twig', [

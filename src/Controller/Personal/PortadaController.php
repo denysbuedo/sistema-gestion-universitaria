@@ -13,16 +13,16 @@ use App\Repository\Personal\GradoAcademicoRepository;
 use App\Repository\Personal\CategoriaInvestigativaRepository;
 
 /**
- * @Route("/personal/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_PERSONAL")
  */
+#[Route('/personal/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_personal_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_personal_portada', methods: ['GET'])]
     public function index(
         PersonaRepository $personaRepo,
         CategoriaDocenteRepository $docenteRepo,

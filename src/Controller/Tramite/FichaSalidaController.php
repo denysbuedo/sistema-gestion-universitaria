@@ -40,14 +40,14 @@ use App\Repository\Tramite\FichaSalidaHistorialDocumentoRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @Route("/tramite/ficha_salida")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_FICHA_SALIDA")
  */
+#[Route('/tramite/ficha_salida')]
 class FichaSalidaController extends AbstractController
 {
     /**
-     * @Route("/{id}/historial-documentos", name="app_ficha_salida_historial_documentos", methods={"GET"})
      */
+    #[Route('/{id}/historial-documentos', name: 'app_ficha_salida_historial_documentos', methods: ['GET'])]
     public function listDocumentos(Request $request, FichaSalida $fichaSalida, FichaSalidaHistorialDocumentoRepository $repo): JsonResponse
     {
         $host = $request->getSchemeAndHttpHost();
@@ -80,10 +80,10 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/", name="app_ficha_salida_index", methods={"GET", "POST"})
      * @param fichaSalidaRepository $fichaSalidaRepository
      * @return Response
      */
+    #[Route('/', name: 'app_ficha_salida_index', methods: ['GET', 'POST'])]
     public function index(Request $request, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         $allPost = $request->request->all();
@@ -119,13 +119,13 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/registrar", name="app_ficha_salida_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param PersonaRepository $personaRepository
      * @param ResponsableRepository $responsableRepository
      * @param Utils $utils
      * @return Response
      */
+    #[Route('/registrar', name: 'app_ficha_salida_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, ResponsableRepository $responsableRepository, Utils $utils)
     {
         try {
@@ -160,11 +160,11 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/registrar-v2", name="app_ficha_salida_registrar_v2", methods={"GET", "POST"})
      * @param Request $request
      * @param Persona $persona
      * @return Response
      */
+    #[Route('/{id}/registrar-v2', name: 'app_ficha_salida_registrar_v2', methods: ['GET', 'POST'])]
     public function registrarV2(Request $request, PdfService $pdfService, DocumentoSalidaRepository $documentoSalidaRepository, PasaporteRepository $pasaporteRepository, Persona $persona, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository)
     {
 //        try {
@@ -353,7 +353,6 @@ class FichaSalidaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/modificar", name="app_ficha_salida_modificar", methods={"GET", "POST"})
      * @param Request $request
      * @param FichaSalida $fichaSalida
      * @param fichaSalidaRepository $fichaSalidaRepository
@@ -361,6 +360,7 @@ class FichaSalidaController extends AbstractController
      * @param FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository
      * @return Response
      */
+    #[Route('/{id}/modificar', name: 'app_ficha_salida_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository)
     {
         try {
@@ -439,11 +439,11 @@ class FichaSalidaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/detail", name="app_ficha_salida_detail", methods={"GET", "POST"})
      * @param Request $request
      * @param fichaSalida $fichaSalida
      * @return Response
      */
+    #[Route('/{id}/detail', name: 'app_ficha_salida_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, FichaSalida $fichaSalida)
     {
         return $this->render('modules/tramite/ficha_salida/detail.html.twig', [
@@ -452,12 +452,12 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/eliminar", name="app_ficha_salida_eliminar", methods={"GET"})
      * @param Request $request
      * @param fichaSalida $fichaSalida
      * @param fichaSalidaRepository $fichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/eliminar', name: 'app_ficha_salida_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository)
     {
         try {
@@ -475,12 +475,12 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/firmar", name="app_ficha_salida_firmar", methods={"GET","POST"})
      * @param Request $request
      * @param fichaSalida $fichaSalida
      * @param fichaSalidaRepository $fichaSalidaRepository
      * @return Response
      */
+    #[Route('/{id}/firmar', name: 'app_ficha_salida_firmar', methods: ['GET','POST'])]
 
     public function firmar(
         Request               $request,
@@ -536,8 +536,8 @@ class FichaSalidaController extends AbstractController
 
     /*Variante a trabajar */
     /**
-     * @Route("/{id}/firmarV2", name="app_ficha_salida_firmarV2", methods={"GET","POST"})
      */
+    #[Route('/{id}/firmarV2', name: 'app_ficha_salida_firmarV2', methods: ['GET','POST'])]
     public function firmarV2(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository): Response
     {
         try {
@@ -594,8 +594,8 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/firmar-dri", name="app_ficha_salida_firmar_dri", methods={"POST"})
      */
+    #[Route('/{id}/firmar-dri', name: 'app_ficha_salida_firmar_dri', methods: ['POST'])]
     public function firmarDRI(Request $request, PasaporteRepository $pasaporteRepository, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, TramiteRepository $tramiteRepository, DocumentoSalidaRepository $documentoSalidaRepository, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository): JsonResponse
     {
         try {
@@ -681,12 +681,12 @@ class FichaSalidaController extends AbstractController
 
 
     /**
-     * @Route("/{id}/cambiar_estado", name="app_ficha_salida_cambiar_estado", methods={"GET", "POST"})
      * @param Request $request
      * @param FichaSalida $fichaSalida
      * @param FichaSalidaEstadoRepository $fichaSalidaEstadoRepository
      * @return Response
      */
+    #[Route('/{id}/cambiar_estado', name: 'app_ficha_salida_cambiar_estado', methods: ['GET', 'POST'])]
     public function cambiarEstado(Request $request, FichaSalida $fichaSalida, PasaporteRepository $pasaporteRepository, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, TramiteRepository $tramiteRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, DocumentoSalidaRepository $documentoSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository, FichaSalidaRepository $fichaSalidaRepository)
     {
         try {
@@ -764,8 +764,8 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/consulta_embajada", name="app_ficha_salida_consulta_embajada", methods={"POST"})
      */
+    #[Route('/{id}/consulta_embajada', name: 'app_ficha_salida_consulta_embajada', methods: ['POST'])]
     public function consultaEmbajada(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository): JsonResponse
     {
         $valor = $request->request->get('consulta_embajada');
@@ -778,8 +778,8 @@ class FichaSalidaController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/datos_cambiar_estado", name="app_ficha_salida_datos_cambiar_estado", methods={"GET"})
      */
+    #[Route('/{id}/datos_cambiar_estado', name: 'app_ficha_salida_datos_cambiar_estado', methods: ['GET'])]
     public function datosCambiarEstado(FichaSalida $fichaSalida, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
     {
         $estadoFinal = [1];
