@@ -132,6 +132,8 @@ HAProxy puede comprobar la conectividad del backend mediante `GET /healthz`;
 este endpoint no consulta PHP ni la base de datos.
 Las IP `10.46.4.32` (bastión) y `10.46.4.130` (Certbot) tienen acceso de red
 para verificación, pero no son proxies confiables para las cabeceras HTTP.
+Mientras el release no esté activado, usar `deploy/nginx/akademos-maintenance.conf`
+para conservar `/healthz` y responder `503` sin enviar solicitudes a PHP-FPM.
 
 ## Activación y reversión
 
