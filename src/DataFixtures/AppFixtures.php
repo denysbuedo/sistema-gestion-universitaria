@@ -50,7 +50,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -60,7 +60,7 @@ class AppFixtures extends Fixture
     private $fixtureAdminPassword;
 
     public function __construct(
-        UserPasswordEncoderInterface $encoder,
+        UserPasswordHasherInterface $encoder,
         EntityManagerInterface $em,
         string $fixtureAdminEmail,
         string $fixtureAdminPassword
@@ -205,7 +205,7 @@ class AppFixtures extends Fixture
         $user->setRole('ROLE_ADMIN');
         $user->setActivo(true);
         $user->setPasswordPlainText($this->fixtureAdminPassword);
-        $encodedPassword = $this->passwordEncoder->encodePassword($user, $this->fixtureAdminPassword);
+        $encodedPassword = $this->passwordEncoder->hashPassword($user, $this->fixtureAdminPassword);
         $user->setPassword($encodedPassword);
         $user->setPasswordChangeFirstTime(true);
         $user->setUserRoles([$rol]);

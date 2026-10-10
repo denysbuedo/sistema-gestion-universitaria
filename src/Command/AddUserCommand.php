@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
@@ -34,7 +34,7 @@ class AddUserCommand extends Command
     private $passwordEncoder;
     private $users;
 
-    public function __construct(EntityManagerInterface $em, UserPasswordEncoderInterface $encoder, UserRepository $users)
+    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $encoder, UserRepository $users)
     {
         parent::__construct();
         $this->entityManager = $em;
@@ -165,7 +165,7 @@ class AddUserCommand extends Command
             $role = "Administrator";
         }        
        
-        $encodedPassword = $this->passwordEncoder->encodePassword($user, $plainPassword);
+        $encodedPassword = $this->passwordEncoder->hashPassword($user, $plainPassword);
         $user->setPassword($encodedPassword);
         $this->entityManager->persist($user);
         $this->entityManager->flush();

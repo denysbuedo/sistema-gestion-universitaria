@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Form\Admin\UserChgPswFormType;
 use App\Repository\Security\UserRepository;
 
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Security\OidcClient;
 
 class SecurityController extends AbstractController
@@ -81,10 +81,10 @@ class SecurityController extends AbstractController
      * @Route("/chgpsw", name="app_usuario_cambiar_contrasena", methods={"GET", "POST"})
      * @param Request $request
      * @param UserRepository $usuarioRepository
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
-    public function chgpsw(Request $request, UserRepository $usuarioRepository, UserPasswordEncoderInterface $encoder)
+    public function chgpsw(Request $request, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
             $usuario = $this->getUser();
@@ -99,7 +99,7 @@ class SecurityController extends AbstractController
                     return $this->redirectToRoute('app_usuario_cambiar_contrasena', [], Response::HTTP_SEE_OTHER);
                 }
 
-                $encodedPassword = $encoder->encodePassword($usuario, $form->getData()->getPasswordPlainText());
+                $encodedPassword = $encoder->hashPassword($usuario, $form->getData()->getPasswordPlainText());
                 $usuario->setPassword($encodedPassword);
                 $usuarioRepository->add($usuario);
 

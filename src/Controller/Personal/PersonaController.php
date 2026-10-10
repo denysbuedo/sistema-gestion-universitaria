@@ -41,7 +41,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
@@ -87,14 +87,14 @@ class PersonaController extends AbstractController
      * @param SexoRepository $sexoRepository
      * @param EntityManagerInterface $em
      * @param Request $request
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @param PersonaRepository $personaRepository
      * @param MunicipioRepository $municipioRepository
      * @param EstructuraRepository $estructuraRepository
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
      */
-    public function registrar(Utils $utils, TipoOrganizacionRepository $tipoOrganizacionRepository, $origin, ProvinciaRepository $provinciaRepository, OrganizacionRepository $organizacionRepository, SexoRepository $sexoRepository, EntityManagerInterface $em, Request $request, UserPasswordEncoderInterface $encoder, PersonaRepository $personaRepository, MunicipioRepository $municipioRepository, EstructuraRepository $estructuraRepository, ResponsabilidadRepository $responsabilidadRepository)
+    public function registrar(Utils $utils, TipoOrganizacionRepository $tipoOrganizacionRepository, $origin, ProvinciaRepository $provinciaRepository, OrganizacionRepository $organizacionRepository, SexoRepository $sexoRepository, EntityManagerInterface $em, Request $request, UserPasswordHasherInterface $encoder, PersonaRepository $personaRepository, MunicipioRepository $municipioRepository, EstructuraRepository $estructuraRepository, ResponsabilidadRepository $responsabilidadRepository)
     {
         $datosFuc = $request->getSession()->get('datos_fuc');
         if (empty($datosFuc)) {
@@ -165,7 +165,7 @@ class PersonaController extends AbstractController
 
             $usuario = new User();
             $usuario->setEmail($request->request->all()['persona']['usuario']);
-            $encodedPassword = $encoder->encodePassword($usuario, $request->request->all()['persona']['contrasena']);
+            $encodedPassword = $encoder->hashPassword($usuario, $request->request->all()['persona']['contrasena']);
             $usuario->setPassword($encodedPassword);
             $usuario->setActivo(true);
             $usuario->setRole('ROLE_USER');
@@ -251,7 +251,7 @@ class PersonaController extends AbstractController
      * @param OrganizacionRepository $organizacionRepository
      * @param UserRepository $userRepository
      * @param PlantillaRepository $plantillaRepository
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @param EntityManagerInterface $em
      * @param Request $request
      * @param Persona $persona
@@ -263,7 +263,7 @@ class PersonaController extends AbstractController
      */
     public function modificar(PersonaOrganizacionRepository $personaOrganizacionRepository, TipoOrganizacionRepository $tipoOrganizacionRepository,
                               OrganizacionRepository        $organizacionRepository, UserRepository $userRepository, PlantillaRepository $plantillaRepository,
-                              UserPasswordEncoderInterface  $encoder, EntityManagerInterface $em, Request $request, Persona $persona, PersonaRepository $personaRepository,
+                              UserPasswordHasherInterface  $encoder, EntityManagerInterface $em, Request $request, Persona $persona, PersonaRepository $personaRepository,
                               MunicipioRepository           $municipioRepository, EstructuraRepository $estructuraRepository, ResponsabilidadRepository $responsabilidadRepository, Utils $utils, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         $choices = [
@@ -290,7 +290,7 @@ class PersonaController extends AbstractController
 
                 if ($email != $request->request->all()['persona']['usuario'] && (!empty($request->request->all()['persona']['contrasena'])) && !empty($request->request->all()['persona']['contrasena2'])) {
                     $persona->getUsuario()->setEmail($request->request->all()['persona']['usuario']);
-                    $encodedPassword = $encoder->encodePassword($persona->getUsuario(), $request->request->all()['persona']['contrasena']);
+                    $encodedPassword = $encoder->hashPassword($persona->getUsuario(), $request->request->all()['persona']['contrasena']);
                     if ($request->request->all()['persona']['contrasena'] == $request->request->all()['persona']['contrasena2']) {
                         $persona->getUsuario()->setPassword($encodedPassword);
                     }

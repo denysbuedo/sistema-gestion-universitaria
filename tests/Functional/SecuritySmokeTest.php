@@ -6,7 +6,7 @@ use App\Entity\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecuritySmokeTest extends WebTestCase
 {
@@ -193,8 +193,8 @@ class SecuritySmokeTest extends WebTestCase
         $user->setActivo(true);
         $user->setPasswordChangeFirstTime(false);
 
-        $encoder = $client->getContainer()->get(UserPasswordEncoderInterface::class);
-        $user->setPassword($encoder->encodePassword($user, self::BASIC_USER_PASSWORD));
+        $encoder = $client->getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($encoder->hashPassword($user, self::BASIC_USER_PASSWORD));
 
         $entityManager->persist($user);
         $entityManager->flush();

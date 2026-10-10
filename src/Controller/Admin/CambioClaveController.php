@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 
@@ -30,12 +30,12 @@ class CambioClaveController extends AbstractController
      * @param Request $request
      * @param User $usuario
      * @param UserRepository $usuarioRepository
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @return Response
      * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function cambiarContrasenna(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordEncoderInterface $encoder)
+    public function cambiarContrasenna(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
             $form = $this->createForm(CambiarClaveFormType::class);
@@ -43,7 +43,7 @@ class CambioClaveController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
 
                 if ($form->getData()->getPasswordPlainText() != "") {
-                    $encodedPassword = $encoder->encodePassword($usuario, $form->getData()->getPasswordPlainText());
+                    $encodedPassword = $encoder->hashPassword($usuario, $form->getData()->getPasswordPlainText());
                     $usuario->setPassword($encodedPassword);
                     $usuario->setPasswordChangeFirstTime(true);
                 }

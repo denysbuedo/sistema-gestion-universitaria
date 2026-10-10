@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 
@@ -44,10 +44,10 @@ class UserController extends AbstractController
      * @Route("/registrar", name="app_usuario_registrar", methods={"GET", "POST"})
      * @param Request $request
      * @param UserRepository $usuarioRepository
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
-    public function registrar(Request $request, UserRepository $usuarioRepository, UserPasswordEncoderInterface $encoder)
+    public function registrar(Request $request, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
             $usuario = new User();
@@ -56,7 +56,7 @@ class UserController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $encodedPassword = $encoder->encodePassword($usuario, $form->getData()->getPasswordPlainText());
+                $encodedPassword = $encoder->hashPassword($usuario, $form->getData()->getPasswordPlainText());
                 $usuario->setPassword($encodedPassword);
                 $usuarioRepository->add($usuario);
                 $this->addFlash('success', 'El elemento ha sido creado satisfactoriamente.');
@@ -78,10 +78,10 @@ class UserController extends AbstractController
      * @param Request $request
      * @param User $usuario
      * @param UserRepository $usuarioRepository
-     * @param UserPasswordEncoderInterface $encoder
+     * @param UserPasswordHasherInterface $encoder
      * @return Response
      */
-    public function modificar(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordEncoderInterface $encoder)
+    public function modificar(Request $request, User $usuario, UserRepository $usuarioRepository, UserPasswordHasherInterface $encoder)
     {
         try {
             $form = $this->createForm(UserFormType::class, $usuario, ['action' => 'modificar']);
@@ -89,7 +89,7 @@ class UserController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if (!empty($_POST['passwordPlainText']['first']) && !empty($_POST['passwordPlainText']['second']) &&
                    $_POST['passwordPlainText']['first'] === $_POST['passwordPlainText']['second']) {
-                    $encodedPassword = $encoder->encodePassword($usuario, $form->getData()->getPasswordPlainText());
+                    $encodedPassword = $encoder->hashPassword($usuario, $form->getData()->getPasswordPlainText());
                     $usuario->setPassword($encodedPassword);
 //                    $usuario->setPasswordChangeFirstTime(false);
                 }
