@@ -126,6 +126,8 @@ sudo ufw enable
 ```
 
 No habilitar Nginx antes de completar la configuración y las pruebas locales.
+HAProxy puede comprobar la conectividad del backend mediante `GET /healthz`;
+este endpoint no consulta PHP ni la base de datos.
 
 ## Activación y reversión
 
