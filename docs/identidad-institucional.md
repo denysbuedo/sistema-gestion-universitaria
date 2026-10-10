@@ -96,6 +96,16 @@ institucional para nuevas integraciones.
 
 ## Estado del piloto de desarrollo
 
+> **BLOQUEANTE PARA PRODUCCIÓN — AUTORIZACIÓN POR ROLES NO RESUELTA**
+>
+> El login, TOTP, renovación, revocación y logout OIDC están validados, pero la
+> aplicación todavía no aplica de forma segura y dinámica `ROLE_USER` y
+> `ROLE_ADMIN` desde el token de Keycloak. La retirada de `ROLE_ADMIN` debe
+> reflejarse en una nueva sesión sin modificar permanentemente la entidad local
+> `User` y sin romper la persistencia de la sesión Symfony. SGU no debe activar
+> OIDC en producción ni retirar el login de contingencia hasta resolver y
+> aprobar este punto.
+
 Validado el 10 de octubre de 2026:
 
 - [x] Redirección desde SGU al cliente `sgu-dev`.
@@ -120,6 +130,23 @@ provocó una regresión en la persistencia de la sesión Symfony y fue revertido
 al último estado estable. No se repetirá el cambio hasta disponer de pruebas
 funcionales específicas para login, recarga de usuario y autorización tras
 añadir y retirar roles.
+
+### Criterios para cerrar el bloqueo de roles
+
+- Un token con `ROLE_USER` permite iniciar sesión y trabajar, aunque la cuenta
+  local hubiera tenido anteriormente privilegios administrativos.
+- Un token con `ROLE_USER` no accede a `/administracion/usuario/` y obtiene 403.
+- Un token con `ROLE_USER` y `ROLE_ADMIN` accede a la sección administrativa.
+- Retirar `ROLE_ADMIN`, revocar la sesión y autenticarse de nuevo elimina el
+  acceso administrativo sin modificar manualmente la BD de SGU.
+- Los roles efectivos sobreviven al almacenamiento y recarga de la sesión
+  Symfony.
+- Los permisos funcionales locales distintos de `ROLE_USER` y `ROLE_ADMIN`
+  conservan su comportamiento acordado.
+- Las pruebas anteriores se ejecutan automáticamente sin usar Keycloak real ni
+  requerir intervención del usuario piloto.
+- La solución supera después el recorrido real con Identidad y recibe su
+  aprobación técnica.
 
 La aplicación conserva los tokens únicamente en la sesión del backend. Cuando
 el access token se aproxima a su expiración, usa el refresh token contra el
