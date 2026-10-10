@@ -106,7 +106,7 @@ Validado el 10 de octubre de 2026:
 - [x] Recepción y autorización de `ROLE_USER`.
 - [x] Firma, emisor, audiencia, expiración, fecha de emisión, nonce y roles cubiertos por pruebas automatizadas.
 - [x] Comprobación local de que secretos y tokens no aparecen en los registros.
-- [ ] Rechazo interactivo de acceso sin OTP y con OTP incorrecto.
+- [x] Rechazo interactivo de OTP incorrecto (`Invalid authenticator code`) y acceso únicamente tras presentar un TOTP válido.
 - [ ] Expiración, renovación y revocación de sesión contra Keycloak.
 - [x] Logout central comprobado en navegador, con retorno autorizado y sesión local invalidada.
 - [ ] Recuperación institucional del segundo factor.
