@@ -9,6 +9,7 @@ semillas TOTP, códigos de recuperación o nuevas contraseñas.
 
 - Aplicación web con backend: OpenID Connect Authorization Code Flow y cliente
   confidencial.
+- PKCE obligatorio con `S256`, incluso para los clientes confidenciales.
 - Realm: el realm institucional común que indique el equipo de Identidad.
 - Segundo factor: flujo central de Keycloak; inicialmente TOTP.
 - API: aceptar tokens Bearer emitidos por Keycloak, validando firma, `iss`,
@@ -61,6 +62,8 @@ La matriz definitiva debe validarse funcionalmente. Como mínimo deben mapearse:
 
 El identificador estable de enlace será el claim `sub`, no el correo. El correo
 puede cambiar y se utilizará únicamente como atributo informativo/verificado.
+La clave de enlace local será la pareja `issuer + sub`; `sub` no se considerará
+global fuera de su emisor.
 
 ## Transición desde el legado
 
