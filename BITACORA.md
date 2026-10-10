@@ -224,3 +224,4 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La decisión vigente es delegar login, 2FA, recuperación y logout en Keycloak mediante OpenID Connect Authorization Code Flow con cliente confidencial.
 - `docs/identidad-institucional.md` contiene el expediente inicial, matriz pendiente, transición desde el legado y criterios de aceptación; la integración queda desactivada con `OIDC_ENABLED=0` hasta recibir realm, cliente, secreto y URLs aprobadas.
 - Se implementó y validó en `dev` el cliente `sgu-dev` mediante Authorization Code Flow, PKCE S256 y vinculación estable `issuer + sub`. El recorrido real Keycloak → LDAP → contraseña → TOTP regresó correctamente a SGU con `ROLE_USER`; la suite quedó en 33 casos y 155 aserciones, sin vulnerabilidades conocidas.
+- Se comprobó en navegador el logout OIDC de `sgu-dev`: Keycloak aceptó `id_token_hint`, regresó a la URL autorizada y SGU denegó el dashboard hasta una nueva autenticación.

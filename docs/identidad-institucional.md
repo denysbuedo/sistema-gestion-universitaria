@@ -108,7 +108,7 @@ Validado el 10 de octubre de 2026:
 - [x] Comprobación local de que secretos y tokens no aparecen en los registros.
 - [ ] Rechazo interactivo de acceso sin OTP y con OTP incorrecto.
 - [ ] Expiración, renovación y revocación de sesión contra Keycloak.
-- [ ] Logout central comprobado en navegador.
+- [x] Logout central comprobado en navegador, con retorno autorizado y sesión local invalidada.
 - [ ] Recuperación institucional del segundo factor.
 - [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
 - [ ] Aprobación técnica del equipo de Identidad.
