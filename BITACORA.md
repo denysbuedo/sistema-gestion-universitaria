@@ -227,3 +227,4 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - Se comprobó en navegador el logout OIDC de `sgu-dev`: Keycloak aceptó `id_token_hint`, regresó a la URL autorizada y SGU denegó el dashboard hasta una nueva autenticación.
 - Se verificó el control negativo del segundo factor: Keycloak rechazó un TOTP incorrecto con `Invalid authenticator code` y solo completó el acceso al presentar un código válido.
 - Se revocó de forma controlada la sesión piloto de `sgu-dev`; tras vencer el access token, Keycloak rechazó el refresh token y SGU invalidó correctamente la sesión Symfony, redirigió al login y no entró en un ciclo de renovación.
+- Se mantuvo una sesión `sgu-dev` vigente durante más de la vida máxima de cinco minutos del access token; SGU renovó la sesión transparentemente y permitió continuar trabajando sin solicitar nuevamente contraseña o TOTP.

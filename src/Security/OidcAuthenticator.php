@@ -67,7 +67,6 @@ final class OidcAuthenticator extends AbstractAuthenticator
             $other = $repository->findOneBy(['oidcIssuer' => $identity['issuer'], 'oidcSubject' => $identity['subject']]);
             if ($other && $other->getId() !== $user->getId()) { throw new \RuntimeException('La identidad ya está vinculada.'); }
             $user->setOidcIssuer($identity['issuer'])->setOidcSubject($identity['subject']);
-            if (in_array('ROLE_ADMIN', $identity['roles'], true)) { $user->setRole('ROLE_ADMIN'); }
             $this->entityManager->flush();
         } else {
             $user = $repository->findOneBy(['oidcIssuer' => $identity['issuer'], 'oidcSubject' => $identity['subject']]);
@@ -75,6 +74,11 @@ final class OidcAuthenticator extends AbstractAuthenticator
         if (!$user instanceof User || !$user->getActivo()) {
             throw new \RuntimeException('La identidad no está vinculada a una cuenta activa de SGU.');
         }
-        return $user;
+        // The effective primary role comes from the current signed token and is
+        // deliberately not persisted. Removing ROLE_ADMIN in Keycloak therefore
+        // takes effect at the next login instead of leaving a local privilege.
+        $effectiveUser = clone $user;
+        $effectiveUser->setRole(in_array('ROLE_ADMIN', $identity['roles'], true) ? 'ROLE_ADMIN' : 'ROLE_USER');
+        return $effectiveUser;
     }
 }
