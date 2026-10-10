@@ -114,6 +114,8 @@ institucional `10.46.4.22` termina TLS y es el único origen autorizado hacia
 ese puerto. Debe reenviar `Host`, `X-Forwarded-For`, `X-Forwarded-Proto: https`
 y `X-Forwarded-Port: 443`. Symfony confía en esas cabeceras exclusivamente
 cuando proceden de la IP declarada en `TRUSTED_PROXIES`.
+El nombre canónico de la aplicación es `sgu.mes.gob.cu` y su URL externa es
+`https://sgu.mes.gob.cu`.
 
 En la VM, limitar el backend y conservar el acceso administrativo:
 
