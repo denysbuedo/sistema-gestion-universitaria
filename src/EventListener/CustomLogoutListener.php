@@ -6,7 +6,6 @@ use App\Entity\NotificacionesUsuario;
 use App\Repository\Personal\ResponsableRepository;
 use App\Services\TraceService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +24,11 @@ class CustomLogoutListener
     private $tokenStorage;
     private $requestStack;
     private $serializer;
-    private $container;
     private OidcClient $oidc;
+    private TraceService $traceService;
+    private string $accionCierreSesion;
+    private string $objetoAutenticacion;
+    private string $tipoTrazaSesion;
 
     /**
      * CustomLogoutListener constructor.
@@ -34,18 +36,20 @@ class CustomLogoutListener
      * @param EntityManagerInterface $entityManager
      * @param TokenStorageInterface $tokenStorage
      * @param RequestStack $requestStack
-     * @param ContainerInterface $container
      * @param SerializerInterface $serializer
      */
-    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage,  RequestStack $requestStack, ContainerInterface $container, SerializerInterface $serializer, OidcClient $oidc)
+    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, RequestStack $requestStack, SerializerInterface $serializer, OidcClient $oidc, TraceService $traceService, string $accionCierreSesion, string $objetoAutenticacion, string $tipoTrazaSesion)
     {
         $this->router = $router;
         $this->entityManager = $entityManager;
         $this->tokenStorage = $tokenStorage;
         $this->requestStack = $requestStack;
         $this->serializer = $serializer;
-        $this->container = $container;
         $this->oidc = $oidc;
+        $this->traceService = $traceService;
+        $this->accionCierreSesion = $accionCierreSesion;
+        $this->objetoAutenticacion = $objetoAutenticacion;
+        $this->tipoTrazaSesion = $tipoTrazaSesion;
     }
 
     /**
@@ -56,8 +60,7 @@ class CustomLogoutListener
     public function onSymfonyComponentSecurityHttpEventLogoutEvent(LogoutEvent $logoutEvent): void
     {
 
-        $traceService = new TraceService($this->requestStack, $this->entityManager, $this->serializer);
-        $traceService->registrar($this->container->getParameter('accion_cierre_sesion'), $this->container->getParameter('objeto_autenticacion'),null, null, $this->container->getParameter('tipo_traza_sesion'));
+        $this->traceService->registrar($this->accionCierreSesion, $this->objetoAutenticacion, null, null, $this->tipoTrazaSesion);
 
         $session = $logoutEvent->getRequest()->getSession();
         $idToken = $session->get('oidc_id_token');

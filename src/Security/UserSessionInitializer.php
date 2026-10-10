@@ -7,7 +7,6 @@ use App\Entity\Personal\PersonaOrganizacion;
 use App\Entity\Security\User;
 use App\Services\TraceService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final class UserSessionInitializer
@@ -15,8 +14,10 @@ final class UserSessionInitializer
     public function __construct(
         private EntityManagerInterface $entityManager,
         private RequestStack $requestStack,
-        private ContainerInterface $container,
-        private TraceService $traceService
+        private TraceService $traceService,
+        private string $accionInicioSesion,
+        private string $objetoAutenticacion,
+        private string $tipoTrazaSesion
     ) {
     }
 
@@ -55,9 +56,9 @@ final class UserSessionInitializer
         $session->set('afiliaciones_usuario_autenticado', implode(', ', $siglas));
 
         $this->traceService->registrar(
-            $this->container->getParameter('accion_inicio_sesion'),
-            $this->container->getParameter('objeto_autenticacion'), null, null,
-            $this->container->getParameter('tipo_traza_sesion')
+            $this->accionInicioSesion,
+            $this->objetoAutenticacion, null, null,
+            $this->tipoTrazaSesion
         );
     }
 }

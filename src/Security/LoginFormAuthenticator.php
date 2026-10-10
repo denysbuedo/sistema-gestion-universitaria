@@ -3,12 +3,8 @@
 namespace App\Security;
 
 use App\Entity\Security\User;
-use App\Services\TraceService;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -26,22 +22,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    private $entityManager;
     private $urlGenerator;
-    private $requestStack;
-    private $container;
-    private TraceService $traceService;
     private UserSessionInitializer $sessionInitializer;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator,
-                                RequestStack $requestStack, ContainerInterface $container, TraceService $traceService,
-                                UserSessionInitializer $sessionInitializer)
+    public function __construct(UrlGeneratorInterface $urlGenerator, UserSessionInitializer $sessionInitializer)
     {
-        $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
-        $this->requestStack = $requestStack;
-        $this->container = $container;
-        $this->traceService = $traceService;
         $this->sessionInitializer = $sessionInitializer;
     }
 
