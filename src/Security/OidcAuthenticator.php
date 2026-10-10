@@ -41,8 +41,6 @@ final class OidcAuthenticator extends AbstractAuthenticator
             $session->set('oidc_authenticated', true);
             return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier(), fn () => $user));
         } catch (\Throwable $exception) {
-            $safeReason = $this->safeFailureReason($exception);
-            $session->set('oidc_auth_error', $safeReason);
             throw new AuthenticationException('No se pudo completar la autenticación institucional.', 0, $exception);
         }
     }
@@ -56,9 +54,7 @@ final class OidcAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $session = $request->getSession();
-        $reason = $session->remove('oidc_auth_error');
-        $session->getFlashBag()->add('error', is_string($reason) ? $reason : 'No se pudo iniciar sesión con la identidad institucional.');
+        $request->getSession()->getFlashBag()->add('error', 'No se pudo iniciar sesión con la identidad institucional.');
         return new RedirectResponse('/login');
     }
 
@@ -71,6 +67,7 @@ final class OidcAuthenticator extends AbstractAuthenticator
             $other = $repository->findOneBy(['oidcIssuer' => $identity['issuer'], 'oidcSubject' => $identity['subject']]);
             if ($other && $other->getId() !== $user->getId()) { throw new \RuntimeException('La identidad ya está vinculada.'); }
             $user->setOidcIssuer($identity['issuer'])->setOidcSubject($identity['subject']);
+            if (in_array('ROLE_ADMIN', $identity['roles'], true)) { $user->setRole('ROLE_ADMIN'); }
             $this->entityManager->flush();
         } else {
             $user = $repository->findOneBy(['oidcIssuer' => $identity['issuer'], 'oidcSubject' => $identity['subject']]);
@@ -78,25 +75,6 @@ final class OidcAuthenticator extends AbstractAuthenticator
         if (!$user instanceof User || !$user->getActivo()) {
             throw new \RuntimeException('La identidad no está vinculada a una cuenta activa de SGU.');
         }
-        // The effective primary role comes from the current signed token and is
-        // deliberately not persisted. Removing ROLE_ADMIN in Keycloak therefore
-        // takes effect at the next login instead of leaving a local privilege.
-        $effectiveUser = clone $user;
-        $effectiveUser->setRole(in_array('ROLE_ADMIN', $identity['roles'], true) ? 'ROLE_ADMIN' : 'ROLE_USER');
-        return $effectiveUser;
-    }
-
-    private function safeFailureReason(\Throwable $exception): string
-    {
-        $message = $exception->getMessage();
-        return match (true) {
-            str_contains($message, 'rol autorizado') => 'Keycloak no incluyó ROLE_USER ni ROLE_ADMIN en el token de SGU.',
-            str_contains($message, 'destinado a SGU'), str_contains($message, 'cliente autorizado') => 'La audiencia del token no corresponde al cliente sgu-dev.',
-            str_contains($message, 'emisor') => 'El emisor del token no coincide con el realm institucional.',
-            str_contains($message, 'nonce'), str_contains($message, 'respuesta de identidad') => 'La respuesta de Keycloak no coincide con el intento de acceso o expiró.',
-            str_contains($message, 'vinculada') => 'La identidad institucional no está vinculada a una cuenta activa de SGU.',
-            str_contains($message, 'tokens requeridos') => 'Keycloak no devolvió todos los tokens requeridos por SGU.',
-            default => 'Keycloak devolvió una respuesta que SGU no pudo validar.',
-        };
+        return $user;
     }
 }

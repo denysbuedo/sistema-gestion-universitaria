@@ -114,6 +114,13 @@ Validado el 10 de octubre de 2026:
 - [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
 - [ ] Aprobación técnica del equipo de Identidad.
 
+La prueba de retirada dinámica de `ROLE_ADMIN` queda pendiente. Un primer
+intento de aplicar el rol exclusivamente sobre una copia temporal del usuario
+provocó una regresión en la persistencia de la sesión Symfony y fue revertido
+al último estado estable. No se repetirá el cambio hasta disponer de pruebas
+funcionales específicas para login, recarga de usuario y autorización tras
+añadir y retirar roles.
+
 La aplicación conserva los tokens únicamente en la sesión del backend. Cuando
 el access token se aproxima a su expiración, usa el refresh token contra el
 token endpoint, valida criptográficamente el nuevo access token y reemplaza el
