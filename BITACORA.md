@@ -150,11 +150,11 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 ## Próximo paso recomendado
 
-1. Iniciar la actividad 6: actualizar Symfony 5.4 y preparar la evolución tecnológica hacia PHP moderno.
-2. Inventariar deprecaciones propias frente a las generadas por dependencias y priorizar las que bloquean Symfony 6.
-3. Sustituir gradualmente Security Guard y la API antigua de codificación de contraseñas, conservando las pruebas de seguridad.
-4. Mantener los pipelines rápido e integral como barreras obligatorias en cada incremento.
-5. Mantener como tarea institucional pendiente la rotación efectiva de cualquier secreto histórico.
+1. Coordinar con Identidad el registro de Akademos como cliente confidencial OIDC en el realm institucional común.
+2. Confirmar responsables, DNS y URLs HTTPS exactas de pruebas y producción para completar el expediente de alta.
+3. Implementar Authorization Code Flow detrás de `OIDC_ENABLED=0`, usando `sub` como vínculo estable y conservando temporalmente el login legado.
+4. Sustituir la validación JWT local por tokens Bearer de Keycloak y probar audiencia, roles, expiración, revocación y logout.
+5. Continuar la actividad 6 y mantener ambos pipelines como barreras obligatorias.
 
 ## Historial
 
@@ -218,3 +218,8 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - Se completó la actividad 4 con un flujo `Fast validation` sin Docker para `main` y `dev`: Composer, sintaxis PHP incremental, 13 pruebas unitarias, contenedor, YAML, Twig y auditoría de dependencias.
 - La primera ejecución rápida (`38010781870`) terminó correctamente en aproximadamente un minuto y se ejecutó en paralelo con la validación integral (`38010781895`), que también quedó en verde.
 - La actividad 5 ya estaba materialmente cubierta por nueve pruebas funcionales repetibles de login web, sesión, logout, JWT, acceso anónimo y permisos por rol; la validación integral volvió a confirmarlas sobre PostgreSQL efímero.
+- Se migró el login web al Authenticator Manager moderno de Symfony y se eliminó el almacenamiento de la contraseña en texto claro dentro de la sesión; las trazas se registran después de validar credenciales.
+- Tras recibir los lineamientos institucionales, se descartó la implementación local de TOTP y códigos de recuperación. El commit preparatorio se revirtió antes de almacenar semillas o activar usuarios.
+- `https://identidad.reduniv.edu.cu` respondió correctamente y redirigió a la consola administrativa de Keycloak.
+- La decisión vigente es delegar login, 2FA, recuperación y logout en Keycloak mediante OpenID Connect Authorization Code Flow con cliente confidencial.
+- `docs/identidad-institucional.md` contiene el expediente inicial, matriz pendiente, transición desde el legado y criterios de aceptación; la integración queda desactivada con `OIDC_ENABLED=0` hasta recibir realm, cliente, secreto y URLs aprobadas.

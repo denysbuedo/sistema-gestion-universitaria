@@ -80,6 +80,17 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringNotContainsString('secrets.', $workflow);
     }
 
+    public function testInstitutionalIdentityConfigurationIsExternalAndDisabledByDefault(): void
+    {
+        $environment = file_get_contents($this->projectDir . '/.env.example');
+        $composer = file_get_contents($this->projectDir . '/composer.json');
+
+        self::assertStringContainsString('OIDC_ENABLED=0', $environment);
+        self::assertStringContainsString('OIDC_ISSUER_URL=https://identidad.reduniv.edu.cu/realms/REEMPLAZAR', $environment);
+        self::assertStringContainsString('OIDC_CLIENT_SECRET=', $environment);
+        self::assertStringNotContainsString('scheb/2fa', $composer);
+    }
+
     private function environmentKeys(string $path): array
     {
         $keys = [];
