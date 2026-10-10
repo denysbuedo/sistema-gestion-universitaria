@@ -13,18 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/api")
- */
+#[Route('/api')]
 class ApiCategoriaEstructuraController extends AbstractController
 {
 
     /**
-     * @Route("/listar_categorias_estructuras", name="api_listar_categorias_estructuras", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param CategoriaEstructuraRepository $categoriaEstructuraRepository
      * @return JsonResponse
      */
+    #[Route('/listar_categorias_estructuras', name: 'api_listar_categorias_estructuras', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarCatgoriasEstructuras(Request $request, CategoriaEstructuraRepository $categoriaEstructuraRepository)
     {
         try {

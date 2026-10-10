@@ -14,18 +14,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/api")
- */
+#[Route('/api')]
 class ApiCategoriaResponsabilidadController extends AbstractController
 {
 
     /**
-     * @Route("/listar_categorias_responsabilid", name="api_listar_categorias_responsabilid", methods={"POST", "OPTIONS"}, defaults={"_format":"json"})
      * @param Request $request
      * @param CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository
      * @return JsonResponse
      */
+    #[Route('/listar_categorias_responsabilid', name: 'api_listar_categorias_responsabilid', methods: ['POST', 'OPTIONS'], defaults: ['_format' => 'json'])]
     public function listarCatgoriasResponsabilidad(Request $request, CategoriaResponsabilidadRepository $categoriaResponsabilidadRepository)
     {
         try {

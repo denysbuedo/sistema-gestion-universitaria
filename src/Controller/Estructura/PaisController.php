@@ -12,16 +12,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/rrhh/pais")
  * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROVIN")
  */
+#[Route('/rrhh/pais')]
 class PaisController extends AbstractController
 {
     /**
-     * @Route("/", name="app_pais_index", methods={"GET"})
      * @param PaisRepository $paisRepository
      * @return Response
      */
+    #[Route('/', name: 'app_pais_index', methods: ['GET'])]
     public function index(PaisRepository $paisRepository): Response
     {
         try {
