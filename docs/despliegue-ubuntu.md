@@ -109,10 +109,21 @@ sudo systemctl restart php8.3-fpm
 sudo systemctl reload nginx
 ```
 
-La plantilla Nginx escucha HTTP para facilitar el piloto interno. Producción
-debe publicar exclusivamente HTTPS, ya sea terminándolo en Nginx o en el proxy
-institucional. No habilitar tráfico de usuarios antes de configurar TLS y las
-cabeceras del proxy de confianza.
+La plantilla Nginx escucha HTTP en el puerto interno `8080`. El HAProxy
+institucional `10.46.4.22` termina TLS y es el único origen autorizado hacia
+ese puerto. Debe reenviar `Host`, `X-Forwarded-For`, `X-Forwarded-Proto: https`
+y `X-Forwarded-Port: 443`. Symfony confía en esas cabeceras exclusivamente
+cuando proceden de la IP declarada en `TRUSTED_PROXIES`.
+
+En la VM, limitar el backend y conservar el acceso administrativo:
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow from 10.46.4.22 to any port 8080 proto tcp
+sudo ufw enable
+```
+
+No habilitar Nginx antes de completar la configuración y las pruebas locales.
 
 ## Activación y reversión
 
