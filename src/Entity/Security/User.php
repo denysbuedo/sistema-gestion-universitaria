@@ -15,7 +15,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  * Usuario Local del Sistema
  * @ORM\Entity
  * @UniqueEntity(fields="email", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @ORM\Table(name="seguridad.tbd_usuario")
+ * @ORM\Table(name="seguridad.tbd_usuario", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="uniq_usuario_oidc_identity", columns={"oidc_issuer", "oidc_subject"})
+ * })
  */
 class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface, AuthorityInterface
 {
@@ -56,6 +58,12 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
      * @ORM\Column(type="boolean", nullable=true)
      */
     private ?bool $passwordChangeFirstTime = false;
+
+    /** @ORM\Column(type="string", length=255, nullable=true) */
+    private ?string $oidcIssuer = null;
+
+    /** @ORM\Column(type="string", length=255, nullable=true) */
+    private ?string $oidcSubject = null;
 
     private $passwordPlainOld;
 
@@ -275,4 +283,26 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
 
         return $this;
     }   
+
+    public function getOidcIssuer(): ?string
+    {
+        return $this->oidcIssuer;
+    }
+
+    public function setOidcIssuer(?string $oidcIssuer): self
+    {
+        $this->oidcIssuer = $oidcIssuer;
+        return $this;
+    }
+
+    public function getOidcSubject(): ?string
+    {
+        return $this->oidcSubject;
+    }
+
+    public function setOidcSubject(?string $oidcSubject): self
+    {
+        $this->oidcSubject = $oidcSubject;
+        return $this;
+    }
 }

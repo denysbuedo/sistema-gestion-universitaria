@@ -40,7 +40,9 @@ security:
         main:
             provider: app_user_provider
             custom_authenticators:
+                - App\Security\OidcAuthenticator
                 - App\Security\LoginFormAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
 
@@ -49,6 +51,7 @@ security:
     access_control:
         # - { path: ^/profile, roles: ROLE_USER } IS_AUTHENTICATED_FULLY
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/oidc/(login|check), roles: PUBLIC_ACCESS }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: [ROLE_ADMIN] }

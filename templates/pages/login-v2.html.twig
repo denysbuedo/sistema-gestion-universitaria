@@ -284,6 +284,16 @@
                 </div>
             {% endif %}
 
+            {% for message in app.flashes('error') %}
+                <div class="alert-error"><i class="fas fa-exclamation-circle"></i><span>{{ message }}</span></div>
+            {% endfor %}
+
+            {% if oidc_enabled %}
+                <a href="{{ path('oidc_login') }}" class="btn-submit" style="text-decoration:none; margin-bottom:1rem">
+                    <span class="btn-label">Entrar con identidad institucional</span>
+                </a>
+            {% endif %}
+
             <form method="post" autocomplete="off" id="login-form">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 

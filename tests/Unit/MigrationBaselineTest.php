@@ -10,10 +10,9 @@ class MigrationBaselineTest extends TestCase
 
     protected function setUp(): void
     {
-        $files = glob(dirname(__DIR__, 2) . '/migrations/Version*.php');
-
-        self::assertCount(1, $files, 'La línea base debe ser la única migración inicial.');
-        $this->migration = file_get_contents($files[0]);
+        $baseline = dirname(__DIR__, 2) . '/migrations/Version20261010004147.php';
+        self::assertFileExists($baseline, 'La migración de línea base debe conservarse.');
+        $this->migration = file_get_contents($baseline);
     }
 
     public function testBaselineContainsTheValidatedSchema(): void

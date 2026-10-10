@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.12",
         "dompdf/dompdf": "^3.1.6",
+        "firebase/php-jwt": "^7.0",
         "gedmo/doctrine-extensions": "^3.7",
         "gnello/php-mattermost-driver": "^2.16",
         "lexik/jwt-authentication-bundle": "^2.11",

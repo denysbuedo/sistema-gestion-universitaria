@@ -97,6 +97,14 @@ services:
       $port: '%env(resolve:DB_PORT)%'
       $fixtureAdminEmail: '%env(FIXTURE_ADMIN_EMAIL)%'
       $fixtureAdminPassword: '%env(FIXTURE_ADMIN_PASSWORD)%'
+      $oidcEnabled: '%env(bool:OIDC_ENABLED)%'
+      $oidcIssuerUrl: '%env(OIDC_ISSUER_URL)%'
+      $oidcClientId: '%env(OIDC_CLIENT_ID)%'
+      $oidcClientSecret: '%env(OIDC_CLIENT_SECRET)%'
+      $oidcRedirectUri: '%env(OIDC_REDIRECT_URI)%'
+      $oidcPostLogoutRedirectUri: '%env(OIDC_POST_LOGOUT_REDIRECT_URI)%'
+      $oidcExpectedAudience: '%env(OIDC_EXPECTED_AUDIENCE)%'
+      $oidcPkceMethod: '%env(OIDC_PKCE_METHOD)%'
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
   App\:

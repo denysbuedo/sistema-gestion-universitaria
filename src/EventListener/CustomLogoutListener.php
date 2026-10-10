@@ -15,6 +15,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Security\OidcClient;
 
 class CustomLogoutListener
 {
@@ -25,6 +26,7 @@ class CustomLogoutListener
     private $requestStack;
     private $serializer;
     private $container;
+    private OidcClient $oidc;
 
     /**
      * CustomLogoutListener constructor.
@@ -35,7 +37,7 @@ class CustomLogoutListener
      * @param ContainerInterface $container
      * @param SerializerInterface $serializer
      */
-    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage,  RequestStack $requestStack, ContainerInterface $container, SerializerInterface $serializer)
+    public function __construct(RouterInterface $router, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage,  RequestStack $requestStack, ContainerInterface $container, SerializerInterface $serializer, OidcClient $oidc)
     {
         $this->router = $router;
         $this->entityManager = $entityManager;
@@ -43,6 +45,7 @@ class CustomLogoutListener
         $this->requestStack = $requestStack;
         $this->serializer = $serializer;
         $this->container = $container;
+        $this->oidc = $oidc;
     }
 
     /**
@@ -55,6 +58,16 @@ class CustomLogoutListener
 
         $traceService = new TraceService($this->requestStack, $this->entityManager, $this->serializer);
         $traceService->registrar($this->container->getParameter('accion_cierre_sesion'), $this->container->getParameter('objeto_autenticacion'),null, null, $this->container->getParameter('tipo_traza_sesion'));
+
+        $session = $logoutEvent->getRequest()->getSession();
+        $idToken = $session->get('oidc_id_token');
+        if ($session->get('oidc_authenticated') && is_string($idToken) && $idToken !== '') {
+            try {
+                $logoutEvent->setResponse(new RedirectResponse($this->oidc->logoutUrl($idToken)));
+            } catch (\Throwable $exception) {
+                // Local logout still succeeds when the identity provider is temporarily unavailable.
+            }
+        }
 
 
 //        $notificacion = new NotificacionesUsuario();

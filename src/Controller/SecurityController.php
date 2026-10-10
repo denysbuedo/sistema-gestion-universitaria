@@ -11,6 +11,7 @@ use App\Form\Admin\UserChgPswFormType;
 use App\Repository\Security\UserRepository;
 
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Security\OidcClient;
 
 class SecurityController extends AbstractController
 {
@@ -30,7 +31,7 @@ class SecurityController extends AbstractController
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, OidcClient $oidc): Response
     {
         // if ($this->getUser()) {
         //     return $this->redirectToRoute('target_path');
@@ -41,7 +42,31 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('pages/login-v2.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('pages/login-v2.html.twig', [
+            'last_username' => $lastUsername, 'error' => $error, 'oidc_enabled' => $oidc->isEnabled(),
+        ]);
+    }
+
+    /** @Route("/oidc/login", name="oidc_login", methods={"GET"}) */
+    public function oidcLogin(Request $request, OidcClient $oidc): Response
+    {
+        $start = $oidc->begin('login');
+        $request->getSession()->set('oidc_attempt', $start['attempt']);
+        return $this->redirect($start['url']);
+    }
+
+    /** @Route("/oidc/link", name="oidc_link", methods={"GET"}) */
+    public function oidcLink(Request $request, OidcClient $oidc): Response
+    {
+        $start = $oidc->begin('link', $this->getUser()->getId());
+        $request->getSession()->set('oidc_attempt', $start['attempt']);
+        return $this->redirect($start['url']);
+    }
+
+    /** @Route("/oidc/check", name="oidc_callback", methods={"GET"}) */
+    public function oidcCallback(): Response
+    {
+        throw new \LogicException('La respuesta OIDC debe ser procesada por el autenticador.');
     }
 
     /**

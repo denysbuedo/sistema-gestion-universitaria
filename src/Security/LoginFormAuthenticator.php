@@ -2,8 +2,6 @@
 
 namespace App\Security;
 
-use App\Entity\Personal\Persona;
-use App\Entity\Personal\PersonaOrganizacion;
 use App\Entity\Security\User;
 use App\Services\TraceService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,15 +31,18 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     private $requestStack;
     private $container;
     private TraceService $traceService;
+    private UserSessionInitializer $sessionInitializer;
 
     public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator,
-                                RequestStack $requestStack, ContainerInterface $container, TraceService $traceService)
+                                RequestStack $requestStack, ContainerInterface $container, TraceService $traceService,
+                                UserSessionInitializer $sessionInitializer)
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->requestStack = $requestStack;
         $this->container = $container;
         $this->traceService = $traceService;
+        $this->sessionInitializer = $sessionInitializer;
     }
 
     public function supports(Request $request): bool
@@ -70,7 +71,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     {
         /** @var User $user */
         $user = $token->getUser();
-        $this->populateUserSession($user);
+        $this->sessionInitializer->initialize($user);
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             if (!$request->getSession()->get(('password_change_first_time')) && !$request->getSession()->get(('usuario_autenticado_role_admin'))) {
@@ -90,53 +91,4 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 
-    private function populateUserSession(User $user): void
-    {
-        $persona = $this->entityManager->getRepository(Persona::class)->findOneBy(['usuario' => $user->getId()]);
-        $session = $this->requestStack->getSession();
-
-        if (!$persona instanceof Persona) {
-            $session->set('nombre_usuario_autenticado', $user->getUsername());
-            $session->set('id_persona_usuario_autenticado', -1);
-            $session->set('id_usuario_autenticado', $user->getId());
-
-            return;
-        }
-
-        $afiliaciones = $this->entityManager->getRepository(PersonaOrganizacion::class)->findBy(['persona' => $persona->getId()]);
-        $siglas = [];
-        foreach ($afiliaciones as $afiliacion) {
-            $siglas[] = $afiliacion->getOrganizacion()->getSiglas();
-        }
-
-        $session->set('id_usuario_autenticado', $user->getId());
-        $session->set('usuario_autenticado_role_admin', in_array('ROLE_ADMIN', $user->getRoles(), true));
-        $session->set('foto_usuario_autenticado', $persona->getFoto());
-        $session->set('nombre_usuario_autenticado', $persona->getPrimerNombre() . ' ' . $persona->getSegundoNombre() . ' ' . $persona->getPrimerApellido() . ' ' . $persona->getSegundoApellido());
-
-        $responsabilidad = $persona->getResponsabilidad();
-        $session->set('responsabilidad_usuario_autenticado', $responsabilidad ? $responsabilidad->getNombre() : null);
-
-        $estructura = $persona->getEstructura();
-        $estructuraPadre = $estructura ? $estructura->getEstructura() : null;
-        $session->set('estructura_usuario_autenticado', $estructura ? $estructura->getId() : null);
-        $session->set('nombre_estructura_usuario_autenticado', $estructura ? $estructura->getNombre() : null);
-        $session->set('estructura_padre_usuario_autenticado', $estructuraPadre ? $estructuraPadre->getNombre() : null);
-        $session->set('id_persona_usuario_autenticado', $persona->getId());
-        $session->set('provincia_usuario_autenticado', $persona->getProvincia() ? $persona->getProvincia()->getNombre() : null);
-        $session->set('municipio_usuario_autenticado', $persona->getMunicipio() ? $persona->getMunicipio()->getNombre() : null);
-
-        $gradoAcademico = $persona->getGradoAcademico();
-        $session->set('grado_cientifico_usuario_autenticado', $gradoAcademico ? $gradoAcademico->getNombre() : null);
-        $session->set('afiliaciones_usuario_autenticado', implode(', ', $siglas));
-        $session->set('password_change_first_time', $user->getPasswordChangeFirstTime());
-
-        $this->traceService->registrar(
-            $this->container->getParameter('accion_inicio_sesion'),
-            $this->container->getParameter('objeto_autenticacion'),
-            null,
-            null,
-            $this->container->getParameter('tipo_traza_sesion')
-        );
-    }
 }
