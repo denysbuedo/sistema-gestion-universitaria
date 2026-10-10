@@ -8,14 +8,14 @@ use Twig\TwigFunction;
 
 class CustomTwigExtension extends AbstractExtension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [           
             
         ];
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('hasRoles', [SecurityTwigExtension::class, 'hasRoles']),
