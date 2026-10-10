@@ -84,6 +84,8 @@ parameters:
 
 
 services:
+  Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+
   # default configuration for services in *this* file
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
@@ -145,6 +147,12 @@ services:
       - name: 'kernel.event_listener'
         event: 'Symfony\Component\Security\Http\Event\LogoutEvent'
         dispatcher: security.event_dispatcher.main
+
+  # Compatibilidad temporal: los reportes FOP heredados aún resuelven servicios
+  # dinámicamente. Mantener esta dependencia explícita hasta modernizarlos.
+  App\Services\HandlerFop:
+    arguments:
+      $container: '@service_container'
 
   idxboost_api.event.jwt_created_listener:
     class: App\EventListener\JWTCreatedListener
