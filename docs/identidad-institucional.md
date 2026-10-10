@@ -35,8 +35,8 @@ base de datos interna de Keycloak.
 | Responsable técnico | Pendiente de confirmar institucionalmente |
 | Responsable funcional | Pendiente de confirmar institucionalmente |
 | Clasificación | Sistema núcleo; 2FA obligatorio según política del realm |
-| Realm | Realm institucional común, pendiente de asignación |
-| Client ID solicitado | `akademos` o el identificador que apruebe Identidad |
+| Realm | `reduniv-institucional` |
+| Client ID | `sgu-dev`, `sgu-test` y `sgu` según ambiente |
 
 URLs que deben confirmarse antes de solicitar el alta:
 
@@ -44,7 +44,7 @@ URLs que deben confirmarse antes de solicitar el alta:
 |---|---|---|---|---|
 | Desarrollo local | `http://127.0.0.1:8000/` | `http://127.0.0.1:8000/oidc/check` | `http://127.0.0.1:8000/` | `http://127.0.0.1:8000` |
 | Pruebas | Pendiente de DNS/HTTPS | Pendiente exacta | Pendiente exacta | Pendiente exacto |
-| Producción | Pendiente de DNS/HTTPS | Pendiente exacta | Pendiente exacta | Pendiente exacto |
+| Producción | `https://sgu.mes.gob.cu/` | `https://sgu.mes.gob.cu/oidc/check` | `https://sgu.mes.gob.cu/` | `https://sgu.mes.gob.cu` |
 
 No se solicitarán comodines en redirecciones u orígenes. Las credenciales del
 cliente se intercambiarán mediante un canal seguro y se almacenarán fuera del
@@ -93,3 +93,22 @@ institucional para nuevas integraciones.
 - Ninguna contraseña, semilla TOTP, código, secreto de cliente o token aparece
   en logs, trazas o repositorio.
 - Todos los casos exigidos por Identidad pasan y existe aprobación técnica.
+
+## Estado del piloto de desarrollo
+
+Validado el 10 de octubre de 2026:
+
+- [x] Redirección desde SGU al cliente `sgu-dev`.
+- [x] Authorization Code Flow con PKCE S256, `state` y `nonce` de un solo uso.
+- [x] Autenticación Keycloak → LDAP → contraseña → TOTP.
+- [x] Callback exacto en `http://127.0.0.1:8000/oidc/check`.
+- [x] Vinculación controlada mediante `issuer + sub`, sin enlace automático por correo.
+- [x] Recepción y autorización de `ROLE_USER`.
+- [x] Firma, emisor, audiencia, expiración, fecha de emisión, nonce y roles cubiertos por pruebas automatizadas.
+- [x] Comprobación local de que secretos y tokens no aparecen en los registros.
+- [ ] Rechazo interactivo de acceso sin OTP y con OTP incorrecto.
+- [ ] Expiración, renovación y revocación de sesión contra Keycloak.
+- [ ] Logout central comprobado en navegador.
+- [ ] Recuperación institucional del segundo factor.
+- [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
+- [ ] Aprobación técnica del equipo de Identidad.

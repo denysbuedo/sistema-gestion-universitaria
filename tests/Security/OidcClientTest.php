@@ -51,6 +51,60 @@ final class OidcClientTest extends TestCase
         $client->finish('code', 'attacker-state', $start['attempt']);
     }
 
+    public function testRejectsExpiredAuthorizationAttempt(): void
+    {
+        $attempt = ['state' => 'state', 'nonce' => 'nonce', 'verifier' => 'verifier', 'createdAt' => time() - 301];
+        $this->expectException(\RuntimeException::class);
+        $this->client(new MockHttpClient())->finish('code', 'state', $attempt);
+    }
+
+    /**
+     * @dataProvider invalidClaimsProvider
+     */
+    public function testRejectsInvalidTokenClaims(array $changes): void
+    {
+        [$privateKey, $jwk] = $this->keyPair();
+        $attempt = [
+            'state' => 'expected-state', 'nonce' => 'expected-nonce', 'verifier' => 'verifier',
+            'createdAt' => time(), 'mode' => 'login', 'userId' => null,
+        ];
+        $claims = array_replace([
+            'iss' => self::ISSUER, 'sub' => 'stable-subject', 'aud' => 'sgu-dev',
+            'iat' => time(), 'exp' => time() + 300, 'nonce' => 'expected-nonce',
+            'roles' => ['ROLE_USER'], 'typ' => 'Bearer',
+        ], $changes);
+        $token = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
+        $client = $this->client(new MockHttpClient([
+            new MockResponse(json_encode($this->metadata())),
+            new MockResponse(json_encode(['id_token' => $token])),
+            new MockResponse(json_encode(['keys' => [$jwk]])),
+        ]));
+
+        $this->expectException(\Throwable::class);
+        $client->finish('code', 'expected-state', $attempt);
+    }
+
+    public function invalidClaimsProvider(): iterable
+    {
+        yield 'wrong issuer' => [['iss' => 'https://attacker.example.test/realms/fake']];
+        yield 'wrong audience' => [['aud' => 'another-client']];
+        yield 'wrong nonce' => [['nonce' => 'attacker-nonce']];
+        yield 'future issued-at' => [['iat' => time() + 120]];
+        yield 'expired token' => [['exp' => time() - 60]];
+        yield 'missing SGU role' => [['roles' => ['ROLE_OTHER']]];
+    }
+
+    public function testLogoutUsesTheApprovedPostLogoutAddress(): void
+    {
+        $client = $this->client(new MockHttpClient([new MockResponse(json_encode($this->metadata()))]));
+        $url = $client->logoutUrl('opaque-id-token');
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+
+        self::assertSame('opaque-id-token', $query['id_token_hint']);
+        self::assertSame('sgu-dev', $query['client_id']);
+        self::assertSame('http://127.0.0.1:8000/', $query['post_logout_redirect_uri']);
+    }
+
     private function client(MockHttpClient $http): OidcClient
     {
         return new OidcClient($http, true, self::ISSUER, 'sgu-dev', 'secret',
