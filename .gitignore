@@ -19,6 +19,7 @@ nbproject
 
 # Local secrets and generated authentication keys
 /config/jwt/*.pem
+/acceso.txt
 
 # Database backups and local exports
 /backups/
