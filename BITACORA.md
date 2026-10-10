@@ -150,11 +150,11 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 ## Próximo paso recomendado
 
-1. Iniciar la actividad 4: consolidar el pipeline de validación y decidir qué comprobaciones deben ejecutarse sin Docker.
-2. Separar las validaciones rápidas de PHP de la prueba integral Ubuntu/PostgreSQL para obtener retroalimentación temprana.
-3. Mantener la reconstrucción por migraciones como criterio obligatorio del pipeline integral.
-4. Revisar caché de Composer, artefactos de prueba y reglas de protección de `dev` antes de proponer cambios en `main`.
-5. Mantener como tareas transversales la rotación institucional de secretos y la sustitución gradual de dependencias abandonadas.
+1. Iniciar la actividad 6: actualizar Symfony 5.4 y preparar la evolución tecnológica hacia PHP moderno.
+2. Inventariar deprecaciones propias frente a las generadas por dependencias y priorizar las que bloquean Symfony 6.
+3. Sustituir gradualmente Security Guard y la API antigua de codificación de contraseñas, conservando las pruebas de seguridad.
+4. Mantener los pipelines rápido e integral como barreras obligatorias en cada incremento.
+5. Mantener como tarea institucional pendiente la rotación efectiva de cualquier secreto histórico.
 
 ## Historial
 
@@ -215,3 +215,6 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La ejecución `38010418439` de GitHub Actions aplicó la línea base (833 consultas), ejecutó el rollback completo (580 consultas), la reaplicó y validó el esquema contra Doctrine.
 - La validación Ubuntu finalizó con 21 pruebas y 124 aserciones, esquema sincronizado y cero vulnerabilidades conocidas.
 - La actividad 3 queda cerrada técnicamente. No se ejecutó SQL ni se modificaron datos del respaldo real.
+- Se completó la actividad 4 con un flujo `Fast validation` sin Docker para `main` y `dev`: Composer, sintaxis PHP incremental, 13 pruebas unitarias, contenedor, YAML, Twig y auditoría de dependencias.
+- La primera ejecución rápida (`38010781870`) terminó correctamente en aproximadamente un minuto y se ejecutó en paralelo con la validación integral (`38010781895`), que también quedó en verde.
+- La actividad 5 ya estaba materialmente cubierta por nueve pruebas funcionales repetibles de login web, sesión, logout, JWT, acceso anónimo y permisos por rol; la validación integral volvió a confirmarlas sobre PostgreSQL efímero.
