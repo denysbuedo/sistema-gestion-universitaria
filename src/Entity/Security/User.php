@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * Usuario Local del Sistema
@@ -16,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @UniqueEntity(fields="email", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
  * @ORM\Table(name="seguridad.tbd_usuario")
  */
-class User extends BaseEntity implements UserInterface, AuthorityInterface
+class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface, AuthorityInterface
 {
     /**
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
@@ -170,7 +171,7 @@ class User extends BaseEntity implements UserInterface, AuthorityInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;

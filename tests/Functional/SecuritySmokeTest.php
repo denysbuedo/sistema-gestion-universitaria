@@ -68,8 +68,7 @@ class SecuritySmokeTest extends WebTestCase
         $client->followRedirect();
         self::assertResponseIsSuccessful();
         $token = $client->getContainer()->get('security.token_storage')->getToken();
-        self::assertNotNull($token);
-        self::assertSame('anon.', $token->getUser());
+        self::assertNull($token);
     }
 
     public function testValidWebCredentialsCreateSessionAndReachDashboard(): void

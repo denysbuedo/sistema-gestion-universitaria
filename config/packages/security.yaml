@@ -1,5 +1,6 @@
 security:
-    encoders:
+    enable_authenticator_manager: true
+    password_hashers:
         App\Entity\Security\User:
             algorithm: auto
 
@@ -20,7 +21,6 @@ security:
         login:
             pattern:  ^/api/login
             stateless: true
-            anonymous: true
             json_login:
                 check_path:               /api/login_check
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
@@ -32,20 +32,15 @@ security:
 
         api:
             pattern:   ^/api
-            anonymous: true
             stateless: true
             provider: app_user_provider
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+            jwt: ~
 
 
         main:
-            anonymous: lazy
             provider: app_user_provider
-            guard:
-                authenticators:
-                    - App\Security\LoginFormAuthenticator
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
 
@@ -53,7 +48,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/profile, roles: ROLE_USER } IS_AUTHENTICATED_FULLY
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: [ROLE_ADMIN] }
