@@ -83,7 +83,7 @@ class AppFixtures extends Fixture
         'ignoreFirstLine' => true
     );
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $ignoreFirstLine = $this->csvParsingOptionsProvince['ignoreFirstLine'];
         $finder = new Finder();

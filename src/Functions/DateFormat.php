@@ -12,7 +12,7 @@ class DateFormat extends FunctionNode
     public $format = null;
 
     // parsear la funcion y establecer las partes
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(\Doctrine\ORM\Query\Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
@@ -23,7 +23,7 @@ class DateFormat extends FunctionNode
     }
 
     // devuelve el sql nativo
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker): string
     {
         return "to_char(" . $this->date->dispatch($sqlWalker) . "," .
             $this->format->dispatch($sqlWalker) . ")";
