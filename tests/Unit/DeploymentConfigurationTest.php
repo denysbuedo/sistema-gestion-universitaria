@@ -80,6 +80,18 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringNotContainsString('secrets.', $workflow);
     }
 
+    public function testTwoFactorFoundationUsesTotpAndRecoveryCodes(): void
+    {
+        $twoFactor = file_get_contents($this->projectDir . '/config/packages/scheb_2fa.yaml');
+        $security = file_get_contents($this->projectDir . '/config/packages/security.yaml');
+
+        self::assertStringContainsString("totp:\n        enabled: true", $twoFactor);
+        self::assertStringContainsString("backup_codes:\n        enabled: true", $twoFactor);
+        self::assertStringContainsString('two_factor:', $security);
+        self::assertStringContainsString('enable_csrf: true', $security);
+        self::assertStringContainsString('IS_AUTHENTICATED_2FA_IN_PROGRESS', $security);
+    }
+
     private function environmentKeys(string $path): array
     {
         $keys = [];
