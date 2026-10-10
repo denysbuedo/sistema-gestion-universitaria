@@ -30,6 +30,7 @@ class MigrationBaselineTest extends TestCase
             'pregrado', 'rrhh', 'seguridad', 'tramite', 'traza',
         ] as $schema) {
             self::assertStringContainsString("CREATE SCHEMA {$schema}", $this->migration);
+            self::assertStringContainsString("DROP SCHEMA {$schema}", $this->migration);
         }
     }
 

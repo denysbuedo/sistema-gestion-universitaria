@@ -4236,5 +4236,18 @@ final class Version20261010004147 extends AbstractMigration
         $this->addSql('DROP TABLE evaluacion.temp_categoria_acreditacion_ies');
         $this->addSql('DROP TABLE evaluacion.temp_categoria_acreditacion_posgrado');
         $this->addSql('DROP TABLE evaluacion.temp_categoria_acreditacion_pregrado');
+        $this->addSql('DROP SCHEMA configuracion');
+        $this->addSql('DROP SCHEMA convenio');
+        $this->addSql('DROP SCHEMA estructura');
+        $this->addSql('DROP SCHEMA evaluacion');
+        $this->addSql('DROP SCHEMA informatizacion');
+        $this->addSql('DROP SCHEMA institucion');
+        $this->addSql('DROP SCHEMA personal');
+        $this->addSql('DROP SCHEMA postgrado');
+        $this->addSql('DROP SCHEMA pregrado');
+        $this->addSql('DROP SCHEMA rrhh');
+        $this->addSql('DROP SCHEMA seguridad');
+        $this->addSql('DROP SCHEMA tramite');
+        $this->addSql('DROP SCHEMA traza');
     }
 }
