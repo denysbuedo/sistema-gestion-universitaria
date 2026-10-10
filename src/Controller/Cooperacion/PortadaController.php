@@ -8,16 +8,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/cooperacion/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_INSTIT")
  */
+#[Route('/cooperacion/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_cooperacion_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_cooperacion_portada', methods: ['GET'])]
     public function index()
     {
         return $this->render('modules/cooperacion/portada/index.html.twig');

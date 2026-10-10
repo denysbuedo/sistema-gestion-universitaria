@@ -22,19 +22,19 @@ use Symfony\Component\Routing\RouterInterface;
 class DashBoardController extends AbstractController
 {
     /**
-     * @Route("/", name="app_home")
      * @return RedirectResponse|Response
      */
+    #[Route('/', name: 'app_home')]
     public function home()
     {
         return $this->redirectToRoute('app_dash_board');
     }
 
     /**
-     * @Route("/dashboard/{id}", name="app_dash_board")
      * @param null $id
      * @return Response
      */
+    #[Route('/dashboard/{id}', name: 'app_dash_board')]
     public function index($id = null)
     {
         //  return $this->render('dash_board/index_sistemas.html.twig');

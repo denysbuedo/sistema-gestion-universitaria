@@ -25,11 +25,11 @@ class ClientMenuController extends AbstractController
     }
 
     /**
-     * @Route("/change/filter/plan/user/{id}", name="app_change_filter_plan_user")
      * @param Request $request
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
+    #[Route('/change/filter/plan/user/{id}', name: 'app_change_filter_plan_user')]
     public function appChangeFilterPlanUser(Request $request, $id)
     {
         $request->getSession()->set('user_plan_filter', $id);

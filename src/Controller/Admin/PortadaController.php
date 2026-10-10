@@ -13,16 +13,16 @@ use App\Repository\Security\ModuloRepository;
 use App\Repository\Traza\TrazaRepository;
 
 /**
- * @Route("/administracion/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_ADMIN")
  */
+#[Route('/administracion/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_administracion_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_administracion_portada', methods: ['GET'])]
     public function index(
         UserRepository $userRepo,
         RolRepository $rolRepo,
