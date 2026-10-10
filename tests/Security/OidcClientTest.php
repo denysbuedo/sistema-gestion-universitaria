@@ -33,7 +33,7 @@ final class OidcClientTest extends TestCase
         $token = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
         $finishClient = $this->client(new MockHttpClient([
             new MockResponse(json_encode($metadata)),
-            new MockResponse(json_encode(['id_token' => $token, 'access_token' => $token])),
+            new MockResponse(json_encode(['id_token' => $token, 'access_token' => $token, 'refresh_token' => 'refresh-token'])),
             new MockResponse(json_encode(['keys' => [$jwk]])),
         ]));
         $identity = $finishClient->finish('authorization-code', $start['attempt']['state'], $start['attempt']);
@@ -41,6 +41,7 @@ final class OidcClientTest extends TestCase
         self::assertSame(self::ISSUER, $identity['issuer']);
         self::assertSame('stable-subject', $identity['subject']);
         self::assertSame(['ROLE_USER'], $identity['roles']);
+        self::assertSame('refresh-token', $identity['refreshToken']);
     }
 
     public function testRejectsMismatchedStateBeforeTokenExchange(): void
@@ -76,7 +77,7 @@ final class OidcClientTest extends TestCase
         $token = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
         $client = $this->client(new MockHttpClient([
             new MockResponse(json_encode($this->metadata())),
-            new MockResponse(json_encode(['id_token' => $token])),
+            new MockResponse(json_encode(['id_token' => $token, 'access_token' => $token, 'refresh_token' => 'refresh-token'])),
             new MockResponse(json_encode(['keys' => [$jwk]])),
         ]));
 
@@ -103,6 +104,30 @@ final class OidcClientTest extends TestCase
         self::assertSame('opaque-id-token', $query['id_token_hint']);
         self::assertSame('sgu-dev', $query['client_id']);
         self::assertSame('http://127.0.0.1:8000/', $query['post_logout_redirect_uri']);
+    }
+
+    public function testRefreshRotatesTokenAndValidatesNewAccessToken(): void
+    {
+        [$privateKey, $jwk] = $this->keyPair();
+        $claims = [
+            'iss' => self::ISSUER, 'sub' => 'stable-subject', 'aud' => 'sgu-dev',
+            'iat' => time(), 'exp' => time() + 300, 'roles' => ['ROLE_USER'], 'typ' => 'Bearer',
+        ];
+        $accessToken = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
+        $client = $this->client(new MockHttpClient([
+            new MockResponse(json_encode($this->metadata())),
+            new MockResponse(json_encode([
+                'access_token' => $accessToken, 'refresh_token' => 'rotated-refresh-token',
+                'id_token' => 'renewed-id-token',
+            ])),
+            new MockResponse(json_encode(['keys' => [$jwk]])),
+        ]));
+
+        $renewed = $client->refresh('original-refresh-token');
+
+        self::assertSame('rotated-refresh-token', $renewed['refreshToken']);
+        self::assertSame('renewed-id-token', $renewed['idToken']);
+        self::assertGreaterThan(time(), $renewed['accessExpiresAt']);
     }
 
     private function client(MockHttpClient $http): OidcClient

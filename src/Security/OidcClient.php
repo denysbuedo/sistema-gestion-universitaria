@@ -58,18 +58,16 @@ final class OidcClient
             'client_id' => $this->oidcClientId, 'client_secret' => $this->oidcClientSecret,
             'redirect_uri' => $this->oidcRedirectUri, 'code_verifier' => $attempt['verifier'],
         ]])->toArray();
-        if (!isset($tokens['id_token'])) {
-            throw new \RuntimeException('El proveedor de identidad no devolvió un ID token.');
+        if (!isset($tokens['id_token'], $tokens['access_token'], $tokens['refresh_token'])) {
+            throw new \RuntimeException('El proveedor de identidad no devolvió todos los tokens requeridos.');
         }
         $jwks = $this->httpClient->request('GET', $metadata['jwks_uri'])->toArray();
         $claims = (array) JWT::decode($tokens['id_token'], JWK::parseKeySet($jwks));
         $this->validateClaims($claims, $attempt['nonce']);
-        if (isset($tokens['access_token'])) {
-            $access = (array) JWT::decode($tokens['access_token'], JWK::parseKeySet($jwks));
-            $this->validateClaims($access, null);
-            if (isset($access['typ']) && !in_array($access['typ'], ['Bearer', 'JWT'], true)) {
-                throw new \RuntimeException('El tipo del access token no está permitido.');
-            }
+        $access = (array) JWT::decode($tokens['access_token'], JWK::parseKeySet($jwks));
+        $this->validateClaims($access, null);
+        if (isset($access['typ']) && !in_array($access['typ'], ['Bearer', 'JWT'], true)) {
+            throw new \RuntimeException('El tipo del access token no está permitido.');
         }
         $roles = array_values(array_intersect((array) ($claims['roles'] ?? []), ['ROLE_USER', 'ROLE_ADMIN']));
         if (!$roles) {
@@ -77,8 +75,30 @@ final class OidcClient
         }
         return [
             'issuer' => $claims['iss'], 'subject' => $claims['sub'], 'roles' => $roles,
-            'idToken' => $tokens['id_token'], 'mode' => $attempt['mode'] ?? 'login',
+            'idToken' => $tokens['id_token'], 'refreshToken' => $tokens['refresh_token'],
+            'accessExpiresAt' => (int) $access['exp'], 'mode' => $attempt['mode'] ?? 'login',
             'userId' => $attempt['userId'] ?? null,
+        ];
+    }
+
+    public function refresh(string $refreshToken): array
+    {
+        $metadata = $this->metadata();
+        $tokens = $this->httpClient->request('POST', $metadata['token_endpoint'], ['body' => [
+            'grant_type' => 'refresh_token', 'refresh_token' => $refreshToken,
+            'client_id' => $this->oidcClientId, 'client_secret' => $this->oidcClientSecret,
+        ]])->toArray();
+        if (!isset($tokens['access_token'])) {
+            throw new \RuntimeException('No fue posible renovar la sesión institucional.');
+        }
+        $jwks = $this->httpClient->request('GET', $metadata['jwks_uri'])->toArray();
+        $access = (array) JWT::decode($tokens['access_token'], JWK::parseKeySet($jwks));
+        $this->validateClaims($access, null);
+
+        return [
+            'refreshToken' => $tokens['refresh_token'] ?? $refreshToken,
+            'accessExpiresAt' => (int) $access['exp'],
+            'idToken' => $tokens['id_token'] ?? null,
         ];
     }
 

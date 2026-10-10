@@ -112,3 +112,9 @@ Validado el 10 de octubre de 2026:
 - [ ] Recuperación institucional del segundo factor.
 - [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
 - [ ] Aprobación técnica del equipo de Identidad.
+
+La aplicación conserva los tokens únicamente en la sesión del backend. Cuando
+el access token se aproxima a su expiración, usa el refresh token contra el
+token endpoint, valida criptográficamente el nuevo access token y reemplaza el
+refresh token si Keycloak lo rota. Si la renovación falla por expiración o
+revocación, invalida la sesión local y obliga a autenticarse nuevamente.

@@ -36,6 +36,8 @@ final class OidcAuthenticator extends AbstractAuthenticator
             $identity = $this->oidc->finish((string) $request->query->get('code'), (string) $request->query->get('state'), $attempt);
             $user = $this->resolveUser($identity);
             $session->set('oidc_id_token', $identity['idToken']);
+            $session->set('oidc_refresh_token', $identity['refreshToken']);
+            $session->set('oidc_access_expires_at', $identity['accessExpiresAt']);
             $session->set('oidc_authenticated', true);
             return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier(), fn () => $user));
         } catch (\Throwable $exception) {
