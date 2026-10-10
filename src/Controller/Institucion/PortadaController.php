@@ -13,16 +13,16 @@ use App\Repository\Institucion\CategoriaAcreditacionRepository;
 use App\Repository\Institucion\InstitucionRevistaCientificaRepository;
 
 /**
- * @Route("/institucion/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_INSTIT")
  */
+#[Route('/institucion/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_institucion_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_institucion_portada', methods: ['GET'])]
     public function index(
         InstitucionRepository $institucionRepo,
         TipoInstitucionRepository $tipoInstRepo,

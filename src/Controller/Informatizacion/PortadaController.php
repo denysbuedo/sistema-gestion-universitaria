@@ -15,16 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/informatizacion/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_INFORMATIZACION")
  */
+#[Route('/informatizacion/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_informatizacion_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_informatizacion_portada', methods: ['GET'])]
     public function index(
         SistemaInformaticoRepository $sistemaRepo,
         ServicioRepository           $servicioRepo,

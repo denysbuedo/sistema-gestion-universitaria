@@ -9,16 +9,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/postgrado/portada")
  * @IsGranted("ROLE_ADMIN", "ROLE_HOME_POSTG")
  */
+#[Route('/postgrado/portada')]
 class PortadaController extends AbstractController
 {
 
     /**
-     * @Route("", name="app_postgrado_portada", methods={"GET"})
      * @return Response
      */
+    #[Route('', name: 'app_postgrado_portada', methods: ['GET'])]
     public function index(SolicitudProgramaRepository $solicitudProgramaRepository)
     {
         $total_programas = count($solicitudProgramaRepository->getSolicitudes());
