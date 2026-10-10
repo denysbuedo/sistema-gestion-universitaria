@@ -483,7 +483,7 @@ class SolicitudProgramaController extends AbstractController
      * @param SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository
      * @return Response
      */
-    public function asignarComision(Request $request, $tipo = '1', MiembrosComisionRepository $miembrosComisionRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, ComisionRepository $comisionRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository)
+    public function asignarComision(Request $request, MiembrosComisionRepository $miembrosComisionRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, ComisionRepository $comisionRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, $tipo = '1')
     {
         try {
             $form = $this->createForm(ComisionProgramaType::class, null, ['idTipoComision' => $tipo]);

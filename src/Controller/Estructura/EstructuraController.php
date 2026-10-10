@@ -625,7 +625,7 @@ class EstructuraController extends AbstractController
     /**
      * @Route("/obtener-grupos/{idEstructura}", name="app_estructura_obtener_grupos", methods={"GET"})
      */
-    public function obtenerGruposDadoId($idEstructura = null, EntityManagerInterface $entityManager): JsonResponse
+    public function obtenerGruposDadoId(EntityManagerInterface $entityManager, $idEstructura = null): JsonResponse
     {
         $grupos = $entityManager->getRepository(Grupo::class)->findBy(['activo' => true]);
 
