@@ -150,10 +150,10 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 ## Próximo paso recomendado
 
-1. Iniciar la actividad 3: establecer la estrategia y línea base de migraciones de Doctrine.
-2. Inventariar el esquema de la copia de prueba y compararlo con los metadatos actuales, sin modificar la base real.
-3. Definir cómo adoptar una línea base en instalaciones existentes y cómo crear instalaciones nuevas de forma reproducible.
-4. Probar migración, reversión y reconstrucción completa únicamente sobre bases efímeras o copias autorizadas.
+1. Iniciar la actividad 4: consolidar el pipeline de validación y decidir qué comprobaciones deben ejecutarse sin Docker.
+2. Separar las validaciones rápidas de PHP de la prueba integral Ubuntu/PostgreSQL para obtener retroalimentación temprana.
+3. Mantener la reconstrucción por migraciones como criterio obligatorio del pipeline integral.
+4. Revisar caché de Composer, artefactos de prueba y reglas de protección de `dev` antes de proponer cambios en `main`.
 5. Mantener como tareas transversales la rotación institucional de secretos y la sustitución gradual de dependencias abandonadas.
 
 ## Historial
@@ -204,3 +204,14 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La auditoría conserva el informe de cinco paquetes abandonados y falla ante avisos de seguridad, sin tratar ambas categorías como equivalentes en Composer 2.7 de Ubuntu.
 - La ejecución `37913609338` de GitHub Actions completó correctamente la validación real sobre Ubuntu 24.04: PHP 8.3, PostgreSQL 18 efímero, fixtures, 18 pruebas con 86 aserciones, contenedor, 22 archivos YAML, 550 plantillas Twig, mapeo y esquema Doctrine, auditoría sin vulnerabilidades, PHP-FPM y Nginx.
 - Con esta ejecución queda cerrada la preparación técnica reproducible de la actividad 2; el despliegue productivo continúa sujeto a aprovisionamiento, secretos rotados, respaldo y ventana de cambio autorizada.
+
+### 2026-10-10
+
+- Se inició y completó la actividad 3 con una línea base Doctrine versionada para PostgreSQL.
+- El inventario DDL del respaldo autorizado se consultó solo en modo lectura, sin restaurar ni inspeccionar filas: contiene 164 tablas, las mismas que la línea base generada desde los metadatos.
+- `DoctrineMigrations\\Version20261010004147` crea 164 tablas en 13 esquemas funcionales y `public`; la única diferencia nominal con el respaldo es la calificación explícita `public.` de dos tablas.
+- La configuración de migraciones usa `all_or_nothing`, restringe la línea base a PostgreSQL y documenta por separado instalaciones nuevas y adopción segura en bases existentes.
+- Se retiró `doctrine:schema:create` de la preparación de pruebas y despliegue; el flujo reproducible usa `doctrine:migrations:migrate`.
+- La ejecución `38010418439` de GitHub Actions aplicó la línea base (833 consultas), ejecutó el rollback completo (580 consultas), la reaplicó y validó el esquema contra Doctrine.
+- La validación Ubuntu finalizó con 21 pruebas y 124 aserciones, esquema sincronizado y cero vulnerabilidades conocidas.
+- La actividad 3 queda cerrada técnicamente. No se ejecutó SQL ni se modificaron datos del respaldo real.
