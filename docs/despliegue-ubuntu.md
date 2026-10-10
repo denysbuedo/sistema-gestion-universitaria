@@ -122,12 +122,16 @@ En la VM, limitar el backend y conservar el acceso administrativo:
 ```bash
 sudo ufw allow OpenSSH
 sudo ufw allow from 10.46.4.22 to any port 8080 proto tcp
+sudo ufw allow from 10.46.4.32 to any port 8080 proto tcp
+sudo ufw allow from 10.46.4.130 to any port 8080 proto tcp
 sudo ufw enable
 ```
 
 No habilitar Nginx antes de completar la configuración y las pruebas locales.
 HAProxy puede comprobar la conectividad del backend mediante `GET /healthz`;
 este endpoint no consulta PHP ni la base de datos.
+Las IP `10.46.4.32` (bastión) y `10.46.4.130` (Certbot) tienen acceso de red
+para verificación, pero no son proxies confiables para las cabeceras HTTP.
 
 ## Activación y reversión
 
