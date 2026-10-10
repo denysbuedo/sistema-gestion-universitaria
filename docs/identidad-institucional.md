@@ -107,7 +107,8 @@ Validado el 10 de octubre de 2026:
 - [x] Firma, emisor, audiencia, expiración, fecha de emisión, nonce y roles cubiertos por pruebas automatizadas.
 - [x] Comprobación local de que secretos y tokens no aparecen en los registros.
 - [x] Rechazo interactivo de OTP incorrecto (`Invalid authenticator code`) y acceso únicamente tras presentar un TOTP válido.
-- [ ] Expiración, renovación y revocación de sesión contra Keycloak.
+- [x] Revocación real en Keycloak detectada al renovar: SGU invalidó la sesión local y redirigió al login sin bucles.
+- [ ] Renovación satisfactoria de una sesión no revocada durante un periodo superior al access token.
 - [x] Logout central comprobado en navegador, con retorno autorizado y sesión local invalidada.
 - [ ] Recuperación institucional del segundo factor.
 - [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
