@@ -163,6 +163,7 @@ Con el entorno exportado, ejecutar:
 ```bash
 sudo -u www-data --preserve-env bash deploy/check-requirements.sh \
   /var/www/akademos/current
+sudo nginx -t
 ```
 
 Luego verificar desde otra máquina:

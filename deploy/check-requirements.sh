@@ -43,6 +43,5 @@ php bin/console about --env=prod
 php bin/console lint:container --env=prod
 php bin/console doctrine:query:sql 'SELECT current_database(), current_user' --env=prod
 fop -version
-nginx -t
 
 echo "Comprobaciones de despliegue completadas."
