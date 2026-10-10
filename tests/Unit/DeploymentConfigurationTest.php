@@ -64,6 +64,22 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringNotContainsString('secrets.', $workflow);
     }
 
+    public function testFastWorkflowRunsWithoutDockerOnMainAndDev(): void
+    {
+        $workflow = file_get_contents($this->projectDir . '/.github/workflows/fast-validation.yml');
+
+        self::assertStringContainsString('branches: [main, dev]', $workflow);
+        self::assertStringContainsString('runs-on: ubuntu-24.04', $workflow);
+        self::assertStringContainsString('php-version:', $workflow);
+        self::assertStringContainsString('composer validate', $workflow);
+        self::assertStringContainsString('composer audit', $workflow);
+        self::assertStringContainsString('php vendor/bin/phpunit tests/Unit', $workflow);
+        self::assertStringContainsString('lint:container', $workflow);
+        self::assertStringContainsString("find src config migrations tests -type f -name '*.php'", $workflow);
+        self::assertStringNotContainsString('docker', strtolower($workflow));
+        self::assertStringNotContainsString('secrets.', $workflow);
+    }
+
     private function environmentKeys(string $path): array
     {
         $keys = [];
