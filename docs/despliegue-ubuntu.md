@@ -81,12 +81,16 @@ sudo -u www-data --preserve-env php bin/console cache:clear --env=prod --no-debu
 sudo -u www-data --preserve-env php bin/console cache:warmup --env=prod --no-debug
 ```
 
-No ejecutar `doctrine:schema:update --force`. Hasta establecer la línea base de
-migraciones, validar el esquema contra una copia no productiva:
+No ejecutar `doctrine:schema:update --force`. En una instalación nueva, aplicar
+las migraciones y validar el resultado:
 
 ```bash
+sudo -u www-data --preserve-env php bin/console doctrine:migrations:migrate --env=prod --no-interaction
 sudo -u www-data --preserve-env php bin/console doctrine:schema:validate --env=prod
 ```
+
+Una instalación existente debe adoptar la línea base sin ejecutar su SQL,
+siguiendo `docs/migraciones.md` y después de validar una copia no productiva.
 
 ## PHP-FPM, systemd y Nginx
 

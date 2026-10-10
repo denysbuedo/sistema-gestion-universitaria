@@ -96,30 +96,21 @@ Git y nunca deben reutilizar las claves de producción.
 
 ## Base de datos
 
-La aplicación usa PostgreSQL y requiere la extensión `uuid-ossp`:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-```
-
-El repositorio todavía no contiene migraciones capaces de reconstruir el
-esquema. Para desarrollo existen dos alternativas temporales:
+La aplicación usa PostgreSQL. Para desarrollo existen dos alternativas:
 
 1. Restaurar una copia no productiva, autorizada y debidamente anonimizada.
-2. Crear un esquema vacío desde las entidades y cargar las fixtures.
+2. Crear una base vacía, aplicar las migraciones y cargar las fixtures.
 
-La segunda alternativa permite recorrer la aplicación, pero no representa con
-fidelidad el estado real de los datos:
+La segunda alternativa permite recorrer la aplicación con datos sintéticos:
 
 ```powershell
 php bin/console doctrine:database:create --if-not-exists
-php bin/console doctrine:schema:create
+php bin/console doctrine:migrations:migrate --no-interaction
 php bin/console doctrine:fixtures:load --no-interaction
 ```
 
-`doctrine:schema:create` es una solución provisional de desarrollo. No debe
-utilizarse como procedimiento de despliegue ni sustituye la futura línea base de
-migraciones.
+La estrategia de instalaciones nuevas, adopción sobre bases existentes y
+rollback está documentada en `docs/migraciones.md`.
 
 Los backups reales pueden contener datos personales, hashes de contraseñas,
 trazas y otra información restringida. Deben almacenarse fuera del repositorio,
@@ -135,9 +126,8 @@ php bin/console lint:container
 php bin/console doctrine:schema:validate
 ```
 
-Actualmente `doctrine:schema:validate` informa inconsistencias heredadas de
-mapeo. Esas incidencias deben registrarse y corregirse antes de establecer la
-línea base de migraciones.
+`doctrine:schema:validate` debe informar mapeos correctos y esquema
+sincronizado antes de iniciar el servidor.
 
 ## Ejecución
 
@@ -172,4 +162,4 @@ symfony server:stop
 - No usar una base de producción como base de desarrollo cotidiana.
 - No ejecutar `doctrine:schema:update --force` en producción.
 - Crear pruebas antes de refactorizaciones o actualizaciones amplias.
-- Versionar las migraciones cuando se establezca la línea base.
+- Versionar cada cambio de esquema mediante migraciones revisadas.

@@ -4,7 +4,7 @@ La suite usa una base PostgreSQL exclusiva llamada `gestion_universitaria_test`.
 
 ## Preparación local
 
-1. Crear `gestion_universitaria_test` con propietario `sgu_dev` y habilitar la extensión `uuid-ossp` usando una cuenta con permisos administrativos.
+1. Crear `gestion_universitaria_test` con propietario `sgu_dev`.
 2. Copiar los valores locales necesarios a `.env.test.local`. Este archivo está ignorado por Git. Como mínimo debe definir `DATABASE_URL`, `DB_USER`, `DB_PASS`, `FIXTURE_ADMIN_EMAIL`, `FIXTURE_ADMIN_PASSWORD` y `JWT_PASSPHRASE`.
 3. Generar un par JWT exclusivo para pruebas:
 
@@ -12,10 +12,10 @@ La suite usa una base PostgreSQL exclusiva llamada `gestion_universitaria_test`.
 php bin/console lexik:jwt:generate-keypair --env=test --skip-if-exists
 ```
 
-4. Crear el esquema y cargar los datos sintéticos:
+4. Aplicar las migraciones y cargar los datos sintéticos:
 
 ```powershell
-php bin/console doctrine:schema:create --env=test
+php bin/console doctrine:migrations:migrate --env=test --no-interaction
 php bin/console doctrine:fixtures:load --env=test --no-interaction
 ```
 

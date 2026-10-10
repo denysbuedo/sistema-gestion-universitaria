@@ -10,7 +10,9 @@ fop -version
 composer check-platform-reqs
 php bin/console lexik:jwt:generate-keypair --env=test --skip-if-exists
 php bin/console doctrine:database:create --env=test --if-not-exists
-php bin/console doctrine:schema:create --env=test
+php bin/console doctrine:migrations:migrate --env=test --no-interaction
+php bin/console doctrine:migrations:execute --env=test --down --no-interaction 'DoctrineMigrations\Version20261010004147'
+php bin/console doctrine:migrations:migrate --env=test --no-interaction
 php bin/console doctrine:fixtures:load --env=test --no-interaction
 
 php vendor/bin/phpunit --no-coverage --do-not-cache-result

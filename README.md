@@ -4,9 +4,9 @@ La aplicación utiliza Symfony 5.4 y PostgreSQL. La guía validada para preparar
 un entorno de desarrollo en Windows está en
 [`docs/desarrollo-windows.md`](docs/desarrollo-windows.md).
 
-El repositorio todavía no contiene una línea base de migraciones. Hasta que se
-complete esa iniciativa, no debe asumirse que
-`doctrine:migrations:migrate` puede construir una base nueva.
+El repositorio contiene una línea base de migraciones capaz de construir una
+base nueva. La adopción sobre instalaciones existentes requiere marcar esa
+línea base como ejecutada; consulte [`docs/migraciones.md`](docs/migraciones.md).
 
 ## Despliegue en producción
 
@@ -173,14 +173,8 @@ curl -X POST https://127.0.0.1:8000/api/login_check \
 
 > Migrations
 ```
- php bin/console doctrine:database:drop --force
- php bin/console doctrine:database:create 
- php bin/console doctrine:schema:update --force
- php bin/console doctrine:fixtures:load
-
- php bin/console make:entity 
- php bin/console make:migration
- php bin/console doctrine:migrations:migrate
+ php bin/console doctrine:migrations:migrate --no-interaction
+ php bin/console doctrine:schema:validate
 ```
 
 > Install 

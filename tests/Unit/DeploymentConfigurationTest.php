@@ -46,6 +46,9 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringContainsString('cp .env.example .env', $dockerfile);
 
         $validationScript = file_get_contents($this->projectDir . '/deploy/validation/run.sh');
+        self::assertStringContainsString('doctrine:migrations:migrate --env=test', $validationScript);
+        self::assertStringContainsString('doctrine:migrations:execute --env=test --down', $validationScript);
+        self::assertStringNotContainsString('doctrine:schema:create', $validationScript);
         self::assertStringContainsString('composer audit --locked --format=json', $validationScript);
         self::assertStringContainsString('empty($audit["advisories"])', $validationScript);
         self::assertStringNotContainsString('--abandoned', $validationScript);
