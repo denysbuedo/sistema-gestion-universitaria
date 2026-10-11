@@ -96,15 +96,15 @@ institucional para nuevas integraciones.
 
 ## Estado del piloto de desarrollo
 
-> **BLOQUEANTE PARA PRODUCCIÓN — AUTORIZACIÓN POR ROLES NO RESUELTA**
+> **VALIDACIÓN LOCAL COMPLETADA — PENDIENTE PRUEBA REAL Y APROBACIÓN**
 >
-> El login, TOTP, renovación, revocación y logout OIDC están validados, pero la
-> aplicación todavía no aplica de forma segura y dinámica `ROLE_USER` y
-> `ROLE_ADMIN` desde el token de Keycloak. La retirada de `ROLE_ADMIN` debe
-> reflejarse en una nueva sesión sin modificar permanentemente la entidad local
-> `User` y sin romper la persistencia de la sesión Symfony. SGU no debe activar
-> OIDC en producción ni retirar el login de contingencia hasta resolver y
-> aprobar este punto.
+> SGU aplica ahora `ROLE_USER` y `ROLE_ADMIN` como atributos de la sesión OIDC,
+> sin escribirlos en la entidad local `User`. El proveedor de usuarios conserva
+> esos roles al refrescar la sesión Symfony y Keycloak sustituye únicamente los
+> dos roles institucionales; los permisos funcionales locales permanecen.
+> La solución está cubierta por pruebas automáticas, pero SGU no debe activar
+> OIDC en producción ni retirar el login de contingencia hasta repetir la
+> concesión y retirada con Keycloak real y recibir aprobación técnica.
 
 Validado el 10 de octubre de 2026:
 
@@ -121,15 +121,15 @@ Validado el 10 de octubre de 2026:
 - [x] Renovación satisfactoria de una sesión no revocada durante un periodo superior al access token; el usuario continuó trabajando sin reautenticarse.
 - [x] Logout central comprobado en navegador, con retorno autorizado y sesión local invalidada.
 - [ ] Recuperación institucional del segundo factor.
-- [ ] Prueba de `ROLE_ADMIN` con una cuenta autorizada.
+- [x] Prueba automática de concesión, persistencia y retirada de `ROLE_ADMIN`.
+- [ ] Prueba real de `ROLE_ADMIN` con una cuenta autorizada.
 - [ ] Aprobación técnica del equipo de Identidad.
 
-La prueba de retirada dinámica de `ROLE_ADMIN` queda pendiente. Un primer
-intento de aplicar el rol exclusivamente sobre una copia temporal del usuario
-provocó una regresión en la persistencia de la sesión Symfony y fue revertido
-al último estado estable. No se repetirá el cambio hasta disponer de pruebas
-funcionales específicas para login, recarga de usuario y autorización tras
-añadir y retirar roles.
+La implementación evita la copia temporal que provocó la regresión anterior.
+Los roles OIDC viven en la instancia autenticada y el proveedor de usuarios los
+transfiere explícitamente a la entidad refrescada. Las pruebas comprueban la
+recarga entre peticiones, el acceso administrativo, el 403 tras retirar el rol
+y que el valor persistente de `User.role` no cambia.
 
 ### Criterios para cerrar el bloqueo de roles
 

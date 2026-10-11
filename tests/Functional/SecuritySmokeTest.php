@@ -155,6 +155,59 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    public function testOidcUserWithoutAdminRoleCannotUsePersistedLocalAdminRole(): void
+    {
+        $client = static::createClient();
+        $user = $this->fixtureAdminUser($client);
+        self::assertSame('ROLE_ADMIN', $user->getRole());
+        $user->setOidcRoles(['ROLE_USER']);
+        $client->loginUser($user, 'main');
+
+        $client->request('GET', '/administracion/usuario/');
+
+        self::assertResponseStatusCodeSame(403);
+        self::assertFalse($client->getRequest()->getSession()->get('usuario_autenticado_role_admin', false));
+        $client->getContainer()->get(EntityManagerInterface::class)->clear();
+        self::assertSame('ROLE_ADMIN', $this->fixtureAdminUser($client)->getRole());
+    }
+
+    public function testOidcAdminRoleSurvivesUserRefreshWithoutBeingPersisted(): void
+    {
+        $client = static::createClient();
+        $user = $this->fixtureAdminUser($client);
+        $user->setOidcRoles(['ROLE_USER', 'ROLE_ADMIN']);
+        $client->loginUser($user, 'main');
+
+        $client->request('GET', '/');
+        self::assertResponseRedirects('/dashboard');
+        $client->request('GET', '/administracion/usuario/');
+
+        self::assertResponseIsSuccessful();
+        self::assertContains('ROLE_ADMIN', $client->getContainer()->get('security.token_storage')->getToken()->getRoleNames());
+        $client->getContainer()->get(EntityManagerInterface::class)->clear();
+        $reloaded = $this->fixtureAdminUser($client);
+        self::assertSame('ROLE_ADMIN', $reloaded->getRole());
+        self::assertNull($reloaded->getOidcRoles());
+    }
+
+    public function testOidcAdminRemovalAppliesToANewSession(): void
+    {
+        $client = static::createClient();
+        $user = $this->fixtureAdminUser($client);
+        $user->setOidcRoles(['ROLE_USER', 'ROLE_ADMIN']);
+        $client->loginUser($user, 'main');
+        $client->request('GET', '/administracion/usuario/');
+        self::assertResponseIsSuccessful();
+
+        $client->restart();
+        $user = $this->fixtureAdminUser($client);
+        $user->setOidcRoles(['ROLE_USER']);
+        $client->loginUser($user, 'main');
+        $client->request('GET', '/administracion/usuario/');
+
+        self::assertResponseStatusCodeSame(403);
+    }
+
     private function getLoginCsrfToken(KernelBrowser $client): string
     {
         $crawler = $client->request('GET', '/login');
@@ -198,6 +251,17 @@ class SecuritySmokeTest extends WebTestCase
 
         $entityManager->persist($user);
         $entityManager->flush();
+
+        return $user;
+    }
+
+    private function fixtureAdminUser(KernelBrowser $client): User
+    {
+        $user = $client->getContainer()->get(EntityManagerInterface::class)
+            ->getRepository(User::class)
+            ->findOneBy(['email' => $this->fixtureAdminEmail()]);
+
+        self::assertInstanceOf(User::class, $user);
 
         return $user;
     }

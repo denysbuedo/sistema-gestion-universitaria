@@ -10,6 +10,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -19,7 +21,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserProviderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -32,9 +34,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function add(User $entity, bool $flush = true): User
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;
@@ -46,9 +48,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function edit(User $entity, bool $flush = true): User
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;
@@ -60,9 +62,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function remove(User $entity, bool $flush = true): void
     {
-        $this->_em->remove($entity);
+        $this->getEntityManager()->remove($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -76,8 +78,42 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         $user->setPassword($newHashedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
+    public function loadUserByIdentifier(string $identifier): UserInterface
+    {
+        $user = $this->findOneBy(['email' => $identifier]);
+        if (!$user instanceof User) {
+            throw new \Symfony\Component\Security\Core\Exception\UserNotFoundException();
+        }
+
+        return $user;
+    }
+
+    public function refreshUser(UserInterface $user): UserInterface
+    {
+        if (!$user instanceof User) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
+        }
+
+        $oidcRoles = $user->getOidcRoles();
+        $refreshed = $this->findOneBy(['email' => $user->getUserIdentifier()]);
+        if (!$refreshed instanceof User) {
+            throw new \Symfony\Component\Security\Core\Exception\UserNotFoundException();
+        }
+
+        if ($oidcRoles !== null) {
+            $refreshed->setOidcRoles($oidcRoles);
+        }
+
+        return $refreshed;
+    }
+
+    public function supportsClass(string $class): bool
+    {
+        return User::class === $class || is_subclass_of($class, User::class);
     }
 
     public function getUsuarios()

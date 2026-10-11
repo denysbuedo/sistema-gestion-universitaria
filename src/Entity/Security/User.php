@@ -56,6 +56,16 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $oidcSubject = null;
 
+    /**
+     * Roles institucionales de la sesión OIDC actual. No se persisten.
+     *
+     * Un valor null identifica una autenticación local. Un array, incluso
+     * vacío, hace que Keycloak sea la autoridad para ROLE_USER/ROLE_ADMIN.
+     *
+     * @var string[]|null
+     */
+    private ?array $oidcRoles = null;
+
     private $passwordPlainOld;
 
     private $passwordPlainText;
@@ -76,7 +86,12 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         //Guarantee every user at least
         $roles[] = $this->role;
 
-        return array_unique($roles);
+        if ($this->oidcRoles !== null) {
+            $roles = array_diff($roles, ['ROLE_USER', 'ROLE_ADMIN']);
+            $roles = array_merge($roles, $this->oidcRoles);
+        }
+
+        return array_values(array_unique($roles));
     }
 
     /**
@@ -294,6 +309,23 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     public function setOidcSubject(?string $oidcSubject): self
     {
         $this->oidcSubject = $oidcSubject;
+        return $this;
+    }
+
+    /** @return string[]|null */
+    public function getOidcRoles(): ?array
+    {
+        return $this->oidcRoles;
+    }
+
+    /** @param string[] $roles */
+    public function setOidcRoles(array $roles): self
+    {
+        $this->oidcRoles = array_values(array_intersect(
+            array_unique($roles),
+            ['ROLE_USER', 'ROLE_ADMIN']
+        ));
+
         return $this;
     }
 }
