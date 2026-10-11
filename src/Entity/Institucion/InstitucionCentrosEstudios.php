@@ -5,28 +5,20 @@ namespace App\Entity\Institucion;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbr_institucion_centros_estudios")
- */
+#[ORM\Table(name: 'institucion.tbr_institucion_centros_estudios')]
+#[ORM\Entity]
 class InstitucionCentrosEstudios extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Institucion::class)]
     private ?Institucion $institucion;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 100)]
     private ?string $nombreCentroEstudio = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $descripcionCentroEstudio= null;
 
 

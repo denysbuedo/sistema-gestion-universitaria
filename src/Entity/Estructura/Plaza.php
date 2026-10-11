@@ -5,30 +5,20 @@ namespace App\Entity\Estructura;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbr_plaza",
- * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="uniq_estructura_plaza_estructura_responsabilidad", columns={"estructura_id", "responsabilidad_id"})
- * })
- */
+#[ORM\Table(name: 'estructura.tbr_plaza')]
+#[ORM\UniqueConstraint(name: 'uniq_estructura_plaza_estructura_responsabilidad', columns: ['estructura_id', 'responsabilidad_id'])]
+#[ORM\Entity]
 class Plaza extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Estructura")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Estructura::class)]
     private ?Estructura $estructura;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Responsabilidad")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Responsabilidad::class)]
     private ?Responsabilidad $responsabilidad;
 
-    /** 
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer', nullable: false)]
     protected ?int $cantidad = 0;    
     
     public function getEstructura()

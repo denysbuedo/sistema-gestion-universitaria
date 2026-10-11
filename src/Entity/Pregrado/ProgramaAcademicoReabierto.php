@@ -6,47 +6,31 @@ use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbd_programa_academico_reabierto")
- */
+#[ORM\Table(name: 'pregrado.tbd_programa_academico_reabierto')]
+#[ORM\Entity]
 class ProgramaAcademicoReabierto extends BaseEntity
 {
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\CursoAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\CursoAcademico::class)]
     private ?CursoAcademico $cursoAcademico;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $fundamentacionReapertura = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenDgp = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $descripcion = null;
 
     /**

@@ -10,127 +10,80 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Postgrado\SolicitudPrograma;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbd_solicitud")
- */
+#[ORM\Table(name: 'evaluacion.tbd_solicitud')]
+#[ORM\Entity]
 class Solicitud extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $tipoSolicitud = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Convocatoria")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Convocatoria::class)]
     private ?Convocatoria $convocatoria;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $institucion;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $programaPregrado;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Postgrado\SolicitudPrograma")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\SolicitudPrograma::class)]
     private ?SolicitudPrograma $programaPosgrado;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="EstadoSolicitud")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: EstadoSolicitud::class)]
     private ?EstadoSolicitud $estadoSolicitud;
 
 
-    /**
-     * @ORM\Column(type="datetime", nullable=false)
-     */
+    #[ORM\Column(type: 'datetime', nullable: false)]
     private $fechaPropuesta;
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaAprobada;
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $cartaSolicitud = null;
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $informeAutoevaluacion = null;
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $planTrabajo = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $estadoInformeAutoevaluacion = null;
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $estadoPlanTrabajo = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $categoriaAcreditacionActual = null;
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $motivoRechazo = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenCTE = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenJAN = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\CategoriaAcreditacion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\CategoriaAcreditacion::class)]
     private ?CategoriaAcreditacion $categoriaAcreditacionAlcanzada;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaEmision;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $numeroPleno = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $numeroAcuerdoPleno = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $annosVigenciaCategoriaAcreditacion = null;
 
     /**

@@ -7,11 +7,10 @@ use App\Repository\Postgrado\SolicitudProgramaRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_GEST_REPORTE_FORMACION_ACADEMICA")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_REPORTE_FORMACION_ACADEMICA')"))]
 #[Route('/postgrado/reporte/formacion_academica')]
 class FormacionAcademicaController extends AbstractController
 {

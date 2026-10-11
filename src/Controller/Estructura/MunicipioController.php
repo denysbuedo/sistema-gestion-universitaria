@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  */
@@ -23,8 +24,8 @@ class MunicipioController extends AbstractController
     /**
      * @param MunicipioRepository $municipioRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_MUNICP')"))]
     #[Route('/', name: 'app_municipio_index', methods: ['GET'])]
     public function index(MunicipioRepository $municipioRepository)
     {
@@ -42,8 +43,8 @@ class MunicipioController extends AbstractController
      * @param Request $request
      * @param MunicipioRepository $municipioRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_MUNICP')"))]
     #[Route('/registrar', name: 'app_municipio_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, MunicipioRepository $municipioRepository)
     {
@@ -72,8 +73,8 @@ class MunicipioController extends AbstractController
      * @param User $municipio
      * @param MunicipioRepository $municipioRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_MUNICP')"))]
     #[Route('/{id}/modificar', name: 'app_municipio_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Municipio $municipio, MunicipioRepository $municipioRepository)
     {
@@ -102,8 +103,8 @@ class MunicipioController extends AbstractController
      * @param Municipio $municipio
      * @param MunicipioRepository $municipioRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_MUNICP')"))]
     #[Route('/{id}/eliminar', name: 'app_municipio_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Municipio $municipio, MunicipioRepository $municipioRepository)
     {
@@ -125,8 +126,8 @@ class MunicipioController extends AbstractController
      * @param Request $request
      * @param Municipio $municipio
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_MUNICP")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_MUNICP')"))]
     #[Route('/{id}/detail', name: 'app_municipio_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Municipio $municipio)
     {

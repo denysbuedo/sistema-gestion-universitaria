@@ -5,17 +5,13 @@ namespace App\Entity\Postgrado;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbd_comision")
- */
+#[ORM\Table(name: 'postgrado.tbd_comision')]
+#[ORM\Entity]
 class Comision extends BaseNomenclator
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Postgrado\TipoComision")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\TipoComision::class)]
     private ?TipoComision $tipoComision;
 
     /**

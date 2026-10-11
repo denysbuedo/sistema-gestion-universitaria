@@ -23,14 +23,14 @@ class DoctrineListener
         $this->_container = $_container;
     }
 
-    /** @ORM\PrePersist */
+    #[ORM\PrePersist]
     public function prePersist(LifecycleEventArgs $args)
     {
         $serialize = new Serializer(array(new GetSetMethodNormalizer()), array(new JsonEncoder()));
        // pr($serialize->serialize($args->getObject()->toSerialize(), 'json'));
     }
 
-    /** @ORM\PostPersist() */
+    #[ORM\PostPersist]
     public function preFlush(LifecycleEventArgs $args)
     {
         pr('PreFlush');
@@ -40,7 +40,7 @@ class DoctrineListener
         }
     }
 
-    /** @ORM\PreUpdate */
+    #[ORM\PreUpdate]
     public function preUpdate(LifecycleEventArgs $args)
     {
         pr('PreUpdate');
@@ -50,7 +50,7 @@ class DoctrineListener
         }
     }
 
-    /** @ORM\PostRemove */
+    #[ORM\PostRemove]
     public function postRemove(LifecycleEventArgs $args)
     {
         pr('PostRemove');
@@ -60,7 +60,7 @@ class DoctrineListener
         }
     }
 
-    /** @ORM\PostLoad */
+    #[ORM\PostLoad]
     public function postLoad(LifecycleEventArgs $args)
     {
         $object = $args->getObject();
@@ -69,7 +69,7 @@ class DoctrineListener
         }
     }
 
-    /** @ORM\PostPersist */
+    #[ORM\PostPersist]
     public function postPersist(LifecycleEventArgs $args)
     {
         pr('PostPersist');

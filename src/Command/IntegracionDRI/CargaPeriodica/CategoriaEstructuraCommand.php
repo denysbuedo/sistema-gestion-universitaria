@@ -16,11 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'categoria-estructura-command')]
 class CategoriaEstructuraCommand extends Command
 {
-
-    protected static $defaultName = 'categoria-estructura-command';
-
 
     private $dbname;
     private $user;
@@ -76,7 +74,7 @@ class CategoriaEstructuraCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
 
     }

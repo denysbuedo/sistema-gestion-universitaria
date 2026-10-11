@@ -7,45 +7,29 @@ use App\Entity\Estructura\Estructura;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\TipoConectividad;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_enlace_conectividad")
- */
+#[ORM\Table(name: 'informatizacion.tbd_enlace_conectividad')]
+#[ORM\Entity]
 class EnlaceConectividad extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $ed;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $anchoBanda;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $precio;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $unidadMedida;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $tipoConexion;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoConectividad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoConectividad::class)]
     private ?TipoConectividad $tipoConectividad;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
     /**
      * @return string|null

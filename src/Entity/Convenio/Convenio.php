@@ -8,119 +8,81 @@ use App\Entity\Tramite\InstitucionExtranjera;
 use App\Entity\Estructura\Pais;
 use App\Entity\Estructura\Estructura;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use App\Entity\Personal\Persona;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="convenio.tbd_convenio")
- */
+#[ORM\Table(name: 'convenio.tbd_convenio')]
+#[ORM\Entity]
 class Convenio
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     protected $creado;
 
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime')]
     protected $actualizado;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Convenio\Modalidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Convenio\Modalidad::class)]
     private ?Modalidad $modalidad;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Convenio\Region")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Convenio\Region::class)]
     private ?Region $region;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Convenio\Tipo")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Convenio\Tipo::class)]
     private ?Tipo $tipo;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $institucionCubana;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\InstitucionExtranjera")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\InstitucionExtranjera::class)]
     private ?InstitucionExtranjera $institucionExtranjera;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Pais")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Pais::class)]
     private ?Pais $pais;
 
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaSuscribe;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaCaducidad;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $cantidadAcciones;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Persona::class, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Persona::class, cascade: ['persist'])]
     private $creadoPor;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Persona::class, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Persona::class, cascade: ['persist'])]
     private $modificadoPor;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $documento = null;
 
 

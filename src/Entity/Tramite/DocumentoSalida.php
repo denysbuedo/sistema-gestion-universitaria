@@ -6,165 +6,108 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Entity\Institucion\Institucion;
 use App\Entity\Security\User;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbd_documento_salida")
- */
+#[ORM\Table(name: 'tramite.tbd_documento_salida')]
+#[ORM\Entity]
 class DocumentoSalida extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="FichaSalida")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: FichaSalida::class)]
     private ?FichaSalida $fichaSalida;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $persona;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $institucionCubana;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Pais")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Pais::class)]
     private ?Pais $pais;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\InstitucionExtranjera")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\InstitucionExtranjera::class)]
     private ?InstitucionExtranjera $institucionExtranjera;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $provinciaExtranjera = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\ConceptoSalida")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\ConceptoSalida::class)]
     private ?ConceptoSalida $conceptoSalida;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $objetivo = null;
 
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaSalidaPrevista;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaRegresoPrevista;
 
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaSalidaReal;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaRegresoReal;
 
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $tiempoEstancia;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\TipoPasaporte")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\TipoPasaporte::class)]
     private ?TipoPasaporte $tipoPasaporte;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $numeroPasaporte;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaEmisionPasaporte;
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaCaducidadPasaporte;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $requiereVisa = false;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $aprobadoFactoresIes = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\EstadoFichaSalida")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\EstadoFichaSalida::class)]
     private ?EstadoFichaSalida $estadoDocumentoSalida;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $cartaInvitacion = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaFinalizado;
 
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaFirmaDirectivo;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaEntregaPasaporte;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaRecogidaPasaporte;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'])]
     private $directivoFirma;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $mandatosMision = null;
 
     /**

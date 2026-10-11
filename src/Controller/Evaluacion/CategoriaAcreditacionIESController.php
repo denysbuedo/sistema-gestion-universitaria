@@ -59,12 +59,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_EVALAUCION_GEST_CATEGORIA_ACREDITACION')"))]
 #[Route('/evaluacion/categoria_acreditacion_ies')]
 class CategoriaAcreditacionIESController extends AbstractController
 {

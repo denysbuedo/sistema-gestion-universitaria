@@ -20,10 +20,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Finder\Finder;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'app-load-country')]
 class LoadCountry extends Command
 {
-    protected static $defaultName = 'app-load-country';
-
     private $doctrine;
     private $paisRepository;
     private $csvParsingOptionsPais;
@@ -51,7 +50,7 @@ class LoadCountry extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
 
     }

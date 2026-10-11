@@ -4,92 +4,60 @@ namespace App\Entity\Pregrado;
 
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Personal\Carrera;
 use App\Entity\Postgrado\RamaCiencia;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_modificacion_plan_estudio")
- */
+#[ORM\Table(name: 'pregrado.tbr_modificacion_plan_estudio')]
+#[ORM\Entity]
 class ModificacionPlanEstudio
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\PlanEstudio")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\PlanEstudio::class)]
     private ?PlanEstudio $planEstudio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\CursoAcademico")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\CursoAcademico::class)]
     private ?CursoAcademico $cursoAcademico;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaAprobacion;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $planEstudioDoc = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamen = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer', nullable: false)]
     private ?int $duracionCursoDiurno;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer', nullable: false)]
     private ?int $duracionCursoPorEncuentro;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $duracionCursoDistancia;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $descripcion = null;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     protected $creado;
 
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime')]
     protected $actualizado;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $documentoEjecutivo = null;
 
     /**

@@ -6,37 +6,26 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Entity\Economia\ConceptoGasto;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbr_documento_salida_tramite")
- */
+#[ORM\Table(name: 'tramite.tbr_documento_salida_tramite')]
+#[ORM\Entity]
 class DocumentoSalidaTramite extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\DocumentoSalida")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\DocumentoSalida::class)]
     private ?DocumentoSalida $documentoSalida;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\Tramite")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\Tramite::class)]
     private ?Tramite $tramite;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $listo = false;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
     /**

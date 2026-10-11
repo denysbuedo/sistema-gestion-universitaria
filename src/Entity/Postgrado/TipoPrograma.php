@@ -6,20 +6,12 @@ use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbn_tipo_programa")
- */
+#[ORM\Table(name: 'postgrado.tbn_tipo_programa')]
+#[ORM\Entity]
 class TipoPrograma extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $codigo = null;
 
     /**

@@ -7,209 +7,137 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Institucion\CategoriaAcreditacion;
 use App\Entity\Postgrado\RamaCiencia;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Entity
- * @UniqueEntity(fields={"nombre", "tipoProgramaAcademico"}, message="Ya existe un programa con el mismo nombre y tipo de programa académico.")
- * @ORM\Table(name="pregrado.tbd_solicitud_programa_academico")
- */
+#[ORM\Table(name: 'pregrado.tbd_solicitud_programa_academico')]
+#[ORM\Entity]
+#[UniqueEntity(fields: ['nombre', 'tipoProgramaAcademico'], message: 'Ya existe un programa con el mismo nombre y tipo de programa académico.')]
 class SolicitudProgramaAcademico
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     protected $creado;
 
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime')]
     protected $actualizado;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     * @Assert\Regex(
-     *           pattern= "/^[,0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\Regex(pattern: '/^[,0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="EstadoProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: EstadoProgramaAcademico::class)]
     private ?EstadoProgramaAcademico $estadoProgramaAcademico;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoProgramaAcademico")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TipoProgramaAcademico::class)]
     private ?TipoProgramaAcademico $tipoProgramaAcademico;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoOrganismo")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoOrganismo::class)]
     private ?TipoOrganismo $tipoOrganismo;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="OrganismoDemandante")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: OrganismoDemandante::class)]
     private ?OrganismoDemandante $organismoDemandante;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'text', nullable: true, length: 255)]
     private ?string $fundamentacion = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $solicitud = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $resolucion = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $cartaAprobacion = null;
 
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaAprobacion;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcionAprobacion = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcionNoAprobacion = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoDiurno = null;
 
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoPorEncuentro = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoADistancia = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadDiurno = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadPorEncuentro = false;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadADistancia = false;
 
-    /**
-     * @ORM\Column(type="text", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'text', nullable: true, length: 255)]
     private ?string $dictamen = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $centroRector;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\OrganismoFormador")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\OrganismoFormador::class)]
     private ?\App\Entity\Pregrado\OrganismoFormador $organismoFormador;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $nombreSolicitante = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $correoSolicitante = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $telefonoSolicitante = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Postgrado\RamaCiencia")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\RamaCiencia::class)]
     private ?RamaCiencia $ramaCiencia;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $centroSolicitante;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 100)]
     private ?string $codigoPrograma = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\CategoriaAcreditacion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\CategoriaAcreditacion::class)]
     private ?CategoriaAcreditacion $categoriaAcreditacion;
 
     /**

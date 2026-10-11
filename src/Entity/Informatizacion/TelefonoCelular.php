@@ -9,38 +9,27 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\Marca;
 use App\Entity\Informatizacion\Modelo;
 use App\Entity\Informatizacion\SistemaOperativo;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_telefono_celular")
- */
+#[ORM\Table(name: 'informatizacion.tbd_telefono_celular')]
+#[ORM\Entity]
 class TelefonoCelular extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Informatizacion\Marca")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Informatizacion\Marca::class)]
     private ?Marca $marca;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Informatizacion\Modelo")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Informatizacion\Modelo::class)]
     private ?Modelo $modelo;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Informatizacion\SistemaOperativo")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Informatizacion\SistemaOperativo::class)]
     private ?SistemaOperativo $sistemaOperativo;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
     /**

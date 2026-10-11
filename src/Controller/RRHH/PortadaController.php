@@ -7,11 +7,10 @@ use App\Repository\RRHH\AE3Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_HOME_RRHH")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_HOME_RRHH')"))]
 #[Route('/rrhh/portada')]
 class PortadaController extends AbstractController
 {

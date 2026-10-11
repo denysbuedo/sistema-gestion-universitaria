@@ -8,107 +8,102 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Estructura\Estructura;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="rrhh.tbd_ae2", uniqueConstraints={@ORM\UniqueConstraint(name="uniq_mes_anio", columns={"mes", "anno", "entidad_id"})})
- * @UniqueEntity(fields={"mes", "anno", "entidad"}, message="Ya existe un registro para este mes y año.")
- */
+#[ORM\Table(name: 'rrhh.tbd_ae2')]
+#[ORM\UniqueConstraint(name: 'uniq_mes_anio', columns: ['mes', 'anno', 'entidad_id'])]
+#[ORM\Entity]
+#[UniqueEntity(fields: ['mes', 'anno', 'entidad'], message: 'Ya existe un registro para este mes y año.')]
 class AE2 extends BaseEntity
 {
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $mes;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $anno;
 
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalPlantillaAprobada;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalPlantillaCubierta;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalGeneralContratos;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalContratosProfesoresTiempoDeterminado;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $profesoresTiempoCompleto;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalContratosNoDocentes;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $contratosNoDocentesConRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $contratosPorSustitucion;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $periodoPrueba;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $serenosAuxiliaresLimpieza;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $laboresAgricolas;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $jubilados;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $otrosConRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $contratosNoDocentesSinRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $serenosAuxiliaresLimpiezaSinRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $laboresAgricolasSinRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $jubiladosSinRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $ejecucionObra;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $otrosSinRespaldo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $reservaCientificaPreparacion;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $recienGraduadosPreparacion;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $reservaDireccionProvincialTrabajo;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $tecnicosMediosPreparacion;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $totalEstudiantesUniversidadContratados;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $estudiantesAuxiliaresTecnicosDocencia;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $estudiantesCargosNoDocentes;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Estructura::class)
-     */
+    #[ORM\ManyToOne(targetEntity: Estructura::class)]
     private $entidad = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $documento = null;
 
     /**

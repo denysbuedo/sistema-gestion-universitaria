@@ -8,31 +8,23 @@ use App\Entity\Institucion\TipoInstitucion;
 use App\Entity\Personal\GradoAcademico;
 use App\Entity\Estructura\Pais;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbd_institucion_extranjera")
- */
+#[ORM\Table(name: 'tramite.tbd_institucion_extranjera')]
+#[ORM\Entity]
 class InstitucionExtranjera
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     protected $creado;
 
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'update')]
+    #[ORM\Column(type: 'datetime')]
     protected $actualizado;
 
     public function getId(): ?int
@@ -50,19 +42,13 @@ class InstitucionExtranjera
         return $this->actualizado;
     }
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     public function getNombre()
@@ -101,57 +87,37 @@ class InstitucionExtranjera
         return $this;
     }
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 100)]
     private ?string $provincia = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 100)]
     private ?string $siglas = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="20")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 20)]
     private ?string $codigo = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $rector = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Pais")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Pais::class)]
     private ?Pais $pais;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $sitioWeb = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="50")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 50)]
     private ?string $telefono = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="50")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 50)]
     private ?string $correo = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $direccionSedePrincipal = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $coordenadasSedePrincipal = null;
 
 

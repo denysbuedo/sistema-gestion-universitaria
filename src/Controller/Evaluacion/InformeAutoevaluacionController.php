@@ -31,11 +31,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_GEST_INFORME_AUTOEVALUACION")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_INFORME_AUTOEVALUACION')"))]
 #[Route('/evaluacion/informe_autoevaluacion')]
 class InformeAutoevaluacionController extends AbstractController
 {

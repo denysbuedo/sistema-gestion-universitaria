@@ -7,28 +7,20 @@ use App\Entity\Personal\Persona;
 use App\Entity\Postgrado\RolComision;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_miembros_comision_nacional")
- */
+#[ORM\Table(name: 'pregrado.tbr_miembros_comision_nacional')]
+#[ORM\Entity]
 class MiembrosComisionNacional extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="ComisionNacional")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: ComisionNacional::class)]
     private ?ComisionNacional $comision;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $miembro;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Postgrado\RolComision")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\RolComision::class)]
     private ?RolComision $rolComision;
 
 

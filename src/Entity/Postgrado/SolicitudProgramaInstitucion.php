@@ -6,22 +6,16 @@ use App\Entity\BaseEntity;
 use App\Entity\Institucion\Institucion;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbr_solicitud_programa_institucion")
- */
+#[ORM\Table(name: 'postgrado.tbr_solicitud_programa_institucion')]
+#[ORM\Entity]
 class SolicitudProgramaInstitucion extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $institucion = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="SolicitudPrograma")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: SolicitudPrograma::class)]
     private ?SolicitudPrograma $solicitudPrograma = null;
 
     /**

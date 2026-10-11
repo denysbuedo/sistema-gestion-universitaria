@@ -6,47 +6,33 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbr_plan_mision_detalles")
- */
+#[ORM\Table(name: 'tramite.tbr_plan_mision_detalles')]
+#[ORM\Entity]
 class PlanMisionDetalles extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\PlanMision")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\PlanMision::class)]
     private ?PlanMision $planMision;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $persona;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Pais")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Pais::class)]
     private ?Pais $pais;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $objetivo = null;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fecha;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $duracion;
 
     /**

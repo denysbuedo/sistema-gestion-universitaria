@@ -6,47 +6,32 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Estructura;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_nauta_hogar")
- * @UniqueEntity(fields="numeroTelefono", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'informatizacion.tbd_nauta_hogar')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'numeroTelefono', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class NautaHogar extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $responsable;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Informatizacion\ServicioContratado")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Informatizacion\ServicioContratado::class)]
     private ?ServicioContratado $servicioContratado;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $numeroTelefono;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $direccionInstalacion;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $precio;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
     /**

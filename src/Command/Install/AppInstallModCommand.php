@@ -12,12 +12,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'app:modules')]
 class AppInstallModCommand extends Command
 {
-    // to make your command lazily loaded, configure the $defaultName static property,
-    // so it will be instantiated only when the command is actually called.
-    protected static $defaultName = 'app:modules';    
-
     /**
      * @var SymfonyStyle
      */
@@ -75,7 +72,7 @@ class AppInstallModCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {                  
         // Ask for the mode if it's not defined
         $mode = $input->getArgument('mode');

@@ -10,23 +10,16 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Postgrado\SolicitudPrograma;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbr_solicitud_dictamen_comision")
- */
+#[ORM\Table(name: 'evaluacion.tbr_solicitud_dictamen_comision')]
+#[ORM\Entity]
 class SolicitudDictamenComision extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Solicitud")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Solicitud::class)]
     private ?Solicitud $solicitud;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenComision = null;
 
     /**

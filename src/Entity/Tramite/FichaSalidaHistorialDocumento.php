@@ -5,40 +5,28 @@ namespace App\Entity\Tramite;
 use App\Entity\BaseEntity;
 use App\Entity\Security\User;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbd_ficha_salida_historial_documento")
- */
+#[ORM\Table(name: 'tramite.tbd_ficha_salida_historial_documento')]
+#[ORM\Entity]
 class FichaSalidaHistorialDocumento extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\FichaSalida")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\FichaSalida::class)]
     private ?FichaSalida $fichaSalida;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $nombre;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $archivo;
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     */
+    #[ORM\Column(type: 'datetime')]
+    #[Timestampable(on: 'create')]
     private ?\DateTimeInterface $fecha;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Security\User")
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Security\User::class)]
     private ?User $usuario;
 
     /**

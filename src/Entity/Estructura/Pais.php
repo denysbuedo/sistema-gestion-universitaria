@@ -7,26 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_pais")
- * @UniqueEntity(fields="siglas", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @UniqueEntity(fields="codigo", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'estructura.tbn_pais')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'siglas', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
+#[UniqueEntity(fields: 'codigo', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Pais extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $iso2;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $iso3;
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $codigoTelefonico;
 
     /**

@@ -4,7 +4,7 @@ namespace App\Services\Twig;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class SecurityTwigExtension implements RuntimeExtensionInterface
 {

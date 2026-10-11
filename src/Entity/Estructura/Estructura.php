@@ -7,124 +7,83 @@ use App\Entity\RRHH\Grupo;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbd_estructura")
- * @UniqueEntity(fields="nombre", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @UniqueEntity(fields="siglas", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'estructura.tbd_estructura')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'nombre', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
+#[UniqueEntity(fields: 'siglas', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Estructura extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $nombre;
-    /**
-     * @ORM\Column(type="string", length=5, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
     private ?string $clasificacionPresupuestaria;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="15")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 15)]
     private ?string $siglas;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $esEntidad = false;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $centroAutorizadoPosgrado = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $iafd = false;
 
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     private $fechaActivacion;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoEstructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoEstructura::class)]
     private ?TipoEstructura $tipoEstructura;
 
     /**
      * Estructura padre
-     *
-     * @ORM\ManyToOne(targetEntity="Estructura")
-     * @ORM\JoinColumn(nullable=true)
      */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Estructura::class)]
     private ?Estructura $estructura;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaEstructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaEstructura::class)]
     private ?CategoriaEstructura $categoriaEstructura;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $ubicacion;
-    /**
-     * @ORM\ManyToOne(targetEntity="Nivel")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Nivel::class)]
     private ?Nivel $nivel;
 
 
-    /**
-     * @ORM\Column(type="string", length=180, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 180, nullable: true)]
     private ?string $email;
 
-    /**
-     * @ORM\Column(type="string", length=15, nullable=true                                                                                                                                                                                                                                              )
-     */
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private ?string $telefono;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $direccion;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Municipio")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Municipio::class)]
     private ?Municipio $municipio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Provincia")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Provincia::class)]
     private ?Provincia $provincia;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false, options={"default": 0})
-     */
+    #[ORM\Column(type: 'integer', nullable: false, options: ['default' => 0])]
     private int $orden = 0;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\RRHH\Grupo", inversedBy="estructuras")
-     * @ORM\JoinColumn(name="grupo_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\JoinColumn(name: 'grupo_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\RRHH\Grupo::class, inversedBy: 'estructuras')]
     private $grupo;
 
     public function getGrupo(): ?Grupo

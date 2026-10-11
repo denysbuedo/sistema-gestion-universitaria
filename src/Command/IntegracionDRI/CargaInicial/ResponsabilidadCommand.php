@@ -18,11 +18,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'carga-inicial-responsabilidad-command')]
 class ResponsabilidadCommand extends Command
 {
-
-    protected static $defaultName = 'carga-inicial-responsabilidad-command';
-
 
     private $dbname;
     private $user;
@@ -79,7 +77,7 @@ class ResponsabilidadCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
 
     }

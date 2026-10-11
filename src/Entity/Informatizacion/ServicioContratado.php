@@ -6,25 +6,17 @@ use App\Entity\BaseEntity;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbn_servicio_contratado")
- */
+#[ORM\Table(name: 'informatizacion.tbn_servicio_contratado')]
+#[ORM\Entity]
 class ServicioContratado extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     */
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
 

@@ -5,34 +5,24 @@ namespace App\Entity\Institucion;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbr_institucion_editorial")
- */
+#[ORM\Table(name: 'institucion.tbr_institucion_editorial')]
+#[ORM\Entity]
 class InstitucionEditorial extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Institucion::class)]
     private ?Institucion $institucion;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 100)]
     private ?string $nombreEditorial = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $direccionElectronicaEditorial = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $descripcionEditorial = null;
 
 

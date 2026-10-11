@@ -9,58 +9,38 @@ use App\Entity\Postgrado\SolicitudPrograma;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Institucion\Institucion;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_solicitud_programa_academico_institucion")
- */
+#[ORM\Table(name: 'pregrado.tbr_solicitud_programa_academico_institucion')]
+#[ORM\Entity]
 class SolicitudProgramaAcademicoInstitucion extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $institucion;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\CategoriaAcreditacion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\CategoriaAcreditacion::class)]
     private ?CategoriaAcreditacion $categoriaAcreditacion;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoDiurno = null;
 
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoPorEncuentro = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'integer', nullable: true, length: 255)]
     private ?int $duracionCursoADistancia = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadDiurno = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadPorEncuentro = false;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $modalidadADistancia = false;
 
     /**

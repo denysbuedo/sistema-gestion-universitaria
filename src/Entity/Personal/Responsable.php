@@ -7,22 +7,16 @@ use App\Entity\Estructura\Estructura;
 use App\Entity\Estructura\Responsabilidad;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbd_responsable")
- */
+#[ORM\Table(name: 'personal.tbd_responsable')]
+#[ORM\Entity]
 class Responsable extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Persona")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Persona::class)]
     private ?Persona $persona;
 
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     /**

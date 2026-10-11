@@ -6,56 +6,37 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Entity\Institucion\Institucion;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbd_pasaporte")
- */
+#[ORM\Table(name: 'tramite.tbd_pasaporte')]
+#[ORM\Entity]
 class Pasaporte extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $persona;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\TipoPasaporte")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\TipoPasaporte::class)]
     private ?TipoPasaporte $tipoPasaporte;
 
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $numeroPasaporte;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaEmisionPasaporte;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaCaducidadPasaporte;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $activo = false;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $cara1 = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $cara2 = null;
 
     /**

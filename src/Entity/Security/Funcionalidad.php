@@ -14,31 +14,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Es parte de un módulo.
  * No debe ser gestionada (las funcionalidad deben existir en el sistema de antemano).
  * Sólo debe ser posible editar su nombre, descripción y su campo activo.
- *
- * @ORM\Entity
- * @ORM\Table(name="seguridad.tbd_funcionalidad")
- * @UniqueEntity(fields="nombre", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
  */
+#[ORM\Table(name: 'seguridad.tbd_funcionalidad')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'nombre', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Funcionalidad extends BaseEntity implements AuthorityInterface
 {
-    /**
-     * @ORM\Column(type="string", length=255, nullable=false)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $nombre;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $descripcion;
 
     /**
@@ -47,20 +34,15 @@ class Funcionalidad extends BaseEntity implements AuthorityInterface
      *
      * Deben emepzar simpre con ROLE_
      * No debe ser editado
-     *
-     * @ORM\Column(type="string", length=250, unique=true, nullable=false)
      */
+    #[ORM\Column(type: 'string', length: 250, unique: true, nullable: false)]
     private $roleKey;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Modulo", fetch="EAGER")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Modulo::class, fetch: 'EAGER')]
     private ?Modulo $modulo;
 
     /**

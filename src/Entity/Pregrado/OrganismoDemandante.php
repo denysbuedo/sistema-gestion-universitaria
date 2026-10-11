@@ -6,22 +6,16 @@ use App\Entity\BaseNomenclator;
 use App\Entity\Postgrado\RolComision;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbn_organismo_demandante")
- */
+#[ORM\Table(name: 'pregrado.tbn_organismo_demandante')]
+#[ORM\Entity]
 class OrganismoDemandante extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=false, length="20")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 20)]
     private ?string $siglas = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoOrganismo")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: TipoOrganismo::class)]
     private ?TipoOrganismo $tipoOrganismo;
 
     /**

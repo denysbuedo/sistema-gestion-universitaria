@@ -5,21 +5,15 @@ namespace App\Entity\Estructura;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_categoria_responsabilidad")
- */
+#[ORM\Table(name: 'estructura.tbn_categoria_responsabilidad')]
+#[ORM\Entity]
 class CategoriaResponsabilidad extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $color;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaResponsabilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaResponsabilidad::class)]
     private CategoriaResponsabilidad $categoriaResponsabilidad;
 
     public function getColor()

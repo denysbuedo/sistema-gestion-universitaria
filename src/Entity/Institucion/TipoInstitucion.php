@@ -5,15 +5,11 @@ namespace App\Entity\Institucion;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbn_tipo_institucion")
- */
+#[ORM\Table(name: 'institucion.tbn_tipo_institucion')]
+#[ORM\Entity]
 class TipoInstitucion extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=false, length="10")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 10)]
     private ?string $siglas=null;
 
 

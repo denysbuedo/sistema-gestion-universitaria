@@ -5,16 +5,12 @@ namespace App\Entity\Estructura;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_responsabilidad")
- */
+#[ORM\Table(name: 'estructura.tbn_responsabilidad')]
+#[ORM\Entity]
 class Responsabilidad  extends BaseNomenclator
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaResponsabilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaResponsabilidad::class)]
     private CategoriaResponsabilidad $categoriaResponsabilidad;
 
    

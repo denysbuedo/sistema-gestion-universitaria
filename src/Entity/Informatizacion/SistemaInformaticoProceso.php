@@ -9,24 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\Visibilidad;
 use App\Entity\Estructura\Estructura;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbr_sistema_informatico_proceso")
- */
+#[ORM\Table(name: 'informatizacion.tbr_sistema_informatico_proceso')]
+#[ORM\Entity]
 class SistemaInformaticoProceso extends BaseEntity
 {
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="SistemaInformatico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: SistemaInformatico::class)]
     private ?SistemaInformatico $sistemaInformatico;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Proceso")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Proceso::class)]
     private ?Proceso $proceso;
 
     /**

@@ -5,60 +5,40 @@ namespace App\Entity\Pregrado;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbd_programa_academico_desactivado")
- */
+#[ORM\Table(name: 'pregrado.tbd_programa_academico_desactivado')]
+#[ORM\Entity]
 class ProgramaAcademicoDesactivado extends BaseEntity
 {
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\CursoAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\CursoAcademico::class)]
     private ?CursoAcademico $cursoAcademico;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $solicitudCentroRector = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenAprobacion = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $resolucionDesactivacion = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $descripcion = null;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     protected $fechaEliminacion;
 
     /**

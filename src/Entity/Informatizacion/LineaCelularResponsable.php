@@ -6,26 +6,19 @@ use App\Entity\BaseEntity;
 use \App\Entity\Informatizacion\LineaCelular;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbr_linea_celular_responsable")
- */
+#[ORM\Table(name: 'informatizacion.tbr_linea_celular_responsable')]
+#[ORM\Entity]
 class LineaCelularResponsable extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="LineaCelular")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: LineaCelular::class)]
     private ?LineaCelular $lineaCelular;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $responsable;
 
     /**

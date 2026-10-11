@@ -6,27 +6,21 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Estructura;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity 
- * @ORM\Table(name="seguridad.tbr_rol_estructura", uniqueConstraints={
- *     @ORM\UniqueConstraint(columns={"rol_id", "estructura_id"})
- * })
- */
+#[ORM\Table(name: 'seguridad.tbr_rol_estructura')]
+#[ORM\UniqueConstraint(columns: ['rol_id', 'estructura_id'])]
+#[ORM\Entity]
 class RolEstructura extends BaseEntity
 {    
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Rol")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Rol::class)]
     private ?Rol $rol;
 
     /**
      * Entiddad padre
-     * 
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;   
 
 

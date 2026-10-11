@@ -6,29 +6,21 @@ use App\Entity\BaseEntity;
 use App\Entity\Institucion\Institucion;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbr_solicitud_programa_presencialidad")
- */
+#[ORM\Table(name: 'postgrado.tbr_solicitud_programa_presencialidad')]
+#[ORM\Entity]
 class SolicitudProgramaPresencialidad
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="PresencialidadPrograma")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: PresencialidadPrograma::class)]
     private ?PresencialidadPrograma $presencialidadPrograma;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="SolicitudPrograma")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: SolicitudPrograma::class)]
     private ?SolicitudPrograma $solicitudPrograma = null;
 
     /**

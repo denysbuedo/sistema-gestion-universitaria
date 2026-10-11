@@ -13,7 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/rrhh/responsabilidad')]
 class ResponsabilidadController extends AbstractController
@@ -22,8 +23,8 @@ class ResponsabilidadController extends AbstractController
     /**
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_RESPON')"))]
     #[Route('/', name: 'app_responsabilidad_index', methods: ['GET'])]
     public function index(ResponsabilidadRepository $responsabilidadRepository)
     {
@@ -41,8 +42,8 @@ class ResponsabilidadController extends AbstractController
      * @param Request $request
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_RESPON')"))]
     #[Route('/registrar', name: 'app_responsabilidad_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, ResponsabilidadRepository $responsabilidadRepository)
     {
@@ -71,8 +72,8 @@ class ResponsabilidadController extends AbstractController
      * @param User $responsabilidad
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_RESPON')"))]
     #[Route('/{id}/modificar', name: 'app_responsabilidad_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Responsabilidad $responsabilidad, ResponsabilidadRepository $responsabilidadRepository)
     {
@@ -100,8 +101,8 @@ class ResponsabilidadController extends AbstractController
      * @param Responsabilidad $responsabilidad
      * @param ResponsabilidadRepository $responsabilidadRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_RESPON')"))]
     #[Route('/{id}/eliminar', name: 'app_responsabilidad_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Responsabilidad $responsabilidad, ResponsabilidadRepository $responsabilidadRepository)
     {
@@ -123,8 +124,8 @@ class ResponsabilidadController extends AbstractController
      * @param Request $request
      * @param Responsabilidad $responsabilidad
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_RESPON")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_RESPON')"))]
     #[Route('/{id}/detail', name: 'app_responsabilidad_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Responsabilidad $responsabilidad)
     {

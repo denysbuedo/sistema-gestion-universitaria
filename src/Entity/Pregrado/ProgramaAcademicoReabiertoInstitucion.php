@@ -7,25 +7,19 @@ use App\Entity\Institucion\Institucion;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_programa_academico_reabierto_institucion")
- */
+#[ORM\Table(name: 'pregrado.tbr_programa_academico_reabierto_institucion')]
+#[ORM\Entity]
 class ProgramaAcademicoReabiertoInstitucion extends BaseEntity
 {
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\ProgramaAcademicoReabierto")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\ProgramaAcademicoReabierto::class)]
     private ?ProgramaAcademicoReabierto $programaAcademicoReabierto = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\Institucion::class)]
     private ?Institucion $institucion;
 
     /**

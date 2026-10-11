@@ -5,22 +5,16 @@ namespace App\Entity\Estructura;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_tipo_entidad")
- */
+#[ORM\Table(name: 'estructura.tbn_tipo_entidad')]
+#[ORM\Entity]
 class TipoEntidad extends BaseNomenclator
 {
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $color;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoEntidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoEntidad::class)]
     private ?TipoEntidad $tipoEntidad;
 
     public function getColor(): ?string

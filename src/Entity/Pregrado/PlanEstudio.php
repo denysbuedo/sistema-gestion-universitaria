@@ -4,105 +4,69 @@ namespace App\Entity\Pregrado;
 
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Personal\Carrera;
 use App\Entity\Postgrado\RamaCiencia;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbd_plan_estudio")
- */
+#[ORM\Table(name: 'pregrado.tbd_plan_estudio')]
+#[ORM\Entity]
 class PlanEstudio extends BaseNomenclator
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="CursoAcademico")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: CursoAcademico::class)]
     private ?CursoAcademico $cursoAcademico;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?\App\Entity\Pregrado\SolicitudProgramaAcademico $carrera;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer', nullable: false)]
     private ?int $annoAprobacion;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaAprobacion;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\App\Entity\Postgrado\RamaCiencia")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\RamaCiencia::class)]
     private ?\App\Entity\Postgrado\RamaCiencia $ramaCiencia;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="OrganismoDemandante")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: OrganismoDemandante::class)]
     private ?OrganismoDemandante $organismoDemandante;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\OrganismoFormador")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\OrganismoFormador::class)]
     private ?OrganismoFormador $organismoFormador;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoProgramaAcademico::class)]
     private ?TipoProgramaAcademico $tipoProgramaAcademico;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $planEstudio = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $duracionCursoDiurno;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $duracionCursoPorEncuentro;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $duracionCursoDistancia;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $descripcionPlanEstudio = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Oace")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Oace::class)]
     private ?Oace $oace;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $documentoEjecutivo = null;
 
     /**

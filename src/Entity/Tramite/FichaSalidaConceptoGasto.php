@@ -6,36 +6,25 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Entity\Economia\ConceptoGasto;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbr_ficha_salida_concepto_gasto")
- */
+#[ORM\Table(name: 'tramite.tbr_ficha_salida_concepto_gasto')]
+#[ORM\Entity]
 class FichaSalidaConceptoGasto extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\FichaSalida")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\FichaSalida::class)]
     private ?FichaSalida $fichaSalida;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Economia\ConceptoGasto")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Economia\ConceptoGasto::class)]
     private ?ConceptoGasto $conceptoGasto;
 
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private ?string $asumidoPor = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $monto = null;
 
     /**

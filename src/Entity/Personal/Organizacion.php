@@ -6,22 +6,16 @@ use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbn_organizacion")
- * @UniqueEntity(fields="siglas", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'personal.tbn_organizacion')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'siglas', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Organizacion extends BaseNomenclator
 {    
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
+    #[ORM\Column(type: 'string', length: 10)]
     private $siglas;
 
-     /**
-     * @ORM\ManyToOne(targetEntity="TipoOrganizacion")
-     * @ORM\JoinColumn(nullable=false)
-     */
+     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TipoOrganizacion::class)]
     private ?TipoOrganizacion $tipoOrganizacion;
 
     public function getSiglas(): ?string

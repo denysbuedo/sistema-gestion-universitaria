@@ -5,15 +5,11 @@ use App\Entity\BaseNomenclator;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_tipo_estructura")
- */
+#[ORM\Table(name: 'estructura.tbn_tipo_estructura')]
+#[ORM\Entity]
 class TipoEstructura extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $color;
 
     public function getId(): ?int

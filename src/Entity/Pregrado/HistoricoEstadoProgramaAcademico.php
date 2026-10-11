@@ -6,33 +6,23 @@ use App\Entity\BaseEntity;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_historico_estado_programa_academico")
- */
+#[ORM\Table(name: 'pregrado.tbr_historico_estado_programa_academico')]
+#[ORM\Entity]
 class HistoricoEstadoProgramaAcademico extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="EstadoProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: EstadoProgramaAcademico::class)]
     private ?EstadoProgramaAcademico $estadoProgramaAcademico;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\CursoAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\CursoAcademico::class)]
     private ?CursoAcademico $cursoAcademico;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamenAprobacion = null;
 
     /**

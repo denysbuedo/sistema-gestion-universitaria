@@ -8,39 +8,27 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\Visibilidad;
 use App\Entity\Estructura\Estructura;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_sistema_informatico")
- */
+#[ORM\Table(name: 'informatizacion.tbd_sistema_informatico')]
+#[ORM\Entity]
 class SistemaInformatico extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $direccionWeb;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $desarrollador;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Visibilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Visibilidad::class)]
     private ?Visibilidad $visibilidad;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoSistema")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoSistema::class)]
     private ?TipoSistema $tipoSistema;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
     /**

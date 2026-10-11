@@ -11,10 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'akademos-tramite-sync-viajando')]
 class ViajandoCommand extends Command
 {
-    protected static $defaultName = 'akademos-tramite-sync-viajando';
-
     private SymfonyStyle $io;
     private DocumentoSalidaRepository $documentoSalidaRepository;
     private EstadoFichaSalidaRepository $estadoFichaSalidaRepository;

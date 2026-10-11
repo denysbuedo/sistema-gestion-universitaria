@@ -4,33 +4,24 @@ namespace App\Entity\Pregrado;
 
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Personal\Carrera;
 use App\Entity\Postgrado\RamaCiencia;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_plan_estudio_documento")
- */
+#[ORM\Table(name: 'pregrado.tbr_plan_estudio_documento')]
+#[ORM\Entity]
 class PlanEstudioDocumento extends BaseNomenclator
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\PlanEstudio", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\PlanEstudio::class, cascade: ['persist'])]
     private ?PlanEstudio $planEstudio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\Documento")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\Documento::class)]
     private ?Documento $documento;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $documentoFisico = null;
 
     /**

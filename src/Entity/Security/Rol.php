@@ -11,51 +11,33 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Define un Rol.
  * Un Rol puede ser asignado a varios usuarios. Un rol tiene permiso a varias Funcionalidades
- * @ORM\Entity
- * @UniqueEntity(fields="nombre", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @ORM\Table(name="seguridad.tbd_rol")
  */
+#[ORM\Table(name: 'seguridad.tbd_rol')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'nombre', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Rol extends BaseEntity implements AuthorityInterface
 {
-    /**
-     * @ORM\Column(type="text", unique=true, nullable=false)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'text', unique: true, nullable: false)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $nombre;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $descripcion;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, unique=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true, unique: true)]
     private $roleKey;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     /**
      * Funcionalidades a las que tiene permiso el Rol.
-     *
-     * @ORM\ManyToMany(targetEntity="Funcionalidad", cascade={"persist"}, fetch="EAGER")
-     * @ORM\JoinTable(name="seguridad.tbr_rol_funcionalidad",
-     *      joinColumns={@ORM\JoinColumn(name="rol_id", referencedColumnName="id",  onDelete="cascade")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="funcionalidad_id", referencedColumnName="id",  onDelete="cascade")}
-     *      )
      */
+    #[ORM\JoinTable(name: 'seguridad.tbr_rol_funcionalidad')]
+    #[ORM\JoinColumn(name: 'rol_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\InverseJoinColumn(name: 'funcionalidad_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\ManyToMany(targetEntity: Funcionalidad::class, cascade: ['persist'], fetch: 'EAGER')]
     private $funcionalidades;
 
     public function __construct()

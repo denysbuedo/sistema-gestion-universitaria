@@ -7,19 +7,14 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Tramite\InstitucionExtranjera;
 use App\Entity\Estructura\Pais;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="convenio.tbr_convenio_accion")
- */
+#[ORM\Table(name: 'convenio.tbr_convenio_accion')]
+#[ORM\Entity]
 class ConvenioAccion extends BaseNomenclator
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Convenio")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Convenio::class)]
     private ?Convenio $convenio;
 
     /**

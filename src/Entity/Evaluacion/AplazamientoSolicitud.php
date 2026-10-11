@@ -10,32 +10,24 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Postgrado\SolicitudPrograma;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbd_aplazamiento_solicitud")
- */
+#[ORM\Table(name: 'evaluacion.tbd_aplazamiento_solicitud')]
+#[ORM\Entity]
 class AplazamientoSolicitud extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Solicitud")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Solicitud::class)]
     private ?Solicitud $solicitud;
 
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=false)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: false)]
     private $fechaPropuestaAplazamiento;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="EstadoAplazamiento")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: EstadoAplazamiento::class)]
     private ?EstadoAplazamiento $estadoAplazamiento;
 
     /**

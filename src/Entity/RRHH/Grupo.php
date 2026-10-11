@@ -7,32 +7,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="rrhh.tbn_grupo")
- */
+#[ORM\Table(name: 'rrhh.tbn_grupo')]
+#[ORM\Entity]
 class Grupo
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $nombre;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $descripcion;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Estructura\Estructura", mappedBy="grupo")
-     */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Estructura\Estructura::class, mappedBy: 'grupo')]
     private $estructuras;
 
     /**
@@ -43,9 +33,7 @@ class Grupo
         return $this->estructuras;
     }
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $activo = true;
 
     public function __construct()

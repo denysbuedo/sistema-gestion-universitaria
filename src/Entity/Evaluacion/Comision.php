@@ -5,16 +5,12 @@ namespace App\Entity\Evaluacion;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbd_comision")
- */
+#[ORM\Table(name: 'evaluacion.tbd_comision')]
+#[ORM\Entity]
 class Comision extends BaseNomenclator
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Solicitud")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE"))
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Solicitud::class)]
     private ?Solicitud $solicitud;
 
     /**

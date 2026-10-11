@@ -5,28 +5,20 @@ namespace App\Entity\Institucion;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbr_institucion_recurso_humano")
- */
+#[ORM\Table(name: 'institucion.tbr_institucion_recurso_humano')]
+#[ORM\Entity]
 class InstitucionRecursoHumano extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Institucion::class)]
     private ?Institucion $institucion;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="RecursosHumanos")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: RecursosHumanos::class)]
     private ?RecursosHumanos $recursoHumano;
 
-    /**
-     * @ORM\Column(type="integer", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'integer', nullable: false, length: 100)]
     private ?int $cantidad = null;
 
 

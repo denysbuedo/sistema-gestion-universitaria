@@ -5,45 +5,31 @@ namespace App\Entity\Institucion;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbr_institucion_revista_cientifica")
- */
+#[ORM\Table(name: 'institucion.tbr_institucion_revista_cientifica')]
+#[ORM\Entity]
 class InstitucionRevistaCientifica extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Institucion")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Institucion::class)]
     private ?Institucion $institucion;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Visibilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Visibilidad::class)]
     private ?Visibilidad $visibilidad;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 100)]
     private ?string $nombreRevista = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 100)]
     private ?string $indexadaEn = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $direccionElectronicaRevista = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $descripcionRevista = null;
 
     /**

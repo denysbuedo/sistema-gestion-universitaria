@@ -9,30 +9,22 @@ use App\Entity\Institucion\Institucion;
 use App\Entity\Tramite\InstitucionExtranjera;
 use App\Entity\Estructura\Pais;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbd_convocatoria")
- */
+#[ORM\Table(name: 'evaluacion.tbd_convocatoria')]
+#[ORM\Entity]
 class Convocatoria extends BaseNomenclator
 {
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaInicio;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $fechaFin;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $carta = null;
 
     /**

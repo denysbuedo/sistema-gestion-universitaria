@@ -7,38 +7,26 @@ use App\Entity\Estructura\Estructura;
 use App\Entity\Estructura\Responsabilidad;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbd_plantilla")
- */
+#[ORM\Table(name: 'personal.tbd_plantilla')]
+#[ORM\Entity]
 class Plantilla extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="string", length=36, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 36, nullable: false)]
     private ?string $idExpediente = '1';
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Persona")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Persona::class)]
     private ?Persona $persona;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Responsabilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Responsabilidad::class)]
     private ?Responsabilidad $responsabilidad;
     
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     /**

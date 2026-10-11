@@ -6,32 +6,23 @@ use App\Entity\BaseEntity;
 use App\Entity\Estructura\Pais;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Entity\Institucion\Institucion;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbr_ficha_salida_estado")
- */
+#[ORM\Table(name: 'tramite.tbr_ficha_salida_estado')]
+#[ORM\Entity]
 class FichaSalidaEstado extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\FichaSalida")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\FichaSalida::class)]
     private ?FichaSalida $fichaSalida;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tramite\EstadoFichaSalida")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Tramite\EstadoFichaSalida::class)]
     private ?EstadoFichaSalida $estadoFichaSalida;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $descripcion = null;
 
     /**

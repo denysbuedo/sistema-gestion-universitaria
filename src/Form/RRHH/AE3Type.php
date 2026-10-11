@@ -51,7 +51,7 @@ class AE3Type extends AbstractType
         'dr' => 'Dr',
     ];
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('mes', ChoiceType::class, [
@@ -99,7 +99,7 @@ class AE3Type extends AbstractType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => AE3::class,

@@ -5,15 +5,11 @@ namespace App\Entity\Tramite;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbn_estado_ficha_salida")
- */
+#[ORM\Table(name: 'tramite.tbn_estado_ficha_salida')]
+#[ORM\Entity]
 class EstadoFichaSalida extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $documentoSalida = true;
 
     /**

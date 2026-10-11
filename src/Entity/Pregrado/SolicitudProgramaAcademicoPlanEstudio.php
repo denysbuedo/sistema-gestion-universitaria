@@ -7,23 +7,17 @@ use App\Entity\Postgrado\Comision;
 use App\Entity\Postgrado\SolicitudPrograma;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_solicitud_programa_academico_plan_estudio")
- */
+#[ORM\Table(name: 'pregrado.tbr_solicitud_programa_academico_plan_estudio')]
+#[ORM\Entity]
 class SolicitudProgramaAcademicoPlanEstudio extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\PlanEstudio")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\PlanEstudio::class)]
     private ?PlanEstudio $planEstudio = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico = null;
 
     /**

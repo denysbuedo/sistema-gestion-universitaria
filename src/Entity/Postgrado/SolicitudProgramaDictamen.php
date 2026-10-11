@@ -6,40 +6,28 @@ use App\Entity\BaseEntity;
 use App\Entity\Personal\Persona;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbr_solicitud_programa_dictamen")
- */
+#[ORM\Table(name: 'postgrado.tbr_solicitud_programa_dictamen')]
+#[ORM\Entity]
 class SolicitudProgramaDictamen extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Comision")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Comision::class)]
     private ?Comision $comision = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="SolicitudPrograma")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: SolicitudPrograma::class)]
     private ?SolicitudPrograma $solicitudPrograma = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $dictamen = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona" )
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $propietarioDictamen;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="RolComision")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: RolComision::class)]
     private ?RolComision $rolComision;
 
 

@@ -26,12 +26,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_GEST_CENTRO_AUTORIZADO")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_CENTRO_AUTORIZADO')"))]
 #[Route('/postgrado/centro_autorizado')]
 class CentroAutorizadoPostgradoController extends AbstractController
 {
@@ -39,8 +38,8 @@ class CentroAutorizadoPostgradoController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/index', name: 'app_postgrado_centro_autorizado_postgrado_index', methods: ['GET'])]
     public function indexEstructurasCAP(EstructuraRepository $estructuraRepository, Utils $utils)
     {

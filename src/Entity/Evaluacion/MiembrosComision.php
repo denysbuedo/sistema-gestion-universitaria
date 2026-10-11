@@ -8,28 +8,20 @@ use App\Entity\BaseNomenclator;
 use App\Entity\Evaluacion\RolComision;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="evaluacion.tbr_miembros_comision")
- */
+#[ORM\Table(name: 'evaluacion.tbr_miembros_comision')]
+#[ORM\Entity]
 class MiembrosComision extends BaseEntity
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="Comision")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Comision::class)]
     private ?Comision $comision;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Persona")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\Persona::class)]
     private ?Persona $miembro;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="RolComision")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: RolComision::class)]
     private ?RolComision $rolComision;
 
     /**

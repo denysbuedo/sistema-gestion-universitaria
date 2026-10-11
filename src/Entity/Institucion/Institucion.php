@@ -6,117 +6,77 @@ use App\Entity\BaseNomenclator;
 use App\Entity\Personal\GradoAcademico;
 use App\Entity\Estructura\Estructura;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="institucion.tbd_institucion")
- */
+#[ORM\Table(name: 'institucion.tbd_institucion')]
+#[ORM\Entity]
 class Institucion extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $logo = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="100")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 100)]
     private ?string $siglas = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="20")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 20)]
     private ?string $codigo = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=false, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 255)]
     private ?string $rector = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\GradoAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\GradoAcademico::class)]
     private ?GradoAcademico $gradoAcademicoRector = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoInstitucion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: TipoInstitucion::class)]
     private ?TipoInstitucion $tipoInstitucion;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaAcreditacion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaAcreditacion::class)]
     private ?CategoriaAcreditacion $categoriaAcreditacion;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $organigrama = null;
 
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     private $fechaFundacion;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $lema = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $mision = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $vision = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $sitioWeb = null;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="50")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 50)]
     private ?string $telefono = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="50")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 50)]
     private ?string $correo = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $direccionSedePrincipal = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $coordenadasSedePrincipal = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $campusUniversitario = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
 

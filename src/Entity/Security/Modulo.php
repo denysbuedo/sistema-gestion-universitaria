@@ -11,42 +11,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Define un módulo en el sistema.
  * Un módulo tiene varias funcionalidades.
- *
- * @ORM\Entity
- * @ORM\Table(name="seguridad.tbd_modulo")
- * @UniqueEntity(fields="nombre", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
  */
+#[ORM\Table(name: 'seguridad.tbd_modulo')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'nombre', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Modulo extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="text", unique=true, nullable=false)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'text', unique: true, nullable: false)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $nombre;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private $descripcion;
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true, unique=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true, unique: true)]
     private $moduleKey;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     public function getNombre()

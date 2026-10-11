@@ -46,14 +46,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_GEST_PROGAPROB")
- * @ORM\Entity
- * @ORM\Table(name="solicitud_programa_academico_aprobado_controller")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
 #[Route('/pregrado/solicitud_programa_academico_aprobado')]
+#[ORM\Table(name: 'solicitud_programa_academico_aprobado_controller')]
+#[ORM\Entity]
 class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 {
 

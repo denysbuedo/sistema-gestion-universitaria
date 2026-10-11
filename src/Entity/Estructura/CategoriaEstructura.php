@@ -5,21 +5,15 @@ namespace App\Entity\Estructura;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_categoria_estructura")
- */
+#[ORM\Table(name: 'estructura.tbn_categoria_estructura')]
+#[ORM\Entity]
 class CategoriaEstructura extends BaseNomenclator
 {
     
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $color;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private $tributaCredencial = false;
     
     public function getColor(): ?string

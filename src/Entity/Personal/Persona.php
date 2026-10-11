@@ -11,206 +11,122 @@ use App\Entity\Estructura\Responsabilidad;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Security\User;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbd_persona")
- * @UniqueEntity(fields="carnetIdentidad", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @UniqueEntity(fields="numeroSerieCarnetIdentidad", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'personal.tbd_persona')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'carnetIdentidad', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
+#[UniqueEntity(fields: 'numeroSerieCarnetIdentidad', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Persona extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
-    /**
-     * @ORM\Column(type="string", length=11, unique=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 11, unique: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $carnetIdentidad;
-    /**
-     * @ORM\Column(type="string", length=11, unique=true, nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 11, unique: true, nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $numeroSerieCarnetIdentidad = null;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $primerNombre;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $segundoNombre = null;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $primerApellido = null;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     * @Assert\Regex(
-     *           pattern= "/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/",
-     *           match=   true,
-     *           message= "Caracteres no válidos, por favor verifique."
-     * )
-     */
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    #[Assert\Regex(pattern: '/^[0-9a-zA-ZäëïöüáéíóúàèìòùÀÈÌÒÙÁÉÍÓÚñÑüÜ_\s]+$/', match: true, message: 'Caracteres no válidos, por favor verifique.')]
     private ?string $segundoApellido = null;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     private $fechaNacimiento;
 
-    /**
-     * @ORM\Column(type="string", length=180, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 180, nullable: true)]
     private ?string $email = null;
 
-    /**
-     * @ORM\Column(type="string", length=15, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private ?string $celular = null;
 
-    /**
-     * @ORM\Column(type="string", length=15, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 15, nullable: true)]
     private ?string $telefono = null;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Provincia")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Provincia::class)]
     private ?Provincia $provincia = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Municipio")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Municipio::class)]
     private ?Municipio $municipio = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $direccion;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="ClasificacionPersona")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: ClasificacionPersona::class)]
     private ?ClasificacionPersona $clasificacionPersona = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="NivelEscolar")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: NivelEscolar::class)]
     private ?NivelEscolar $nivelEscolar = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaDocente")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaDocente::class)]
     private ?CategoriaDocente $categoriaDocente = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Profesion")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Profesion::class)]
     private ?Profesion $profesion = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GradoAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: GradoAcademico::class)]
     private ?GradoAcademico $gradoAcademico = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="CategoriaInvestigativa")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: CategoriaInvestigativa::class)]
     private ?CategoriaInvestigativa $categoriaInvestigativa;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademico")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademico::class)]
     private ?SolicitudProgramaAcademico $solicitudProgramaAcademico = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Sexo")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Sexo::class)]
     private ?Sexo $sexo = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=CategoriaEstructura::class)
-     */
+    #[ORM\ManyToOne(targetEntity: CategoriaEstructura::class)]
     private $categoriaEstructura = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Estructura::class)
-     */
+    #[ORM\ManyToOne(targetEntity: Estructura::class)]
     private $estructura = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Estructura::class)
-     */
+    #[ORM\ManyToOne(targetEntity: Estructura::class)]
     private $entidad = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Responsabilidad::class)
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Responsabilidad::class)]
     private $responsabilidad;
 
 
-    /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist'])]
     private $usuario;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $foto = null;
 
 
-    /**
-     * @ORM\Column(type="string", length=180, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 180, nullable: true)]
     private ?string $twitter = null;
 
 

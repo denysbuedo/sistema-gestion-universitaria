@@ -5,16 +5,15 @@ namespace App\Controller\Personal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use App\Repository\Personal\PersonaRepository;
 use App\Repository\Personal\CategoriaDocenteRepository;
 use App\Repository\Personal\GradoAcademicoRepository;
 use App\Repository\Personal\CategoriaInvestigativaRepository;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_HOME_PERSONAL")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_HOME_PERSONAL')"))]
 #[Route('/personal/portada')]
 class PortadaController extends AbstractController
 {

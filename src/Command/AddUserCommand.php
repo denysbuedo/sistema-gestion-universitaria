@@ -19,12 +19,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'app:add-user')]
 class AddUserCommand extends Command
 {
-    // to make your command lazily loaded, configure the $defaultName static property,
-    // so it will be instantiated only when the command is actually called.
-    protected static $defaultName = 'app:add-user';
-
     /**
      * @var SymfonyStyle
      */
@@ -81,7 +78,7 @@ class AddUserCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         if (null !== $input->getArgument('email') && null !== $input->getArgument('rol') && null !== $input->getArgument('password')) {
             return;

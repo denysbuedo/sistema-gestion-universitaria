@@ -24,7 +24,8 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,8 +78,8 @@ class EstructuraController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/', name: 'app_estructura_index', methods: ['GET'])]
     public function index(EstructuraRepository $estructuraRepository, Utils $utils, PersonaRepository $personaRepository)
     {
@@ -114,8 +115,8 @@ class EstructuraController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/arbol', name: 'app_estructura_index_arbol', methods: ['GET'])]
     public function indexArbol(EstructuraRepository $estructuraRepository, Utils $utils, PersonaRepository $personaRepository): Response
     {
@@ -181,8 +182,8 @@ class EstructuraController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/estructuras/mapa', name: 'app_estructura_index_mapa', methods: ['GET'])]
     public function indexMapa(EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository): Response
     {
@@ -208,8 +209,8 @@ class EstructuraController extends AbstractController
      * @param Request $request
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/registrar', name: 'app_estructura_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, MunicipioRepository $municipioRepository, Utils $utils)
     {
@@ -266,8 +267,8 @@ class EstructuraController extends AbstractController
      * @param User $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT" )
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/{id}/modificar', name: 'app_estructura_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, Estructura $estructura, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, MunicipioRepository $municipioRepository, Utils $utils)
     {
@@ -314,8 +315,8 @@ class EstructuraController extends AbstractController
      * @param Estructura $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT", "ROLE_GEST_CENTRO_AUTORIZADO", "ROLE_GEST_FORMACION_DOCTORES")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT') or is_granted('ROLE_GEST_CENTRO_AUTORIZADO') or is_granted('ROLE_GEST_FORMACION_DOCTORES')"))]
     #[Route('/{id}/eliminar', name: 'app_estructura_eliminar', methods: ['GET'])]
     public function eliminar(Request $request, Estructura $estructura, EstructuraRepository $estructuraRepository)
     {
@@ -338,8 +339,8 @@ class EstructuraController extends AbstractController
      * @param Estructura $estructura
      * @param Plaza $plazaRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT", "ROLE_GEST_CENTRO_AUTORIZADO", "ROLE_GEST_FORMACION_DOCTORES")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT') or is_granted('ROLE_GEST_CENTRO_AUTORIZADO') or is_granted('ROLE_GEST_FORMACION_DOCTORES')"))]
     #[Route('/{id}/detail', name: 'app_estructura_detail', methods: ['GET', 'POST'])]
     public function detail(Request $request, Estructura $estructura, PlazaRepository $plazaRepository)
     {
@@ -354,8 +355,8 @@ class EstructuraController extends AbstractController
      * @param Estructura $estructura
      * @param PlazaRepository $plazaRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/{id}/plaza', name: 'app_estructura_plaza', methods: ['GET', 'POST'])]
     public function plaza(Request $request, Estructura $estructura, PlazaRepository $plazaRepository)
     {
@@ -388,8 +389,8 @@ class EstructuraController extends AbstractController
      * @param Plaza $plaza
      * @param PlazaRepository $plazaRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/{id}/eliminar-plaza', name: 'app_estructura_eliminar_plaza', methods: ['GET'])]
     public function eliminarPlaza(Request $request, Plaza $plaza, PlazaRepository $plazaRepository)
     {
@@ -413,8 +414,8 @@ class EstructuraController extends AbstractController
      * @param Estructura $estructura
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/{id}/registrar-estructura-hija', name: 'app_estructura_registrar_hija', methods: ['GET', 'POST'])]
     public function registrarEstructuraHija(Request $request, ProvinciaRepository $provinciaRepository, MunicipioRepository $municipioRepository, TipoEstructuraRepository $tipoEstructuraRepository, CategoriaEstructuraRepository $categoriaEstructuraRepository, Estructura $estructura, EstructuraRepository $estructuraRepository, EntityManagerInterface $entityManager, Utils $utils)
     {
@@ -504,8 +505,8 @@ class EstructuraController extends AbstractController
      * @param Request $request
      * @param User $user
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/exportar_pdf', name: 'app_estructura_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, HandlerFop $handFop, EstructuraRepository $estructuraRepository)
     {
@@ -537,8 +538,8 @@ class EstructuraController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/{id}/exportar-estructuras-hijas', name: 'app_estructura_exportar_estructuras_hijas', methods: ['GET', 'POST'])]
     public function exportarEstructurasHija($id, HandlerFop $handFop, EstructuraRepository $estructuraRepository)
     {

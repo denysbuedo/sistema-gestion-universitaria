@@ -5,10 +5,8 @@ namespace App\Entity\Convenio;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="convenio.tbn_modalida")
- */
+#[ORM\Table(name: 'convenio.tbn_modalida')]
+#[ORM\Entity]
 class Modalidad extends BaseNomenclator
 {
 

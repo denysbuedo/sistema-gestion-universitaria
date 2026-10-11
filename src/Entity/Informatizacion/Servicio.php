@@ -9,35 +9,23 @@ use App\Entity\Informatizacion\PublicoObjetivo;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\Visibilidad;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_servicio")
- */
+#[ORM\Table(name: 'informatizacion.tbd_servicio')]
+#[ORM\Entity]
 class Servicio extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $clasificacion;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $direccionWeb;
-    /**
-     * @ORM\ManyToOne(targetEntity="Visibilidad")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Visibilidad::class)]
     private ?Visibilidad $visibilidad;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="PublicoObjetivo")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: PublicoObjetivo::class)]
     private ?PublicoObjetivo $publicoObjetivo;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
 
     /**
@@ -48,14 +36,10 @@ class Servicio extends BaseNomenclator
         return $this->direccionWeb;
     }
 
-    /**
-     * @ORM\Column(type="boolean" , nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $integracionPasarelaPago = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $integracionFirmaDigital = false;
 
     /**

@@ -5,15 +5,11 @@ namespace App\Entity\Tramite;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="tramite.tbn_tipo_pasaporte")
- */
+#[ORM\Table(name: 'tramite.tbn_tipo_pasaporte')]
+#[ORM\Entity]
 class TipoPasaporte extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true, length="10")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 10)]
     private ?string $siglas=null;
 
 

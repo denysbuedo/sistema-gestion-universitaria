@@ -20,11 +20,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'carga-inicial-estructura-command')]
 class EstructuraCommand extends Command
 {
-
-    protected static $defaultName = 'carga-inicial-estructura-command';
-
 
     private $dbname;
     private $user;
@@ -85,7 +83,7 @@ class EstructuraCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
 
     }

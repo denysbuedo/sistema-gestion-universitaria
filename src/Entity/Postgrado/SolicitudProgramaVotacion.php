@@ -5,29 +5,21 @@ namespace App\Entity\Postgrado;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbr_solicitud_programa_votacion")
- */
+#[ORM\Table(name: 'postgrado.tbr_solicitud_programa_votacion')]
+#[ORM\Entity]
 class SolicitudProgramaVotacion extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="MiembrosCopep")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: MiembrosCopep::class)]
     private ?MiembrosCopep $miembrosCopep = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="SolicitudPrograma")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: SolicitudPrograma::class)]
     private ?SolicitudPrograma $solicitudPrograma = null;
 
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $voto;
 
     /**

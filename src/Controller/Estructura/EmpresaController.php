@@ -14,11 +14,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_ESTRUCTURA_EMPRESA")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_ESTRUCTURA_EMPRESA')"))]
 #[Route('/rrhh/empresas')]
 class EmpresaController extends AbstractController
 {
@@ -27,8 +26,8 @@ class EmpresaController extends AbstractController
     /**
      * @param EstructuraRepository $estructuraRepository
      * @return Response
-     * @IsGranted("ROLE_ADMIN", "ROLE_GEST_ESTRUCT")
-     */
+*/
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/', name: 'app_estructura_empresa_index', methods: ['GET'])]
     public function index(EstructuraRepository $estructuraRepository, Utils $utils)
     {

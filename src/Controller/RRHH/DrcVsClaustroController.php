@@ -11,20 +11,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_RRHH_CLAUSTRO_DRC_PT")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_RRHH_CLAUSTRO_DRC_PT')"))]
 #[Route('/rrhh/claustro_drc_pt')]
 class DrcVsClaustroController extends AbstractController
 {
-    private ObjectNormalizer $normalizer;
+    private NormalizerInterface $normalizer;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ObjectNormalizer $normalizer, EntityManagerInterface $entityManager)
+    public function __construct(NormalizerInterface $normalizer, EntityManagerInterface $entityManager)
     {
         $this->normalizer = $normalizer;
         $this->entityManager = $entityManager;

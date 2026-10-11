@@ -6,37 +6,25 @@ use App\Entity\Security\User;
 use App\Repository\InformePersonalizadoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=InformePersonalizadoRepository::class)
- */
+#[ORM\Entity(repositoryClass: InformePersonalizadoRepository::class)]
 class InformePersonalizado
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $nombre;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $contenido;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Security\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Security\User::class)]
     private ?User $usuario;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $privado;
 
     public function getId(): ?int

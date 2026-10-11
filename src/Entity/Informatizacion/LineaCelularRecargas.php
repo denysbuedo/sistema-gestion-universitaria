@@ -5,34 +5,23 @@ namespace App\Entity\Informatizacion;
 use App\Entity\BaseEntity;
 use App\Entity\Informatizacion\LineaCelular;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbr_linea_celular_recargas")
- */
+#[ORM\Table(name: 'informatizacion.tbr_linea_celular_recargas')]
+#[ORM\Entity]
 class LineaCelularRecargas extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Informatizacion\LineaCelular")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Informatizacion\LineaCelular::class)]
     private ?LineaCelular $lineaCelular;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $planVoz = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $planSms = null;
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $planDatos = null;
 
     public function __construct()

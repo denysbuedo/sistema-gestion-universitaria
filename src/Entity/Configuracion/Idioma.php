@@ -5,16 +5,12 @@ namespace App\Entity\Configuracion;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="configuracion.tbn_idioma")
- */
+#[ORM\Table(name: 'configuracion.tbn_idioma')]
+#[ORM\Entity]
 class Idioma extends BaseNomenclator
 {
     
-    /**
-     * @ORM\Column(type="string", length=2, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 2, nullable: true)]
     private ?string $siglas;
 
     /**

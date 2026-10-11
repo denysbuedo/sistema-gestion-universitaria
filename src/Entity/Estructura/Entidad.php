@@ -7,69 +7,48 @@ use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbd_entidad")
- * @UniqueEntity(fields="codigo", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'estructura.tbd_entidad')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'codigo', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Entidad extends BaseNomenclator
 {
-    /**
-     * @ORM\OneToOne(targetEntity="Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(targetEntity: Estructura::class)]
     private ?Estructura $estructura;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="TipoEntidad")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TipoEntidad::class)]
     private ?TipoEntidad $tipoEntidad;
 
     /**
      * Entiddad padre
-     * 
-     * @ORM\ManyToOne(targetEntity="Entidad")
-     * @ORM\JoinColumn(nullable=true)
      */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Entidad::class)]
     private ?Entidad $entidad;
 
-    /**
-     * @ORM\Column(type="string", length=180, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 180, nullable: false)]
     private ?string $email;
 
-    /**
-     * @ORM\Column(type="string", length=15, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 15, nullable: false)]
     private ?string $telefono;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $direccion;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $codigo;
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Municipio")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Municipio::class)]
     private ?Municipio $municipio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Provincia")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Provincia::class)]
     private ?Provincia $provincia;
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: 'text', nullable: false)]
     private ?string $siglas;
 
     public function getEstructura()

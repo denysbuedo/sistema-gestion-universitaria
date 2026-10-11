@@ -27,10 +27,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 
+#[\Symfony\Component\Console\Attribute\AsCommand(name: 'akademos-pregrado-sync-programas-academicos')]
 class PregradoSyncProgramasAcademicosCommand extends Command
 {
 
-    protected static $defaultName = 'akademos-pregrado-sync-programas-academicos';
     private $env;
     private $container;
     private $em;
@@ -60,7 +60,7 @@ class PregradoSyncProgramasAcademicosCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
 
     }

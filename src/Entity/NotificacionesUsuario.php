@@ -5,52 +5,36 @@ namespace App\Entity;
 use App\Repository\NotificacionesUsuarioRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Security\User;
-use Gedmo\Mapping\Annotation as Gedmo;
+use App\Doctrine\Attribute\Timestampable;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=NotificacionesUsuarioRepository::class)
- */
+#[ORM\Entity(repositoryClass: NotificacionesUsuarioRepository::class)]
 class NotificacionesUsuario
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $texto;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $url;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Security\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Security\User::class)]
     private ?User $usuarioEnvia;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Security\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Security\User::class)]
     private ?User $usuarioRecive;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $leido = false;
 
-    /**
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: 'datetime')]
     private $fechaCreado;
 
     /**

@@ -37,16 +37,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\Tramite\DocumentoSalidaHistorialDocumento;
 use App\Repository\Tramite\DocumentoSalidaHistorialDocumentoRepository;
 use App\Repository\Tramite\FichaSalidaHistorialDocumentoRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/**
- * @IsGranted("ROLE_ADMIN", "ROLE_GEST_DOCUMENTO_SALIDA")
- */
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_DOCUMENTO_SALIDA')"))]
 #[Route('/tramite/documento_salida')]
 class DocumentoSalidaController extends AbstractController
 {

@@ -5,15 +5,11 @@ namespace App\Entity\Postgrado;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbn_tipo_solicitud")
- */
+#[ORM\Table(name: 'postgrado.tbn_tipo_solicitud')]
+#[ORM\Entity]
 class TipoSolicitud extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true, length="3")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 3)]
     private ?string $siglas=null;
 
 

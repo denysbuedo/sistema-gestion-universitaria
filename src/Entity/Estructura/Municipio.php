@@ -6,27 +6,19 @@ use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="estructura.tbn_municipio")
- * @UniqueEntity(fields="codigo", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- */
+#[ORM\Table(name: 'estructura.tbn_municipio')]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'codigo', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class Municipio extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="integer", nullable=false)
-     */
+    #[ORM\Column(type: 'integer', nullable: false)]
     private ?int $codigo;    
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Provincia")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Provincia::class)]
     private ?Provincia $provincia;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private string $extId;
 
     

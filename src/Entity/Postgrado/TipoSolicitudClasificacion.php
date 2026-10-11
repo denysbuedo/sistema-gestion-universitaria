@@ -5,23 +5,17 @@ namespace App\Entity\Postgrado;
 use App\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbr_tipo_solicitud_clasificacion")
- */
+#[ORM\Table(name: 'postgrado.tbr_tipo_solicitud_clasificacion')]
+#[ORM\Entity]
 class TipoSolicitudClasificacion extends BaseEntity
 {
 
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Postgrado\TipoSolicitud")
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Postgrado\TipoSolicitud::class)]
     private ?TipoSolicitud $tipoSolicitud;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, length="255")
-     */
+    #[ORM\Column(type: 'string', nullable: true, length: 255)]
     private ?string $clasificacion = null;
 
     /**

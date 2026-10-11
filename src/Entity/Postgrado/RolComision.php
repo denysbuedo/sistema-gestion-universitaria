@@ -5,15 +5,11 @@ namespace App\Entity\Postgrado;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="postgrado.tbn_rol_comision")
- */
+#[ORM\Table(name: 'postgrado.tbn_rol_comision')]
+#[ORM\Entity]
 class RolComision extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $copep = true;
 
     public function getCopep()

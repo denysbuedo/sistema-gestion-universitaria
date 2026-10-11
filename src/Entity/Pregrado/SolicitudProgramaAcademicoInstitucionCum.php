@@ -6,29 +6,21 @@ use App\Entity\BaseEntity;
 use App\Entity\Institucion\InstitucionCum;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pregrado.tbr_solicitud_programa_academico_institucion_cum")
- */
+#[ORM\Table(name: 'pregrado.tbr_solicitud_programa_academico_institucion_cum')]
+#[ORM\Entity]
 class SolicitudProgramaAcademicoInstitucionCum extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Institucion\InstitucionCum")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion\InstitucionCum::class)]
     private ?InstitucionCum $institucionCum;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion::class)]
     private ?SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion;
 
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $modalidad = null;
 
     public function getInstitucionCum(): ?InstitucionCum

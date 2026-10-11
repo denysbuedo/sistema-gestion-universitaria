@@ -6,15 +6,11 @@ use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbn_grado_academico")
- */
+#[ORM\Table(name: 'personal.tbn_grado_academico')]
+#[ORM\Entity]
 class GradoAcademico extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=false, length="8")
-     */
+    #[ORM\Column(type: 'string', nullable: false, length: 8)]
     private ?string $siglas;   
 
    

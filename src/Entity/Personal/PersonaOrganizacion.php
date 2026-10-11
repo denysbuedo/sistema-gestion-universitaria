@@ -6,23 +6,17 @@ use App\Entity\BaseEntity;
 use App\Entity\Personal\Organizacion;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbr_persona_organizacion")
- */
+#[ORM\Table(name: 'personal.tbr_persona_organizacion')]
+#[ORM\Entity]
 class PersonaOrganizacion extends BaseEntity
 {
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Persona" )
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Persona::class)]
     private ?Persona $persona;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Organizacion")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Organizacion::class)]
     private ?Organizacion $organizacion;
 
 

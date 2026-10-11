@@ -7,43 +7,27 @@ use App\Entity\Estructura\Estructura;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Informatizacion\TipoConectividad;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="informatizacion.tbd_centro_dato_virtual")
- */
+#[ORM\Table(name: 'informatizacion.tbd_centro_dato_virtual')]
+#[ORM\Entity]
 class CentroDatoVirtual extends BaseNomenclator
 {
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $ram;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $cpu;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $hdd;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $hddSalva;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $cantidadIpReales;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $precio;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Estructura\Estructura")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Estructura\Estructura::class)]
     private ?Estructura $estructura;
     /**
      * @return string|null

@@ -5,16 +5,12 @@ namespace App\Entity\Personal;
 use App\Entity\BaseNomenclator;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="personal.tbn_carrera")
- */
+#[ORM\Table(name: 'personal.tbn_carrera')]
+#[ORM\Entity]
 class Carrera extends BaseNomenclator
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\NivelEscolar")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Personal\NivelEscolar::class)]
     private ?NivelEscolar $nivelEscolar;
 
     public function getNivelEscolar()

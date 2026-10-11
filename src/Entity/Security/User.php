@@ -13,56 +13,47 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * Usuario Local del Sistema
- * @ORM\Entity
- * @UniqueEntity(fields="email", message="EL valor {{ value }} ya existe. Por favor inserte otro valor.")
- * @ORM\Table(name="seguridad.tbd_usuario", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="uniq_usuario_oidc_identity", columns={"oidc_issuer", "oidc_subject"})
- * })
  */
+#[ORM\Table(name: 'seguridad.tbd_usuario')]
+#[ORM\UniqueConstraint(name: 'uniq_usuario_oidc_identity', columns: ['oidc_issuer', 'oidc_subject'])]
+#[ORM\Entity]
+#[UniqueEntity(fields: 'email', message: 'EL valor {{ value }} ya existe. Por favor inserte otro valor.')]
 class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface, AuthorityInterface
 {
-    /**
-     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 180, unique: true, nullable: false)]
     private $email;
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string", nullable=false)
      */
+    #[ORM\Column(type: 'string', nullable: false)]
     private $password;
 
     /**
      * @var string Rol principal/especial
-     * @ORM\Column(type="string", nullable=false)
      */
+    #[ORM\Column(type: 'string', nullable: false)]
     private $role = 'ROLE_USER';
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false)
-     */
+    #[ORM\Column(type: 'boolean', nullable: false)]
     private ?bool $activo = true;
 
     /**
      * Roles asignados al usuario.
-     *
-     * @ORM\ManyToMany(targetEntity="Rol", cascade={"persist"}, fetch="EAGER")
-     * @ORM\JoinTable(name="seguridad.tbr_user_rol",
-     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="cascade")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="rol_id", referencedColumnName="id", onDelete="cascade")}
-     *      )
      */
+    #[ORM\JoinTable(name: 'seguridad.tbr_user_rol')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\InverseJoinColumn(name: 'rol_id', referencedColumnName: 'id', onDelete: 'cascade')]
+    #[ORM\ManyToMany(targetEntity: Rol::class, cascade: ['persist'], fetch: 'EAGER')]
     private $userRoles;    
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $passwordChangeFirstTime = false;
 
-    /** @ORM\Column(type="string", length=255, nullable=true) */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $oidcIssuer = null;
 
-    /** @ORM\Column(type="string", length=255, nullable=true) */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $oidcSubject = null;
 
     private $passwordPlainOld;
