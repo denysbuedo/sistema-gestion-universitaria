@@ -54,7 +54,7 @@ class AE2Repository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
             ->select('DISTINCT e.id, e.nombre')
             ->join('a.entidad', 'e')
-            ->orderBy('a.mes', 'asc');
+            ->orderBy('a.mes', \SortDirection::Ascending);
 
         if ($entidadId !== null) {
             $qb->andWhere('e.id = :entidadId')
@@ -71,7 +71,7 @@ class AE2Repository extends ServiceEntityRepository
                 ->setParameter('anno', $anno);
         }
 
-        return $qb->orderBy('e.nombre', 'ASC')
+        return $qb->orderBy('e.nombre', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -79,8 +79,8 @@ class AE2Repository extends ServiceEntityRepository
     public function findByFilters(array $filters = [])
     {
         $qb = $this->createQueryBuilder('a')
-            ->orderBy('a.anno', 'ASC')
-            ->addOrderBy('a.mes', 'ASC');
+            ->orderBy('a.anno', \SortDirection::Ascending)
+            ->addOrderBy('a.mes', \SortDirection::Ascending);
 
 //        if (!empty($filters['entidad'])) {
 //            $qb->andWhere('a.entidad = :entidad')
@@ -187,8 +187,8 @@ class AE2Repository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->select('a.anno, a.mes')
-            ->orderBy('a.anno', 'DESC')
-            ->addOrderBy('a.mes', 'DESC')
+            ->orderBy('a.anno', \SortDirection::Descending)
+            ->addOrderBy('a.mes', \SortDirection::Descending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

@@ -55,7 +55,7 @@ class TelefonoCelularRepository extends ServiceEntityRepository
             ->select('m.nombre AS name, COUNT(tc.id) AS y')
             ->innerJoin('tc.marca', 'm')
             ->groupBy('m.id, m.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -68,7 +68,7 @@ class TelefonoCelularRepository extends ServiceEntityRepository
             ->select('so.nombre AS name, COUNT(tc.id) AS y')
             ->innerJoin('tc.sistemaOperativo', 'so')
             ->groupBy('so.id, so.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 

@@ -55,7 +55,7 @@ class ServicioRepository extends ServiceEntityRepository
             ->select('po.nombre AS name, COUNT(s.id) AS y')
             ->innerJoin('s.publicoObjetivo', 'po')
             ->groupBy('po.id, po.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 

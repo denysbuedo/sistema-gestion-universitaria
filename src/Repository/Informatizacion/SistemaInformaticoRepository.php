@@ -55,7 +55,7 @@ class SistemaInformaticoRepository extends ServiceEntityRepository
             ->select('ts.nombre AS name, COUNT(si.id) AS y')
             ->innerJoin('si.tipoSistema', 'ts')
             ->groupBy('ts.id, ts.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -68,7 +68,7 @@ class SistemaInformaticoRepository extends ServiceEntityRepository
             ->select('v.nombre AS name, COUNT(si.id) AS y')
             ->innerJoin('si.visibilidad', 'v')
             ->groupBy('v.id, v.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 

@@ -13,6 +13,8 @@ class SecuritySmokeTest extends WebTestCase
     private const TEST_DATABASE = 'gestion_universitaria_test';
     private const BASIC_USER_EMAIL = 'basic-user@example.invalid';
     private const BASIC_USER_PASSWORD = 'basic-user-test-password';
+    private const INACTIVE_USER_EMAIL = 'inactive-user@example.invalid';
+    private const INACTIVE_USER_PASSWORD = 'inactive-user-test-password';
 
     protected function setUp(): void
     {
@@ -69,6 +71,24 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $token = $client->getContainer()->get('security.token_storage')->getToken();
         self::assertNull($token);
+    }
+
+    public function testInactiveUserCannotLoginThroughTheWebForm(): void
+    {
+        $client = static::createClient();
+        $this->getOrCreateInactiveUser($client);
+        $csrfToken = $this->getLoginCsrfToken($client);
+
+        $client->request('POST', '/login', [
+            'email' => self::INACTIVE_USER_EMAIL,
+            'password' => self::INACTIVE_USER_PASSWORD,
+            '_csrf_token' => $csrfToken,
+        ]);
+
+        self::assertResponseRedirects('/login');
+        $client->followRedirect();
+        self::assertResponseIsSuccessful();
+        self::assertNull($client->getContainer()->get('security.token_storage')->getToken());
     }
 
     public function testValidWebCredentialsCreateSessionAndReachDashboard(): void
@@ -208,6 +228,39 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    /**
+     * @dataProvider moduleLandingPageProvider
+     */
+    public function testAdministratorCanOpenModuleLandingPages(string $path): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', $path);
+
+        self::assertResponseIsSuccessful();
+    }
+
+    public function moduleLandingPageProvider(): iterable
+    {
+        yield 'administracion' => ['/administracion/portada'];
+        yield 'convenio' => ['/convenio/portada'];
+        yield 'cooperacion' => ['/cooperacion/portada'];
+        yield 'economia' => ['/economia/portada'];
+        yield 'estructura' => ['/estructura/portada'];
+        yield 'evaluacion' => ['/evaluacion/portada'];
+        yield 'informatizacion' => ['/informatizacion/portada'];
+        yield 'institucion' => ['/institucion/portada'];
+        yield 'personal' => ['/personal/portada'];
+        yield 'postgrado' => ['/postgrado/portada'];
+        yield 'pregrado' => ['/pregrado/portada'];
+        yield 'rrhh' => ['/rrhh/portada'];
+        yield 'reporte' => ['/reporte/portada'];
+        yield 'tramite' => ['/tramite/portada'];
+        yield 'traza' => ['/traza/portada'];
+        yield 'visita' => ['/visita/portada'];
+    }
+
     private function getLoginCsrfToken(KernelBrowser $client): string
     {
         $crawler = $client->request('GET', '/login');
@@ -249,6 +302,29 @@ class SecuritySmokeTest extends WebTestCase
         $encoder = $client->getContainer()->get(UserPasswordHasherInterface::class);
         $user->setPassword($encoder->hashPassword($user, self::BASIC_USER_PASSWORD));
 
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $user;
+    }
+
+    private function getOrCreateInactiveUser(KernelBrowser $client): User
+    {
+        $entityManager = $client->getContainer()->get(EntityManagerInterface::class);
+        $user = $entityManager->getRepository(User::class)->findOneBy([
+            'email' => self::INACTIVE_USER_EMAIL,
+        ]);
+
+        if (!$user instanceof User) {
+            $user = new User();
+            $user->setEmail(self::INACTIVE_USER_EMAIL);
+            $user->setRole('ROLE_USER');
+            $user->setPasswordChangeFirstTime(false);
+        }
+
+        $user->setActivo(false);
+        $hasher = $client->getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, self::INACTIVE_USER_PASSWORD));
         $entityManager->persist($user);
         $entityManager->flush();
 

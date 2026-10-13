@@ -56,7 +56,7 @@ class ConvenioRepository extends ServiceEntityRepository
             ->innerJoin('p.entidad', 'e')
             ->where('e.id = :idEntidad')
             ->setParameter('idEntidad', $idEntidad)
-            ->orderBy('c.id', 'DESC')
+            ->orderBy('c.id', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
         return $response;
@@ -102,7 +102,7 @@ class ConvenioRepository extends ServiceEntityRepository
             ->innerJoin('c.tipo', 't')
             ->select('t.nombre as name', 'COUNT(c.id) as y')
             ->groupBy('t.id', 't.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
         
@@ -123,7 +123,7 @@ class ConvenioRepository extends ServiceEntityRepository
             ->innerJoin('c.pais', 'p')
             ->select('p.nombre as name', 'COUNT(c.id) as y')
             ->groupBy('p.id', 'p.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
@@ -170,7 +170,7 @@ class ConvenioRepository extends ServiceEntityRepository
             ->innerJoin('c.institucionCubana', 'i')
             ->select('i.nombre as name', 'COUNT(c.id) as y')
             ->groupBy('i.id', 'i.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
@@ -193,7 +193,7 @@ class ConvenioRepository extends ServiceEntityRepository
             ->innerJoin('c.institucionExtranjera', 'i')
             ->select('i.nombre as name', 'COUNT(c.id) as y')
             ->groupBy('i.id', 'i.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();

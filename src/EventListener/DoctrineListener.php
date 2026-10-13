@@ -8,6 +8,7 @@ use App\Entity\Personal\ClasificacionPersona;
 use App\Services\TraceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping AS ORM;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
@@ -24,7 +25,7 @@ class DoctrineListener
     }
 
     #[ORM\PrePersist]
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(PrePersistEventArgs $args): void
     {
         $serialize = new Serializer(array(new GetSetMethodNormalizer()), array(new JsonEncoder()));
        // pr($serialize->serialize($args->getObject()->toSerialize(), 'json'));

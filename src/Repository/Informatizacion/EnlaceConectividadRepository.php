@@ -55,7 +55,7 @@ class EnlaceConectividadRepository extends ServiceEntityRepository
             ->select('tc.nombre AS name, COUNT(ec.id) AS y')
             ->innerJoin('ec.tipoConectividad', 'tc')
             ->groupBy('tc.id, tc.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 

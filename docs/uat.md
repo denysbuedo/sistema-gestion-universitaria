@@ -39,6 +39,21 @@ Registrar en cada prueba:
 
 Estados permitidos: `Pendiente`, `Correcto`, `Falló`, `Bloqueado` y `No aplica`.
 
+## Prevalidación automatizada
+
+El 13 de octubre de 2026 se ejecutó sobre la base sintética de pruebas:
+
+- UAT-001: arranque de Symfony y acceso al dashboard;
+- UAT-002: login local, persistencia de sesión y logout;
+- UAT-003: rechazo de contraseña incorrecta y de usuario inactivo;
+- UAT-004: respuesta 403 para un usuario sin privilegios administrativos;
+- UAT-005: apertura de las 16 portadas funcionales con un administrador.
+
+La suite resultante contiene 55 pruebas y 237 aserciones. Esta prevalidación no
+cambia los estados del registro UAT: los recorridos deben repetirse sobre la
+copia autorizada y con evidencia funcional. UAT-006, trazas, permanece pendiente
+de validación específica.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad

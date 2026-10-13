@@ -49,7 +49,7 @@ class AE3Repository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
             ->select('DISTINCT e.id, e.nombre')
             ->join('a.entidad', 'e')
-            ->orderBy('a.mes', 'asc');
+            ->orderBy('a.mes', \SortDirection::Ascending);
 
         if ($anno !== null) {
             $qb->andWhere('a.anno = :anno')
@@ -59,7 +59,7 @@ class AE3Repository extends ServiceEntityRepository
             $qb->andWhere('e.id = :entidadId')
                 ->setParameter('entidadId', $entidadId);
         }
-        return $qb->orderBy('e.nombre', 'ASC')
+        return $qb->orderBy('e.nombre', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
     }
@@ -76,7 +76,7 @@ class AE3Repository extends ServiceEntityRepository
             ->setParameter('mes', $mes)
             ->setParameter('anno', $anno)
             ->setParameter('excluded', [42, 27])
-            ->orderBy('e.siglas', 'ASC')
+            ->orderBy('e.siglas', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -86,8 +86,8 @@ class AE3Repository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->select('a.anno, a.mes')
-            ->orderBy('a.anno', 'DESC')
-            ->addOrderBy('a.mes', 'DESC')
+            ->orderBy('a.anno', \SortDirection::Descending)
+            ->addOrderBy('a.mes', \SortDirection::Descending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

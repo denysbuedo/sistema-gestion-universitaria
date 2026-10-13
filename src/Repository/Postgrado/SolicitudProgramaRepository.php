@@ -55,7 +55,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('qb')
             ->innerJoin('qb.estadoPrograma', 'ep')
             ->where("ep.id NOT IN(:valuesItems)")->setParameter('valuesItems', array_values([7]))
-            ->orderBy('qb.id', 'desc');
+            ->orderBy('qb.id', \SortDirection::Descending);
 
         $resul = $qb->getQuery()->getResult();
         return $resul;
@@ -74,7 +74,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('estadoPrograma.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->andWhere($qb->expr()->notIn('solicitud.id', "($subQueryDQL)")) // Uso de la subconsulta DQL
-            ->orderBy('solicitud.id', 'DESC');
+            ->orderBy('solicitud.id', \SortDirection::Descending);
 
         return $qb->getQuery()->getResult();
     }
@@ -126,7 +126,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('tp.id, tp.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -142,7 +142,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('rc.id, rc.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -158,7 +158,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('mp.id, mp.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -174,7 +174,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('u.id, u.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
@@ -191,7 +191,7 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('ca.id, ca.nombre')
-            ->orderBy('y', 'DESC')
+            ->orderBy('y', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 

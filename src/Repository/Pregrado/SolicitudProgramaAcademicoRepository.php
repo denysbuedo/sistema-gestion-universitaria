@@ -65,7 +65,7 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
             ->join('qb.organismoDemandante', 'od')
             ->join('qb.estadoProgramaAcademico', 'epa')
             ->where("qb.estadoProgramaAcademico IN(:valuesItems)")->setParameter('valuesItems', array_values($estadoIds))
-            ->orderBy('qb.id', 'desc');
+            ->orderBy('qb.id', \SortDirection::Descending);
         $resul = $qb->getQuery()->getResult();
 
         return $resul;
@@ -75,7 +75,7 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('qb')
             ->where("qb.estadoProgramaAcademico IN(:valuesItems)")->setParameter('valuesItems', array_values($estadoIds))
-            ->orderBy('qb.id', 'desc');
+            ->orderBy('qb.id', \SortDirection::Descending);
         if (!empty($id)) {
             $qb->andWhere("qb.centroRector = $id");
         }
@@ -87,7 +87,7 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('qb')
             ->select("qb.nombre, qb.id")
             ->where("qb.estadoProgramaAcademico IN(:valuesItems)")->setParameter('valuesItems', array_values($estadoIds))
-            ->orderBy('qb.id', 'desc');
+            ->orderBy('qb.id', \SortDirection::Descending);
         if (!empty($id)) {
             $qb->andWhere("qb.centroRector = $id");
         }
@@ -174,7 +174,7 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('qb')
             ->join('qb.tipoProgramaAcademico', 'tp')
             ->where("tp.id = '$tipoProgramaAcademico' and qb.estadoProgramaAcademico IN(:valuesItems)")->setParameter('valuesItems', array_values($estadoIds))
-            ->orderBy('qb.id', 'desc');
+            ->orderBy('qb.id', \SortDirection::Descending);
 
         $resul = $qb->getQuery()->getResult();
         return $resul;
