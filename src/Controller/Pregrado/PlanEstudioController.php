@@ -18,6 +18,7 @@ use App\Repository\Pregrado\PlanEstudioDocumentoRepository;
 use App\Repository\Pregrado\PlanEstudioRepository;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\HandlerFop;
+use App\Services\UploadedDocumentStorage;
 use App\Services\Utils;
 use Cassandra\Timestamp;
 use Doctrine\ORM\EntityManagerInterface;
@@ -121,33 +122,28 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/registo-temporal-doc', name: 'app_plan_estudio_registro_temporal_doc', methods: ['GET', 'POST'])]
-    public function registroTemporalDeDocumento(Request $request, RequestStack $requestStack)
+    public function registroTemporalDeDocumento(Request $request, RequestStack $requestStack, UploadedDocumentStorage $storage): Response
     {
         try {
             $post = $request->request->all();
-            $uploadPath = 'uploads/pregrado/plan_estudio/documentos/';
-            $url = null;
-            $path = "uploads/pregrado/plan_estudio/documentos";
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-            }
-            if (move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/pregrado/plan_estudio/documentos/' . $_FILES['file']['name'])) {
-                $url = $uploadPath . $_FILES['file']['name'];
+            $file = $request->files->get('file');
+            if (!$file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                return $this->json(['error' => 'Debe seleccionar un archivo.'], Response::HTTP_BAD_REQUEST);
             }
 
-            if (!empty($url)) {
-                $documentosPlanEstudio = $requestStack->getSession()->has('documentosPlanEstudio') ? $requestStack->getSession()->get('documentosPlanEstudio') : null;
-                $item['id'] = uniqid();
-                $item['documento'] = $url;
-                $item['id_documento'] = $post['documento'];
-                $item['nombre_documento'] = $_FILES['file']['name'];
-                $documentosPlanEstudio[] = $item;
-                $requestStack->getSession()->set('documentosPlanEstudio', $documentosPlanEstudio);
-            }
+            $stored = $storage->store($file, 'uploads/pregrado/plan_estudio/documentos');
+            $documentosPlanEstudio = $requestStack->getSession()->get('documentosPlanEstudio', []);
+            $documentosPlanEstudio[] = [
+                'id' => bin2hex(random_bytes(8)),
+                'documento' => $stored['path'],
+                'id_documento' => $post['documento'] ?? null,
+                'nombre_documento' => $stored['originalName'],
+            ];
+            $requestStack->getSession()->set('documentosPlanEstudio', $documentosPlanEstudio);
+
             return $this->json($requestStack->getSession()->get('documentosPlanEstudio'), Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            $this->addFlash('error', $exception->getMessage());
-            return $this->redirectToRoute('app_plan_estudio_registrar', [], Response::HTTP_SEE_OTHER);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->json(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 

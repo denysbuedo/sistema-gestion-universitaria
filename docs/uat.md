@@ -105,8 +105,8 @@ Ejecutar al menos un caso realista de cada tecnología:
 - [x] PDF mediante Dompdf (prevalidado por PHPUnit).
 - [x] Exportación XLSX con PhpSpreadsheet (prevalidado por PHPUnit).
 - [ ] Descarga de un documento previamente almacenado.
-- [ ] Carga de un archivo permitido dentro del límite configurado.
-- [ ] Rechazo de extensión o tamaño no permitido.
+- [x] Carga de un archivo permitido dentro del límite configurado (prevalidada en PHPUnit para documentos de planes de estudio).
+- [x] Rechazo de tipo MIME o tamaño no permitido (prevalidado en PHPUnit; límite de 32 MB).
 - [ ] Confirmación de que los temporales se crean en `var/tmp/export/` y se
       eliminan según el procedimiento operativo.
 

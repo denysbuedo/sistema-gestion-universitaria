@@ -154,6 +154,10 @@ services:
     arguments:
       $container: '@service_container'
 
+  App\Services\UploadedDocumentStorage:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+
   idxboost_api.event.jwt_created_listener:
     class: App\EventListener\JWTCreatedListener
     arguments: [ '@request_stack', '@service_container' ]
