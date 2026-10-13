@@ -3,6 +3,9 @@
 namespace App\Tests\Functional;
 
 use App\Entity\Security\User;
+use App\Entity\Personal\Persona;
+use App\Entity\Traza\ConfiguracionTraza;
+use App\Entity\Traza\Traza;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -239,6 +242,45 @@ class SecuritySmokeTest extends WebTestCase
         $client->request('GET', $path);
 
         self::assertResponseIsSuccessful();
+    }
+
+    public function testLoginAndLogoutCreateSessionTracesWithoutSensitiveData(): void
+    {
+        $client = static::createClient();
+        $entityManager = $client->getContainer()->get(EntityManagerInterface::class);
+        $user = $this->fixtureAdminUser($client);
+        $persona = $entityManager->getRepository(Persona::class)->findOneBy(['usuario' => $user->getId()]);
+        self::assertInstanceOf(Persona::class, $persona);
+
+        $configuration = $entityManager->getRepository(ConfiguracionTraza::class)->findOneBy(['persona' => $persona]);
+        if (!$configuration instanceof ConfiguracionTraza) {
+            $configuration = (new ConfiguracionTraza())->setPersona($persona);
+        }
+        $configuration->setActivo(true);
+        $entityManager->persist($configuration);
+        $entityManager->flush();
+
+        $before = $entityManager->getRepository(Traza::class)->count(['persona' => $persona]);
+        $this->loginThroughForm($client);
+        $client->request('GET', '/logout');
+
+        $entityManager->clear();
+        $traces = $entityManager->getRepository(Traza::class)->findBy(
+            ['persona' => $persona->getId()],
+            ['id' => 'DESC'],
+            2
+        );
+        self::assertCount(2, $traces);
+        self::assertSame($before + 2, $entityManager->getRepository(Traza::class)->count(['persona' => $persona->getId()]));
+        self::assertEqualsCanonicalizing(['Inicio de sesión', 'Cierre de sesión'], array_map(
+            static fn (Traza $trace): string => $trace->getAccion()->getNombre(),
+            $traces
+        ));
+        foreach ($traces as $trace) {
+            $serialized = $trace->getData() . $trace->getDataAnterior();
+            self::assertStringNotContainsString($this->fixtureAdminPassword(), $serialized);
+            self::assertStringNotContainsString('token', strtolower($serialized));
+        }
     }
 
     public function moduleLandingPageProvider(): iterable

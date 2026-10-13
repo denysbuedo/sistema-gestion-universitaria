@@ -48,11 +48,12 @@ El 13 de octubre de 2026 se ejecutó sobre la base sintética de pruebas:
 - UAT-003: rechazo de contraseña incorrecta y de usuario inactivo;
 - UAT-004: respuesta 403 para un usuario sin privilegios administrativos;
 - UAT-005: apertura de las 16 portadas funcionales con un administrador.
+- UAT-006: creación de trazas de inicio y cierre de sesión sin contraseñas ni
+  tokens en la carga registrada.
 
 La suite resultante contiene 55 pruebas y 237 aserciones. Esta prevalidación no
 cambia los estados del registro UAT: los recorridos deben repetirse sobre la
-copia autorizada y con evidencia funcional. UAT-006, trazas, permanece pendiente
-de validación específica.
+copia autorizada y con evidencia funcional.
 
 ## Matriz priorizada
 

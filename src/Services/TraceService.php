@@ -9,86 +9,86 @@ use App\Entity\Traza\Objeto;
 use App\Entity\Traza\TipoTraza;
 use App\Entity\Traza\Traza;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @Service("traceService")
- */
-class TraceService
+final class TraceService
 {
-
-    private $baseUrl;
-    private $em;
-    private $serializer;
-    private $request;
-
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $em, SerializerInterface $serializer)
-    {
-        $this->baseUrl = $requestStack->getCurrentRequest()->getSchemeAndHttpHost();
-        $this->em = $em;
-        $this->serializer = $serializer;
-        $this->request = $requestStack->getCurrentRequest();
-
+    public function __construct(
+        private RequestStack $requestStack,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private LoggerInterface $logger
+    ) {
     }
 
-
-    /**
-     * @param $accion
-     * @param $objeto
-     * @param $entidadNueva
-     * @param int $tipoTraza
-     * @return bool
-     */
-    public function registrar($accion, $objeto, $dataAnterior, $nuevaData, $tipoTraza = 2)
+    public function registrar($accion, $objeto, $dataAnterior, $nuevaData, $tipoTraza = 2): bool
     {
-//        pr($serializer->deserialize($va, CategoriaDocente::class,'json')->getNombre());
         try {
-            $session = $this->request->getSession();
-            $idPersona = $session->get('id_persona_usuario_autenticado');
-            $configuracionTraza = $this->em->getRepository(ConfiguracionTraza::class)->findOneBy(['persona' => $idPersona]);
-
-            if ($configuracionTraza instanceof ConfiguracionTraza && method_exists($configuracionTraza, 'getActivo') && $configuracionTraza->getActivo()) {
-                $nuevo = new Traza();
-                $nuevo->setDataAnterior($this->serializer->serialize($dataAnterior, 'json') );
-                $nuevo->setData($this->serializer->serialize($nuevaData, 'json'));
-                $nuevo->setAccion($this->em->getRepository(Accion::class)->find($accion));
-                $nuevo->setTipoTraza($this->em->getRepository(TipoTraza::class)->find($tipoTraza));
-                $nuevo->setObjeto($this->em->getRepository(Objeto::class)->find($objeto));
-                $nuevo->setPersona($this->em->getRepository(Persona::class)->find($this->request->getSession()->get('id_persona_usuario_autenticado')));
-                $nuevo->setIp($_SERVER['REMOTE_ADDR']);
-                $nuevo->setNavegador($this->detect()['browser']);
-                $nuevo->setSistemaOperativo($this->detect()['os']);
-                $this->em->persist($nuevo);
-                $this->em->flush();
-                return true;
+            $request = $this->requestStack->getCurrentRequest();
+            if ($request === null || !$request->hasSession()) {
+                return false;
             }
-            return false;
-        } catch (\Exception $exception) {
+
+            $personaId = $request->getSession()->get('id_persona_usuario_autenticado');
+            $configuration = $this->entityManager->getRepository(ConfiguracionTraza::class)
+                ->findOneBy(['persona' => $personaId]);
+            if (!$configuration instanceof ConfiguracionTraza || !$configuration->getActivo()) {
+                return false;
+            }
+
+            $accionEntity = $this->entityManager->getRepository(Accion::class)->find($accion);
+            $tipoEntity = $this->entityManager->getRepository(TipoTraza::class)->find($tipoTraza);
+            $objetoEntity = $this->entityManager->getRepository(Objeto::class)->find($objeto);
+            $persona = $this->entityManager->getRepository(Persona::class)->find($personaId);
+            if (!$accionEntity || !$tipoEntity || !$objetoEntity || !$persona) {
+                return false;
+            }
+
+            $client = $this->detect((string) $request->headers->get('User-Agent', ''));
+            $trace = (new Traza())
+                ->setDataAnterior($this->serializer->serialize($dataAnterior, 'json'))
+                ->setData($this->serializer->serialize($nuevaData, 'json'))
+                ->setAccion($accionEntity)
+                ->setTipoTraza($tipoEntity)
+                ->setObjeto($objetoEntity)
+                ->setPersona($persona)
+                ->setIp($request->getClientIp() ?? 'unknown')
+                ->setNavegador($client['browser'])
+                ->setSistemaOperativo($client['os']);
+
+            $this->entityManager->persist($trace);
+            $this->entityManager->flush();
+
+            return true;
+        } catch (\Throwable $exception) {
+            $this->logger->warning('No se pudo registrar una traza de SGU.', [
+                'exception_class' => $exception::class,
+            ]);
+
             return false;
         }
     }
 
-    private function detect()
+    /** @return array{browser: string, os: string} */
+    private function detect(string $userAgent): array
     {
-        $browser = array("IE", "OPERA", "MOZILLA", "NETSCAPE", "FIREFOX", "SAFARI", "CHROME");
-        $os = array("WIN", "MAC", "LINUX");
-        $info['browser'] = "OTHER";
-        $info['os'] = "OTHER";
-        foreach ($browser as $parent) {
-            $s = strpos(strtoupper($_SERVER['HTTP_USER_AGENT']), $parent);
-            $f = $s + strlen($parent);
-            $version = substr($_SERVER['HTTP_USER_AGENT'], $f, 15);
-            $version = preg_replace('/[^0-9,.]/', '', $version);
-            if ($s) {
-                $info['browser'] = ucfirst(strtolower($parent)) . ' ' . $version;
+        $info = ['browser' => 'OTHER', 'os' => 'OTHER'];
+        foreach (['IE', 'OPERA', 'MOZILLA', 'NETSCAPE', 'FIREFOX', 'SAFARI', 'CHROME'] as $browser) {
+            $position = strpos(strtoupper($userAgent), $browser);
+            if ($position !== false) {
+                $version = substr($userAgent, $position + strlen($browser), 15);
+                $version = preg_replace('/[^0-9,.]/', '', $version);
+                $info['browser'] = ucfirst(strtolower($browser)) . ' ' . $version;
             }
         }
-        foreach ($os as $val) {
-            if (strpos(strtoupper($_SERVER['HTTP_USER_AGENT']), $val) !== false)
-                $info['os'] = ucfirst(strtolower($val));
+        foreach (['WIN', 'MAC', 'LINUX'] as $os) {
+            if (strpos(strtoupper($userAgent), $os) !== false) {
+                $info['os'] = ucfirst(strtolower($os));
+            }
         }
-        return $info;
 
+        return $info;
     }
 }
