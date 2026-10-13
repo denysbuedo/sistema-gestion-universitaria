@@ -258,3 +258,9 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La regresión final de esta etapa queda en 35 pruebas y 162 aserciones, sin fallos ni deprecaciones. La herramienta temporal de conversión fue retirada. La autorización dinámica de roles de Keycloak continúa como bloqueo funcional independiente para producción.
 - Se implementó la autorización dinámica de `ROLE_USER` y `ROLE_ADMIN` sin persistir los roles de Keycloak en la entidad `User`. Los roles institucionales viven en la sesión autenticada, sustituyen únicamente sus equivalentes locales y sobreviven a la recarga de usuario mediante un proveedor específico; los demás permisos funcionales locales se conservan.
 - Las pruebas funcionales comprueban concesión de `ROLE_ADMIN`, acceso administrativo, 403 con solo `ROLE_USER`, retirada del privilegio en una sesión nueva y ausencia de cambios persistentes. La regresión completa queda en 38 pruebas y 183 aserciones correctas. Falta repetir el recorrido con roles reales en Keycloak y recibir aprobación de Identidad antes de habilitar OIDC en producción.
+
+### 2026-10-13
+
+- La prueba real de concesión y retirada de `ROLE_ADMIN` queda aplazada hasta que esté disponible el equipo de Identidad. El issue permanece abierto y OIDC productivo continúa condicionado a esa validación y aprobación.
+- Se inició el bloque de UAT que sí puede ejecutar el equipo de SGU. `docs/uat.md` establece condiciones de entrada, evidencias seguras, 20 recorridos priorizados, validación de FOP/Dompdf/XLSX/archivos, controles de integridad y criterios de salida para la transición.
+- Mientras Identidad no esté disponible, la UAT aislada utilizará el login local de contingencia; esto no sustituye las pruebas reales de Keycloak pendientes.

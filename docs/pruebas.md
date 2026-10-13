@@ -1,5 +1,8 @@
 # Pruebas automatizadas
 
+La ejecución funcional previa a producción se organiza mediante el
+[plan de pruebas de aceptación](uat.md).
+
 La suite usa una base PostgreSQL exclusiva llamada `gestion_universitaria_test`. El código de prueba verifica el nombre de la base antes de ejecutar cada caso y se detiene si apunta a otra base.
 
 ## Preparación local
