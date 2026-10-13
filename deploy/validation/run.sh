@@ -7,6 +7,29 @@ composer --version
 psql --version
 fop -version
 
+fop_smoke_dir="$(mktemp -d)"
+trap 'rm -rf "${fop_smoke_dir}"' EXIT
+
+cat > "${fop_smoke_dir}/report.fo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="page" page-height="29.7cm" page-width="21cm" margin="2cm">
+      <fo:region-body/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:page-sequence master-reference="page">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block>SGU - validacion real de Apache FOP</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>
+EOF
+
+fop -fo "${fop_smoke_dir}/report.fo" -pdf "${fop_smoke_dir}/report.pdf"
+test -s "${fop_smoke_dir}/report.pdf"
+head -c 5 "${fop_smoke_dir}/report.pdf" | grep -q '^%PDF-'
+
 composer check-platform-reqs
 php bin/console lexik:jwt:generate-keypair --env=test --skip-if-exists
 php bin/console doctrine:database:create --env=test --if-not-exists

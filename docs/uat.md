@@ -101,9 +101,9 @@ copia autorizada y con evidencia funcional.
 
 Ejecutar al menos un caso realista de cada tecnología:
 
-- [ ] PDF mediante Apache FOP.
-- [ ] PDF mediante Dompdf.
-- [ ] Exportación XLSX con PhpSpreadsheet.
+- [x] PDF mediante Apache FOP (prevalidado en la validación Ubuntu).
+- [x] PDF mediante Dompdf (prevalidado por PHPUnit).
+- [x] Exportación XLSX con PhpSpreadsheet (prevalidado por PHPUnit).
 - [ ] Descarga de un documento previamente almacenado.
 - [ ] Carga de un archivo permitido dentro del límite configurado.
 - [ ] Rechazo de extensión o tamaño no permitido.

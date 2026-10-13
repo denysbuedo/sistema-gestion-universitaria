@@ -263,6 +263,7 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 - La prueba real de concesión y retirada de `ROLE_ADMIN` queda aplazada hasta que esté disponible el equipo de Identidad. El issue permanece abierto y OIDC productivo continúa condicionado a esa validación y aprobación.
 - Se inició el bloque de UAT que sí puede ejecutar el equipo de SGU. `docs/uat.md` establece condiciones de entrada, evidencias seguras, 20 recorridos priorizados, validación de FOP/Dompdf/XLSX/archivos, controles de integridad y criterios de salida para la transición.
+- La validación reproducible de Ubuntu pasó de comprobar únicamente la presencia de Apache FOP a generar un PDF real y validar su firma. Dompdf y XLSX continúan cubiertos con generación real en PHPUnit; las pruebas de archivos permanecen abiertas hasta endurecer las cargas heredadas.
 - Mientras Identidad no esté disponible, la UAT aislada utilizará el login local de contingencia; esto no sustituye las pruebas reales de Keycloak pendientes.
 - La prevalidación automática P0 detectó que el login local no rechazaba cuentas con `User.activo=false`; se incorporó un `ActiveUserChecker` común a web y API y una prueba funcional de rechazo.
 - El humo de las 16 portadas funcionales reveló errores 500 en Cooperación y Visitas por plantillas laterales ausentes. Se añadieron ambas plantillas y todas las portadas responden correctamente.
