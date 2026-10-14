@@ -122,6 +122,17 @@ con 67 pruebas y 283 aserciones. El usuario repitió el recorrido sobre
 `/pregrado/solicitud_programa_academico_aprobado/` y confirmó que la página
 cargó correctamente.
 
+### Cierre de recorridos P1 — 2026-10-14
+
+Tras aplicar el hotfix, el usuario autorizado completó los recorridos de planes
+de estudio, documentos y programas aprobados de Pregrado; formación académica,
+grados científicos y comisiones de Posgrado; comisiones, plan anual e informes
+de autoevaluación; consolidados AE2/AE3; y el catálogo de cursos académicos.
+Las once rutas cargaron correctamente con los datos y permisos de su sesión.
+
+Con esta evidencia quedan correctos UAT-105 y UAT-201 a UAT-204. No se
+realizaron operaciones de escritura durante estos recorridos.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
@@ -214,7 +225,10 @@ coinciden con el sistema de referencia.
 | UAT-102 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Institución correctos |
 | UAT-103 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Personal correctos |
 | UAT-104 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Administración correctos |
-| UAT-105 | Pendiente | Usuario autorizado SGU | 2026-10-14 | Idiomas correcto; falta otro catálogo usado por formularios |
-| UAT-201–204 | Pendiente |  |  |  |
+| UAT-105 | Correcto | Usuario autorizado SGU | 2026-10-14 | Idiomas y curso académico correctos |
+| UAT-201 | Correcto | Usuario autorizado SGU | 2026-10-14 | Solicitudes, programas aprobados, planes y documentos de Pregrado correctos |
+| UAT-202 | Correcto | Usuario autorizado SGU | 2026-10-14 | Solicitudes, programas, grados científicos y comisiones de Posgrado correctos |
+| UAT-203 | Correcto | Usuario autorizado SGU | 2026-10-14 | Solicitudes, comisiones, plan anual e informes de Evaluación correctos |
+| UAT-204 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listados, detalles y consolidados AE2/AE3 correctos |
 | UAT-301–305 | Pendiente |  |  |  |
 
