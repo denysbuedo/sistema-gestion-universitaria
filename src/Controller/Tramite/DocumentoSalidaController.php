@@ -32,6 +32,7 @@ use App\Repository\Tramite\FichaSalidaRepository;
 use App\Repository\Tramite\PasaporteRepository;
 use App\Repository\Tramite\TramiteRepository;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -482,7 +483,7 @@ class DocumentoSalidaController extends AbstractController
     /**
      */
     #[Route('/{id}/adjuntar_informe_ejecutivo', name: 'app_documento_salida_adjuntar_informe', methods: ['GET', 'POST'])]
-    public function adjuntarInformeEjecutivo(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository)
+    public function adjuntarInformeEjecutivo(Request $request, DocumentoSalida $documentoSalida, DocumentoSalidaRepository $documentoSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, UploadedDocumentStorage $storage)
     {
         try {
             if ($request->isMethod('POST')) {
@@ -494,12 +495,8 @@ class DocumentoSalidaController extends AbstractController
                     return $this->redirectToRoute('app_documento_salida_index');
                 }
 
-                $ci = $documentoSalida->getPersona()->getCarnetIdentidad();
-                $newFilename = sprintf('informe_ejecutivo_%d_%s.%s', $ci, uniqid(), $file->guessExtension() ?? 'pdf');
-
                 $uploadDir = 'uploads/tramites/documento_salida/informe_ejecutivo';
-                $file->move($uploadDir, $newFilename);
-                $fullPath = $uploadDir . '/' . $newFilename;
+                $fullPath = $storage->store($file, $uploadDir)['path'];
 
                 $this->logDocument($documentoSalida, "Informe Ejecutivo", $fullPath);
 

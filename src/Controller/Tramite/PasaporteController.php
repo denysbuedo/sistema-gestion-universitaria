@@ -24,6 +24,7 @@ use App\Repository\Tramite\PasaporteRepository;
 use App\Repository\Tramite\TipoPasaporteRepository;
 use App\Repository\Tramite\TramiteRepository;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -94,7 +95,7 @@ class PasaporteController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/registrar-v2', name: 'app_pasaporte_registrar_v2', methods: ['GET', 'POST'])]
-    public function registrarV2(Request $request, Persona $persona, PasaporteRepository $pasaporteRepository, FichaSalidaRepository $fichaSalidaRepository)
+    public function registrarV2(Request $request, Persona $persona, PasaporteRepository $pasaporteRepository, FichaSalidaRepository $fichaSalidaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $pasaporte = new Pasaporte();
@@ -103,17 +104,11 @@ class PasaporteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if (!empty($form['cara1']->getData())) {
                     $file = $form['cara1']->getData();
-                    $ext = $file->guessExtension();
-                    $file_name = md5(uniqid()) . "." . $ext;
-                    $pasaporte->setCara1($file_name);
-                    $file->move("uploads/tramites/pasaporte", $file_name);
+                    $pasaporte->setCara1($storage->storeName($file, 'uploads/tramites/pasaporte'));
                 }
                 if (!empty($form['cara2']->getData())) {
                     $file = $form['cara2']->getData();
-                    $ext = $file->guessExtension();
-                    $file_name = md5(uniqid()) . "." . $ext;
-                    $pasaporte->setCara2($file_name);
-                    $file->move("uploads/tramites/pasaporte", $file_name);
+                    $pasaporte->setCara2($storage->storeName($file, 'uploads/tramites/pasaporte'));
                 }
 
                 $pasaporte->setPersona($persona);
@@ -160,7 +155,7 @@ class PasaporteController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_pasaporte_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, Pasaporte $pasaporte, PasaporteRepository $pasaporteRepository, DocumentoSalidaRepository $documentoSalidaRepository)
+    public function modificar(Request $request, Pasaporte $pasaporte, PasaporteRepository $pasaporteRepository, DocumentoSalidaRepository $documentoSalidaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(PasaporteType::class, $pasaporte, ['action' => 'modificar']);
@@ -168,29 +163,13 @@ class PasaporteController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if (!empty($form['cara1']->getData())) {
-                    if ($pasaporte->getCara1() != null) {
-                        if (file_exists('uploads/tramites/pasaporte/' . $pasaporte->getCara1())) {
-                            unlink('uploads/tramites/pasaporte/' . $pasaporte->getCara1());
-                        }
-                    }
                     $file = $form['cara1']->getData();
-                    $ext = $file->guessExtension();
-                    $file_name = md5(uniqid()) . "." . $ext;
-                    $pasaporte->setCara1($file_name);
-                    $file->move("uploads/tramites/pasaporte", $file_name);
+                    $pasaporte->setCara1($storage->replace($file, 'uploads/tramites/pasaporte', $pasaporte->getCara1()));
                 }
 
                 if (!empty($form['cara2']->getData())) {
-                    if ($pasaporte->getCara2() != null) {
-                        if (file_exists('uploads/tramites/pasaporte/' . $pasaporte->getCara2())) {
-                            unlink('uploads/tramites/pasaporte/' . $pasaporte->getCara2());
-                        }
-                    }
                     $file = $form['cara2']->getData();
-                    $ext = $file->guessExtension();
-                    $file_name = md5(uniqid()) . "." . $ext;
-                    $pasaporte->setCara2($file_name);
-                    $file->move("uploads/tramites/pasaporte", $file_name);
+                    $pasaporte->setCara2($storage->replace($file, 'uploads/tramites/pasaporte', $pasaporte->getCara2()));
                 }
                 $temp = explode('/', $request->request->all()['pasaporte']['fechaEmisionPasaporte']);
                 $pasaporte->setFechaEmisionPasaporte(new \DateTime($temp[2] . '/' . $temp[1] . '/' . $temp[0]));

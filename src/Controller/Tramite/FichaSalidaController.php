@@ -28,6 +28,7 @@ use App\Repository\Tramite\PasaporteRepository;
 use App\Repository\Tramite\TramiteRepository;
 use App\Services\PdfService;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -164,7 +165,7 @@ class FichaSalidaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/registrar-v2', name: 'app_ficha_salida_registrar_v2', methods: ['GET', 'POST'])]
-    public function registrarV2(Request $request, PdfService $pdfService, DocumentoSalidaRepository $documentoSalidaRepository, PasaporteRepository $pasaporteRepository, Persona $persona, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository)
+    public function registrarV2(Request $request, PdfService $pdfService, DocumentoSalidaRepository $documentoSalidaRepository, PasaporteRepository $pasaporteRepository, Persona $persona, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository, UploadedDocumentStorage $storage)
     {
 //        try {
         $entidad = new FichaSalida();
@@ -190,11 +191,9 @@ class FichaSalidaController extends AbstractController
             $entidad->setEstadoFichaSalida($estadoFicha);
 
             $invitationFile = null;
-            if (!empty($_FILES['ficha_salida']['name']['cartaInvitacion'])) {
-                $file = $form['cartaInvitacion']->getData();
-                $invitationFile = $_FILES['ficha_salida']['name']['cartaInvitacion'];
+            if (($file = $form['cartaInvitacion']->getData()) instanceof UploadedFile) {
+                $invitationFile = $storage->storeName($file, 'uploads/tramites/ficha_salida/carta_invitacion');
                 $entidad->setCartaInvitacion($invitationFile);
-                $file->move("uploads/tramites/ficha_salida/carta_invitacion", $invitationFile);
             }
 
             // Después de guardar $entidad en BD:
@@ -360,7 +359,7 @@ class FichaSalidaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_ficha_salida_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository)
+    public function modificar(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, ConceptoGastoRepository $conceptoGastoRepository, FichaSalidaConceptoGastoRepository $fichaSalidaConceptoGastoRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(FichaSalidaType::class, $fichaSalida, ['action' => 'modificar']);
@@ -382,11 +381,9 @@ class FichaSalidaController extends AbstractController
                 $fichaSalida->setFechaCaducidadPasaporte(new \DateTime($temp[2] . '/' . $temp[1] . '/' . $temp[0]));
 
                 $invitationFile = null;
-                if (!empty($_FILES['ficha_salida']['name']['cartaInvitacion'])) {
-                    $file = $form['cartaInvitacion']->getData();
-                    $invitationFile = pathinfo($_FILES['ficha_salida']['name']['cartaInvitacion'], PATHINFO_FILENAME) . '-' . uniqid() . '.' . $file->guessExtension();
+                if (($file = $form['cartaInvitacion']->getData()) instanceof UploadedFile) {
+                    $invitationFile = $storage->replace($file, 'uploads/tramites/ficha_salida/carta_invitacion', $fichaSalida->getCartaInvitacion());
                     $fichaSalida->setCartaInvitacion($invitationFile);
-                    $file->move("uploads/tramites/ficha_salida/carta_invitacion", $invitationFile);
                 }
 
                 foreach ($conceptoGastosAsociados as $value) {
@@ -484,7 +481,8 @@ class FichaSalidaController extends AbstractController
     public function firmar(
         Request               $request,
         FichaSalida           $fichaSalida,
-        FichaSalidaRepository $fichaSalidaRepository
+        FichaSalidaRepository $fichaSalidaRepository,
+        UploadedDocumentStorage $storage
     ): Response
     {
         try {
@@ -493,19 +491,9 @@ class FichaSalidaController extends AbstractController
 
             if ($file instanceof UploadedFile) {
                 // Nombre único para evitar colisiones y mantener historial
-                $newFilename = sprintf(
-                    'ficha_salida_%d_%s.%s',
-                    $fichaSalida->getPersona()->getCarnetIdentidad(),
-                    uniqid(),
-                    $file->guessExtension() ?? $file->getClientOriginalExtension()
-                );
-
-                // Mover el archivo a la carpeta definida
-                $fullPath = 'uploads/tramites/ficha_salida/ficha_salida/' . $newFilename;
-                $file->move(
-                    $this->getParameter('kernel.project_dir') . '/public/uploads/tramites/ficha_salida/ficha_salida',
-                    $newFilename
-                );
+                $stored = $storage->store($file, 'uploads/tramites/ficha_salida/ficha_salida');
+                $newFilename = basename($stored['path']);
+                $fullPath = $stored['path'];
 
                 // Guardar nombre en la entidad
                 $fichaSalida->setFichaSalida($newFilename);
@@ -537,7 +525,7 @@ class FichaSalidaController extends AbstractController
     /**
      */
     #[Route('/{id}/firmarV2', name: 'app_ficha_salida_firmarV2', methods: ['GET','POST'])]
-    public function firmarV2(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository): Response
+    public function firmarV2(Request $request, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, UploadedDocumentStorage $storage): Response
     {
         try {
             if (!$fichaSalidaRepository->find($fichaSalida)) {
@@ -547,17 +535,8 @@ class FichaSalidaController extends AbstractController
 
             // Revisar si hay archivo adjunto
             $uploadedFile = $request->files->get('file');
-            if ($uploadedFile) {
-                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
-
-                // Mover archivo a la carpeta unificada
-                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/tramites/ficha_salida/ficha_salida';
-                $uploadedFile->move($uploadDir, $newFilename);
-
-                // Guardar ruta del archivo en la entidad y HISTORIAL
-                $fullPath = 'uploads/tramites/ficha_salida/ficha_salida/' . $newFilename;
+            if ($uploadedFile instanceof UploadedFile) {
+                $fullPath = $storage->store($uploadedFile, 'uploads/tramites/ficha_salida/ficha_salida')['path'];
                 $fichaSalida->setDocumentoFirmado($fullPath);
                 $this->logDocument($fichaSalida, "Ficha Firmada (V2)", $fullPath);
             }
@@ -595,19 +574,12 @@ class FichaSalidaController extends AbstractController
     /**
      */
     #[Route('/{id}/firmar-dri', name: 'app_ficha_salida_firmar_dri', methods: ['POST'])]
-    public function firmarDRI(Request $request, PasaporteRepository $pasaporteRepository, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, TramiteRepository $tramiteRepository, DocumentoSalidaRepository $documentoSalidaRepository, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository): JsonResponse
+    public function firmarDRI(Request $request, PasaporteRepository $pasaporteRepository, DocumentoSalidaTramiteRepository $documentoSalidaTramiteRepository, TramiteRepository $tramiteRepository, DocumentoSalidaRepository $documentoSalidaRepository, FichaSalida $fichaSalida, FichaSalidaRepository $fichaSalidaRepository, EstadoFichaSalidaRepository $estadoFichaSalidaRepository, FichaSalidaEstadoRepository $fichaSalidaEstadoRepository, UploadedDocumentStorage $storage): JsonResponse
     {
         try {
             $uploadedFile = $request->files->get('file');
-            if ($uploadedFile) {
-                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
-
-                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/tramites/ficha_salida/ficha_salida';
-                $uploadedFile->move($uploadDir, $newFilename);
-
-                $fullPath = 'uploads/tramites/ficha_salida/ficha_salida/' . $newFilename;
+            if ($uploadedFile instanceof UploadedFile) {
+                $fullPath = $storage->store($uploadedFile, 'uploads/tramites/ficha_salida/ficha_salida')['path'];
                 $this->logDocument($fichaSalida, "Ficha Firmada DRI", $fullPath);
             }
 

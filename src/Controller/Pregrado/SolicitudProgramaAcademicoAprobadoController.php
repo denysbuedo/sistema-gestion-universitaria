@@ -39,6 +39,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
 use App\Services\HandlerFop;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -424,7 +425,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/reabrir', name: 'app_solicitud_programa_academico_aprobado_reabrir', methods: ['GET', 'POST'])]
-    public function reabrir(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoReabiertoRepository $programaAcademicoReabiertoRepository, ProgramaAcademicoReabiertoInstitucionRepository $programaAcademicoReabiertoInstitucionRepository, InstitucionRepository $institucionRepository)
+    public function reabrir(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoReabiertoRepository $programaAcademicoReabiertoRepository, ProgramaAcademicoReabiertoInstitucionRepository $programaAcademicoReabiertoInstitucionRepository, InstitucionRepository $institucionRepository, UploadedDocumentStorage $storage)
     {
         try {
             $reabierto = $programaAcademicoReabiertoRepository->findBy(['solicitudProgramaAcademico' => $solicitudPrograma->getId()]);
@@ -445,29 +446,11 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                 $utils->guardarHistoricoEstadoProgramaAcademico($solicitudPrograma->getId(), 7);
                 $solicitudProgramaRepository->edit($solicitudPrograma, true);
 
-                if (!empty($_FILES['programa_academico_reabierto']['name']['fundamentacionReapertura'])) {
-                    if ($programaAcademicoReabierto->getFundamentacionReapertura() != null) {
-                        if (file_exists('uploads/pregrado/programas_aprobados/fundamentacionReapertura/' . $programaAcademicoReabierto->getFundamentacionReapertura())) {
-                            unlink('uploads/pregrado/programas_aprobados/fundamentacionfundamentacionReapertura/' . $programaAcademicoReabierto->getFundamentacionReapertura());
-                        }
-                    }
-
-                    $file = $form['fundamentacionReapertura']->getData();
-                    $file_name = $_FILES['programa_academico_reabierto']['name']['fundamentacionReapertura'];
-                    $programaAcademicoReabierto->setFundamentacionReapertura($file_name);
-                    $file->move("uploads/pregrado/programas_aprobados/fundamentacionReapertura/", $file_name);
+                if (($file = $form['fundamentacionReapertura']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $programaAcademicoReabierto->setFundamentacionReapertura($storage->replace($file, 'uploads/pregrado/programas_aprobados/fundamentacionReapertura', $programaAcademicoReabierto->getFundamentacionReapertura()));
                 }
-                if (!empty($_FILES['programa_academico_reabierto']['name']['dictamenDgp'])) {
-                    if ($programaAcademicoReabierto->getDictamenDgp() != null) {
-                        if (file_exists('uploads/pregrado/programas_aprobados/dictamenDgp/' . $programaAcademicoReabierto->getDictamenDgp())) {
-                            unlink('uploads/pregrado/programas_aprobados/dictamenDgp/' . $programaAcademicoReabierto->getDictamenDgp());
-                        }
-                    }
-
-                    $file = $form['dictamenDgp']->getData();
-                    $file_name = $_FILES['programa_academico_reabierto']['name']['dictamenDgp'];
-                    $programaAcademicoReabierto->setDictamenDgp($file_name);
-                    $file->move("uploads/pregrado/programas_aprobados/dictamenDgp/", $file_name);
+                if (($file = $form['dictamenDgp']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $programaAcademicoReabierto->setDictamenDgp($storage->replace($file, 'uploads/pregrado/programas_aprobados/dictamenDgp', $programaAcademicoReabierto->getDictamenDgp()));
                 }
 
                 if (isset($reabierto[0])) {
@@ -523,7 +506,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/desactivar', name: 'app_solicitud_programa_academico_aprobado_desactivar', methods: ['GET', 'POST'])]
-    public function desactivar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository)
+    public function desactivar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository, UploadedDocumentStorage $storage)
     {
         try {
             $desactivar = $programaAcademicoDesactivadoRepository->findBy(['solicitudProgramaAcademico' => $solicitudPrograma->getId()]);
@@ -545,41 +528,14 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                 $solicitudPrograma->setEstadoProgramaAcademico($estadoProgramaRepository->find(6));
                 $solicitudProgramaRepository->edit($solicitudPrograma, true);
 
-                if (!empty($_FILES['programa_academico_desactivado']['name']['resolucionDesactivacion'])) {
-                    if ($programaAcademicoDesactivado->getResolucionDesactivacion() != null) {
-                        if (file_exists('uploads/pregrado/programas_aprobados/resolucion_desactivacion/' . $programaAcademicoDesactivado->getResolucionDesactivacion())) {
-                            unlink('uploads/pregrado/programas_aprobados/resolucion_desactivacion/' . $programaAcademicoDesactivado->getResolucionDesactivacion());
-                        }
-                    }
-
-                    $file = $form['resolucionDesactivacion']->getData();
-                    $file_name = $_FILES['programa_academico_desactivado']['name']['resolucionDesactivacion'];
-                    $programaAcademicoDesactivado->setResolucionDesactivacion($file_name);
-                    $file->move("uploads/pregrado/programas_aprobados/resolucion_desactivacion/", $file_name);
+                if (($file = $form['resolucionDesactivacion']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $programaAcademicoDesactivado->setResolucionDesactivacion($storage->replace($file, 'uploads/pregrado/programas_aprobados/resolucion_desactivacion', $programaAcademicoDesactivado->getResolucionDesactivacion()));
                 }
-                if (!empty($_FILES['programa_academico_desactivado']['name']['dictamenAprobacion'])) {
-                    if ($programaAcademicoDesactivado->getDictamenAprobacion() != null) {
-                        if (file_exists('uploads/pregrado/programas_aprobados/dictamenAprobacion/' . $programaAcademicoDesactivado->getDictamenAprobacion())) {
-                            unlink('uploads/pregrado/programas_aprobados/dictamenAprobacion/' . $programaAcademicoDesactivado->getDictamenAprobacion());
-                        }
-                    }
-
-                    $file = $form['dictamenAprobacion']->getData();
-                    $dictamenAprobacion = $_FILES['programa_academico_desactivado']['name']['dictamenAprobacion'];
-                    $programaAcademicoDesactivado->setDictamenAprobacion($dictamenAprobacion);
-                    $file->move("uploads/pregrado/programas_aprobados/dictamenAprobacion/", $dictamenAprobacion);
+                if (($file = $form['dictamenAprobacion']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $programaAcademicoDesactivado->setDictamenAprobacion($storage->replace($file, 'uploads/pregrado/programas_aprobados/dictamenAprobacion', $programaAcademicoDesactivado->getDictamenAprobacion()));
                 }
-                if (!empty($_FILES['programa_academico_desactivado']['name']['solicitudCentroRector'])) {
-                    if ($programaAcademicoDesactivado->getSolicitudCentroRector() != null) {
-                        if (file_exists('uploads/pregrado/programas_aprobados/solicitudCentroRector/' . $programaAcademicoDesactivado->getSolicitudCentroRector())) {
-                            unlink('uploads/pregrado/programas_aprobados/solicitudCentroRector/' . $programaAcademicoDesactivado->getSolicitudCentroRector());
-                        }
-                    }
-
-                    $file = $form['solicitudCentroRector']->getData();
-                    $file_name = $_FILES['programa_academico_desactivado']['name']['solicitudCentroRector'];
-                    $programaAcademicoDesactivado->setSolicitudCentroRector($file_name);
-                    $file->move("uploads/pregrado/programas_aprobados/solicitudCentroRector/", $file_name);
+                if (($file = $form['solicitudCentroRector']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $programaAcademicoDesactivado->setSolicitudCentroRector($storage->replace($file, 'uploads/pregrado/programas_aprobados/solicitudCentroRector', $programaAcademicoDesactivado->getSolicitudCentroRector()));
                 }
 
                 if (isset($desactivar[0])) {
