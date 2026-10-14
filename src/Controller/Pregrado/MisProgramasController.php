@@ -45,7 +45,6 @@ use App\Services\DoctrineHelper;
 use App\Services\HandlerFop;
 use App\Services\Utils;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,8 +55,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_PREGRADO_MIS_PROGRAMAS')"))]
 #[Route('/pregrado/mis_programas')]
-#[ORM\Table(name: 'solicitud_programa_academico_aprobado_controller')]
-#[ORM\Entity]
 class MisProgramasController extends AbstractController
 {
 

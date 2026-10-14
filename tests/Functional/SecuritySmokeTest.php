@@ -244,6 +244,19 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseIsSuccessful();
     }
 
+    /**
+     * @dataProvider criticalPregradoReadPageProvider
+     */
+    public function testAdministratorCanOpenCriticalPregradoReadPages(string $path): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', $path);
+
+        self::assertResponseIsSuccessful();
+    }
+
     public function testLoginAndLogoutCreateSessionTracesWithoutSensitiveData(): void
     {
         $client = static::createClient();
@@ -301,6 +314,13 @@ class SecuritySmokeTest extends WebTestCase
         yield 'tramite' => ['/tramite/portada'];
         yield 'traza' => ['/traza/portada'];
         yield 'visita' => ['/visita/portada'];
+    }
+
+    public function criticalPregradoReadPageProvider(): iterable
+    {
+        yield 'programas aprobados' => ['/pregrado/solicitud_programa_academico_aprobado/'];
+        yield 'mis programas asignados' => ['/pregrado/mis_programas/asignados'];
+        yield 'mis programas asignados en CUM' => ['/pregrado/mis_programas/asignados_en_cum'];
     }
 
     private function getLoginCsrfToken(KernelBrowser $client): string
