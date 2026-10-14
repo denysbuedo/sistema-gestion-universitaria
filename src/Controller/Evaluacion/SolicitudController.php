@@ -27,6 +27,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Repository\Security\UserRepository;
 use App\Repository\Tramite\InstitucionExtranjeraRepository;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,7 +59,7 @@ class SolicitudController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_solicitud_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, InstitucionRepository $institucionRepository, SolicitudRepository $solicitudRepository, PersonaRepository $personaRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
+    public function registrar(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, InstitucionRepository $institucionRepository, SolicitudRepository $solicitudRepository, PersonaRepository $personaRepository, EstadoSolicitudRepository $estadoSolicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $solicitud = new Solicitud();
@@ -108,11 +109,8 @@ class SolicitudController extends AbstractController
                 if ('programa_posgrado' == $request->request->all()['solicitud']['tipoSolicitud']) {
                     $solicitud->setProgramaPosgrado($solicitudProgramaRepository->find($request->request->all()['solicitud']['programaPosgrado']));
                 }
-                if (!empty($_FILES['solicitud']['name']['cartaSolicitud'])) {
-                    $file = $form['cartaSolicitud']->getData();
-                    $file_name = $_FILES['solicitud']['name']['cartaSolicitud'];
-                    $solicitud->setCartaSolicitud($file_name);
-                    $file->move("uploads/evaluacion/solicitud/cartaSolicitud", $file_name);
+                if (($file = $form['cartaSolicitud']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setCartaSolicitud($storage->storeName($file, 'uploads/evaluacion/solicitud/cartaSolicitud'));
                 }
                 $solicitud->setEstadoSolicitud($estadoSolicitudRepository->find($this->getParameter('estado_evaluacion_solicitada')));
                 $solicitudRepository->add($solicitud, true);
@@ -139,7 +137,7 @@ class SolicitudController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_solicitud_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository)
+    public function modificar(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudSimplificadaType::class, $solicitud, ['action' => 'modificar']);
@@ -150,16 +148,8 @@ class SolicitudController extends AbstractController
                 $temp = explode('/', $request->request->all()['solicitud_simplificada']['fechaPropuesta']);
                 $solicitud->setFechaPropuesta(new \DateTime($temp[2] . '/' . $temp[1] . '/' . $temp[0]));
 
-                if (!empty($form['cartaSolicitud']->getData())) {
-                    if ($solicitud->getCartaSolicitud() != null) {
-                        if (file_exists('uploads/evaluacion/solicitud/cartaSolicitud/' . $solicitud->getCartaSolicitud())) {
-                            unlink('uploads/evaluacion/solicitud/cartaSolicitud/' . $solicitud->getCartaSolicitud());
-                        }
-                    }
-                    $file = $form['cartaSolicitud']->getData();
-                    $file_name = $_FILES['solicitud_simplificada']['name']['cartaSolicitud'];
-                    $solicitud->setCartaSolicitud($file_name);
-                    $file->move("uploads/evaluacion/solicitud/cartaSolicitud", $file_name);
+                if (($file = $form['cartaSolicitud']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setCartaSolicitud($storage->replace($file, 'uploads/evaluacion/solicitud/cartaSolicitud', $solicitud->getCartaSolicitud()));
                 }
 
                 $solicitudRepository->edit($solicitud);

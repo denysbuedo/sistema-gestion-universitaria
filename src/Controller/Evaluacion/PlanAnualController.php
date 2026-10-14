@@ -25,6 +25,7 @@ use App\Repository\Evaluacion\EstadoAplazamientoRepository;
 use App\Repository\Evaluacion\EstadoSolicitudRepository;
 use App\Repository\Evaluacion\SolicitudDictamenComisionRepository;
 use App\Repository\Evaluacion\SolicitudRepository;
+use App\Services\UploadedDocumentStorage;
 use App\Repository\Institucion\InstitucionRepository;
 use App\Repository\Personal\PersonaRepository;
 use App\Repository\Postgrado\SolicitudProgramaRepository;
@@ -91,25 +92,17 @@ class PlanAnualController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/informe_autoevaluacion', name: 'app_plan_anual_evaluacion_informe_autoevaluacion', methods: ['GET', 'POST'])]
-    public function informeAutoevaluacion(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
+    public function informeAutoevaluacion(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudInformeAutoevaluacionType::class, $solicitud, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($form['informeAutoevaluacion']->getData())) {
-                    if ($solicitud->getInformeAutoevaluacion() != null) {
-                        if (file_exists('uploads/evaluacion/solicitud/informe/autoevaluacion/' . $solicitud->getInformeAutoevaluacion())) {
-                            unlink('uploads/evaluacion/solicitud/informe/autoevaluacion/' . $solicitud->getInformeAutoevaluacion());
-                        }
-                    }
-                    $file = $form['informeAutoevaluacion']->getData();
-                    $file_name = $_FILES['solicitud_informe_autoevaluacion']['name']['informeAutoevaluacion'];
-                    $solicitud->setInformeAutoevaluacion($file_name);
+                if (($file = $form['informeAutoevaluacion']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setInformeAutoevaluacion($storage->replace($file, 'uploads/evaluacion/solicitud/informe/autoevaluacion', $solicitud->getInformeAutoevaluacion()));
                     $solicitud->setEstadoInformeAutoevaluacion(null);
                     $solicitud->setEstadoSolicitud($estadoSolicitudRepository->find($this->getParameter('estado_evaluacion_pendiente_informe')));//Pendiente de analisis del informe
-                    $file->move("uploads/evaluacion/solicitud/informe/autoevaluacion/", $file_name);
                 }
 
                 $solicitudRepository->edit($solicitud);
@@ -134,25 +127,17 @@ class PlanAnualController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/plan_trabajo', name: 'app_plan_anual_evaluacion_plan_trabajo', methods: ['GET', 'POST'])]
-    public function planTrabajo(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
+    public function planTrabajo(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudPlanTrabajoType::class, $solicitud, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($form['planTrabajo']->getData())) {
-                    if ($solicitud->getPlanTrabajo() != null) {
-                        if (file_exists('uploads/evaluacion/solicitud/planTrabajo/' . $solicitud->getPlanTrabajo())) {
-                            unlink('uploads/evaluacion/solicitud/planTrabajo/' . $solicitud->getPlanTrabajo());
-                        }
-                    }
-                    $file = $form['planTrabajo']->getData();
-                    $file_name = $_FILES['solicitud_plan_trabajo']['name']['planTrabajo'];
-                    $solicitud->setPlanTrabajo($file_name);
+                if (($file = $form['planTrabajo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setPlanTrabajo($storage->replace($file, 'uploads/evaluacion/solicitud/planTrabajo', $solicitud->getPlanTrabajo()));
                     $solicitud->setEstadoPlanTrabajo(null);
                     $solicitud->setEstadoSolicitud($estadoSolicitudRepository->find($this->getParameter('estado_evaluacion_pendiente_plan_trabajo')));//Pendiente de analisis del informe
-                    $file->move("uploads/evaluacion/solicitud/planTrabajo/", $file_name);
                 }
 
                 $solicitudRepository->edit($solicitud);
@@ -212,7 +197,7 @@ class PlanAnualController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/dictamen_comision', name: 'app_plan_anual_evaluacion_dictamen_comision', methods: ['GET', 'POST'])]
-    public function dictamenComision(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository)
+    public function dictamenComision(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudComisionType::class, null, ['action' => 'modificar']);
@@ -220,11 +205,8 @@ class PlanAnualController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $nuevo = new SolicitudDictamenComision();
-                if (!empty($form['dictamenComision']->getData())) {
-                    $file = $form['dictamenComision']->getData();
-                    $file_name = $_FILES['solicitud_comision']['name']['dictamenComision'];
-                    $nuevo->setDictamenComision($file_name);
-                    $file->move("uploads/evaluacion/plan_anual/comision/dictamen/", $file_name);
+                if (($file = $form['dictamenComision']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $nuevo->setDictamenComision($storage->storeName($file, 'uploads/evaluacion/plan_anual/comision/dictamen'));
                 }
                 $nuevo->setSolicitud($solicitud);
                 $solicitudDictamenComisionRepository->add($nuevo, true);
@@ -250,9 +232,10 @@ class PlanAnualController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar_dictamen', name: 'app_plan_anual_evaluacion_eliminar_dictamen', methods: ['GET'])]
-    public function eliminarDictamen(Request $request, SolicitudDictamenComision $solicitudDictamenComision, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository)
+    public function eliminarDictamen(Request $request, SolicitudDictamenComision $solicitudDictamenComision, SolicitudDictamenComisionRepository $solicitudDictamenComisionRepository, UploadedDocumentStorage $storage)
     {
         try {
+            $storage->delete('uploads/evaluacion/plan_anual/comision/dictamen', $solicitudDictamenComision->getDictamenComision());
             $solicitudDictamenComisionRepository->remove($solicitudDictamenComision, true);
             $this->addFlash('success', 'El elemento ha sido eliminado satisfactoriamente.');
             return $this->redirectToRoute('app_plan_anual_evaluacion_dictamen_comision', ['id' => $solicitudDictamenComision->getSolicitud()->getId()], Response::HTTP_SEE_OTHER);
@@ -270,23 +253,15 @@ class PlanAnualController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/dictamen_cte', name: 'app_plan_anual_evaluacion_dictamen_cte', methods: ['GET', 'POST'])]
-    public function dictamenCTE(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
+    public function dictamenCTE(Request $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudCTEType::class, $solicitud, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($form['dictamenCTE']->getData())) {
-                    if ($solicitud->getDictamenCTE() != null) {
-                        if (file_exists('uploads/evaluacion/plan_anual/cte/dictamen/' . $solicitud->getDictamenCTE())) {
-                            unlink('uploads/evaluacion/plan_anual/cte/dictamen/' . $solicitud->getDictamenCTE());
-                        }
-                    }
-                    $file = $form['dictamenCTE']->getData();
-                    $file_name = $_FILES['solicitud_cte']['name']['dictamenCTE'];
-                    $solicitud->setDictamenCTE($file_name);
-                    $file->move("uploads/evaluacion/plan_anual/cte/dictamen/", $file_name);
+                if (($file = $form['dictamenCTE']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setDictamenCTE($storage->replace($file, 'uploads/evaluacion/plan_anual/cte/dictamen', $solicitud->getDictamenCTE()));
                 }
                 $solicitud->setEstadoSolicitud($estadoSolicitudRepository->find($this->getParameter('estado_evaluacion_dictamen_cte')));
                 $solicitudRepository->edit($solicitud, true);
@@ -315,23 +290,15 @@ class PlanAnualController extends AbstractController
     public function dictamenJAN(Request                              $request, Solicitud $solicitud, SolicitudRepository $solicitudRepository,
                                 EstadoSolicitudRepository            $estadoSolicitudRepository, InstitucionRepository $institucionRepository,
                                 SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository,
-                                SolicitudProgramaRepository          $solicitudProgramaRepository)
+                                SolicitudProgramaRepository          $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(SolicitudJANType::class, $solicitud, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($form['dictamenJAN']->getData())) {
-                    if ($solicitud->getDictamenJAN() != null) {
-                        if (file_exists('uploads/evaluacion/plan_anual/jan/dictamen/' . $solicitud->getDictamenJAN())) {
-                            unlink('uploads/evaluacion/plan_anual/jan/dictamen/' . $solicitud->getDictamenJAN());
-                        }
-                    }
-                    $file = $form['dictamenJAN']->getData();
-                    $file_name = $_FILES['solicitud_jan']['name']['dictamenJAN'];
-                    $solicitud->setDictamenJAN($file_name);
-                    $file->move("uploads/evaluacion/plan_anual/jan/dictamen/", $file_name);
+                if (($file = $form['dictamenJAN']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setDictamenJAN($storage->replace($file, 'uploads/evaluacion/plan_anual/jan/dictamen', $solicitud->getDictamenJAN()));
                 }
                 $temp = explode('/', $request->request->all()['solicitud_jan']['fechaEmision']);
                 $solicitud->setFechaEmision(new \DateTime($temp[2] . '/' . $temp[1] . '/' . $temp[0]));

@@ -17,6 +17,7 @@ use App\Repository\Evaluacion\ComisionRepository;
 use App\Repository\Evaluacion\EstadoAplazamientoRepository;
 use App\Repository\Evaluacion\EstadoSolicitudRepository;
 use App\Repository\Evaluacion\SolicitudRepository;
+use App\Services\UploadedDocumentStorage;
 use App\Repository\Institucion\InstitucionRepository;
 use App\Repository\Personal\PersonaRepository;
 use App\Repository\Postgrado\SolicitudProgramaRepository;
@@ -94,20 +95,18 @@ class InformeAutoevaluacionController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/rechazar', name: 'app_informe_autoevaluacion_rechazar', methods: ['POST'])]
-    public function rechazar(Request $request, EntityManagerInterface $entityManager, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository)
+    public function rechazar(Request $request, EntityManagerInterface $entityManager, Solicitud $solicitud, SolicitudRepository $solicitudRepository, EstadoSolicitudRepository $estadoSolicitudRepository, UploadedDocumentStorage $storage)
     {
         try {
             $file = $request->files->get('additionalFile');
-            $imagePath = $file->getClientOriginalName();
-
-            if (file_exists('uploads/evaluacion/solicitud/informe/autoevaluacion/motivos_rechazos/' . $imagePath)) {
-                unlink('uploads/evaluacion/solicitud/informe/autoevaluacion/motivos_rechazos/' . $imagePath);
+            if (!$file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                throw new \InvalidArgumentException('Debe adjuntar el documento con el motivo del rechazo.');
             }
-            $file->move("uploads/evaluacion/solicitud/informe/autoevaluacion/motivos_rechazos", $imagePath);
+            $storedName = $storage->storeName($file, 'uploads/evaluacion/solicitud/informe/autoevaluacion/motivos_rechazos');
 
             $solicitud->setEstadoInformeAutoevaluacion('Rechazado');
             $solicitud->setEstadoSolicitud($estadoSolicitudRepository->find($this->getParameter('estado_evaluacion_informe_rechazado')));
-            $solicitud->setMotivoRechazo($imagePath);
+            $solicitud->setMotivoRechazo($storedName);
 
             $solicitudRepository->edit($solicitud, true);
             $entityManager->flush();

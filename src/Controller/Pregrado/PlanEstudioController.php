@@ -54,27 +54,21 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_plan_estudio_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, EntityManagerInterface $em, RequestStack $requestStack, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, DocumentoRepository $documentoRepository, CursoAcademicoRepository $cursoAcademicoRepository)
+    public function registrar(Request $request, EntityManagerInterface $em, RequestStack $requestStack, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, DocumentoRepository $documentoRepository, CursoAcademicoRepository $cursoAcademicoRepository, UploadedDocumentStorage $storage)
     {
         try {
             $planEstudioEntity = new PlanEstudio();
             $form = $this->createForm(PlanEstudioType::class, $planEstudioEntity, ['action' => 'registrar']);
             $form->handleRequest($request);
-            if ($form->isSubmitted()) {
+            if ($form->isSubmitted() && $form->isValid()) {
                 $planEstudioEntity->setNombre('Plan de estudio ' . $cursoAcademicoRepository->find($request->request->all()['plan_estudio']['cursoAcademico'])->getNombre());
                 $planEstudioEntity->setFechaAprobacion(\DateTime::createFromFormat('d/m/Y', $request->request->all()['plan_estudio']['fechaAprobacion']));
 
-                if (!empty($_FILES['plan_estudio']['name']['planEstudio'])) {
-                    $file = $form['planEstudio']->getData();
-                    $file_name = $_FILES['plan_estudio']['name']['planEstudio'];
-                    $planEstudioEntity->setPlanEstudio($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/plan_estudio", $file_name);
+                if (($file = $form['planEstudio']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $planEstudioEntity->setPlanEstudio($storage->storeName($file, 'uploads/pregrado/plan_estudio/plan_estudio'));
                 }
-                if (!empty($_FILES['plan_estudio']['name']['documentoEjecutivo'])) {
-                    $file = $form['documentoEjecutivo']->getData();
-                    $file_name = $_FILES['plan_estudio']['name']['documentoEjecutivo'];
-                    $planEstudioEntity->setDocumentoEjecutivo($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/documento_ejecutivo", $file_name);
+                if (($file = $form['documentoEjecutivo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $planEstudioEntity->setDocumentoEjecutivo($storage->storeName($file, 'uploads/pregrado/plan_estudio/documento_ejecutivo'));
                 }
                 $documentos = $requestStack->getSession()->get('documentosPlanEstudio');
                 if (is_array($documentos)) {
@@ -154,36 +148,20 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_plan_estudio_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, RequestStack $requestStack, planEstudio $planEstudio, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
+    public function modificar(Request $request, RequestStack $requestStack, planEstudio $planEstudio, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(PlanEstudioType::class, $planEstudio, ['action' => 'modificar']);
             $form->handleRequest($request);
-            if ($form->isSubmitted() /*&& $form->isValid()*/) {
+            if ($form->isSubmitted() && $form->isValid()) {
                 $temp = explode('/', $request->request->all()['plan_estudio']['fechaAprobacion']);
                 $planEstudio->setFechaAprobacion(new \DateTime($temp[1] . '/' . $temp[0] . '/' . $temp[2]));
 
-                if (!empty($_FILES['plan_estudio']['name']['planEstudio'])) {
-                    if ($planEstudio->getPlanEstudio() != null) {
-                        if (file_exists('uploads/pregrado/plan_estudio/' . $planEstudio->getPlanEstudio())) {
-                            unlink('uploads/pregrado/plan_estudio/plan_estudio/' . $planEstudio->getPlanEstudio());
-                        }
-                    }
-                    $file = $form['planEstudio']->getData();
-                    $file_name = $_FILES['plan_estudio']['name']['planEstudio'];
-                    $planEstudio->setPlanEstudio($file_name);
-                    $file->move("uploads/pregrado/plan_estudio", $file_name);
+                if (($file = $form['planEstudio']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $planEstudio->setPlanEstudio($storage->replace($file, 'uploads/pregrado/plan_estudio/plan_estudio', $planEstudio->getPlanEstudio()));
                 }
-                if (!empty($_FILES['plan_estudio']['name']['documentoEjecutivo'])) {
-                    if ($planEstudio->getPlanEstudio() != null) {
-                        if (file_exists('uploads/pregrado/plan_estudio/documento_ejecutivo/' . $planEstudio->getDocumentoEjecutivo())) {
-                            unlink('uploads/pregrado/plan_estudio/documento_ejecutivo/' . $planEstudio->getDocumentoEjecutivo());
-                        }
-                    }
-                    $file = $form['documentoEjecutivo']->getData();
-                    $file_name = $_FILES['plan_estudio']['name']['documentoEjecutivo'];
-                    $planEstudio->setDocumentoEjecutivo($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/documento_ejecutivo", $file_name);
+                if (($file = $form['documentoEjecutivo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $planEstudio->setDocumentoEjecutivo($storage->replace($file, 'uploads/pregrado/plan_estudio/documento_ejecutivo', $planEstudio->getDocumentoEjecutivo()));
                 }
 
                 $planEstudioRepository->edit($planEstudio);
@@ -247,7 +225,7 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificaciones', name: 'app_plan_estudio_modificaciones', methods: ['GET', 'POST'])]
-    public function modificaciones(Request $request, planEstudio $planEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository)
+    public function modificaciones(Request $request, planEstudio $planEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository, UploadedDocumentStorage $storage)
     {
         try {
             $modificacion = new ModificacionPlanEstudio();
@@ -258,23 +236,14 @@ class PlanEstudioController extends AbstractController
                 $temp = explode('/', $request->request->all()['modificacion_plan_estudio']['fechaAprobacion']);
                 $modificacion->setFechaAprobacion(new \DateTime($temp[1] . '/' . $temp[0] . '/' . $temp[2]));
                 $modificacion->setPlanEstudio($planEstudio);
-                if (!empty($_FILES['modificacion_plan_estudio']['name']['planEstudioDoc'])) {
-                    $file = $form['planEstudioDoc']->getData();
-                    $file_name = $_FILES['modificacion_plan_estudio']['name']['planEstudioDoc'];
-                    $modificacion->setPlanEstudioDoc($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/modificaciones/plan_estudio", $file_name);
+                if (($file = $form['planEstudioDoc']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $modificacion->setPlanEstudioDoc($storage->storeName($file, 'uploads/pregrado/plan_estudio/modificaciones/plan_estudio'));
                 }
-                if (!empty($_FILES['modificacion_plan_estudio']['name']['dictamen'])) {
-                    $file = $form['dictamen']->getData();
-                    $file_name = $_FILES['modificacion_plan_estudio']['name']['dictamen'];
-                    $modificacion->setDictamen($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/modificaciones/dictamen", $file_name);
+                if (($file = $form['dictamen']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $modificacion->setDictamen($storage->storeName($file, 'uploads/pregrado/plan_estudio/modificaciones/dictamen'));
                 }
-                if (!empty($_FILES['modificacion_plan_estudio']['name']['documentoEjecutivo'])) {
-                    $file = $form['documentoEjecutivo']->getData();
-                    $file_name = $_FILES['modificacion_plan_estudio']['name']['documentoEjecutivo'];
-                    $modificacion->setDocumentoEjecutivo($file_name);
-                    $file->move("uploads/pregrado/plan_estudio/modificaciones/documento_ejecutivo", $file_name);
+                if (($file = $form['documentoEjecutivo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $modificacion->setDocumentoEjecutivo($storage->storeName($file, 'uploads/pregrado/plan_estudio/modificaciones/documento_ejecutivo'));
                 }
 
                 $modificacionPlanEstudioRepository->add($modificacion, true);
@@ -299,10 +268,13 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar_modificacion', name: 'app_plan_estudio_eliminar_modificacion', methods: ['GET'])]
-    public function eliminarModificacion(ModificacionPlanEstudio $modificacionPlanEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository)
+    public function eliminarModificacion(ModificacionPlanEstudio $modificacionPlanEstudio, ModificacionPlanEstudioRepository $modificacionPlanEstudioRepository, UploadedDocumentStorage $storage)
     {
         try {
             if ($modificacionPlanEstudio instanceof ModificacionPlanEstudio) {
+                $storage->delete('uploads/pregrado/plan_estudio/modificaciones/plan_estudio', $modificacionPlanEstudio->getPlanEstudioDoc());
+                $storage->delete('uploads/pregrado/plan_estudio/modificaciones/dictamen', $modificacionPlanEstudio->getDictamen());
+                $storage->delete('uploads/pregrado/plan_estudio/modificaciones/documento_ejecutivo', $modificacionPlanEstudio->getDocumentoEjecutivo());
                 $modificacionPlanEstudioRepository->remove($modificacionPlanEstudio, true);
                 $this->addFlash('success', 'El elemento ha sido eliminado satisfactoriamente.');
                 return $this->redirectToRoute('app_plan_estudio_modificaciones', ['id' => $modificacionPlanEstudio->getPlanEstudio()->getId()], Response::HTTP_SEE_OTHER);
@@ -333,10 +305,11 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar-documento-editar', name: 'app_plan_estudio_eliminar_documento_editar', methods: ['GET'])]
-    public function eliminarDocumentoEditar(PlanEstudioDocumento $planEstudioDocumento, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
+    public function eliminarDocumentoEditar(PlanEstudioDocumento $planEstudioDocumento, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, UploadedDocumentStorage $storage)
     {
         try {
             if ($planEstudioDocumentoRepository->find($planEstudioDocumento) instanceof PlanEstudioDocumento) {
+                $storage->delete('uploads/pregrado/plan_estudio/documentos', basename($planEstudioDocumento->getDocumentoFisico()));
                 $planEstudioDocumentoRepository->remove($planEstudioDocumento, true);
                 $this->addFlash('success', 'El elemento ha sido eliminado satisfactoriamente.');
                 return $this->redirectToRoute('app_plan_estudio_modificar', ['id' => $planEstudioDocumento->getPlanEstudio()->getId()], Response::HTTP_SEE_OTHER);
@@ -355,32 +328,27 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/registo-temporal-doc-edit', name: 'app_plan_estudio_registro_temporal_doc_edit', methods: ['GET', 'POST'])]
-    public function registroTemporalDeDocumentoEdit(Request $request, RequestStack $requestStack, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository)
+    public function registroTemporalDeDocumentoEdit(Request $request, RequestStack $requestStack, DocumentoRepository $documentoRepository, PlanEstudioRepository $planEstudioRepository, PlanEstudioDocumentoRepository $planEstudioDocumentoRepository, UploadedDocumentStorage $storage)
     {
         try {
             $post = $request->request->all();
 
-            $uploadPath = 'uploads/pregrado/plan_estudio/documentos/';
-            $url = null;
-            $path = "uploads/pregrado/plan_estudio/documentos";
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
+            $file = $request->files->get('file');
+            if (!$file instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                return $this->json(['error' => 'Debe seleccionar un archivo.'], Response::HTTP_BAD_REQUEST);
             }
-            if (move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/pregrado/plan_estudio/documentos/' . $_FILES['file']['name'])) {
-                $url = $uploadPath . $_FILES['file']['name'];
-            }
-            if (!empty($url)) {
-                $new = new PlanEstudioDocumento();
-                $new->setNombre($_FILES['file']['name']);
-                $new->setPlanEstudio($planEstudioRepository->find($requestStack->getSession()->get('planEstudioId')));
-                $new->setDocumentoFisico($url);
-                $new->setDocumento($documentoRepository->find($post['documento']));
-                $planEstudioDocumentoRepository->add($new, true);
-            }
+
+            $stored = $storage->store($file, 'uploads/pregrado/plan_estudio/documentos');
+            $new = new PlanEstudioDocumento();
+            $new->setNombre($stored['originalName']);
+            $new->setPlanEstudio($planEstudioRepository->find($requestStack->getSession()->get('planEstudioId')));
+            $new->setDocumentoFisico($stored['path']);
+            $new->setDocumento($documentoRepository->find($post['documento']));
+            $planEstudioDocumentoRepository->add($new, true);
+
             return $this->json('OK', Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            $this->addFlash('error', $exception->getMessage());
-            return $this->redirectToRoute('app_plan_estudio_registrar', [], Response::HTTP_SEE_OTHER);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->json(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -389,7 +357,7 @@ class PlanEstudioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar-documento-crear', name: 'app_plan_estudio_eliminar_documento_crear', methods: ['GET', 'POST'])]
-    public function eliminarDocumentoCrear($id, RequestStack $requestStack)
+    public function eliminarDocumentoCrear($id, RequestStack $requestStack, UploadedDocumentStorage $storage)
     {
         try {
             $documentos = $requestStack->getSession()->get('documentosPlanEstudio');
@@ -398,6 +366,8 @@ class PlanEstudioController extends AbstractController
                 foreach ($documentos as $value) {
                     if ($value['id'] !== $id) {
                         $response[] = $value;
+                    } else {
+                        $storage->delete('uploads/pregrado/plan_estudio/documentos', basename($value['documento']));
                     }
                 }
             }
