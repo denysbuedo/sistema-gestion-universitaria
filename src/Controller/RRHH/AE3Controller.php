@@ -6,6 +6,7 @@ use App\Entity\RRHH\AE3;
 use App\Form\RRHH\AE3Type;
 use App\Repository\Personal\PersonaRepository;
 use App\Repository\RRHH\AE3Repository;
+use App\Services\UploadedDocumentStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,7 +47,7 @@ class AE3Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae3_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE3Repository $aE3Repository, PersonaRepository $personaRepository)
+    public function registrar(Request $request, AE3Repository $aE3Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $ae3 = new AE3();
@@ -64,11 +65,8 @@ class AE3Controller extends AbstractController
             $form = $this->createForm(AE3Type::class, $ae3, ['action' => 'registrar']);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['ae3']['name']['documento'])) {
-                    $file = $form['documento']->getData();
-                    $file_name = $_FILES['ae3']['name']['documento'];
-                    $ae3->setDocumento($file_name);
-                    $file->move("uploads/rrhh/ae3/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $ae3->setDocumento($storage->storeName($file, 'uploads/rrhh/ae3/documento'));
                 }
 
                 $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -107,18 +105,15 @@ class AE3Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae3_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, AE3 $ae3, AE3Repository $ae3Repository, PersonaRepository $personaRepository)
+    public function modificar(Request $request, AE3 $ae3, AE3Repository $ae3Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(AE3Type::class, $ae3, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['ae3']['name']['documento'])) {
-                    $file = $form['documento']->getData();
-                    $file_name = $_FILES['ae3']['name']['documento'];
-                    $ae3->setDocumento($file_name);
-                    $file->move("uploads/rrhh/ae3/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $ae3->setDocumento($storage->replace($file, 'uploads/rrhh/ae3/documento', $ae3->getDocumento()));
                 }
                 if (empty($ae3->getEntidad())) {
                     $this->addFlash('error', 'La institucion no es correcta.');

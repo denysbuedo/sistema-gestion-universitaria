@@ -71,6 +71,32 @@ final class UploadedDocumentStorageTest extends TestCase
         (new UploadedDocumentStorage($this->projectDirectory))->store($file, 'uploads/documents');
     }
 
+    public function testReplaceStoresTheNewDocumentAndDeletesThePreviousOne(): void
+    {
+        $directory = $this->projectDirectory . '/public/uploads/documents';
+        mkdir($directory, 0770, true);
+        file_put_contents($directory . '/previous.pdf', '%PDF-old');
+        $file = new UploadedFile($this->temporaryFile('%PDF-new'), 'new.pdf', 'application/pdf', null, true);
+
+        $name = (new UploadedDocumentStorage($this->projectDirectory))
+            ->replace($file, 'uploads/documents', 'previous.pdf');
+
+        self::assertFileDoesNotExist($directory . '/previous.pdf');
+        self::assertFileExists($directory . '/' . $name);
+        self::assertMatchesRegularExpression('/^[a-f0-9]{32}\.pdf$/', $name);
+    }
+
+    public function testDeleteIgnoresAPathInsteadOfAStoredName(): void
+    {
+        $outside = $this->projectDirectory . '/public/outside.pdf';
+        file_put_contents($outside, '%PDF-outside');
+
+        (new UploadedDocumentStorage($this->projectDirectory))
+            ->delete('uploads/documents', '../outside.pdf');
+
+        self::assertFileExists($outside);
+    }
+
     private function temporaryFile(string $contents): string
     {
         $path = tempnam(sys_get_temp_dir(), 'sgu-file-');

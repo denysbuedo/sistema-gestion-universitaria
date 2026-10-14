@@ -48,6 +48,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
 use App\Services\HandlerFop;
 use App\Services\TraceService;
+use App\Services\UploadedDocumentStorage;
 use App\Services\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -85,7 +86,7 @@ class InstitucionController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_institucion_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, InstitucionRepository $institucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack)
+    public function registrar(Request $request, InstitucionRepository $institucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack, UploadedDocumentStorage $storage)
     {
         try {
             $institucion = new Institucion();
@@ -102,17 +103,8 @@ class InstitucionController extends AbstractController
                 $institucion->setDireccionSedePrincipal($institucion->getEstructura()->getDireccion());
                 $institucion->setCoordenadasSedePrincipal($institucion->getEstructura()->getUbicacion());
 
-                if (!empty($_FILES['institucion']['name']['logo'])) {
-                    $file = $form['logo']->getData();
-                    $file_name = $_FILES['institucion']['name']['logo'];
-                    $institucion->setLogo($file_name);
-                    $file->move("uploads/institucion/logo", $file_name);
-                }
-                if (!empty($_FILES['institucion']['name']['organigrama'])) {
-                    $file = $form['organigrama']->getData();
-                    $file_name = $_FILES['institucion']['name']['organigrama'];
-                    $institucion->setOrganigrama($file_name);
-                    $file->move("uploads/institucion/organigrama", $file_name);
+                if (($file = $form['logo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $institucion->setLogo($storage->storeName($file, 'uploads/institucion/logo'));
                 }
                 $institucionRepository->add($institucion, true);
 
@@ -143,7 +135,7 @@ class InstitucionController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_institucion_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, Institucion $institucion, InstitucionRepository $tipoInstitucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack)
+    public function modificar(Request $request, Institucion $institucion, InstitucionRepository $tipoInstitucionRepository, SerializerInterface $serializer, EntityManagerInterface $entityManager, RequestStack $requestStack, UploadedDocumentStorage $storage)
     {
         try {
             $dataAnterior = $institucion;
@@ -163,30 +155,8 @@ class InstitucionController extends AbstractController
                 $temp = explode('/', $request->request->all()['institucion']['fechaFundacion']);
                 $institucion->setFechaFundacion(new \DateTime($temp[1] . '/' . $temp[0] . '/' . $temp[2]));
 
-                if (!empty($form['logo']->getData())) {
-                    if ($institucion->getLogo() != null) {
-                        if (file_exists('uploads/institucion/logo/' . $institucion->getLogo())) {
-                            unlink('uploads/institucion/logo/' . $institucion->getLogo());
-                        }
-                    }
-                    $file = $form['logo']->getData();
-                    $file_name = $_FILES['institucion']['name']['logo'];
-                    $institucion->setLogo($file_name);
-                    $file->move("uploads/institucion/logo", $file_name);
-                }
-
-
-                if (!empty($_FILES['institucion']['name']['organigrama'])) {
-                    if ($institucion->getOrganigrama() != null) {
-                        if (file_exists('uploads/institucion/organigrama/' . $institucion->getOrganigrama())) {
-                            unlink('uploads/institucion/organigrama/' . $institucion->getOrganigrama());
-                        }
-                    }
-                    $file = $form['organigrama']->getData();
-                    $file_name = $_FILES['institucion']['name']['organigrama'];
-
-                    $institucion->setOrganigrama($file_name);
-                    $file->move("uploads/institucion/organigrama", $file_name);
+                if (($file = $form['logo']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $institucion->setLogo($storage->replace($file, 'uploads/institucion/logo', $institucion->getLogo()));
                 }
 
 

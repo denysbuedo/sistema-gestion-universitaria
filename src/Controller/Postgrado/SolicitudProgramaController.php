@@ -37,6 +37,7 @@ use App\Repository\Postgrado\SolicitudProgramaRepository;
 use App\Repository\Postgrado\SolicitudProgramaVotacionRepository;
 use App\Services\DoctrineHelper;
 use App\Services\TraceService;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -83,7 +84,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_solicitud_programa_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository)
+    public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $solicitudPrograma = new SolicitudPrograma();
@@ -136,12 +137,9 @@ class SolicitudProgramaController extends AbstractController
                 }
 
 
-                if (!empty($_FILES['solicitud_programa']['name']['docPrograma'])) {
-                    $file = $form['docPrograma']->getData();
-                    $file_name = $_FILES['solicitud_programa']['name']['docPrograma'];
-                    $solicitudPrograma->setDocPrograma($file_name);
+                if (($file = $form['docPrograma']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setDocPrograma($storage->storeName($file, 'uploads/postgrado/solicitud_programa'));
                     $solicitudPrograma->setEstadoPrograma($estadoProgramaRepository->find(1));
-                    $file->move("uploads/postgrado/solicitud_programa", $file_name);
                 }
 
                 if (isset($post['solicitud_programa']['nombreExistente']) && !empty($post['solicitud_programa']['nombreExistente'])) {
@@ -188,7 +186,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_solicitud_programa_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, PresencialidadProgramaRepository $presencialidadProgramaRepository, EntityManagerInterface $entityManager, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
+    public function modificar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, PresencialidadProgramaRepository $presencialidadProgramaRepository, EntityManagerInterface $entityManager, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $dataAnterior = DoctrineHelper::toArray($solicitudPrograma);
@@ -233,16 +231,8 @@ class SolicitudProgramaController extends AbstractController
                     }
                 }
 
-                if (!empty($_FILES['solicitud_programa']['name']['docPrograma'])) {
-                    if ($solicitudPrograma->getDocPrograma() != null) {
-                        if (file_exists('uploads/solicitud_programa/' . $solicitudPrograma->getDocPrograma())) {
-                            unlink('uploads/postgrado/solicitud_programa/' . $solicitudPrograma->getDocPrograma());
-                        }
-                    }
-                    $file = $form['docPrograma']->getData();
-                    $file_name = $_FILES['solicitud_programa']['name']['docPrograma'];
-                    $solicitudPrograma->setDocPrograma($file_name);
-                    $file->move("uploads/solicitud_programa", $file_name);
+                if (($file = $form['docPrograma']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setDocPrograma($storage->replace($file, 'uploads/postgrado/solicitud_programa', $solicitudPrograma->getDocPrograma()));
                 }
                 if (isset($post['solicitud_programa']['nombreExistente']) && !empty($post['solicitud_programa']['nombreExistente'])) {
                     $solicitudPrograma->setDescripcion($post['solicitud_programa']['nombreExistente']);
@@ -345,7 +335,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/aprobar', name: 'app_solicitud_programa_aprobar', methods: ['GET', 'POST'])]
-    public function aprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
+    public function aprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $choices = [
@@ -367,29 +357,11 @@ class SolicitudProgramaController extends AbstractController
                     $solicitudPrograma->setFechaAprobacion(\DateTime::createFromFormat('d/m/Y', $fechaAprobacion));
                 }
 
-                if (!empty($_FILES['aprobar_programa']['name']['resolucionPrograma'])) {
-                    if ($solicitudPrograma->getResolucionPrograma() != null) {
-                        if (file_exists('uploads/postgrado/resolucion_programa/' . $solicitudPrograma->getResolucionPrograma())) {
-                            unlink('uploads/postgrado/resolucion_programa/' . $solicitudPrograma->getResolucionPrograma());
-                        }
-                    }
-
-                    $file = $form['resolucionPrograma']->getData();
-                    $file_name = $_FILES['aprobar_programa']['name']['resolucionPrograma'];
-                    $solicitudPrograma->setResolucionPrograma($file_name);
-                    $file->move("uploads/postgrado/resolucion_programa", $file_name);
+                if (($file = $form['resolucionPrograma']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setResolucionPrograma($storage->replace($file, 'uploads/postgrado/resolucion_programa', $solicitudPrograma->getResolucionPrograma()));
                 }
-                if (!empty($_FILES['aprobar_programa']['name']['dictamenFinal'])) {
-                    if ($solicitudPrograma->getDictamenFinal() != null) {
-                        if (file_exists('uploads/postgrado/dictamen_final/' . $solicitudPrograma->getDictamenFinal())) {
-                            unlink('uploads/postgrado/dictamen_final/' . $solicitudPrograma->getDictamenFinal());
-                        }
-                    }
-
-                    $file = $form['dictamenFinal']->getData();
-                    $file_name = $_FILES['aprobar_programa']['name']['dictamenFinal'];
-                    $solicitudPrograma->setDictamenFinal($file_name);
-                    $file->move("uploads/postgrado/dictamen_final", $file_name);
+                if (($file = $form['dictamenFinal']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setDictamenFinal($storage->replace($file, 'uploads/postgrado/dictamen_final', $solicitudPrograma->getDictamenFinal()));
                 }
 
                 $solicitudPrograma->setEstadoPrograma($estadoProgramaRepository->find(7));
@@ -427,24 +399,15 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/no-aprobar', name: 'app_solicitud_programa_no_aprobar', methods: ['GET', 'POST'])]
-    public function noAprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository)
+    public function noAprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(NoAprobarProgramaType::class, $solicitudPrograma);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['no_aprobar_programa']['name']['dictamenFinal'])) {
-                    if ($solicitudPrograma->getDictamenFinal() != null) {
-                        if (file_exists('uploads/postgrado/dictamen_final/' . $solicitudPrograma->getDictamenFinal())) {
-                            unlink('uploads/postgrado/dictamen_final/' . $solicitudPrograma->getDictamenFinal());
-                        }
-                    }
-
-                    $file = $form['dictamenFinal']->getData();
-                    $file_name = $_FILES['no_aprobar_programa']['name']['dictamenFinal'];
-                    $solicitudPrograma->setDictamenFinal($file_name);
-                    $file->move("uploads/postgrado/dictamen_final", $file_name);
+                if (($file = $form['dictamenFinal']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setDictamenFinal($storage->replace($file, 'uploads/postgrado/dictamen_final', $solicitudPrograma->getDictamenFinal()));
                 }
 
                 $solicitudPrograma->setEstadoPrograma($estadoProgramaRepository->find(5));
@@ -565,7 +528,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/asociar_dictamen', name: 'app_solicitud_programa_asociar_dictamen', methods: ['GET', 'POST'])]
-    public function asociarDictamen(Request $request, MiembrosCopepRepository $miembrosCopepRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, PersonaRepository $personaRepository, ComisionRepository $comisionRepository, RolComisionRepository $rolComisionRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository)
+    public function asociarDictamen(Request $request, MiembrosCopepRepository $miembrosCopepRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, PersonaRepository $personaRepository, ComisionRepository $comisionRepository, RolComisionRepository $rolComisionRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository, UploadedDocumentStorage $storage)
     {
         try {
             $entidad = new SolicitudProgramaDictamen();
@@ -586,11 +549,8 @@ class SolicitudProgramaController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $exist = $solicitudProgramaDictamenRepository->findBy(['solicitudPrograma' => $solicitudPrograma->getId(), 'rolComision' => $request->request->all()['solicitud_programa_dictamen']['rolComision'], 'comision' => $request->request->all()['solicitud_programa_dictamen']['comision']]);
                 if (empty($exist)) {
-                    if (!empty($_FILES['solicitud_programa_dictamen']['name']['dictamen'])) {
-                        $file = $form['dictamen']->getData();
-                        $file_name = $_FILES['solicitud_programa_dictamen']['name']['dictamen'];
-                        $entidad->setDictamen($file_name);
-                        $file->move("uploads/postgrado/solicitud_programa/dictamen", $file_name);
+                    if (($file = $form['dictamen']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                        $entidad->setDictamen($storage->storeName($file, 'uploads/postgrado/solicitud_programa/dictamen'));
                     }
 
 
@@ -651,10 +611,11 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar_dictamen', name: 'app_solicitud_programa_eliminar_dictamen', methods: ['GET'])]
-    public function eliminarDictamen(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaDictamen $solicitudProgramaDictamen, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository)
+    public function eliminarDictamen(Request $request, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaComisionRepository $solicitudProgramaComisionRepository, SolicitudProgramaDictamen $solicitudProgramaDictamen, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository, UploadedDocumentStorage $storage)
     {
         try {
             if ($solicitudProgramaDictamen instanceof SolicitudProgramaDictamen) {
+                $storage->delete('uploads/postgrado/solicitud_programa/dictamen', $solicitudProgramaDictamen->getDictamen());
                 $solicitudProgramaDictamenRepository->remove($solicitudProgramaDictamen, true);
 
                 $cantidadComisiones = count($solicitudProgramaComisionRepository->findBy(['solicitudPrograma' => $solicitudProgramaDictamen->getSolicitudPrograma()->getId()]));
@@ -683,18 +644,15 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/revisar_dictamenes', name: 'app_solicitud_programa_revisar_dictamenes', methods: ['GET', 'POST'])]
-    public function revisionDictamen(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaRepository $solicitudProgramaRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudPrograma $solicitudPrograma, MiembrosCopepRepository $miembrosCopepRepository)
+    public function revisionDictamen(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaDictamenRepository $solicitudProgramaDictamenRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudProgramaRepository $solicitudProgramaRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, SolicitudPrograma $solicitudPrograma, MiembrosCopepRepository $miembrosCopepRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(RevisionDictamenType::class, $solicitudPrograma);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['revision_dictamen']['name']['dictamenGeneral'])) {
-                    $file = $form['dictamenGeneral']->getData();
-                    $file_name = $_FILES['revision_dictamen']['name']['dictamenGeneral'];
-                    $solicitudPrograma->setDictamenFinal($file_name);
-                    $file->move("uploads/postgrado/solicitud_programa/dictamen_general", $file_name);
+                if (($file = $form['dictamenGeneral']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitudPrograma->setDictamenFinal($storage->replace($file, 'uploads/postgrado/solicitud_programa/dictamen_general', $solicitudPrograma->getDictamenFinal()));
                 }
 
                 /*Notificacion*/

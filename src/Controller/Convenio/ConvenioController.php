@@ -13,6 +13,7 @@ use App\Repository\Convenio\ConvenioRepository;
 use App\Repository\Convenio\ConvenioAccionRepository;
 use App\Repository\Personal\PersonaRepository;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,7 +66,7 @@ class ConvenioController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_convenio_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository)
+    public function registrar(Request $request, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $entidad = new Convenio();
@@ -77,11 +78,8 @@ class ConvenioController extends AbstractController
                 $entidad->setFechaCaducidad(\DateTime::createFromFormat('d/m/Y', $request->request->all()['convenio']['fechaCaducidad']));
                 $entidad->setCreadoPor($personaRepository->findOneBy(['usuario' => $this->getUser()]));
 
-                if (!empty($_FILES['convenio']['name']['documento'])) {
-                    $file = $form['documento']->getData();
-                    $file_name = $_FILES['convenio']['name']['documento'];
-                    $entidad->setDocumento($file_name);
-                    $file->move("uploads/convenio/intrumento_juridico/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $entidad->setDocumento($storage->storeName($file, 'uploads/convenio/intrumento_juridico/documento'));
                 }
 
                 $convenioRepository->add($entidad, true);
@@ -106,7 +104,7 @@ class ConvenioController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_convenio_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, Convenio $convenio, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository)
+    public function modificar(Request $request, Convenio $convenio, ConvenioRepository $convenioRepository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(ConvenioType::class, $convenio, ['action' => 'modificar']);
@@ -121,16 +119,8 @@ class ConvenioController extends AbstractController
                 $convenio->setModificadoPor($personaRepository->findOneBy(['usuario' => $this->getUser()]));
 
 
-                if (!empty($_FILES['ficha_salida']['name']['cartaInvitacion'])) {
-                    if ($convenio->getDocumento() != null) {
-                        if (file_exists('uploads/tramites/ficha_salida/carta_invitacion/' . $convenio->getDocumento())) {
-                            unlink('uploads/convenio/intrumento_juridico/documento/' . $convenio->getDocumento());
-                        }
-                    }
-                    $file = $form['cartaInvitacion']->getData();
-                    $file_name = $_FILES['ficha_salida']['name']['cartaInvitacion'];
-                    $convenio->setDocumento($file_name);
-                    $file->move("uploads/convenio/intrumento_juridico/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $convenio->setDocumento($storage->replace($file, 'uploads/convenio/intrumento_juridico/documento', $convenio->getDocumento()));
                 }
 
 

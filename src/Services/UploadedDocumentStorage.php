@@ -59,4 +59,34 @@ final class UploadedDocumentStorage
             'originalName' => basename($file->getClientOriginalName()),
         ];
     }
+
+    public function storeName(UploadedFile $file, string $relativeDirectory): string
+    {
+        return basename($this->store($file, $relativeDirectory)['path']);
+    }
+
+    public function replace(UploadedFile $file, string $relativeDirectory, ?string $previousName): string
+    {
+        $storedName = $this->storeName($file, $relativeDirectory);
+        $this->delete($relativeDirectory, $previousName);
+
+        return $storedName;
+    }
+
+    public function delete(string $relativeDirectory, ?string $storedName): void
+    {
+        if ($storedName === null || $storedName === '' || basename($storedName) !== $storedName) {
+            return;
+        }
+
+        $relativeDirectory = trim(str_replace('\\', '/', $relativeDirectory), '/');
+        if ($relativeDirectory === '' || str_contains($relativeDirectory, '..')) {
+            return;
+        }
+
+        $path = $this->publicDirectory . '/' . $relativeDirectory . '/' . $storedName;
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
 }

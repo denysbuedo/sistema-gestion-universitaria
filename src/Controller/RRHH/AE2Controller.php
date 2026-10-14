@@ -13,6 +13,7 @@ use App\Repository\RRHH\AE2Repository;
 use App\Repository\RRHH\CategoriaDocenteRepository;
 use App\Repository\Security\UserRepository;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -54,7 +55,7 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae2_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository)
+    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $ae2 = new AE2();
@@ -72,11 +73,8 @@ class AE2Controller extends AbstractController
             $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'registrar']);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['ae2']['name']['documento'])) {
-                    $file = $form['documento']->getData();
-                    $file_name = $_FILES['ae2']['name']['documento'];
-                    $ae2->setDocumento($file_name);
-                    $file->move("uploads/rrhh/ae2/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $ae2->setDocumento($storage->storeName($file, 'uploads/rrhh/ae2/documento'));
                 }
 
                 $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
@@ -114,18 +112,15 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae2_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository)
+    public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
     {
         try {
             $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'modificar']);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if (!empty($_FILES['ae2']['name']['documento'])) {
-                    $file = $form['documento']->getData();
-                    $file_name = $_FILES['ae2']['name']['documento'];
-                    $ae2->setDocumento($file_name);
-                    $file->move("uploads/rrhh/ae2/documento", $file_name);
+                if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $ae2->setDocumento($storage->replace($file, 'uploads/rrhh/ae2/documento', $ae2->getDocumento()));
                 }
                 if (empty($ae2->getEntidad())) {
                     $this->addFlash('error', 'La institucion no es correcta.');
