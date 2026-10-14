@@ -47,6 +47,17 @@ faltan métricas por ruta y por consulta para atribuirles tiempos concretos.
 - El suscriptor OIDC se ejecuta en las peticiones principales, pero solo llama
   al servidor de Identidad cuando el token está a menos de 60 segundos de
   expirar. No explica una lentitud constante.
+- Las estadísticas de las portadas se calculan de forma síncrona antes de
+  renderizar el HTML. No se encontró carga asíncrona de indicadores en esas
+  plantillas, por lo que el usuario espera a que finalicen todas las consultas.
+- Al menos diez portadas ejecutan estadísticas al abrirse. Pregrado realiza al
+  menos 17 llamadas de datos y varias recuperan entidades completas para luego
+  aplicar `count()` en PHP. Administración y Trazas cuentan por rol/tipo y por
+  día mediante consultas dentro de bucles. Trámites ejecuta conteos separados
+  por estado y seis consultas adicionales para su tendencia mensual.
+- Institución y Personal también cuentan cada categoría por separado. Estos son
+  patrones N+1 de agregación: el número de consultas aumenta con la cantidad de
+  categorías, roles o tipos.
 
 ## Trabajo priorizado
 
@@ -63,6 +74,25 @@ faltan métricas por ruta y por consulta para atribuirles tiempos concretos.
 - [ ] Capturar una navegación autenticada con DevTools/HAR, incluyendo primera
   visita y visita con caché, para separar red, backend, descarga, parseo y
   ejecución JavaScript.
+- [ ] Medir por separado cada portada de módulo y registrar tiempo total,
+  cantidad de consultas, tiempo SQL y memoria. Priorizar Pregrado,
+  Administración, Trazas, Trámites, Institución y Personal.
+
+### P0 - Desacoplar las estadísticas de la navegación
+
+- [ ] Renderizar primero la estructura útil del módulo y solicitar los
+  indicadores mediante un endpoint dedicado, mostrando marcadores de carga y
+  un error no bloqueante si las estadísticas fallan.
+- [ ] Evitar que la carga asíncrona multiplique el tráfico: agrupar los
+  indicadores de una portada en una respuesta y cancelar peticiones obsoletas.
+- [ ] Reemplazar conteos repetidos y bucles por consultas agregadas con
+  `COUNT`, `GROUP BY` y agregación condicional. Nunca hidratar colecciones de
+  entidades solo para contarlas.
+- [ ] Añadir caché de corta duración para estadísticas compartidas, con clave
+  por módulo, filtros y alcance institucional del usuario. Definir invalidación
+  o caducidad según la frecuencia real de actualización.
+- [ ] Para cálculos realmente pesados, evaluar vistas materializadas o tablas
+  de resumen actualizadas fuera del recorrido interactivo.
 
 ### P0 - Reducir el coste del frontend
 
@@ -105,6 +135,9 @@ faltan métricas por ruta y por consulta para atribuirles tiempos concretos.
   justificadamente pesadas.
 - Primera carga de una pantalla administrativa por debajo de 1,5 s en la red
   institucional de referencia, y navegación repetida por debajo de 0,8 s.
+- La estructura navegable de una portada debe aparecer sin esperar sus
+  estadísticas; el endpoint agregado de indicadores debe responder en menos de
+  800 ms en p95 o reutilizar un resultado almacenado en caché.
 - Recursos estáticos comprimidos y reutilizados por caché en visitas repetidas.
 - Plantilla administrativa común por debajo de 1,5 MiB y 25 solicitudes antes
   de incorporar los recursos propios de la pantalla.
