@@ -87,6 +87,13 @@ creación y limpieza de `var/tmp/export/`; el directorio todavía no existía en
 el release porque no se generó un reporte durante esta verificación de solo
 lectura.
 
+### Verificación manual de portadas — 2026-10-14
+
+Un usuario autorizado recorrió las 16 portadas funcionales del entorno
+desplegado. Todas abrieron sin error 500, sin redirección inesperada al login y
+con menús, datos, estadísticas y gráficos cargados correctamente según los
+permisos de su sesión. Con esta evidencia quedan correctos UAT-001 y UAT-005.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
@@ -169,11 +176,11 @@ coinciden con el sistema de referencia.
 
 | Caso | Estado | Responsable | Fecha | Evidencia/incidencia |
 |---|---|---|---|---|
-| UAT-001 | Pendiente |  |  |  |
+| UAT-001 | Correcto | Usuario autorizado SGU | 2026-10-14 | Salud HTTP 200 y portadas autenticadas correctas |
 | UAT-002 | Pendiente |  |  |  |
 | UAT-003 | Pendiente |  |  |  |
 | UAT-004 | Pendiente |  |  |  |
-| UAT-005 | Pendiente |  |  |  |
+| UAT-005 | Correcto | Usuario autorizado SGU | 2026-10-14 | Las 16 portadas cargaron datos, estadísticas, gráficos y menús sin errores |
 | UAT-006 | Pendiente |  |  |  |
 | UAT-101–105 | Pendiente |  |  |  |
 | UAT-201–204 | Pendiente |  |  |  |
