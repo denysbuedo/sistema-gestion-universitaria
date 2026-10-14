@@ -51,9 +51,41 @@ El 13 de octubre de 2026 se ejecutó sobre la base sintética de pruebas:
 - UAT-006: creación de trazas de inicio y cierre de sesión sin contraseñas ni
   tokens en la carga registrada.
 
-La suite resultante contiene 55 pruebas y 237 aserciones. Esta prevalidación no
+La suite resultante contiene 64 pruebas y 274 aserciones. Esta prevalidación no
 cambia los estados del registro UAT: los recorridos deben repetirse sobre la
 copia autorizada y con evidencia funcional.
+
+## Verificación técnica del entorno desplegado — 2026-10-14
+
+Se ejecutó un bloque de comprobaciones no destructivas sobre el release
+`96fa418` y desde un puesto externo. No se realizaron altas, modificaciones ni
+bajas sobre los datos reales, por lo que esta evidencia no sustituye los
+recorridos funcionales manuales.
+
+- `/healthz` respondió cinco veces con HTTP 200, entre 0,29 y 0,32 s.
+- `/login` respondió cinco veces con HTTP 200, entre 0,30 y 0,39 s.
+- Desde la propia VM, `/healthz` respondió en menos de 1 ms y `/login` en
+  aproximadamente 20 ms, a través de Nginx y PHP-FPM.
+- Nginx, PHP 8.3-FPM y PostgreSQL estaban activos, sin presión observable de
+  CPU, memoria, swap o disco.
+- Las dos migraciones disponibles constan como ejecutadas; no hay migraciones
+  nuevas pendientes.
+- Doctrine informó mapeo correcto y esquema sincronizado con las entidades.
+- PostgreSQL no informó índices inválidos ni restricciones pendientes de
+  validación. La base ocupaba aproximadamente 27 MB.
+- No se encontraron advertencias de Nginx/PHP-FPM en `journald` ni entradas
+  recientes en el registro de errores de Nginx.
+- `public/uploads` apunta al almacenamiento compartido persistente y este tiene
+  propietario `www-data:www-data` y permisos restringidos.
+- La auditoría de Composer no encontró vulnerabilidades conocidas.
+- En desarrollo quedaron correctos el contenedor, 20 archivos YAML, 552
+  plantillas Twig, el mapeo y el esquema de pruebas, además de las 64 pruebas
+  con 274 aserciones.
+
+Permanece pendiente comprobar mediante un recorrido funcional controlado la
+creación y limpieza de `var/tmp/export/`; el directorio todavía no existía en
+el release porque no se generó un reporte durante esta verificación de solo
+lectura.
 
 ## Matriz priorizada
 
