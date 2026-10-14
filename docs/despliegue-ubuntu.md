@@ -36,6 +36,7 @@ firma del instalador. No ejecutar Composer como `root` dentro del proyecto.
 ```bash
 sudo adduser --system --group --home /var/www/akademos akademos
 sudo install -d -o akademos -g www-data -m 0750 /var/www/akademos/releases
+sudo install -d -o www-data -g www-data -m 0770 /var/www/akademos/shared/uploads
 sudo install -d -o root -g www-data -m 0750 /etc/akademos/jwt
 sudo install -d -o root -g www-data -m 0750 /etc/akademos
 ```
@@ -77,6 +78,8 @@ set +a
 sudo -u akademos --preserve-env composer install \
   --no-dev --classmap-authoritative --no-interaction
 sudo install -d -o www-data -g www-data -m 0770 "$release_dir/var"
+sudo rm -d "$release_dir/public/uploads"
+sudo ln -s /var/www/akademos/shared/uploads "$release_dir/public/uploads"
 sudo -u www-data --preserve-env php bin/console cache:clear --env=prod --no-debug
 sudo -u www-data --preserve-env php bin/console cache:warmup --env=prod --no-debug
 ```
