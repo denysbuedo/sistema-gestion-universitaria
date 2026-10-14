@@ -94,6 +94,19 @@ desplegado. Todas abrieron sin error 500, sin redirección inesperada al login y
 con menús, datos, estadísticas y gráficos cargados correctamente según los
 permisos de su sesión. Con esta evidencia quedan correctos UAT-001 y UAT-005.
 
+### Verificación manual de listados y detalles — 2026-10-14
+
+El usuario autorizado comprobó listados, filtros, búsquedas y detalles en
+Administración, Estructura, Institución, Personal, Configuración, Pregrado,
+Posgrado, Evaluación y RRHH AE2/AE3. Los diez recorridos cargaron datos sin
+errores 500 ni pérdida de la sesión y no se ejecutaron operaciones de escritura.
+
+Esta evidencia cierra UAT-101 a UAT-104. La comprobación de Idiomas aporta
+evidencia a UAT-105, que permanece pendiente hasta validar al menos otro
+catálogo utilizado por formularios. Los listados principales aportan evidencia
+parcial a UAT-201 a UAT-204; todavía deben recorrerse planes, documentos,
+comisiones, dictámenes y reportes para cerrarlos.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
@@ -182,7 +195,11 @@ coinciden con el sistema de referencia.
 | UAT-004 | Pendiente |  |  |  |
 | UAT-005 | Correcto | Usuario autorizado SGU | 2026-10-14 | Las 16 portadas cargaron datos, estadísticas, gráficos y menús sin errores |
 | UAT-006 | Pendiente |  |  |  |
-| UAT-101–105 | Pendiente |  |  |  |
+| UAT-101 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Estructura correctos |
+| UAT-102 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Institución correctos |
+| UAT-103 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Personal correctos |
+| UAT-104 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Administración correctos |
+| UAT-105 | Pendiente | Usuario autorizado SGU | 2026-10-14 | Idiomas correcto; falta otro catálogo usado por formularios |
 | UAT-201–204 | Pendiente |  |  |  |
 | UAT-301–305 | Pendiente |  |  |  |
 
