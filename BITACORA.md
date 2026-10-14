@@ -296,3 +296,10 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   estadísticas síncronas de las portadas son otro riesgo confirmado.
 - `docs/plan-cierre.md` concentra los tres bloques restantes: UAT funcional,
   aprobación de Identidad y promoción/transición controlada.
+- La UAT detectó un 500 en programas aprobados de Pregrado causado por dos
+  controladores marcados accidentalmente como entidades Doctrine. El hotfix
+  `6df51ad` retiró esos atributos, cubrió las tres rutas afectadas y se desplegó
+  con salva previa; el usuario confirmó la corrección en producción.
+- La regresión posterior quedó en 67 pruebas y 283 aserciones, sin
+  vulnerabilidades conocidas. Symfony se actualizó a 6.4.48 y Doctrine
+  Fixtures a 4.3.1 dentro de sus líneas compatibles.

@@ -107,6 +107,21 @@ catálogo utilizado por formularios. Los listados principales aportan evidencia
 parcial a UAT-201 a UAT-204; todavía deben recorrerse planes, documentos,
 comisiones, dictámenes y reportes para cerrarlos.
 
+### Incidencia resuelta durante UAT — 2026-10-14
+
+La ruta de programas aprobados de Pregrado devolvió HTTP 500. Dos controladores
+habían conservado por error atributos `ORM\Entity` y `ORM\Table`, lo que hacía
+que Symfony los excluyera del contenedor de servicios. Se retiraron esos
+atributos, se añadieron pruebas funcionales para las tres rutas afectadas y se
+actualizó Doctrine Fixtures para eliminar la deprecación descubierta durante la
+regresión.
+
+El hotfix `6df51ad` quedó desplegado como release
+`20261014135400-6df51ad`, precedido por una salva verificada. La regresión pasó
+con 67 pruebas y 283 aserciones. El usuario repitió el recorrido sobre
+`/pregrado/solicitud_programa_academico_aprobado/` y confirmó que la página
+cargó correctamente.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
