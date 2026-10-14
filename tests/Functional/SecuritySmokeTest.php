@@ -316,6 +316,43 @@ class SecuritySmokeTest extends WebTestCase
         }
     }
 
+    public function testAdministratorCanToggleTheirTraceConfiguration(): void
+    {
+        $client = static::createClient();
+        $entityManager = $client->getContainer()->get(EntityManagerInterface::class);
+        $user = $this->fixtureAdminUser($client);
+        $persona = $entityManager->getRepository(Persona::class)->findOneBy(['usuario' => $user->getId()]);
+        self::assertInstanceOf(Persona::class, $persona);
+
+        $configuration = $entityManager->getRepository(ConfiguracionTraza::class)->findOneBy(['persona' => $persona]);
+        if (!$configuration instanceof ConfiguracionTraza) {
+            $configuration = (new ConfiguracionTraza())->setPersona($persona)->setActivo(true);
+            $entityManager->persist($configuration);
+            $entityManager->flush();
+        }
+
+        $initialState = $configuration->getActivo();
+        $client->loginUser($user, 'main');
+        $client->request('POST', '/traza/traza/configurar_traza');
+
+        self::assertResponseIsSuccessful();
+        $response = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(!$initialState, $response['enabled']);
+        $entityManager = $client->getContainer()->get(EntityManagerInterface::class);
+        $configuration = $entityManager->getRepository(ConfiguracionTraza::class)->find($configuration->getId());
+        self::assertInstanceOf(ConfiguracionTraza::class, $configuration);
+        self::assertSame(!$initialState, $configuration->getActivo());
+
+        $client->request('POST', '/traza/traza/configurar_traza');
+        self::assertResponseIsSuccessful();
+        $response = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame($initialState, $response['enabled']);
+        $entityManager = $client->getContainer()->get(EntityManagerInterface::class);
+        $configuration = $entityManager->getRepository(ConfiguracionTraza::class)->find($configuration->getId());
+        self::assertInstanceOf(ConfiguracionTraza::class, $configuration);
+        self::assertSame($initialState, $configuration->getActivo());
+    }
+
     public function moduleLandingPageProvider(): iterable
     {
         yield 'administracion' => ['/administracion/portada'];

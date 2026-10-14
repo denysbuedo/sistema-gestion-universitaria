@@ -32,9 +32,10 @@ class ConfiguracionTrazaRepository extends ServiceEntityRepository
 
     public function edit(ConfiguracionTraza $entity, bool $flush = true): ConfiguracionTraza
     {
-        $this->_em->persist($entity);
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $entityManager->flush();
         }
 
         return $entity;

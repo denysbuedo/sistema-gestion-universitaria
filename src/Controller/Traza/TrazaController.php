@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
+use Psr\Log\LoggerInterface;
 
 #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_HOME_TRAZAS')"))]
 #[Route('/traza/traza')]
@@ -91,7 +92,7 @@ class TrazaController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/configurar_traza', name: 'app_traza_configuracion', methods: ['GET', 'POST'])]
-    public function configurarTraza(PersonaRepository $personaRepository, UserRepository $userRepository, ConfiguracionTrazaRepository $configuracionTrazaRepository)
+    public function configurarTraza(PersonaRepository $personaRepository, UserRepository $userRepository, ConfiguracionTrazaRepository $configuracionTrazaRepository, LoggerInterface $logger)
     {
         try {
             $persona = $personaRepository->findOneBy(['usuario' => $userRepository->find($this->getUser()->getId())]);
@@ -101,16 +102,22 @@ class TrazaController extends AbstractController
             if (isset($configuracionTraza) && !empty($configuracionTraza)) {
                 $configuracionTraza->setActivo(!$configuracionTraza->getActivo());
                 $configuracionTrazaRepository->edit($configuracionTraza, true);
+                $enabled = $configuracionTraza->getActivo();
             } else {
                 $newCT = new ConfiguracionTraza();
                 $newCT->setActivo(true);
                 $newCT->setPersona($persona);
                 $configuracionTrazaRepository->add($newCT, true);
+                $enabled = $newCT->getActivo();
             }
 
-            return $this->json('OK');
-        } catch (\Exception $exception) {
-            return new JsonResponse([]);
+            return $this->json(['enabled' => $enabled]);
+        } catch (\Throwable $exception) {
+            $logger->error('No se pudo actualizar la configuración de trazas.', [
+                'exception_class' => $exception::class,
+            ]);
+
+            return $this->json(['error' => 'No se pudo actualizar la configuración de trazas.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
