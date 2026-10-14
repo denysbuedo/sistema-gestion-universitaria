@@ -150,11 +150,15 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 ## Próximo paso recomendado
 
-1. Coordinar con Identidad el registro de Akademos como cliente confidencial OIDC en el realm institucional común.
-2. Confirmar responsables, DNS y URLs HTTPS exactas de pruebas y producción para completar el expediente de alta.
-3. Implementar Authorization Code Flow detrás de `OIDC_ENABLED=0`, usando `sub` como vínculo estable y conservando temporalmente el login legado.
-4. Sustituir la validación JWT local por tokens Bearer de Keycloak y probar audiencia, roles, expiración, revocación y logout.
-5. Continuar la actividad 6 y mantener ambos pipelines como barreras obligatorias.
+1. Ejecutar la UAT funcional P0/P1 definida en `docs/uat.md`, sin modificar
+   datos reales fuera de una ventana y un conjunto controlado.
+2. Completar con Identidad la concesión y retirada real de `ROLE_ADMIN`, el 403
+   posterior y la aprobación técnica.
+3. Congelar el candidato, ensayar respaldo/restauración y promover `dev` a
+   `main` mediante revisión.
+4. Ejecutar el despliegue autorizado, humo posterior y observación reforzada.
+5. Tratar rendimiento, módulo piloto e interoperabilidad como evolución
+   posterior, según `docs/plan-cierre.md` y `docs/todo-rendimiento.md`.
 
 ## Historial
 
@@ -277,3 +281,18 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La regresión queda en 55 pruebas y 237 aserciones, sin fallos ni deprecaciones. Los casos UAT-001 a UAT-005 tienen prevalidación automática, pero conservan estado pendiente hasta repetirse sobre la copia autorizada; UAT-006 (trazas) sigue sin prevalidación específica.
 - Se endureció `TraceService`: ya no depende de `$_SERVER`, obtiene petición, IP y agente desde HttpFoundation, valida todas las referencias antes de persistir y registra fallos técnicos sin incluir cargas sensibles. El ambiente de pruebas usa los identificadores sintéticos correctos para inicio, cierre, autenticación y sesión.
 - UAT-006 quedó prevalidado automáticamente: un login y logout generan exactamente dos trazas y la prueba comprueba que no contienen contraseña ni referencias a tokens. La UAT manual sobre la copia autorizada sigue siendo necesaria.
+
+### 2026-10-14
+
+- Se completó una verificación no destructiva del entorno desplegado: salud y
+  login respondieron HTTP 200, Nginx/PHP-FPM/PostgreSQL estaban activos, las
+  migraciones estaban al día y Doctrine confirmó el esquema sincronizado.
+- PostgreSQL no informó índices inválidos ni restricciones sin validar; no se
+  encontraron errores recientes de Nginx ni advertencias de los servicios.
+- La regresión creció a 64 pruebas y 274 aserciones, con contenedor, YAML, Twig,
+  mapeo, esquema y auditoría de dependencias correctos.
+- Se documentó el diagnóstico de rendimiento. El cuello de botella comprobado
+  está principalmente en recursos frontend grandes y sin caché/compresión; las
+  estadísticas síncronas de las portadas son otro riesgo confirmado.
+- `docs/plan-cierre.md` concentra los tres bloques restantes: UAT funcional,
+  aprobación de Identidad y promoción/transición controlada.
