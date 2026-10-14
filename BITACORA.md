@@ -303,3 +303,14 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La regresión posterior quedó en 67 pruebas y 283 aserciones, sin
   vulnerabilidades conocidas. Symfony se actualizó a 6.4.48 y Doctrine
   Fixtures a 4.3.1 dentro de sus líneas compatibles.
+- Se completaron los recorridos manuales P1 y P2 de consulta: los once flujos
+  académicos principales y las diez rutas complementarias cargaron
+  correctamente con la copia real y sin operaciones de escritura.
+- Se corrigió el acceso directo a Notificaciones, que exponía un fragmento AJAX
+  sin estilos. Los accesos normales redirigen ahora a la vista completa y la
+  plantilla hereda los recursos globales; el release
+  `20261014182200-1b75dae` quedó activo tras una salva verificada.
+- La regresión queda en 68 pruebas y 292 aserciones. UAT-101 a UAT-105,
+  UAT-201 a UAT-204 y UAT-301 a UAT-305 están correctos. Permanecen por cerrar
+  las comprobaciones manuales P0, archivos/reportes, integridad comparativa y
+  la prueba real de roles con el equipo de Identidad.

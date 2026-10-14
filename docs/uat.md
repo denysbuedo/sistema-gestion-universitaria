@@ -133,6 +133,25 @@ Las once rutas cargaron correctamente con los datos y permisos de su sesión.
 Con esta evidencia quedan correctos UAT-105 y UAT-201 a UAT-204. No se
 realizaron operaciones de escritura durante estos recorridos.
 
+### Cierre de recorridos P2 — 2026-10-14
+
+El usuario autorizado recorrió diez listados y detalles de Convenios y
+Cooperación, Trámites, Economía, Informatización, Visitas y Notificaciones. Las
+rutas mostraron correctamente sus datos y no se enviaron avisos externos.
+
+Durante el recorrido se detectó que el acceso directo a
+`/notificaciones/usuario` mostraba únicamente el fragmento destinado al
+desplegable AJAX, sin la estructura ni los estilos globales. El controlador
+redirige ahora los accesos normales a la vista completa de notificaciones y
+conserva el fragmento para peticiones AJAX. La plantilla completa hereda además
+los recursos CSS y JavaScript de la plantilla base. El release
+`20261014182200-1b75dae` se desplegó con salva previa y el usuario confirmó la
+presentación correcta.
+
+Con esta evidencia quedan correctos UAT-301 a UAT-305. La regresión asociada
+quedó en 68 pruebas y 292 aserciones, sin deprecaciones ni vulnerabilidades
+conocidas.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
@@ -230,5 +249,9 @@ coinciden con el sistema de referencia.
 | UAT-202 | Correcto | Usuario autorizado SGU | 2026-10-14 | Solicitudes, programas, grados científicos y comisiones de Posgrado correctos |
 | UAT-203 | Correcto | Usuario autorizado SGU | 2026-10-14 | Solicitudes, comisiones, plan anual e informes de Evaluación correctos |
 | UAT-204 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listados, detalles y consolidados AE2/AE3 correctos |
-| UAT-301–305 | Pendiente |  |  |  |
+| UAT-301 | Correcto | Usuario autorizado SGU | 2026-10-14 | Convenios, cooperación y catálogos relacionados correctos |
+| UAT-302 | Correcto | Usuario autorizado SGU | 2026-10-14 | Fichas, pasaportes y planes de misión consultados correctamente |
+| UAT-303 | Correcto | Usuario autorizado SGU | 2026-10-14 | Conceptos de gasto y obsequios consultados correctamente |
+| UAT-304 | Correcto | Usuario autorizado SGU | 2026-10-14 | Sistemas, servicios y conectividad consultados correctamente |
+| UAT-305 | Correcto | Usuario autorizado SGU | 2026-10-14 | Visitas y notificaciones correctas; incidencia visual resuelta en `1b75dae` |
 
