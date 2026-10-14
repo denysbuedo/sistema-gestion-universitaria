@@ -12,7 +12,7 @@ Ubuntu, almacenamiento persistente y rollback documentado. La aplicación está
 desplegada y la comprobación técnica de producción es correcta.
 
 Como estimación de planificación, el cierre global está aproximadamente al
-85 %. El porcentaje no representa líneas de código: el 15 % restante contiene
+90 %. El porcentaje no representa líneas de código: el 10 % restante contiene
 validaciones humanas y de coordinación que pueden bloquear la transición.
 
 ## Bloque A — UAT funcional y datos
@@ -20,9 +20,12 @@ validaciones humanas y de coordinación que pueden bloquear la transición.
 Objetivo: comprobar con responsables funcionales que la versión conserva los
 procesos y resultados del sistema de referencia.
 
-- [x] Prevalidación automática P0: 64 pruebas y 274 aserciones.
+- [x] Prevalidación automática y regresión: 68 pruebas y 292 aserciones.
 - [x] Salud pública, servicios, migraciones, esquema y almacenamiento de cargas.
-- [ ] Ejecutar recorridos manuales P0 y P1 de `docs/uat.md`.
+- [x] Ejecutar recorridos manuales P1 de datos maestros y procesos académicos.
+- [x] Ejecutar recorridos manuales P2 de procesos complementarios.
+- [ ] Completar recorridos manuales P0 de sesión, rechazo de acceso, permisos y
+  trazas.
 - [ ] Comparar una muestra de conteos, consultas y reportes con el sistema de
   referencia.
 - [ ] Validar descarga de un documento real autorizado.
@@ -73,8 +76,8 @@ Objetivo: convertir el estado validado de `dev` en una versión estable.
 
 ## Tiempo restante estimado
 
-Si Identidad está disponible, la UAT no descubre defectos bloqueantes y existe
-una ventana de cambio, los tres bloques de cierre pueden completarse en dos a
-cuatro jornadas concentradas. Si aparecen defectos funcionales o no hay
+Si Identidad está disponible, las verificaciones restantes no descubren
+defectos bloqueantes y existe una ventana de cambio, los tres bloques de cierre
+pueden completarse en una a tres jornadas concentradas. Si aparecen defectos funcionales o no hay
 disponibilidad de los responsables, el tiempo dependerá de esas correcciones y
 aprobaciones; el trabajo técnico ya realizado no necesita repetirse.
