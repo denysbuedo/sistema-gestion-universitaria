@@ -257,6 +257,26 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseIsSuccessful();
     }
 
+    public function testNotificationFragmentAndFullPageUseTheirExpectedLayouts(): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', '/notificaciones/usuario');
+        self::assertResponseRedirects('/notificaciones/usuario/todas');
+
+        $client->request('POST', '/notificaciones/usuario', server: [
+            'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest',
+        ]);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.dropdown-header');
+
+        $client->request('GET', '/notificaciones/usuario/todas');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('link[rel="stylesheet"]');
+        self::assertSelectorExists('.content-wrapper');
+    }
+
     public function testLoginAndLogoutCreateSessionTracesWithoutSensitiveData(): void
     {
         $client = static::createClient();

@@ -5,6 +5,7 @@
 {% block sidebar %}{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <style>
         .tools{
             display: none;
@@ -86,9 +87,9 @@
 {% endblock %}
 
 {% block javascripts %}
-
-<script>
-    $('.menuAmburguesa').remove()
-</script>
+    {{ parent() }}
+    <script>
+        $('.menuAmburguesa').remove()
+    </script>
 {% endblock %}
 

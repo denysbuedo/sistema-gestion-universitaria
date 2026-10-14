@@ -14,7 +14,7 @@ use App\Entity\RRHH\AE3;
 use App\Entity\Security\Rol;
 use App\Entity\Security\RolEstructura;
 use App\Entity\Security\User;
-use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
@@ -30,40 +30,18 @@ class Utils
     private $em;
     private $ib_api_ri_url;
     private $api_fuc_url;
-    private $dbname;
-    private $user;
-    private $password;
-    private $host;
-    private $driver;
     private $connection;
-    private $port;
     private $container;
 
 
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $em, ContainerBagInterface $container, $dbname, $user, $password, $host, $driver, $port)
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $em, ContainerBagInterface $container, Connection $connection)
     {
         $this->base_url = $requestStack->getCurrentRequest()->getSchemeAndHttpHost();
         $this->em = $em;
         $this->ib_api_ri_url = $container->get('IB_API_RI_URL');
         $this->api_fuc_url = $container->get('API_FUC');
 
-        $this->dbname = $dbname;
-        $this->user = $user;
-        $this->password = $password;
-        $this->host = $host;
-        $this->driver = $driver;
-        $this->port = $port;
-
-        $connectionParams = array(
-            'dbname' => $this->dbname,
-            'user' => $this->user,
-            'password' => $this->password,
-            'host' => $this->host,
-            'port' => $this->port,
-            'driver' => $this->driver,
-            'charset' => 'UTF8'
-        );
-        $this->connection = DriverManager::getConnection($connectionParams);
+        $this->connection = $connection;
         $this->container = $container;
     }
 

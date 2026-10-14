@@ -7,6 +7,7 @@ use App\Repository\NotificacionesUsuarioRepository;
 use App\Repository\Planificacion\ObjetivoGeneralRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,8 +19,11 @@ class NotificationController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     #[Route('/notificaciones/usuario', name: 'app_notificaciones_usuario')]
-    public function index(NotificacionesUsuarioRepository $notificacionesUsuarioRepository): Response
+    public function index(Request $request, NotificacionesUsuarioRepository $notificacionesUsuarioRepository): Response
     {
+        if (!$request->isXmlHttpRequest()) {
+            return $this->redirectToRoute('app_notificaciones_usuario_todas');
+        }
 
         $notificaciones = $notificacionesUsuarioRepository->findBy(['usuarioRecive' => $this->getUser()], ['id' => 'DESC']);
 
