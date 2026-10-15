@@ -320,3 +320,10 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   repositorio y el endpoint dejó de convertir excepciones en respuestas de
   éxito. El usuario confirmó las trazas nuevas de sesión tras desplegar
   `9eca9af`; la regresión quedó en 69 pruebas y 303 aserciones.
+- **PENDIENTE DE TRANSICIÓN:** el respaldo PostgreSQL no incluía los archivos
+  físicos. `/var/www/akademos/shared/uploads` está vacío, aunque la base
+  conserva referencias a documentos de Convenios, fotos y otros adjuntos. Se
+  debe copiar íntegramente `public/uploads` desde la instalación operativa,
+  comprobar cantidad, tamaño e integridad y realizar una sincronización final
+  antes de habilitar a los usuarios en la nueva VM. Los 404 de archivos no se
+  resolverán corrigiendo URLs individuales.

@@ -29,6 +29,10 @@ procesos y resultados del sistema de referencia.
 - [ ] Comparar una muestra de conteos, consultas y reportes con el sistema de
   referencia.
 - [ ] Validar descarga de un documento real autorizado.
+- [ ] Migrar íntegramente `public/uploads` desde la instalación operativa al
+  almacenamiento persistente `/var/www/akademos/shared/uploads` de la nueva VM.
+- [ ] Comparar cantidad, tamaño e integridad de los archivos y ejecutar una
+  sincronización incremental final antes del cambio de usuarios.
 - [ ] Generar en UAT un PDF FOP, un PDF Dompdf y un XLSX, y comprobar contenido.
 - [ ] Confirmar creación y limpieza de `var/tmp/export/`.
 - [ ] Registrar y corregir defectos bloqueantes; repetir la regresión completa.
@@ -61,6 +65,8 @@ Objetivo: convertir el estado validado de `dev` en una versión estable.
 - [ ] Crear y revisar el pull request de `dev` hacia `main`.
 - [ ] Obtener un respaldo reciente y ejecutar un ensayo documentado de
   restauración y rollback.
+- [ ] Confirmar que la sincronización final de documentos, imágenes y adjuntos
+  concluyó sin archivos faltantes ni enlaces 404.
 - [ ] Desplegar el commit aprobado durante una ventana autorizada.
 - [ ] Ejecutar humo posterior al despliegue y revisar errores 4xx/5xx.
 - [ ] Comunicar la transición, responsables y procedimiento de incidencia.
