@@ -5,6 +5,9 @@ namespace App\Services;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Clase para la generacion de documentos PDF usando FOP
@@ -23,7 +26,7 @@ class HandlerFop
     private $PDFTMPPATH;
     private $FOPPATH;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, private TokenStorageInterface $tokenStorage, private LoggerInterface $logger)
     {
         $this->container = $container;
 
@@ -42,7 +45,7 @@ class HandlerFop
             $xml = ($use_head) ? "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $xml . "<{$root}>\n" : $xml . "<{$root}>\n";
 
         if (!is_array($object) && !is_object($object)) {
-            $xml = str_replace(array('>', '<', '&'), array('&gt;', '&lt;', '&amp;'), $object);
+            $xml = str_replace(array('>', '<', '&'), array('&gt;', '&lt;', '&amp;'), (string) $object);
         }
 
         if (is_array($object) || is_object($object)) {
@@ -88,6 +91,10 @@ class HandlerFop
     function exportToPdf(ReportFop $param)
     {
         $param->setContainer($this->container);
+        $user = $this->tokenStorage->getToken()?->getUser();
+        if ($param instanceof ExportList && $user instanceof UserInterface) {
+            $param->setUser($user);
+        }
 //        pr($param->getToXmlContent());
         $xml_content = $this->arrayToXml($param->getToXmlContent());
 
@@ -147,15 +154,26 @@ class HandlerFop
         //generar el documento en el formato especificado
 
         $arguments = ['-xml', $xml_path, '-xsl', $xsl_path, '-' . $outpu_format_comand, $export_path];
+        $fopExecutable = $this->FOPPATH;
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $resolvedExecutable = realpath($fopExecutable);
+            if ($resolvedExecutable !== false) {
+                $fopExecutable = $resolvedExecutable;
+            }
+        }
         $command = DIRECTORY_SEPARATOR === '\\'
-            ? array_merge(['cmd', '/c', $this->FOPPATH], $arguments)
-            : array_merge([$this->FOPPATH], $arguments);
+            ? array_merge(['cmd', '/c', $fopExecutable], $arguments)
+            : array_merge([$fopExecutable], $arguments);
 
         $process = new Process($command);
         $process->setTimeout(180);
         $process->run();
 
         if (!$process->isSuccessful() || !file_exists($export_path)) {
+            $this->logger->error('Falló la generación de un documento con FOP.', [
+                'exit_code' => $process->getExitCode(),
+                'process_error' => trim($process->getErrorOutput()),
+            ]);
             throw new \RuntimeException('SYS006: no se pudo generar el documento con FOP.');
         }
 

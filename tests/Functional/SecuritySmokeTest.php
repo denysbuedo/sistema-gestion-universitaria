@@ -353,6 +353,18 @@ class SecuritySmokeTest extends WebTestCase
         self::assertSame($initialState, $configuration->getActivo());
     }
 
+    public function testAdministratorCanExportSessionTracesToPdf(): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', '/traza/traza/exportar_pdf');
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('content-type', 'application/pdf');
+        self::assertStringStartsWith('%PDF-', $client->getResponse()->getContent());
+    }
+
     public function moduleLandingPageProvider(): iterable
     {
         yield 'administracion' => ['/administracion/portada'];

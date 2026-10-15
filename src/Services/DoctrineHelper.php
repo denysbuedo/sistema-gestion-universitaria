@@ -91,7 +91,7 @@ class DoctrineHelper
         foreach ($clazzProps as $prop)
         {
             // If a Whitelist exists
-            if (@count($whitelist[$clazzName]) > 0)
+            if (!empty($whitelist[$clazzName]))
             {
                 // And this class property is not in it
                 if (!@in_array($prop->name, $whitelist[$clazzName]))
@@ -101,7 +101,7 @@ class DoctrineHelper
                 }
                 // Otherwise, if a blacklist exists
             }
-            elseif (@count($blacklist[$clazzName] > 0))
+            elseif (!empty($blacklist[$clazzName]))
             {
 
                 // And this class property is in it

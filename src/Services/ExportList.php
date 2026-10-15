@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+
 abstract class ExportList implements \App\Services\ReportFop
 {
 
@@ -9,6 +11,7 @@ abstract class ExportList implements \App\Services\ReportFop
     private $token;
     private $filters_header;
     private $container;
+    private ?UserInterface $user = null;
     protected $filters = array();
 
     public function __construct($filters)
@@ -95,7 +98,10 @@ abstract class ExportList implements \App\Services\ReportFop
 
         $filters_header = $this->getFiltersHeader();
 
-        $user = \App\Services\DoctrineHelper::toArray($this->container->get('security.token_storage')->getToken()->getUser(), 1);
+        if (!$this->user instanceof UserInterface) {
+            throw new \RuntimeException('No existe un usuario autenticado para generar el reporte.');
+        }
+        $user = \App\Services\DoctrineHelper::toArray($this->user, 1);
         
         $user['username'] = $user['email'];
         $user['create_date'] = date('d/m/Y H:i');
@@ -110,6 +116,11 @@ abstract class ExportList implements \App\Services\ReportFop
         }
 
         return $data_array = array('filters_header' => $filters_header, 'header' => $header, 'data' => $fixedData, 'user' => $user);
+    }
+
+    public function setUser(UserInterface $user): void
+    {
+        $this->user = $user;
     }
 
     /**

@@ -68,7 +68,7 @@ class TrazaRepository extends ServiceEntityRepository
             ->innerJoin('qb.accion', 'a')
             ->innerJoin('qb.objeto', 'o')
             ->innerJoin('qb.persona', 'p');
-        $qb->orderBy('qb.creado', 'desc');
+        $qb->orderBy('qb.creado', \SortDirection::Descending);
         $resul = $qb->getQuery()->getResult();
         $final = [];
         foreach ($resul as $value) {
