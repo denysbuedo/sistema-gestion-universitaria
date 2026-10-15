@@ -314,3 +314,9 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   UAT-201 a UAT-204 y UAT-301 a UAT-305 están correctos. Permanecen por cerrar
   las comprobaciones manuales P0, archivos/reportes, integridad comparativa y
   la prueba real de roles con el equipo de Identidad.
+- La validación manual de UAT-006 detectó que los identificadores de los
+  catálogos de trazas estaban en cero y que el interruptor ocultaba un fallo al
+  persistir. Se alineó el entorno con la copia autorizada, se corrigió el
+  repositorio y el endpoint dejó de convertir excepciones en respuestas de
+  éxito. El usuario confirmó las trazas nuevas de sesión tras desplegar
+  `9eca9af`; la regresión quedó en 69 pruebas y 303 aserciones.

@@ -152,6 +152,21 @@ Con esta evidencia quedan correctos UAT-301 a UAT-305. La regresión asociada
 quedó en 68 pruebas y 292 aserciones, sin deprecaciones ni vulnerabilidades
 conocidas.
 
+### Validación manual de trazas — 2026-10-14
+
+La primera comprobación no mostró eventos porque los identificadores de inicio,
+cierre, objeto de autenticación y tipo de sesión estaban configurados como
+`0` en el entorno desplegado. Tras alinearlos con los catálogos de la copia
+autorizada, se detectó además que el interruptor de trazas ocultaba una
+excepción del repositorio y respondía como si hubiera guardado el cambio.
+
+El endpoint se corrigió para persistir mediante el `EntityManager` soportado y
+devolver un error HTTP real si falla. Se activó la configuración solicitada por
+el usuario, se desplegó el commit `9eca9af` con salva previa y la regresión pasó
+con 69 pruebas y 303 aserciones. El usuario repitió cierre, inicio y consulta
+del listado, y confirmó la aparición de las trazas. Con esta evidencia queda
+correcto UAT-006.
+
 ## Matriz priorizada
 
 ### P0 — habilitación y seguridad
@@ -239,7 +254,7 @@ coinciden con el sistema de referencia.
 | UAT-003 | Pendiente |  |  |  |
 | UAT-004 | Pendiente |  |  |  |
 | UAT-005 | Correcto | Usuario autorizado SGU | 2026-10-14 | Las 16 portadas cargaron datos, estadísticas, gráficos y menús sin errores |
-| UAT-006 | Pendiente |  |  |  |
+| UAT-006 | Correcto | Usuario autorizado SGU | 2026-10-14 | Inicio y cierre visibles; configuración corregida en `9eca9af` |
 | UAT-101 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Estructura correctos |
 | UAT-102 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Institución correctos |
 | UAT-103 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Personal correctos |
