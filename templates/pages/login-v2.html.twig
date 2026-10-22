@@ -1,3 +1,7 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Acceso | SGU Akademos</title>
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('assets/fontawesome-free/css/all.min.css') }}">
     <style>
@@ -15,7 +19,7 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { min-height: 100%; margin: 0; }
+        html, body { min-height: 100%; margin: 0; overflow-x: hidden; }
         body {
             min-height: 100vh;
             background: var(--sgu-canvas);
@@ -76,12 +80,25 @@
         .login-meta a:hover { text-decoration: underline; }
 
         @media (max-width: 800px) {
-            .login-layout { display: block; }
-            .login-brand { display: none; }
-            .login-main { min-height: 100vh; padding: 38px 22px; }
-            .mobile-brand { display: block; }
+            .login-layout { display: flex; min-height: 100dvh; flex-direction: column; background: var(--sgu-white); }
+            .login-brand { display: block; padding: 24px 22px; }
+            .brand-kicker { font-size: 11px; }
+            .brand-title { margin: 8px 0 0; font-size: 23px; line-height: 1.2; letter-spacing: -.02em; }
+            .brand-copy, .brand-footer { display: none; }
+            .login-main { display: block; min-height: 0; padding: 28px 22px 36px; background: var(--sgu-white); }
+            .login-panel { max-width: none; }
+            .mobile-brand { display: none; }
+            .login-header { margin-bottom: 24px; }
+            .login-header h1 { font-size: 25px; }
+            .login-meta { margin-top: 24px; }
         }
-        @media (max-width: 480px) { .form-control { font-size: 16px; } }
+        @media (max-width: 480px) {
+            .login-brand { padding: 20px 18px; }
+            .login-main { padding: 24px 18px 30px; }
+            .form-control { min-height: 48px; font-size: 16px; }
+            .btn-primary, .btn-secondary { min-height: 48px; padding-left: 12px; padding-right: 12px; font-size: 13px; }
+            .access-divider { margin: 20px 0; }
+        }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
     </style>
 {% endblock %}

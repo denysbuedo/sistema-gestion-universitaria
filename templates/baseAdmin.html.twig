@@ -430,6 +430,44 @@ scratch. This page gets rid of all links and provides the needed markup only.
             line-height: 1.2;
         }
 
+        /* Navegación institucional */
+        .main-sidebar.sidebar-dark-primary { background: #102f4f; box-shadow: none !important; }
+        .main-sidebar .brand-link,
+        .layout-navbar-fixed .wrapper .sidebar-dark-primary .brand-link:not([class*=navbar]) {
+            display: flex; height: 64px; align-items: center; gap: 11px; padding: 0 18px;
+            border-bottom: 1px solid rgba(255,255,255,.12); background: #102f4f; color: #fff;
+        }
+        .sgu-brand-mark {
+            display: inline-flex; width: 32px; height: 32px; flex: 0 0 32px; align-items: center;
+            justify-content: center; border: 1px solid rgba(255,255,255,.3); font-size: 13px;
+        }
+        .sgu-brand-name { display: block; font-size: 15px; font-weight: 500; line-height: 1.1; letter-spacing: .04em; }
+        .sgu-brand-system { display: block; margin-top: 3px; color: rgba(255,255,255,.58); font-size: 10px; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; }
+        .main-sidebar .sidebar { padding: 0 0 18px; }
+        [class*=sidebar-dark] .user-panel { padding: 16px 18px; }
+        .up-avatar { width: 40px; height: 40px; box-shadow: none; }
+        .up-status { background: #fff; border-color: #102f4f; }
+        .up-name { font-size: .86rem; font-weight: 500; }
+        .main-sidebar .nav-sidebar { padding: 10px 0; }
+        .main-sidebar .nav-sidebar > .nav-item > .nav-link {
+            width: auto; min-height: 44px; margin: 2px 10px; padding: 11px 12px; border-radius: 3px;
+            color: rgba(255,255,255,.78); font-size: 14px; font-weight: 400;
+        }
+        .main-sidebar .nav-sidebar > .nav-item > .nav-link:hover,
+        .main-sidebar .nav-sidebar > .nav-item.menu-open > .nav-link,
+        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+            background: rgba(255,255,255,.09); color: #fff; box-shadow: none;
+        }
+        .main-sidebar .nav-sidebar .nav-icon { width: 22px; margin-right: 8px; color: rgba(255,255,255,.65); font-size: 14px; }
+        [class*=sidebar-dark] .nav-legacy.nav-sidebar > .nav-item .nav-treeview,
+        [class*=sidebar-dark] .nav-legacy.nav-sidebar > .nav-item > .nav-treeview { background: transparent; }
+        .main-sidebar .nav-treeview > .nav-item > .nav-link {
+            width: auto; margin: 1px 10px; padding: 9px 12px 9px 43px; border-radius: 3px;
+            color: rgba(255,255,255,.62); font-size: 13px; font-weight: 400;
+        }
+        .main-sidebar .nav-treeview > .nav-item > .nav-link:hover,
+        .main-sidebar .nav-treeview > .nav-item > .nav-link.active { background: rgba(255,255,255,.07); color: #fff; }
+
             </style>
 
     {% block stylesheets %}
@@ -648,9 +686,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="{{ path('app_admin_home') }}" class="brand-link">
-            {#            <img  src="{{ asset('images/logo_principal.png') }}" > #}
-            <span class="brand-text font-weight-light"
-                  style="font-weight: bold !important; margin-left: 27%">AKADEMOS</span>
+            <span class="sgu-brand-mark"><i class="fas fa-university" aria-hidden="true"></i></span>
+            <span>
+                <span class="sgu-brand-name">AKADEMOS</span>
+                <span class="sgu-brand-system">Gestión Universitaria</span>
+            </span>
         </a>
 
         <!-- Sidebar -->
