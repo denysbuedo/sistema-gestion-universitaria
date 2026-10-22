@@ -351,3 +351,13 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   y 552 plantillas Twig validan correctamente. Se actualizó
   `symfony/expression-language` de 6.4.45 a 6.4.48 por CVE-2026-109449 y la
   auditoría de Composer no informa vulnerabilidades conocidas.
+- `dev` se publicó en `e1747fc` y se preparó, sin activar, el release
+  `/var/www/akademos/releases/20261021-e1747fc` en la VM nueva. Dependencias,
+  caché de producción, contenedor, plataforma y esquema validan correctamente;
+  el enlace activo continúa en `20261015011500-3bb11f9`.
+- El almacenamiento compartido conserva 2.003 archivos y 1.039.182.804 bytes.
+  Se corrigió el procedimiento para instalar el `.env` operativo no versionado
+  y asignar `var/` a `www-data` antes de limpiar/calentar caché.
+- No se aceptó sin verificación la nueva huella presentada por la VM operativa
+  anterior (`10.46.6.9`). Antes del inventario diferencial, Infraestructura debe
+  confirmar `SHA256:I6htL3NSG4SIdorPRkCpch4QCW/MCB64PMykroSfZBs`.

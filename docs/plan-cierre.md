@@ -20,7 +20,7 @@ validaciones humanas y de coordinación que pueden bloquear la transición.
 Objetivo: comprobar con responsables funcionales que la versión conserva los
 procesos y resultados del sistema de referencia.
 
-- [x] Prevalidación automática y regresión: 68 pruebas y 292 aserciones.
+- [x] Prevalidación automática y regresión: 68 pruebas y 301 aserciones.
 - [x] Salud pública, servicios, migraciones, esquema y almacenamiento de cargas.
 - [x] Ejecutar recorridos manuales P1 de datos maestros y procesos académicos.
 - [x] Ejecutar recorridos manuales P2 de procesos complementarios.
@@ -61,7 +61,9 @@ declara OIDC productivo aprobado.
 
 Objetivo: convertir el estado validado de `dev` en una versión estable.
 
-- [ ] Congelar el commit candidato y comprobar ambos pipelines.
+- [x] Preparar en la VM nueva el candidato `e1747fc` y validar dependencias,
+  caché, contenedor, requisitos y esquema sin activarlo.
+- [ ] Congelar el commit candidato definitivo y comprobar ambos pipelines.
 - [ ] Crear y revisar el pull request de `dev` hacia `main`.
 - [ ] Obtener un respaldo reciente y ejecutar un ensayo documentado de
   restauración y rollback.

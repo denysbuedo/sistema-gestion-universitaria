@@ -71,6 +71,11 @@ sudo -u akademos git clone --branch dev --single-branch \
 cd "$release_dir"
 sudo -u akademos git checkout "$release_id"
 
+# El archivo no se versiona. Instalarlo desde la configuración operativa
+# aprobada (o conservar el del release activo si no cambió el ambiente).
+sudo install -o akademos -g akademos -m 0664 \
+  /var/www/akademos/current/.env "$release_dir/.env"
+
 set -a
 source /etc/akademos/akademos.env
 set +a
@@ -78,6 +83,8 @@ set +a
 sudo -u akademos --preserve-env composer install \
   --no-dev --classmap-authoritative --no-interaction
 sudo install -d -o www-data -g www-data -m 0770 "$release_dir/var"
+sudo chown -R www-data:www-data "$release_dir/var"
+sudo chmod -R u+rwX,g+rwX,o-rwx "$release_dir/var"
 sudo rm -d "$release_dir/public/uploads"
 sudo ln -s /var/www/akademos/shared/uploads "$release_dir/public/uploads"
 sudo -u www-data --preserve-env php bin/console cache:clear --env=prod --no-debug
