@@ -1413,44 +1413,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     })
 
-    // Fix AdminLTE treeview toggle issue
-    $(document).ready(function() {
-        // Override the AdminLTE treeview behavior to fix the toggle issue
-        $(document).off('click', '[data-widget="treeview"] .nav-link');
-        
-        $(document).on('click', '[data-widget="treeview"] .nav-link', function(e) {
-            var $this = $(this);
-            var $parent = $this.parent('.nav-item');
-            var $treeview = $parent.find('> .nav-treeview');
-            
-            if ($treeview.length === 0) {
-                return; // No submenu, let the link work normally
-            }
-            
-            e.preventDefault();
-            
-            var isMenuOpen = $parent.hasClass('menu-open');
-            
-            if (isMenuOpen) {
-                // Close this menu
-                $parent.removeClass('menu-open menu-is-opening');
-                $treeview.slideUp(300);
-            } else {
-                // Close all other menus first (accordion behavior)
-                var $allMenuItems = $(this).closest('[data-widget="treeview"]').find('.nav-item.menu-open');
-                $allMenuItems.not($parent).each(function() {
-                    $(this).removeClass('menu-open menu-is-opening');
-                    $(this).find('> .nav-treeview').slideUp(300);
-                });
-                
-                // Open this menu
-                $parent.addClass('menu-is-opening');
-                $treeview.slideDown(300, function() {
-                    $parent.addClass('menu-open').removeClass('menu-is-opening');
-                });
-            }
+    // Acordeón del menú: este manejador se ejecuta antes que AdminLTE para evitar dobles toggles.
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('[data-widget="treeview"] .nav-link');
+        if (!link) return;
+
+        var parent = link.closest('.nav-item');
+        var treeview = parent ? parent.querySelector(':scope > .nav-treeview') : null;
+        if (!treeview) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        var root = link.closest('[data-widget="treeview"]');
+        var wasOpen = parent.classList.contains('menu-open');
+
+        root.querySelectorAll('.nav-item.menu-open').forEach(function (item) {
+            if (item === parent) return;
+            item.classList.remove('menu-open', 'menu-is-opening');
+            var submenu = item.querySelector(':scope > .nav-treeview');
+            var trigger = item.querySelector(':scope > .nav-link');
+            if (submenu) submenu.style.display = 'none';
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
         });
-    });
+
+        parent.classList.toggle('menu-open', !wasOpen);
+        parent.classList.remove('menu-is-opening');
+        treeview.style.display = wasOpen ? 'none' : 'block';
+        link.setAttribute('aria-expanded', wasOpen ? 'false' : 'true');
+    }, true);
 
     // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll('.table tbody tr');
