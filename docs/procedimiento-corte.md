@@ -61,9 +61,9 @@ incluyen en comandos guardados, capturas, bitácoras ni archivos del repositorio
 - El release, la base y los servicios activos no cambiaron. Salud y login
   respondieron 200 desde la VM y por HTTPS externo.
 
-La base y el volcado de ensayo quedan temporalmente retenidos, con acceso
-restringido, para las comprobaciones funcionales. Deben eliminarse conforme a
-la política institucional después de aprobar o descartar el ensayo.
+Tras completar las comprobaciones funcionales, la base y el volcado de ensayo
+fueron eliminados de forma controlada para no conservar otra copia con datos
+personales. La base y el release activos permanecieron intactos y saludables.
 
 ## Secuencia de la ventana de corte
 

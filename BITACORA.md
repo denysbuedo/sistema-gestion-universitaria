@@ -389,3 +389,15 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   en `/`, tras lo cual el proceso y sus temporales fueron eliminados. El release
   y la base activos no cambiaron y `/healthz` y `/login` continuaron en 200
   tanto interna como externamente.
+- El recorrido autenticado real sobre la restauración validó un administrador
+  local en 19 rutas funcionales, logout e invalidación de sesión. Un usuario
+  local sin roles funcionales obtuvo 403 en Administración; credenciales
+  incorrectas y una cuenta temporalmente inactiva fueron rechazadas. Los hashes
+  y estados originales se restauraron automáticamente al terminar cada caso.
+- Se generaron y validaron un PDF FOP autenticado (61.236 bytes), un Excel
+  heredado (26.004 bytes), un PDF Dompdf y un XLSX real. Las firmas `%PDF` y
+  `PK` fueron correctas y no quedaron temporales de exportación.
+- Terminado el ensayo, se eliminaron exclusivamente la base
+  `akademos_rehearsal_20261022` y el dump
+  `/var/backups/akademos/rehearsal-20261022.dump`. Son recreables desde la
+  fuente operativa; la base activa, el candidato y los uploads no se tocaron.

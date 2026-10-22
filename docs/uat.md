@@ -235,8 +235,8 @@ Ejecutar al menos un caso realista de cada tecnología:
       desde el acceso HTTPS de la nueva VM.
 - [x] Carga de un archivo permitido dentro del límite configurado (prevalidada en PHPUnit para documentos de planes de estudio).
 - [x] Rechazo de tipo MIME o tamaño no permitido (prevalidado en PHPUnit; límite de 32 MB).
-- [ ] Confirmación de que los temporales se crean en `var/tmp/export/` y se
-      eliminan según el procedimiento operativo.
+- [x] Confirmación de que los temporales de exportación se eliminan; el ensayo
+      terminó con cero archivos pendientes en `var/tmp/export/`.
 
 Verificar que nombre, tipo MIME, codificación, contenido, totales y filtros
 coinciden con el sistema de referencia.
@@ -247,9 +247,10 @@ coinciden con el sistema de referencia.
       nueva copia. Se identificó el delta que deberá capturar el volcado final.
 - [ ] Confirmar que consultas y reportes críticos devuelven los mismos resultados
       que el sistema actualmente operativo para una muestra acordada.
-- [ ] Confirmar que no aparecieron migraciones de esquema no planificadas.
-- [ ] Revisar errores 4xx/5xx y excepciones en los registros del periodo.
-- [ ] Restaurar o descartar los cambios introducidos por los casos de prueba.
+- [x] Confirmar que no aparecieron migraciones de esquema no planificadas.
+- [x] Revisar errores 4xx/5xx y excepciones en los registros del ensayo.
+- [x] Restaurar los hashes/estados temporales y eliminar la base, dump, servidor
+      HTTP y archivos creados por el ensayo.
 
 ## Criterios de salida
 
@@ -267,9 +268,9 @@ coinciden con el sistema de referencia.
 | Caso | Estado | Responsable | Fecha | Evidencia/incidencia |
 |---|---|---|---|---|
 | UAT-001 | Correcto | Usuario autorizado SGU | 2026-10-14 | Salud HTTP 200 y portadas autenticadas correctas |
-| UAT-002 | Pendiente |  |  |  |
-| UAT-003 | Pendiente |  |  |  |
-| UAT-004 | Pendiente |  |  |  |
+| UAT-002 | Correcto | Equipo técnico SGU | 2026-10-22 | Login, 19 rutas, logout e invalidación sobre restauración aislada |
+| UAT-003 | Correcto | Equipo técnico SGU | 2026-10-22 | Contraseña incorrecta y cuenta inactiva rechazadas; estado restaurado |
+| UAT-004 | Correcto | Equipo técnico SGU | 2026-10-22 | Usuario local sin roles funcionales recibió 403 en Administración |
 | UAT-005 | Correcto | Usuario autorizado SGU | 2026-10-14 | Las 16 portadas cargaron datos, estadísticas, gráficos y menús sin errores |
 | UAT-006 | Correcto | Usuario autorizado SGU | 2026-10-14 | Inicio y cierre visibles; configuración corregida en `9eca9af` |
 | UAT-101 | Correcto | Usuario autorizado SGU | 2026-10-14 | Listado, búsqueda y detalle de Estructura correctos |

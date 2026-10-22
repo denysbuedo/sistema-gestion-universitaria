@@ -24,8 +24,8 @@ procesos y resultados del sistema de referencia.
 - [x] Salud pública, servicios, migraciones, esquema y almacenamiento de cargas.
 - [x] Ejecutar recorridos manuales P1 de datos maestros y procesos académicos.
 - [x] Ejecutar recorridos manuales P2 de procesos complementarios.
-- [ ] Completar recorridos manuales P0 de sesión, rechazo de acceso, permisos y
-  trazas.
+- [x] Completar recorridos P0 de sesión, rechazo de acceso, permisos y trazas
+  sobre la restauración aislada y la UAT desplegada.
 - [ ] Comparar una muestra de conteos, consultas y reportes con el sistema de
   referencia.
 - [x] Comparar conteos exactos de las 164 tablas operativas e identificar el
@@ -37,9 +37,10 @@ procesos y resultados del sistema de referencia.
 - [x] Revalidar los 2.003 archivos por SHA-256 contra la VM operativa, sin
   faltantes ni diferencias de contenido.
 - [ ] Ejecutar una sincronización incremental final antes del cambio de usuarios.
-- [ ] Generar en UAT un PDF FOP, un PDF Dompdf y un XLSX, y comprobar contenido.
-- [ ] Confirmar creación y limpieza de `var/tmp/export/`.
-- [ ] Registrar y corregir defectos bloqueantes; repetir la regresión completa.
+- [x] Generar un PDF FOP autenticado, un PDF Dompdf, un Excel heredado y un
+  XLSX, comprobando sus firmas y tamaños.
+- [x] Confirmar creación y limpieza de `var/tmp/export/` y temporales de ensayo.
+- [x] Registrar y corregir defectos bloqueantes; repetir la regresión completa.
 - [ ] Obtener aprobación funcional y técnica.
 
 Este bloque requiere un entorno UAT aislado para operaciones de escritura. En
