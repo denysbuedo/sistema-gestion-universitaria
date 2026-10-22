@@ -119,6 +119,8 @@ class SecuritySmokeTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Gestión universitaria');
+        self::assertSelectorTextContains('.section__title', 'Procesos Universitarios');
+        self::assertSelectorTextContains('.section__description', 'formación, la investigación, la extensión y la graduación');
         self::assertSelectorExists('#module-search');
         self::assertSelectorExists('[data-module="pregrado formación académica carreras"]');
         self::assertSelectorExists('a[href="/administracion/portada"]');
