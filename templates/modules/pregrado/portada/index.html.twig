@@ -56,6 +56,10 @@
         .pg-inline-stat:last-child { border-right: 0; }
         .pg-inline-value { margin-bottom: 6px; color: var(--pg-navy); font-size: 26px; font-weight: 500; }
         .pg-inline-label { color: var(--pg-muted); font-size: 13px; font-weight: 400; }
+        .pg-modality-chart { position: relative; height: 230px; }
+        .pg-modality-legend { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 14px; border-top: 1px solid var(--pg-line); }
+        .pg-modality-legend > div { padding: 13px 10px 0; color: var(--pg-muted); font-size: 12px; text-align: center; }
+        .pg-modality-legend strong { display: block; margin-bottom: 2px; color: var(--pg-navy); font-size: 16px; font-weight: 500; }
 
         .pg-accreditation { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); border: 1px solid var(--pg-line); }
         .pg-accreditation-item { padding: 18px; border-right: 1px solid var(--pg-line); }
@@ -127,11 +131,8 @@
                             </section>
                             <section class="pg-panel">
                                 <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-user-graduate"></i></div><div><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></div></header>
-                                <div class="pg-inline-stats">
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.diurno }}</div><div class="pg-inline-label">Diurno</div></div>
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.por_encuentro }}</div><div class="pg-inline-label">Por encuentros</div></div>
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.adistancia }}</div><div class="pg-inline-label">A distancia</div></div>
-                                </div>
+                                <div class="pg-modality-chart"><canvas id="chartCarreraModalidad"></canvas></div>
+                                <div class="pg-modality-legend"><div><strong>{{ carrera_por_modalidad.diurno }}</strong>Diurno</div><div><strong>{{ carrera_por_modalidad.por_encuentro }}</strong>Por encuentros</div><div><strong>{{ carrera_por_modalidad.adistancia }}</strong>A distancia</div></div>
                             </section>
                         </div>
                         <div class="pg-column">
@@ -164,11 +165,8 @@
                             </section>
                             <section class="pg-panel">
                                 <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-user-graduate"></i></div><div><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></div></header>
-                                <div class="pg-inline-stats">
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.diurno }}</div><div class="pg-inline-label">Diurno</div></div>
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.por_encuentro }}</div><div class="pg-inline-label">Por encuentros</div></div>
-                                    <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.adistancia }}</div><div class="pg-inline-label">A distancia</div></div>
-                                </div>
+                                <div class="pg-modality-chart"><canvas id="chartCicloModalidad"></canvas></div>
+                                <div class="pg-modality-legend"><div><strong>{{ ciclo_corto_por_modalidad.diurno }}</strong>Diurno</div><div><strong>{{ ciclo_corto_por_modalidad.por_encuentro }}</strong>Por encuentros</div><div><strong>{{ ciclo_corto_por_modalidad.adistancia }}</strong>A distancia</div></div>
                             </section>
                         </div>
                         <div class="pg-column">
@@ -244,12 +242,32 @@
                 });
             }
 
+            function modalityChart(id, values) {
+                return new Chart(document.getElementById(id), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Diurno', 'Por encuentros', 'A distancia'],
+                        datasets: [{ data: values, backgroundColor: ['#102f4f', '#7892a7', '#c5d1da'], borderColor: '#ffffff', borderWidth: 2 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        animation: { duration: 250 },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { backgroundColor: '#102f4f', displayColors: false, padding: 11, cornerRadius: 2 }
+                        }
+                    }
+                });
+            }
+
+            modalityChart('chartCarreraModalidad', [{{ carrera_por_modalidad.diurno }}, {{ carrera_por_modalidad.por_encuentro }}, {{ carrera_por_modalidad.adistancia }}]);
             horizontalChart('chartCarreraRectores', {{ carrera_por_centro_rector|raw }});
             horizontalChart('chartCarreraFormador', {{ carrera_organismo_formador|raw }});
             horizontalChart('chartCarreraDemandante', {{ carrera_organismo_demandante|raw }});
             var cycleChartsCreated = false;
             $('a[href="#pg-ciclo"]').on('shown.bs.tab', function () {
                 if (!cycleChartsCreated) {
+                    modalityChart('chartCicloModalidad', [{{ ciclo_corto_por_modalidad.diurno }}, {{ ciclo_corto_por_modalidad.por_encuentro }}, {{ ciclo_corto_por_modalidad.adistancia }}]);
                     horizontalChart('chartCicloRectores', {{ ciclo_corto_por_centro_rector|raw }});
                     horizontalChart('chartCicloFormador', {{ ciclo_corto_organismo_formador|raw }});
                     horizontalChart('chartCicloDemandante', {{ ciclo_corto_organismo_demandante|raw }});
