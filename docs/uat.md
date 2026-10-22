@@ -12,13 +12,15 @@ reales.
 
 ## Condiciones de entrada
 
-- [ ] Copia de la base identificada con fecha, origen y responsable.
-- [ ] Restauración realizada en un entorno aislado.
+- [x] Copia de la base identificada con fecha y origen; responsable técnico del
+  ensayo registrado en la operación institucional.
+- [x] Restauración realizada en la base aislada
+  `akademos_rehearsal_20261022`, sin cambiar la aplicación activa.
 - [ ] Correo, Mattermost y demás salidas externas desactivadas o redirigidas.
 - [ ] Secretos exclusivos del ambiente de pruebas.
-- [ ] `dev` desplegada desde un commit identificado.
-- [ ] `php bin/console doctrine:schema:validate` correcto.
-- [ ] Suite PHPUnit y auditoría de Composer correctas.
+- [x] Candidato `e1747fc` preparado desde `dev` sin activarlo.
+- [x] `php bin/console doctrine:schema:validate` correcto sobre la restauración.
+- [x] Suite PHPUnit y auditoría de Composer correctas.
 - [ ] Respaldo del entorno UAT disponible antes de realizar cambios funcionales.
 
 No se requiere conceder ni retirar roles de SGU en Keycloak. Identidad se limita

@@ -69,8 +69,8 @@ Objetivo: convertir el estado validado de `dev` en una versión estable.
   caché, contenedor, requisitos y esquema sin activarlo.
 - [ ] Congelar el commit candidato definitivo y comprobar ambos pipelines.
 - [ ] Crear y revisar el pull request de `dev` hacia `main`.
-- [ ] Obtener un respaldo reciente y ejecutar un ensayo documentado de
-  restauración y rollback.
+- [x] Obtener un respaldo reciente y ejecutar un ensayo documentado de
+  restauración, migración, aislamiento y reversibilidad.
 - [x] Documentar en `docs/procedimiento-corte.md` la restauración en una base
   nueva, adopción de línea base, migración OIDC, activación y reversión.
 - [ ] Confirmar que la sincronización final de documentos, imágenes y adjuntos

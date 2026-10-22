@@ -43,6 +43,28 @@ otra vez dentro de la ventana.
 Las credenciales se leen de la configuración protegida de cada servidor. No se
 incluyen en comandos guardados, capturas, bitácoras ni archivos del repositorio.
 
+### Resultado del ensayo del 22 de octubre de 2026
+
+- Se generó desde la VM nueva un volcado consistente de la base operativa
+  PostgreSQL 10.17, sin instalar software ni escribir en la VM anterior.
+- El volcado custom ocupa 891.523 bytes y su SHA-256 es
+  `fd848e30f8730afa33716b964ddcd46866e18618f85b06ec3d6612a032744612`.
+- Se restauró en la base aislada `akademos_rehearsal_20261022`, propiedad del
+  usuario de aplicación, sin modificar la base activa.
+- La línea base se registró sin ejecutar su DDL y la migración OIDC se ejecutó
+  correctamente. Doctrine informa dos migraciones ejecutadas, ninguna pendiente
+  y esquema sincronizado; las dos columnas OIDC están presentes.
+- Las 164 tablas operativas coinciden exactamente en cantidad con la fuente.
+  No existen índices inválidos ni restricciones sin validar.
+- Un servidor HTTP temporal ligado exclusivamente a `127.0.0.1` respondió 200
+  en `/login` y 302 en `/`; fue detenido y sus temporales fueron eliminados.
+- El release, la base y los servicios activos no cambiaron. Salud y login
+  respondieron 200 desde la VM y por HTTPS externo.
+
+La base y el volcado de ensayo quedan temporalmente retenidos, con acceso
+restringido, para las comprobaciones funcionales. Deben eliminarse conforme a
+la política institucional después de aprobar o descartar el ensayo.
+
 ## Secuencia de la ventana de corte
 
 ### 1. Congelar escrituras

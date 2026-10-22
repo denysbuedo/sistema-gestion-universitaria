@@ -378,3 +378,14 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - El `.env` no versionado del candidato quedó restringido a propietario
   `akademos`, grupo `www-data` y modo `0640`; el procedimiento de releases
   incorpora esos permisos.
+- Se completó un ensayo de restauración sin modificar la VM ni la base
+  operativas. El dump custom de PostgreSQL 10.17 ocupa 891.523 bytes y tiene
+  SHA-256 `fd848e30f8730afa33716b964ddcd46866e18618f85b06ec3d6612a032744612`.
+- La restauración aislada `akademos_rehearsal_20261022` adoptó la línea base y
+  ejecutó la migración OIDC. Doctrine informa esquema sincronizado, dos
+  migraciones ejecutadas y ninguna pendiente; las 164 tablas coinciden en
+  conteo con la fuente, sin índices inválidos ni constraints sin validar.
+- El humo HTTP temporal contra la restauración respondió 200 en `/login` y 302
+  en `/`, tras lo cual el proceso y sus temporales fueron eliminados. El release
+  y la base activos no cambiaron y `/healthz` y `/login` continuaron en 200
+  tanto interna como externamente.
