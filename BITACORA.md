@@ -361,3 +361,17 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - No se aceptó sin verificación la nueva huella presentada por la VM operativa
   anterior (`10.46.6.9`). Antes del inventario diferencial, Infraestructura debe
   confirmar `SHA256:I6htL3NSG4SIdorPRkCpch4QCW/MCB64PMykroSfZBs`.
+- La huella anterior fue confirmada directamente desde la consola de la VM y
+  registrada. El inventario posterior fue estrictamente de solo lectura.
+- Los 2.003 archivos del origen y destino coinciden completamente por SHA-256:
+  no existen faltantes, extras ni contenidos diferentes. Dos fechas de
+  modificación posteriores no representaban cambios de contenido; la diferencia
+  observada por `du` correspondía a metadatos de directorios.
+- La comparación exacta de conteos cubrió las 164 tablas operativas: 161
+  coinciden, la fuente tiene 32 filas adicionales en `rrhh.tbd_ae2` y 27 en
+  `rrhh.tbd_ae3`, y el destino conserva cuatro trazas generadas durante UAT.
+  `public.doctrine_migration_versions` existe solo en el destino modernizado.
+- Se definió que el corte final restaurará la base operativa en una base nueva,
+  adoptará la línea base y ejecutará la migración OIDC antes de cambiar el
+  release. Este diseño mantiene intacta la base validada para una reversión
+  rápida y queda documentado en `docs/procedimiento-corte.md`.

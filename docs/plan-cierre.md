@@ -28,10 +28,14 @@ procesos y resultados del sistema de referencia.
   trazas.
 - [ ] Comparar una muestra de conteos, consultas y reportes con el sistema de
   referencia.
-- [ ] Validar descarga de un documento real autorizado.
+- [x] Comparar conteos exactos de las 164 tablas operativas e identificar el
+  delta desde la copia: 32 AE2 y 27 AE3 adicionales en el origen.
+- [x] Validar descarga de documentos reales autorizados.
 - [x] Realizar la copia inicial íntegra de `public/uploads` desde la instalación operativa al
   almacenamiento persistente `/var/www/akademos/shared/uploads` de la nueva VM.
 - [x] Comparar cantidad, tamaño e integridad de la copia inicial.
+- [x] Revalidar los 2.003 archivos por SHA-256 contra la VM operativa, sin
+  faltantes ni diferencias de contenido.
 - [ ] Ejecutar una sincronización incremental final antes del cambio de usuarios.
 - [ ] Generar en UAT un PDF FOP, un PDF Dompdf y un XLSX, y comprobar contenido.
 - [ ] Confirmar creación y limpieza de `var/tmp/export/`.
@@ -67,6 +71,8 @@ Objetivo: convertir el estado validado de `dev` en una versión estable.
 - [ ] Crear y revisar el pull request de `dev` hacia `main`.
 - [ ] Obtener un respaldo reciente y ejecutar un ensayo documentado de
   restauración y rollback.
+- [x] Documentar en `docs/procedimiento-corte.md` la restauración en una base
+  nueva, adopción de línea base, migración OIDC, activación y reversión.
 - [ ] Confirmar que la sincronización final de documentos, imágenes y adjuntos
   concluyó sin archivos faltantes ni enlaces 404.
 - [ ] Desplegar el commit aprobado durante una ventana autorizada.

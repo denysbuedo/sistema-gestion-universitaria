@@ -229,8 +229,8 @@ Ejecutar al menos un caso realista de cada tecnología:
 - [x] PDF mediante Apache FOP (prevalidado en la validación Ubuntu).
 - [x] PDF mediante Dompdf (prevalidado por PHPUnit).
 - [x] Exportación XLSX con PhpSpreadsheet (prevalidado por PHPUnit).
-- [ ] Descarga y contenido de un documento previamente almacenado (copia
-      inicial disponible; pendiente confirmación visual del usuario).
+- [x] Descarga y contenido de documentos previamente almacenados, confirmados
+      desde el acceso HTTPS de la nueva VM.
 - [x] Carga de un archivo permitido dentro del límite configurado (prevalidada en PHPUnit para documentos de planes de estudio).
 - [x] Rechazo de tipo MIME o tamaño no permitido (prevalidado en PHPUnit; límite de 32 MB).
 - [ ] Confirmación de que los temporales se crean en `var/tmp/export/` y se
@@ -241,7 +241,8 @@ coinciden con el sistema de referencia.
 
 ## Integridad y comparación
 
-- [ ] Comparar conteos por módulo antes y después de la UAT.
+- [x] Comparar conteos exactos de tablas entre la instalación operativa y la
+      nueva copia. Se identificó el delta que deberá capturar el volcado final.
 - [ ] Confirmar que consultas y reportes críticos devuelven los mismos resultados
       que el sistema actualmente operativo para una muestra acordada.
 - [ ] Confirmar que no aparecieron migraciones de esquema no planificadas.
