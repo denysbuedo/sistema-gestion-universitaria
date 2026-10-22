@@ -11,68 +11,68 @@
             --pg-line: #dce4ea;
             --pg-soft: #f4f7f9;
             --pg-white: #fff;
+            --pg-blue-soft: #eaf1f6;
+            --pg-steel: #496b86;
         }
 
         .pg-page { margin: -10px -15px 0; background: var(--pg-soft); color: var(--pg-text); }
-        .pg-header { padding: 27px 32px 25px; border-bottom: 1px solid var(--pg-line); background: var(--pg-white); }
-        .pg-eyebrow { margin-bottom: 5px; color: var(--pg-muted); font-size: 11px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
-        .pg-title { margin: 0 0 5px; color: var(--pg-navy); font-size: 25px; font-weight: 500; letter-spacing: -.015em; }
-        .pg-subtitle { margin: 0; color: var(--pg-muted); font-size: 13px; font-weight: 400; }
-        .pg-content { padding: 24px 32px 34px; }
+        .pg-header { padding: 32px 36px 29px; border-bottom: 1px solid var(--pg-line); background: var(--pg-white); }
+        .pg-eyebrow { margin-bottom: 7px; color: var(--pg-steel); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+        .pg-title { margin: 0 0 7px; color: var(--pg-navy); font-size: 30px; font-weight: 500; letter-spacing: -.015em; }
+        .pg-subtitle { margin: 0; color: var(--pg-muted); font-size: 15px; font-weight: 400; }
+        .pg-content { padding: 28px 36px 42px; }
 
-        .pg-metrics { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); margin-bottom: 24px; border: 1px solid var(--pg-line); background: var(--pg-white); }
-        .pg-metric { min-height: 92px; padding: 18px 20px; border-right: 1px solid var(--pg-line); }
-        .pg-metric:last-child { border-right: 0; }
-        .pg-metric-value { margin-bottom: 5px; color: var(--pg-navy); font-size: 27px; font-weight: 500; line-height: 1; }
-        .pg-metric-label { color: var(--pg-muted); font-size: 12px; font-weight: 400; }
+        .pg-metrics { display: grid; grid-template-columns: repeat(3, minmax(190px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .pg-metric { display: flex; min-height: 108px; align-items: center; gap: 16px; padding: 20px 22px; border: 1px solid var(--pg-line); background: var(--pg-white); }
+        .pg-metric-icon { display: flex; width: 44px; height: 44px; flex: 0 0 44px; align-items: center; justify-content: center; border: 1px solid #cfdae3; background: var(--pg-blue-soft); color: var(--pg-navy); font-size: 17px; }
+        .pg-metric-value { margin-bottom: 6px; color: var(--pg-navy); font-size: 30px; font-weight: 500; line-height: 1; }
+        .pg-metric-label { color: var(--pg-muted); font-size: 14px; font-weight: 400; }
 
-        .pg-tabs { display: flex; gap: 24px; margin-bottom: 18px; border-bottom: 1px solid var(--pg-line); }
-        .pg-tabs .nav-link { margin-bottom: -1px; padding: 10px 1px 11px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--pg-muted); font-size: 13px; font-weight: 400; }
+        .pg-tabs { display: flex; gap: 30px; margin-bottom: 22px; border-bottom: 1px solid var(--pg-line); }
+        .pg-tabs .nav-link { margin-bottom: -1px; padding: 12px 1px 13px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--pg-muted); font-size: 15px; font-weight: 400; }
         .pg-tabs .nav-link:hover { color: var(--pg-navy); }
         .pg-tabs .nav-link.active { border-bottom-color: var(--pg-navy); background: transparent; color: var(--pg-navy); font-weight: 500; }
 
-        .pg-grid { display: grid; grid-template-columns: minmax(280px, .85fr) minmax(0, 1.5fr); gap: 18px; }
-        .pg-column { display: grid; align-content: start; gap: 18px; }
-        .pg-panel { padding: 20px; border: 1px solid var(--pg-line); background: var(--pg-white); }
-        .pg-panel-header { margin-bottom: 18px; }
-        .pg-panel-title { margin: 0 0 4px; color: var(--pg-text); font-size: 14px; font-weight: 500; }
-        .pg-panel-note { margin: 0; color: var(--pg-muted); font-size: 11px; font-weight: 400; }
-        .pg-chart { position: relative; height: 245px; }
-        .pg-chart-large { height: 285px; }
+        .pg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .pg-column { display: contents; }
+        .pg-panel { min-width: 0; padding: 24px; border: 1px solid var(--pg-line); background: var(--pg-white); }
+        .pg-panel-wide { grid-column: 1 / -1; }
+        .pg-panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+        .pg-panel-icon { display: flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; background: var(--pg-blue-soft); color: var(--pg-navy); font-size: 14px; }
+        .pg-panel-title { margin: 0 0 4px; color: var(--pg-text); font-size: 16px; font-weight: 500; }
+        .pg-panel-note { margin: 0; color: var(--pg-muted); font-size: 13px; font-weight: 400; }
+        .pg-chart { position: relative; min-height: 320px; }
+        .pg-chart-large { min-height: 380px; }
 
-        .pg-bars { display: grid; gap: 14px; }
-        .pg-bar-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; color: var(--pg-text); font-size: 12px; font-weight: 400; }
+        .pg-bars { display: grid; gap: 18px; }
+        .pg-bar-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: var(--pg-text); font-size: 14px; font-weight: 400; }
         .pg-bar-value { color: var(--pg-muted); font-variant-numeric: tabular-nums; }
-        .pg-bar-track { height: 5px; overflow: hidden; background: #e8edf1; }
+        .pg-bar-track { height: 7px; overflow: hidden; background: #e8edf1; }
         .pg-bar-fill { height: 100%; background: var(--pg-navy); }
 
         .pg-inline-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--pg-line); }
-        .pg-inline-stat { padding: 14px 12px; border-right: 1px solid var(--pg-line); }
+        .pg-inline-stat { padding: 20px 16px; border-right: 1px solid var(--pg-line); }
         .pg-inline-stat:last-child { border-right: 0; }
-        .pg-inline-value { margin-bottom: 4px; color: var(--pg-navy); font-size: 20px; font-weight: 500; }
-        .pg-inline-label { color: var(--pg-muted); font-size: 11px; font-weight: 400; }
+        .pg-inline-value { margin-bottom: 6px; color: var(--pg-navy); font-size: 26px; font-weight: 500; }
+        .pg-inline-label { color: var(--pg-muted); font-size: 13px; font-weight: 400; }
 
         .pg-accreditation { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); border: 1px solid var(--pg-line); }
-        .pg-accreditation-item { padding: 14px; border-right: 1px solid var(--pg-line); }
+        .pg-accreditation-item { padding: 18px; border-right: 1px solid var(--pg-line); }
         .pg-accreditation-item:last-child { border-right: 0; }
-        .pg-accreditation-value { color: var(--pg-navy); font-size: 20px; font-weight: 500; }
-        .pg-accreditation-name { margin: 3px 0; color: var(--pg-text); font-size: 11px; font-weight: 400; }
-        .pg-accreditation-percent { color: var(--pg-muted); font-size: 10px; }
+        .pg-accreditation-value { color: var(--pg-navy); font-size: 25px; font-weight: 500; }
+        .pg-accreditation-name { margin: 5px 0; color: var(--pg-text); font-size: 13px; font-weight: 400; }
+        .pg-accreditation-percent { color: var(--pg-muted); font-size: 12px; }
 
         @media (max-width: 1100px) {
-            .pg-metrics { grid-template-columns: repeat(3, 1fr); }
-            .pg-metric:nth-child(3) { border-right: 0; }
-            .pg-metric:nth-child(-n+3) { border-bottom: 1px solid var(--pg-line); }
+            .pg-metrics { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 800px) {
             .pg-header, .pg-content { padding-left: 18px; padding-right: 18px; }
             .pg-grid { grid-template-columns: 1fr; }
+            .pg-panel-wide { grid-column: auto; }
         }
         @media (max-width: 560px) {
-            .pg-metrics { grid-template-columns: repeat(2, 1fr); }
-            .pg-metric { border-bottom: 1px solid var(--pg-line); }
-            .pg-metric:nth-child(2n) { border-right: 0; }
-            .pg-metric:nth-last-child(-n+2) { border-bottom: 0; }
+            .pg-metrics { grid-template-columns: 1fr; }
             .pg-accreditation { grid-template-columns: repeat(2, 1fr); }
             .pg-accreditation-item:nth-child(2n) { border-right: 0; }
             .pg-accreditation-item:nth-child(-n+2) { border-bottom: 1px solid var(--pg-line); }
@@ -91,17 +91,17 @@
         <div class="pg-content">
             <section class="pg-metrics" aria-label="Indicadores generales">
                 {% set metrics = [
-                    {'value': total_solicitudes, 'label': 'Solicitudes'},
-                    {'value': total_aprobado, 'label': 'Aprobados'},
-                    {'value': programas_rechazados, 'label': 'Rechazados'},
-                    {'value': programas_reabiertos, 'label': 'Reabiertos'},
-                    {'value': programas_desactivados, 'label': 'Desactivados'},
-                    {'value': programas_extintos, 'label': 'Extintos'}
+                    {'value': total_solicitudes, 'label': 'Solicitudes', 'icon': 'fa-file-alt'},
+                    {'value': total_aprobado, 'label': 'Aprobados', 'icon': 'fa-check-circle'},
+                    {'value': programas_rechazados, 'label': 'Rechazados', 'icon': 'fa-times-circle'},
+                    {'value': programas_reabiertos, 'label': 'Reabiertos', 'icon': 'fa-redo-alt'},
+                    {'value': programas_desactivados, 'label': 'Desactivados', 'icon': 'fa-pause-circle'},
+                    {'value': programas_extintos, 'label': 'Extintos', 'icon': 'fa-archive'}
                 ] %}
                 {% for metric in metrics %}
                     <div class="pg-metric">
-                        <div class="pg-metric-value">{{ metric.value }}</div>
-                        <div class="pg-metric-label">{{ metric.label }}</div>
+                        <div class="pg-metric-icon"><i class="fas {{ metric.icon }}" aria-hidden="true"></i></div>
+                        <div><div class="pg-metric-value">{{ metric.value }}</div><div class="pg-metric-label">{{ metric.label }}</div></div>
                     </div>
                 {% endfor %}
             </section>
@@ -116,7 +116,7 @@
                     <div class="pg-grid">
                         <div class="pg-column">
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Ramas de la ciencia</h2><p class="pg-panel-note">Distribución de carreras aprobadas</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-atom"></i></div><div><h2 class="pg-panel-title">Ramas de la ciencia</h2><p class="pg-panel-note">Distribución de carreras aprobadas</p></div></header>
                                 <div class="pg-bars">
                                     {% for item in carrera_por_rama_ciencia %}
                                         {% set percentage = carreras_aprobadas > 0 ? (item.total * 100 / carreras_aprobadas)|round(0) : 0 %}
@@ -125,7 +125,7 @@
                                 </div>
                             </section>
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-user-graduate"></i></div><div><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></div></header>
                                 <div class="pg-inline-stats">
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.diurno }}</div><div class="pg-inline-label">Diurno</div></div>
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.por_encuentro }}</div><div class="pg-inline-label">Por encuentros</div></div>
@@ -133,7 +133,7 @@
                                 </div>
                             </section>
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></div></header>
                                 <div class="pg-accreditation">
                                     {% for item in carrera_por_categoria_acreditacion %}
                                         <div class="pg-accreditation-item"><div class="pg-accreditation-value">{{ item.total }}</div><div class="pg-accreditation-name">{{ item.nombre }}</div><div class="pg-accreditation-percent">{{ carreras_aprobadas > 0 ? (item.total * 100 / carreras_aprobadas)|round(1) : 0 }}%</div></div>
@@ -142,9 +142,9 @@
                             </section>
                         </div>
                         <div class="pg-column">
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></header><div class="pg-chart pg-chart-large"><canvas id="chartCarreraRectores"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></header><div class="pg-chart"><canvas id="chartCarreraFormador"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></header><div class="pg-chart"><canvas id="chartCarreraDemandante"></canvas></div></section>
+                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCarreraRectores"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCarreraFormador"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCarreraDemandante"></canvas></div></section>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                     <div class="pg-grid">
                         <div class="pg-column">
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Ramas de la ciencia</h2><p class="pg-panel-note">Distribución de programas de ciclo corto</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-atom"></i></div><div><h2 class="pg-panel-title">Ramas de la ciencia</h2><p class="pg-panel-note">Distribución de programas de ciclo corto</p></div></header>
                                 <div class="pg-bars">
                                     {% for item in ciclo_corto_por_rama_ciencia %}
                                         {% set percentage = ciclo_corto_aprobados > 0 ? (item.total * 100 / ciclo_corto_aprobados)|round(0) : 0 %}
@@ -162,7 +162,7 @@
                                 </div>
                             </section>
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-user-graduate"></i></div><div><h2 class="pg-panel-title">Modalidades</h2><p class="pg-panel-note">Programas aprobados por modalidad</p></div></header>
                                 <div class="pg-inline-stats">
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.diurno }}</div><div class="pg-inline-label">Diurno</div></div>
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.por_encuentro }}</div><div class="pg-inline-label">Por encuentros</div></div>
@@ -170,7 +170,7 @@
                                 </div>
                             </section>
                             <section class="pg-panel">
-                                <header class="pg-panel-header"><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></header>
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></div></header>
                                 <div class="pg-accreditation">
                                     {% for item in ciclo_corto_por_categoria_acreditacion %}
                                         <div class="pg-accreditation-item"><div class="pg-accreditation-value">{{ item.total }}</div><div class="pg-accreditation-name">{{ item.nombre }}</div><div class="pg-accreditation-percent">{{ ciclo_corto_aprobados > 0 ? (item.total * 100 / ciclo_corto_aprobados)|round(1) : 0 }}%</div></div>
@@ -179,9 +179,9 @@
                             </section>
                         </div>
                         <div class="pg-column">
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></header><div class="pg-chart pg-chart-large"><canvas id="chartCicloRectores"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></header><div class="pg-chart"><canvas id="chartCicloFormador"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></header><div class="pg-chart"><canvas id="chartCicloDemandante"></canvas></div></section>
+                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCicloRectores"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCicloFormador"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCicloDemandante"></canvas></div></section>
                         </div>
                     </div>
                 </div>
@@ -196,23 +196,28 @@
         document.addEventListener('DOMContentLoaded', function () {
             Chart.defaults.color = '#6b7b88';
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            Chart.defaults.font.size = 11;
+            Chart.defaults.font.size = 13;
 
             function chartData(source) {
                 return { labels: source.map(function (item) { return item.name; }), values: source.map(function (item) { return item.y; }) };
             }
             function horizontalChart(id, source) {
                 var parsed = chartData(source);
-                return new Chart(document.getElementById(id), {
+                var canvas = document.getElementById(id);
+                var chartBox = canvas.parentElement;
+                var minimumHeight = chartBox.classList.contains('pg-chart-large') ? 400 : 340;
+                chartBox.style.height = Math.max(minimumHeight, parsed.labels.length * 38 + 70) + 'px';
+                return new Chart(canvas, {
                     type: 'bar',
-                    data: { labels: parsed.labels, datasets: [{ data: parsed.values, backgroundColor: '#102f4f', borderWidth: 0, barThickness: 12, maxBarThickness: 16 }] },
+                    data: { labels: parsed.labels, datasets: [{ data: parsed.values, backgroundColor: '#496b86', borderWidth: 0, barThickness: 16, maxBarThickness: 18 }] },
                     options: {
                         indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                         animation: { duration: 250 },
-                        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#102f4f', displayColors: false, padding: 9, cornerRadius: 2 } },
+                        layout: { padding: { right: 12 } },
+                        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#102f4f', displayColors: false, padding: 11, cornerRadius: 2 } },
                         scales: {
-                            x: { beginAtZero: true, grid: { color: '#e6ebef', drawBorder: false }, ticks: { precision: 0 } },
-                            y: { grid: { display: false, drawBorder: false }, ticks: { color: '#425563' } }
+                            x: { beginAtZero: true, grid: { color: '#e6ebef', drawBorder: false }, ticks: { precision: 0, padding: 8 } },
+                            y: { grid: { display: false, drawBorder: false }, ticks: { color: '#425563', padding: 8, autoSkip: false } }
                         }
                     }
                 });
