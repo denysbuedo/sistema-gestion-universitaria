@@ -41,8 +41,9 @@
         .pg-panel-icon { display: flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; background: var(--pg-blue-soft); color: var(--pg-navy); font-size: 14px; }
         .pg-panel-title { margin: 0 0 4px; color: var(--pg-text); font-size: 16px; font-weight: 500; }
         .pg-panel-note { margin: 0; color: var(--pg-muted); font-size: 13px; font-weight: 400; }
-        .pg-chart { position: relative; min-height: 320px; }
-        .pg-chart-large { min-height: 380px; }
+        .pg-chart { position: relative; height: 340px; overflow-x: hidden; overflow-y: auto; }
+        .pg-chart-large { height: 400px; }
+        .pg-chart-inner { position: relative; width: 100%; min-height: 100%; }
 
         .pg-bars { display: grid; gap: 18px; }
         .pg-bar-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: var(--pg-text); font-size: 14px; font-weight: 400; }
@@ -132,19 +133,19 @@
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ carrera_por_modalidad.adistancia }}</div><div class="pg-inline-label">A distancia</div></div>
                                 </div>
                             </section>
-                            <section class="pg-panel">
-                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></div></header>
+                        </div>
+                        <div class="pg-column">
+                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCarreraRectores"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCarreraFormador"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCarreraDemandante"></canvas></div></section>
+                            <section class="pg-panel pg-panel-wide">
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Calidad reconocida de los programas académicos</p></div></header>
                                 <div class="pg-accreditation">
                                     {% for item in carrera_por_categoria_acreditacion %}
                                         <div class="pg-accreditation-item"><div class="pg-accreditation-value">{{ item.total }}</div><div class="pg-accreditation-name">{{ item.nombre }}</div><div class="pg-accreditation-percent">{{ carreras_aprobadas > 0 ? (item.total * 100 / carreras_aprobadas)|round(1) : 0 }}%</div></div>
                                     {% endfor %}
                                 </div>
                             </section>
-                        </div>
-                        <div class="pg-column">
-                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCarreraRectores"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCarreraFormador"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCarreraDemandante"></canvas></div></section>
                         </div>
                     </div>
                 </div>
@@ -169,19 +170,19 @@
                                     <div class="pg-inline-stat"><div class="pg-inline-value">{{ ciclo_corto_por_modalidad.adistancia }}</div><div class="pg-inline-label">A distancia</div></div>
                                 </div>
                             </section>
-                            <section class="pg-panel">
-                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Categoría de los programas</p></div></header>
+                        </div>
+                        <div class="pg-column">
+                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCicloRectores"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCicloFormador"></canvas></div></section>
+                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCicloDemandante"></canvas></div></section>
+                            <section class="pg-panel pg-panel-wide">
+                                <header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-award"></i></div><div><h2 class="pg-panel-title">Acreditación</h2><p class="pg-panel-note">Calidad reconocida de los programas académicos</p></div></header>
                                 <div class="pg-accreditation">
                                     {% for item in ciclo_corto_por_categoria_acreditacion %}
                                         <div class="pg-accreditation-item"><div class="pg-accreditation-value">{{ item.total }}</div><div class="pg-accreditation-name">{{ item.nombre }}</div><div class="pg-accreditation-percent">{{ ciclo_corto_aprobados > 0 ? (item.total * 100 / ciclo_corto_aprobados)|round(1) : 0 }}%</div></div>
                                     {% endfor %}
                                 </div>
                             </section>
-                        </div>
-                        <div class="pg-column">
-                            <section class="pg-panel pg-panel-wide"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-university"></i></div><div><h2 class="pg-panel-title">Centros rectores</h2><p class="pg-panel-note">Programas coordinados por institución</p></div></header><div class="pg-chart pg-chart-large"><canvas id="chartCicloRectores"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-building"></i></div><div><h2 class="pg-panel-title">Organismos formadores</h2><p class="pg-panel-note">Distribución institucional</p></div></header><div class="pg-chart"><canvas id="chartCicloFormador"></canvas></div></section>
-                            <section class="pg-panel"><header class="pg-panel-header"><div class="pg-panel-icon"><i class="fas fa-briefcase"></i></div><div><h2 class="pg-panel-title">Organismos demandantes</h2><p class="pg-panel-note">Demanda de programas por organismo</p></div></header><div class="pg-chart"><canvas id="chartCicloDemandante"></canvas></div></section>
                         </div>
                     </div>
                 </div>
@@ -206,7 +207,11 @@
                 var canvas = document.getElementById(id);
                 var chartBox = canvas.parentElement;
                 var minimumHeight = chartBox.classList.contains('pg-chart-large') ? 400 : 340;
-                chartBox.style.height = Math.max(minimumHeight, parsed.labels.length * 38 + 70) + 'px';
+                var chartInner = document.createElement('div');
+                chartInner.className = 'pg-chart-inner';
+                chartBox.insertBefore(chartInner, canvas);
+                chartInner.appendChild(canvas);
+                chartInner.style.height = Math.max(minimumHeight, parsed.labels.length * 38 + 70) + 'px';
                 return new Chart(canvas, {
                     type: 'bar',
                     data: { labels: parsed.labels, datasets: [{ data: parsed.values, backgroundColor: '#496b86', borderWidth: 0, barThickness: 16, maxBarThickness: 18 }] },
