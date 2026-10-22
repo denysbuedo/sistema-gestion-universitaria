@@ -110,6 +110,21 @@ class SecuritySmokeTest extends WebTestCase
         self::assertStringEndsWith('/dashboard', $client->getRequest()->getUri());
     }
 
+    public function testDashboardProvidesTheInstitutionalProcessPortal(): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', '/dashboard');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Gestión universitaria');
+        self::assertSelectorExists('#module-search');
+        self::assertSelectorExists('[data-module="pregrado formación académica carreras"]');
+        self::assertSelectorExists('a[href="/administracion/portada"]');
+        self::assertSelectorNotExists('link[href*="fonts.googleapis.com"]');
+    }
+
     public function testLogoutInvalidatesTheAuthenticatedSession(): void
     {
         $client = static::createClient();
