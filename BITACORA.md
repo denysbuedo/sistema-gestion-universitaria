@@ -327,3 +327,10 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   comprobar cantidad, tamaño e integridad y realizar una sincronización final
   antes de habilitar a los usuarios en la nueva VM. Los 404 de archivos no se
   resolverán corrigiendo URLs individuales.
+- El 21 de octubre de 2026 se realizó la copia inicial de `public/uploads`
+  desde la VM operativa, sin detener servicios, sin borrar el origen y con un
+  límite aproximado de 10 MB/s. El destino persistente contiene 2.003 archivos
+  y 1.039.182.804 bytes; la verificación por checksum no encontró diferencias.
+  Dos PDF de Convenios respondieron HTTP 200 interna y externamente. Falta la
+  validación visual y una sincronización incremental final durante la ventana
+  de transición, ya que el servidor anterior continúa activo.

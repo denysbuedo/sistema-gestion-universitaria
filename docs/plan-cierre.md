@@ -29,10 +29,10 @@ procesos y resultados del sistema de referencia.
 - [ ] Comparar una muestra de conteos, consultas y reportes con el sistema de
   referencia.
 - [ ] Validar descarga de un documento real autorizado.
-- [ ] Migrar íntegramente `public/uploads` desde la instalación operativa al
+- [x] Realizar la copia inicial íntegra de `public/uploads` desde la instalación operativa al
   almacenamiento persistente `/var/www/akademos/shared/uploads` de la nueva VM.
-- [ ] Comparar cantidad, tamaño e integridad de los archivos y ejecutar una
-  sincronización incremental final antes del cambio de usuarios.
+- [x] Comparar cantidad, tamaño e integridad de la copia inicial.
+- [ ] Ejecutar una sincronización incremental final antes del cambio de usuarios.
 - [ ] Generar en UAT un PDF FOP, un PDF Dompdf y un XLSX, y comprobar contenido.
 - [ ] Confirmar creación y limpieza de `var/tmp/export/`.
 - [ ] Registrar y corregir defectos bloqueantes; repetir la regresión completa.

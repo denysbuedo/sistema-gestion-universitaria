@@ -211,20 +211,26 @@ correcto UAT-006.
 
 ## Reportes, exportaciones y archivos
 
-La base restaurada conserva referencias a documentos e imágenes, pero el
-directorio persistente de la nueva VM está todavía vacío. La descarga de dos
-documentos de Convenios devolvió 404 y también se observaron fotografías de
-usuarios ausentes. La validación manual de descargas queda bloqueada hasta
-migrar el árbol completo `public/uploads` desde la instalación operativa y
-verificarlo contra `/var/www/akademos/shared/uploads`.
+La base restaurada conservaba referencias a documentos e imágenes, pero el
+directorio persistente de la nueva VM estaba vacío. El 21 de octubre de 2026
+se realizó una copia inicial, limitada a aproximadamente 10 MB/s y sin borrar
+el origen, desde la instalación operativa hacia
+`/var/www/akademos/shared/uploads`. La comparación registró 2.003 archivos,
+1.039.182.804 bytes, tres archivos vacíos heredados y ninguna diferencia en la
+verificación completa por checksum. Dos documentos de Convenios que antes
+devolvían 404 respondieron HTTP 200 desde el backend y por HTTPS externo.
+
+Permanece pendiente la comprobación visual del contenido por el usuario y una
+sincronización incremental final, porque la instalación anterior continúa
+prestando servicio y puede recibir archivos nuevos antes de la transición.
 
 Ejecutar al menos un caso realista de cada tecnología:
 
 - [x] PDF mediante Apache FOP (prevalidado en la validación Ubuntu).
 - [x] PDF mediante Dompdf (prevalidado por PHPUnit).
 - [x] Exportación XLSX con PhpSpreadsheet (prevalidado por PHPUnit).
-- [ ] Descarga de un documento previamente almacenado (bloqueada por migración
-      pendiente de `public/uploads`).
+- [ ] Descarga y contenido de un documento previamente almacenado (copia
+      inicial disponible; pendiente confirmación visual del usuario).
 - [x] Carga de un archivo permitido dentro del límite configurado (prevalidada en PHPUnit para documentos de planes de estudio).
 - [x] Rechazo de tipo MIME o tamaño no permitido (prevalidado en PHPUnit; límite de 32 MB).
 - [ ] Confirmación de que los temporales se crean en `var/tmp/export/` y se
