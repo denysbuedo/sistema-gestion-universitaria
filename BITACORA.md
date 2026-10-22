@@ -375,3 +375,6 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   adoptará la línea base y ejecutará la migración OIDC antes de cambiar el
   release. Este diseño mantiene intacta la base validada para una reversión
   rápida y queda documentado en `docs/procedimiento-corte.md`.
+- El `.env` no versionado del candidato quedó restringido a propietario
+  `akademos`, grupo `www-data` y modo `0640`; el procedimiento de releases
+  incorpora esos permisos.

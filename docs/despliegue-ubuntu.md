@@ -73,7 +73,7 @@ sudo -u akademos git checkout "$release_id"
 
 # El archivo no se versiona. Instalarlo desde la configuración operativa
 # aprobada (o conservar el del release activo si no cambió el ambiente).
-sudo install -o akademos -g akademos -m 0664 \
+sudo install -o akademos -g www-data -m 0640 \
   /var/www/akademos/current/.env "$release_dir/.env"
 
 set -a
