@@ -77,4 +77,24 @@ class TrazaRepository extends ServiceEntityRepository
         }
         return $final;
     }
+
+    public function countGroupedByType(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->select('tt.nombre AS label', 'COUNT(t.id) AS value')
+            ->innerJoin('t.tipoTraza', 'tt')
+            ->groupBy('tt.id', 'tt.nombre')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function countByDay(\DateTimeInterface $from, \DateTimeInterface $to): array
+    {
+        $rows = $this->getEntityManager()->getConnection()->executeQuery(
+            'SELECT creado::date AS day, COUNT(*) AS value FROM traza.tbd_traza WHERE creado >= :from AND creado < :to GROUP BY creado::date ORDER BY creado::date',
+            ['from' => $from->format('Y-m-d H:i:s'), 'to' => $to->format('Y-m-d H:i:s')]
+        )->fetchAllAssociative();
+
+        return array_column($rows, 'value', 'day');
+    }
 }

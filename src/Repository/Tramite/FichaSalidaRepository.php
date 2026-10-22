@@ -48,4 +48,28 @@ class FichaSalidaRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function countGroupedByStatus(): array
+    {
+        return $this->createQueryBuilder('f')
+            ->select('IDENTITY(f.estadoFichaSalida) AS id', 'e.nombre AS label', 'COUNT(f.id) AS value')
+            ->innerJoin('f.estadoFichaSalida', 'e')
+            ->where('e.documentoSalida = false')
+            ->andWhere('e.activo = true')
+            ->groupBy('f.estadoFichaSalida')
+            ->addGroupBy('e.id')
+            ->addGroupBy('e.nombre')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function countByMonth(\DateTimeInterface $from, \DateTimeInterface $to): array
+    {
+        $rows = $this->getEntityManager()->getConnection()->executeQuery(
+            "SELECT to_char(creado, 'YYYY-MM') AS month, COUNT(*) AS value FROM tramite.tbd_ficha_salida WHERE creado >= :from AND creado < :to GROUP BY to_char(creado, 'YYYY-MM') ORDER BY month",
+            ['from' => $from->format('Y-m-d H:i:s'), 'to' => $to->format('Y-m-d H:i:s')]
+        )->fetchAllAssociative();
+
+        return array_column($rows, 'value', 'month');
+    }
 }

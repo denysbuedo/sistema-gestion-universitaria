@@ -33,6 +33,21 @@ class DeploymentConfigurationTest extends TestCase
         self::assertStringContainsString('root /var/www/akademos/current/public;', $nginx);
     }
 
+    public function testProductionTemplatesEnableMeasuredCachingAndSlowRequestDiagnostics(): void
+    {
+        $nginx = file_get_contents($this->projectDir . '/deploy/nginx/akademos.conf');
+        $nginxHttp = file_get_contents($this->projectDir . '/deploy/nginx/akademos-http.conf');
+        $phpFpm = file_get_contents($this->projectDir . '/deploy/php-fpm/akademos.conf');
+
+        self::assertStringContainsString('gzip on;', $nginx);
+        self::assertStringContainsString('expires 7d;', $nginx);
+        self::assertStringContainsString('akademos_timing', $nginx);
+        self::assertStringContainsString('$request_time', $nginxHttp);
+        self::assertStringContainsString('$upstream_response_time', $nginxHttp);
+        self::assertStringContainsString('request_slowlog_timeout = 2s', $phpFpm);
+        self::assertStringContainsString('opcache.validate_timestamps] = 0', $phpFpm);
+    }
+
     public function testUbuntuValidationUsesAnEphemeralTestDatabase(): void
     {
         $compose = file_get_contents($this->projectDir . '/deploy/validation/compose.yaml');

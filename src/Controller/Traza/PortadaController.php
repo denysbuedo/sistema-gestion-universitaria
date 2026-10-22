@@ -29,31 +29,16 @@ class PortadaController extends AbstractController
         // 1. KPIs Generales
         $totalTrazas = $trazaRepo->count([]);
         
-        $todayStart = (new \DateTime())->setTime(0, 0, 0);
-        $todayEnd = (new \DateTime())->setTime(23, 59, 59);
-        $qbHoy = $trazaRepo->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.creado >= :start')
-            ->andWhere('t.creado <= :end')
-            ->setParameter('start', $todayStart)
-            ->setParameter('end', $todayEnd);
-        $trazasHoy = (int)$qbHoy->getQuery()->getSingleScalarResult();
+        $trendStart = (new \DateTimeImmutable('-6 days'))->setTime(0, 0);
+        $trendEnd = (new \DateTimeImmutable('tomorrow'))->setTime(0, 0);
+        $countsByDay = $trazaRepo->countByDay($trendStart, $trendEnd);
+        $trazasHoy = (int)($countsByDay[(new \DateTimeImmutable())->format('Y-m-d')] ?? 0);
 
         $totalTipos = $tipoRepo->count([]);
         $totalAcciones = $accionRepo->count([]);
 
         // 2. Gráfico de Dona: Distribución por Tipo de Traza
-        $tipos = $tipoRepo->findAll();
-        $tipoDist = [];
-        foreach ($tipos as $tipo) {
-            $count = $trazaRepo->count(['tipoTraza' => $tipo]);
-            if ($count > 0) {
-                $tipoDist[] = [
-                    'label' => $tipo->getNombre(),
-                    'value' => $count
-                ];
-            }
-        }
+        $tipoDist = $trazaRepo->countGroupedByType();
 
         // 3. Gráfico de Tendencia: Actividad de los últimos 7 días
         $trendData = [];
@@ -62,19 +47,8 @@ class PortadaController extends AbstractController
         
         for ($i = 6; $i >= 0; $i--) {
             $date = new \DateTime("-$i days");
-            $start = (clone $date)->setTime(0, 0, 0);
-            $end = (clone $date)->setTime(23, 59, 59);
-            
             $trendLabels[] = $date->format('d') . ' ' . $meses[(int)$date->format('n') - 1];
-            
-            $qb = $trazaRepo->createQueryBuilder('t')
-                ->select('COUNT(t.id)')
-                ->where('t.creado >= :start')
-                ->andWhere('t.creado <= :end')
-                ->setParameter('start', $start)
-                ->setParameter('end', $end);
-            
-            $trendData[] = (int)$qb->getQuery()->getSingleScalarResult();
+            $trendData[] = (int)($countsByDay[$date->format('Y-m-d')] ?? 0);
         }
 
         // 4. Actividad Reciente

@@ -33,37 +33,8 @@ class PortadaController extends AbstractController
         $totalRoles = $rolRepo->count([]);
         $totalModulos = $moduloRepo->count([]);
         
-        // Actividad de Hoy (Trazas)
-        $todayStart = (new \DateTime())->setTime(0, 0, 0);
-        $todayEnd = (new \DateTime())->setTime(23, 59, 59);
-        $qbTrazaToday = $trazaRepo->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.creado >= :start')
-            ->andWhere('t.creado <= :end')
-            ->setParameter('start', $todayStart)
-            ->setParameter('end', $todayEnd);
-        $actividadHoy = (int)$qbTrazaToday->getQuery()->getSingleScalarResult();
-
         // 2. Gráfico de Dona: Usuarios por Rol (Estimado simplificado)
-        $roles = $rolRepo->findAll();
-        $rolesDistribution = [];
-        // Dado que un usuario puede tener múltiples roles, contamos cuántos usuarios están asignados a cada rol
-        foreach ($roles as $rol) {
-            $count = (int)$userRepo->createQueryBuilder('u')
-                ->select('COUNT(u.id)')
-                ->join('u.userRoles', 'r')
-                ->where('r.id = :rolId')
-                ->setParameter('rolId', $rol->getId())
-                ->getQuery()
-                ->getSingleScalarResult();
-            
-            if ($count > 0) {
-                $rolesDistribution[] = [
-                    'label' => $rol->getNombre(),
-                    'value' => $count
-                ];
-            }
-        }
+        $rolesDistribution = $userRepo->countGroupedByRole();
 
         // 3. Gráfico de Tendencia: Actividad del sistema (últimos 7 días)
         $trendData = [];
@@ -71,21 +42,14 @@ class PortadaController extends AbstractController
         
         $mesesNombres = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
         
+        $trendStart = (new \DateTimeImmutable('-6 days'))->setTime(0, 0);
+        $trendEnd = (new \DateTimeImmutable('tomorrow'))->setTime(0, 0);
+        $countsByDay = $trazaRepo->countByDay($trendStart, $trendEnd);
+        $actividadHoy = (int)($countsByDay[(new \DateTimeImmutable())->format('Y-m-d')] ?? 0);
         for ($i = 6; $i >= 0; $i--) {
             $date = new \DateTime("-$i days");
-            $start = (clone $date)->setTime(0, 0, 0);
-            $end = (clone $date)->setTime(23, 59, 59);
-            
             $trendLabels[] = $date->format('d') . ' ' . $mesesNombres[(int)$date->format('n') - 1];
-            
-            $qb = $trazaRepo->createQueryBuilder('t')
-                ->select('COUNT(t.id)')
-                ->where('t.creado >= :start')
-                ->andWhere('t.creado <= :end')
-                ->setParameter('start', $start)
-                ->setParameter('end', $end);
-            
-            $trendData[] = (int)$qb->getQuery()->getSingleScalarResult();
+            $trendData[] = (int)($countsByDay[$date->format('Y-m-d')] ?? 0);
         }
 
         // 4. Actividad Reciente (Últimas 10 acciones)

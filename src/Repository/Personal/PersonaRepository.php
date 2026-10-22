@@ -155,4 +155,21 @@ class PersonaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countGroupedBy(string $association): array
+    {
+        if (!in_array($association, ['categoriaDocente', 'gradoAcademico'], true)) {
+            throw new \InvalidArgumentException('Unsupported person grouping.');
+        }
+
+        return $this->createQueryBuilder('p')
+            ->select('IDENTITY(p.' . $association . ') AS id', 'COALESCE(g.nombre, :withoutGroup) AS label', 'COUNT(p.id) AS value')
+            ->leftJoin('p.' . $association, 'g')
+            ->groupBy('p.' . $association)
+            ->addGroupBy('g.id')
+            ->addGroupBy('g.nombre')
+            ->setParameter('withoutGroup', 'Sin categoría / No definido')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

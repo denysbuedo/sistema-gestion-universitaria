@@ -3,7 +3,6 @@
 namespace App\Controller\Tramite;
 
 use App\Repository\Tramite\DocumentoSalidaRepository;
-use App\Repository\Tramite\EstadoFichaSalidaRepository;
 use App\Repository\Tramite\FichaSalidaRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +20,7 @@ class PortadaController extends AbstractController
     #[Route('', name: 'app_tramite_portada', methods: ['GET'])]
     public function index(
         FichaSalidaRepository $fichaRepo,
-        DocumentoSalidaRepository $docRepo,
-        EstadoFichaSalidaRepository $estadoRepo
+        DocumentoSalidaRepository $docRepo
     ): Response {
         // 1. Estadísticas Generales (KPIs)
         $totalFichas = $fichaRepo->count([]);
@@ -39,17 +37,7 @@ class PortadaController extends AbstractController
         $docsFinalizados = $docRepo->count(['estadoDocumentoSalida' => 6]);
 
         // 2. Datos para el Gráfico de Dona: Distribución de Fichas
-        $estadosFicha = $estadoRepo->findBy(['documentoSalida' => false, 'activo' => true]);
-        $statusDistribution = [];
-        foreach ($estadosFicha as $est) {
-            $count = $fichaRepo->count(['estadoFichaSalida' => $est->getId()]);
-            if ($count > 0) {
-                $statusDistribution[] = [
-                    'label' => $est->getNombre(),
-                    'value' => $count
-                ];
-            }
-        }
+        $statusDistribution = $fichaRepo->countGroupedByStatus();
 
         // 3. Tendencia de últimos 6 meses (Fichas creadas)
         $trendData = [];
@@ -61,22 +49,14 @@ class PortadaController extends AbstractController
             7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'
         ];
 
+        $trendStart = (new \DateTimeImmutable('first day of -5 months'))->setTime(0, 0);
+        $trendEnd = (new \DateTimeImmutable('first day of next month'))->setTime(0, 0);
+        $countsByMonth = $fichaRepo->countByMonth($trendStart, $trendEnd);
         for ($i = 5; $i >= 0; $i--) {
             $date = new \DateTime("first day of -$i month");
-            $start = (clone $date)->setTime(0, 0, 0);
-            $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
-            
             $monthNum = (int)$date->format('n');
             $monthsLabels[] = $mesesNombres[$monthNum];
-            
-            $qb = $fichaRepo->createQueryBuilder('f')
-                ->select('COUNT(f.id)')
-                ->where('f.creado >= :start')
-                ->andWhere('f.creado <= :end')
-                ->setParameter('start', $start)
-                ->setParameter('end', $end);
-            
-            $fichasTrend[] = (int)$qb->getQuery()->getSingleScalarResult();
+            $fichasTrend[] = (int)($countsByMonth[$date->format('Y-m')] ?? 0);
         }
 
         return $this->render('modules/tramite/portada/index.html.twig', [

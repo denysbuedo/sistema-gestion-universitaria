@@ -129,4 +129,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $temp = $connect->executeQuery($query);
         return $temp->fetchAllAssociative();
     }
+
+    public function countGroupedByRole(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('r.nombre AS label', 'COUNT(DISTINCT u.id) AS value')
+            ->innerJoin('u.userRoles', 'r')
+            ->groupBy('r.id', 'r.nombre')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

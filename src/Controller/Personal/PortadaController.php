@@ -35,34 +35,10 @@ class PortadaController extends AbstractController
         $totalInvestigativas = $invRepo->count([]);
 
         // 2. Gráfico de Dona: Personal por Categoría Docente
-        $catDocentes = $docenteRepo->findAll();
-        $docenteDist = [];
-        $sinDocenteCount = $personaRepo->count(['categoriaDocente' => null]);
-        if ($sinDocenteCount > 0) {
-            $docenteDist[] = ['label' => 'Sin Categoría Docente', 'value' => $sinDocenteCount];
-        }
-
-        foreach ($catDocentes as $cat) {
-            $count = $personaRepo->count(['categoriaDocente' => $cat]);
-            if ($count > 0) {
-                $docenteDist[] = ['label' => $cat->getNombre(), 'value' => $count];
-            }
-        }
+        $docenteDist = $personaRepo->countGroupedBy('categoriaDocente');
 
         // 3. Gráfico de Barras: Personal por Grado Académico
-        $grados = $gradoRepo->findAll();
-        $gradoDist = [];
-        $sinGradoCount = $personaRepo->count(['gradoAcademico' => null]);
-        if ($sinGradoCount > 0) {
-            $gradoDist[] = ['label' => 'Sin Grado / Bachiller', 'value' => $sinGradoCount];
-        }
-
-        foreach ($grados as $grado) {
-            $count = $personaRepo->count(['gradoAcademico' => $grado]);
-            if ($count > 0) {
-                $gradoDist[] = ['label' => $grado->getNombre(), 'value' => $count];
-            }
-        }
+        $gradoDist = $personaRepo->countGroupedBy('gradoAcademico');
 
         // 4. Últimos Registros
         $actividadReciente = $personaRepo->findBy([], ['id' => 'DESC'], 10);

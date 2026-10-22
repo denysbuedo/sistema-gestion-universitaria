@@ -88,4 +88,21 @@ class InstitucionRepository extends ServiceEntityRepository
         $resul = $qb->getQuery()->getResult();
         return $resul;
     }
+
+    public function countGroupedBy(string $association): array
+    {
+        if (!in_array($association, ['tipoInstitucion', 'categoriaAcreditacion'], true)) {
+            throw new \InvalidArgumentException('Unsupported institution grouping.');
+        }
+
+        return $this->createQueryBuilder('i')
+            ->select('IDENTITY(i.' . $association . ') AS id', 'COALESCE(g.nombre, :withoutGroup) AS label', 'COUNT(i.id) AS value')
+            ->leftJoin('i.' . $association, 'g')
+            ->groupBy('i.' . $association)
+            ->addGroupBy('g.id')
+            ->addGroupBy('g.nombre')
+            ->setParameter('withoutGroup', 'Sin categoría / No definido')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
