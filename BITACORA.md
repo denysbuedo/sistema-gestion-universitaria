@@ -401,3 +401,31 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   `akademos_rehearsal_20261022` y el dump
   `/var/backups/akademos/rehearsal-20261022.dump`. Son recreables desde la
   fuente operativa; la base activa, el candidato y los uploads no se tocaron.
+
+### 2026-10-22
+
+- Se atendieron de urgencia `CVE-2026-109618` y `CVE-2026-109619` únicamente
+  en la VM nueva. Los 13 paquetes PHP 8.3 pasaron de la revisión Ubuntu
+  `.11` a `8.3.6-0ubuntu0.24.04.13`; PHP-FPM, Nginx, salud y login quedaron
+  correctos. La VM operativa anterior no fue modificada.
+- El diagnóstico de lentitud descartó saturación: cuatro CPU, 14 GiB de RAM
+  disponible y respuestas locales públicas de 4–10 ms. Se identificaron como
+  causas principales consultas estadísticas repetidas y el sondeo completo de
+  notificaciones cada 12,5 segundos.
+- La primera optimización limitó el desplegable a diez notificaciones, conservó
+  el conteo total, redujo el sondeo a 60 segundos y reemplazó cargas completas
+  por conteos SQL en Convenios, Pregrado e Informatización. El usuario confirmó
+  una mejora abismal.
+- La segunda optimización consolidó en agregaciones únicas los gráficos de
+  Instituciones, Personal, Administración, Trazas y Trámites. Se añadieron
+  índices para fechas de trazas/fichas y notificaciones recientes, y se ejecutó
+  `ANALYZE`.
+- Nginx comprime las respuestas, cachea siete días los recursos versionables y
+  registra `request_time`/`upstream_response_time`. PHP-FPM registra peticiones
+  de más de dos segundos y usa OPcache de producción con 256 MiB, 30.000
+  scripts y timestamps desactivados; cada release reinicia PHP-FPM.
+- La regresión quedó en 69 pruebas y 308 aserciones. El release activo es
+  `/var/www/akademos/releases/20261022012506-perf2`; salud y login responden 200,
+  no existen unidades fallidas, errores nuevos ni respuestas 5xx. El respaldo
+  verificado está en `/var/backups/sgu-performance-20261022012506` y la release
+  previa permanece disponible para reversión.

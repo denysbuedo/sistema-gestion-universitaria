@@ -26,6 +26,7 @@ nbproject
 *.backup
 *.dump
 *.pgdump
+/sgu-perf*.tar.gz
 
 ###> symfony/phpunit-bridge ###
 .phpunit
