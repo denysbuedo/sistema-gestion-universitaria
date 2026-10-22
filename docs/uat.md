@@ -21,9 +21,9 @@ reales.
 - [ ] Suite PHPUnit y auditoría de Composer correctas.
 - [ ] Respaldo del entorno UAT disponible antes de realizar cambios funcionales.
 
-La prueba real de concesión y retirada de roles Keycloak se mantiene aplazada
-hasta disponer del equipo de Identidad. No impide ejecutar los casos funcionales
-con el acceso local de contingencia en el entorno aislado.
+No se requiere conceder ni retirar roles de SGU en Keycloak. Identidad se limita
+a autenticar; los casos de autorización se ejecutan con roles administrados en
+SGU. Permanece pendiente la aprobación de esta frontera por Identidad.
 
 ## Evidencia mínima por caso
 

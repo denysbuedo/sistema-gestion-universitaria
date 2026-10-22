@@ -98,14 +98,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
         }
 
-        $oidcRoles = $user->getOidcRoles();
         $refreshed = $this->findOneBy(['email' => $user->getUserIdentifier()]);
         if (!$refreshed instanceof User) {
             throw new \Symfony\Component\Security\Core\Exception\UserNotFoundException();
-        }
-
-        if ($oidcRoles !== null) {
-            $refreshed->setOidcRoles($oidcRoles);
         }
 
         return $refreshed;

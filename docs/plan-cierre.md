@@ -48,10 +48,10 @@ Objetivo: cerrar la condición pendiente con el equipo de Identidad.
 
 - [x] Login Keycloak → LDAP → contraseña → TOTP.
 - [x] PKCE S256, state, nonce, renovación, revocación y logout.
-- [x] Autorización dinámica cubierta automáticamente.
-- [ ] Conceder `ROLE_ADMIN` al piloto y revocar su sesión de `sgu-dev`.
-- [ ] Confirmar acceso administrativo.
-- [ ] Retirar `ROLE_ADMIN`, revocar nuevamente y confirmar respuesta 403.
+- [x] SGU conserva exclusivamente sus roles y permisos locales.
+- [x] Un usuario básico local recibe 403 y un administrador local conserva acceso.
+- [x] Los claims de roles de Keycloak no conceden privilegios en SGU.
+- [ ] Confirmar con Identidad la frontera: Keycloak autentica; SGU autoriza.
 - [ ] Recibir aprobación de Identidad y documentar la evidencia sin tokens.
 
 Hasta terminar este bloque no se elimina el acceso local de contingencia ni se

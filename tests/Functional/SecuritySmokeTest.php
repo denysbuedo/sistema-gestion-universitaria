@@ -178,27 +178,11 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
-    public function testOidcUserWithoutAdminRoleCannotUsePersistedLocalAdminRole(): void
+    public function testLocalAdministratorRoleRemainsAuthoritativeAfterUserRefresh(): void
     {
         $client = static::createClient();
         $user = $this->fixtureAdminUser($client);
         self::assertSame('ROLE_ADMIN', $user->getRole());
-        $user->setOidcRoles(['ROLE_USER']);
-        $client->loginUser($user, 'main');
-
-        $client->request('GET', '/administracion/usuario/');
-
-        self::assertResponseStatusCodeSame(403);
-        self::assertFalse($client->getRequest()->getSession()->get('usuario_autenticado_role_admin', false));
-        $client->getContainer()->get(EntityManagerInterface::class)->clear();
-        self::assertSame('ROLE_ADMIN', $this->fixtureAdminUser($client)->getRole());
-    }
-
-    public function testOidcAdminRoleSurvivesUserRefreshWithoutBeingPersisted(): void
-    {
-        $client = static::createClient();
-        $user = $this->fixtureAdminUser($client);
-        $user->setOidcRoles(['ROLE_USER', 'ROLE_ADMIN']);
         $client->loginUser($user, 'main');
 
         $client->request('GET', '/');
@@ -208,27 +192,21 @@ class SecuritySmokeTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertContains('ROLE_ADMIN', $client->getContainer()->get('security.token_storage')->getToken()->getRoleNames());
         $client->getContainer()->get(EntityManagerInterface::class)->clear();
-        $reloaded = $this->fixtureAdminUser($client);
-        self::assertSame('ROLE_ADMIN', $reloaded->getRole());
-        self::assertNull($reloaded->getOidcRoles());
+        self::assertSame('ROLE_ADMIN', $this->fixtureAdminUser($client)->getRole());
     }
 
-    public function testOidcAdminRemovalAppliesToANewSession(): void
+    public function testLocalBasicRoleRemainsDeniedAfterUserRefresh(): void
     {
         $client = static::createClient();
-        $user = $this->fixtureAdminUser($client);
-        $user->setOidcRoles(['ROLE_USER', 'ROLE_ADMIN']);
+        $user = $this->getOrCreateBasicUser($client);
         $client->loginUser($user, 'main');
-        $client->request('GET', '/administracion/usuario/');
-        self::assertResponseIsSuccessful();
 
-        $client->restart();
-        $user = $this->fixtureAdminUser($client);
-        $user->setOidcRoles(['ROLE_USER']);
-        $client->loginUser($user, 'main');
+        $client->request('GET', '/');
+        self::assertResponseRedirects('/dashboard');
         $client->request('GET', '/administracion/usuario/');
 
         self::assertResponseStatusCodeSame(403);
+        self::assertNotContains('ROLE_ADMIN', $client->getContainer()->get('security.token_storage')->getToken()->getRoleNames());
     }
 
     /**

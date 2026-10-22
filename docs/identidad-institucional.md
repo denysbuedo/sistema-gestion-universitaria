@@ -15,8 +15,8 @@ semillas TOTP, códigos de recuperación o nuevas contraseñas.
 - API: aceptar tokens Bearer emitidos por Keycloak, validando firma, `iss`,
   `aud`, expiración y tipo.
 - Integraciones máquina a máquina: Client Credentials y cuentas de servicio.
-- Autorización: roles/permisos explícitos; iniciar sesión no concede acceso por
-  sí solo.
+- Autorización: SGU es la única autoridad de sus roles y permisos funcionales;
+  iniciar sesión en Keycloak no concede privilegios dentro de SGU.
 - Cierre de sesión: invalidar la sesión local y ejecutar el logout OIDC con
   redirección registrada.
 
@@ -50,15 +50,14 @@ No se solicitarán comodines en redirecciones u orígenes. Las credenciales del
 cliente se intercambiarán mediante un canal seguro y se almacenarán fuera del
 repositorio.
 
-## Roles iniciales
+## Responsabilidad de autorización
 
-La matriz definitiva debe validarse funcionalmente. Como mínimo deben mapearse:
-
-- `ROLE_ADMIN`: administración funcional y de usuarios autorizados.
-- `ROLE_USER`: acceso autenticado básico.
-- Authorities actuales asociadas a roles internos: requieren inventario antes
-  de decidir si se convierten en roles de cliente Keycloak o permanecen como
-  permisos de negocio administrados por Akademos.
+Keycloak autentica al usuario mediante LDAP, contraseña y TOTP, pero no asigna
+roles funcionales de SGU. `ROLE_USER`, `ROLE_ADMIN` y todas las authorities se
+administran exclusivamente en la base local de SGU. La aplicación ignora
+cualquier claim `roles` recibido para tomar decisiones de autorización; por
+tanto, un `ROLE_ADMIN` emitido accidentalmente por Identidad no eleva
+privilegios y su ausencia tampoco degrada a un administrador local.
 
 El identificador estable de enlace será el claim `sub`, no el correo. El correo
 puede cambiar y se utilizará únicamente como atributo informativo/verificado.
@@ -73,7 +72,7 @@ global fuera de su emisor.
 3. Añadir el identificador `sub` a las cuentas locales necesarias para enlazar
    permisos de negocio durante la transición.
 4. Probar login, enrolamiento TOTP, ausencia/errores de OTP, recuperación,
-   expiración, renovación, revocación, logout y roles.
+   expiración, renovación, revocación, logout y autorización local.
 5. Activar primero en pruebas; conservar un procedimiento de reversión
    temporal y auditado.
 6. Desactivar el login web local y la emisión JWT basada en contraseña cuando
@@ -88,7 +87,8 @@ institucional para nuevas integraciones.
 - Descubrimiento OIDC y JWKS desde el issuer aprobado.
 - Validación estricta de firma, emisor, audiencia, expiración y tipo de token.
 - Estado y nonce verificados en Authorization Code Flow.
-- Roles insuficientes producen denegación aunque el usuario esté autenticado.
+- Los permisos locales insuficientes producen denegación aunque el usuario
+  esté autenticado por Keycloak.
 - Logout local y central comprobados.
 - Ninguna contraseña, semilla TOTP, código, secreto de cliente o token aparece
   en logs, trazas o repositorio.
@@ -96,15 +96,12 @@ institucional para nuevas integraciones.
 
 ## Estado del piloto de desarrollo
 
-> **VALIDACIÓN LOCAL COMPLETADA — PENDIENTE PRUEBA REAL Y APROBACIÓN**
+> **FRONTERA DE AUTENTICACIÓN/AUTORIZACIÓN CORREGIDA**
 >
-> SGU aplica ahora `ROLE_USER` y `ROLE_ADMIN` como atributos de la sesión OIDC,
-> sin escribirlos en la entidad local `User`. El proveedor de usuarios conserva
-> esos roles al refrescar la sesión Symfony y Keycloak sustituye únicamente los
-> dos roles institucionales; los permisos funcionales locales permanecen.
-> La solución está cubierta por pruebas automáticas, pero SGU no debe activar
-> OIDC en producción ni retirar el login de contingencia hasta repetir la
-> concesión y retirada con Keycloak real y recibir aprobación técnica.
+> OIDC se utiliza solo para autenticar y vincular mediante `issuer + sub`.
+> SGU conserva la autoridad exclusiva de todos sus roles y permisos. Ya no se
+> requiere conceder ni retirar `ROLE_ADMIN` en Keycloak; sigue pendiente la
+> aprobación técnica del recorrido institucional completo.
 
 Validado el 10 de octubre de 2026:
 
@@ -113,40 +110,29 @@ Validado el 10 de octubre de 2026:
 - [x] Autenticación Keycloak → LDAP → contraseña → TOTP.
 - [x] Callback exacto en `http://127.0.0.1:8000/oidc/check`.
 - [x] Vinculación controlada mediante `issuer + sub`, sin enlace automático por correo.
-- [x] Recepción y autorización de `ROLE_USER`.
-- [x] Firma, emisor, audiencia, expiración, fecha de emisión, nonce y roles cubiertos por pruebas automatizadas.
+- [x] Firma, emisor, audiencia, expiración, fecha de emisión y nonce cubiertos por pruebas automatizadas.
 - [x] Comprobación local de que secretos y tokens no aparecen en los registros.
 - [x] Rechazo interactivo de OTP incorrecto (`Invalid authenticator code`) y acceso únicamente tras presentar un TOTP válido.
 - [x] Revocación real en Keycloak detectada al renovar: SGU invalidó la sesión local y redirigió al login sin bucles.
 - [x] Renovación satisfactoria de una sesión no revocada durante un periodo superior al access token; el usuario continuó trabajando sin reautenticarse.
 - [x] Logout central comprobado en navegador, con retorno autorizado y sesión local invalidada.
 - [ ] Recuperación institucional del segundo factor.
-- [x] Prueba automática de concesión, persistencia y retirada de `ROLE_ADMIN`.
-- [ ] Prueba real de `ROLE_ADMIN` con una cuenta autorizada.
+- [x] Pruebas automáticas de autorización exclusivamente local y 403 para un usuario básico.
+- [x] Prueba automática de que un claim OIDC `ROLE_ADMIN` no se incorpora a la identidad de SGU.
 - [ ] Aprobación técnica del equipo de Identidad.
 
-La implementación evita la copia temporal que provocó la regresión anterior.
-Los roles OIDC viven en la instancia autenticada y el proveedor de usuarios los
-transfiere explícitamente a la entidad refrescada. Las pruebas comprueban la
-recarga entre peticiones, el acceso administrativo, el 403 tras retirar el rol
-y que el valor persistente de `User.role` no cambia.
+Los roles no forman parte de la identidad que devuelve `OidcClient` ni se
+transfieren durante la recarga del usuario. Las pruebas comprueban que los
+permisos locales sobreviven entre peticiones y controlan el acceso HTTP.
 
-### Criterios para cerrar el bloqueo de roles
+### Criterios para cerrar la integración
 
-- Un token con `ROLE_USER` permite iniciar sesión y trabajar, aunque la cuenta
-  local hubiera tenido anteriormente privilegios administrativos.
-- Un token con `ROLE_USER` no accede a `/administracion/usuario/` y obtiene 403.
-- Un token con `ROLE_USER` y `ROLE_ADMIN` accede a la sección administrativa.
-- Retirar `ROLE_ADMIN`, revocar la sesión y autenticarse de nuevo elimina el
-  acceso administrativo sin modificar manualmente la BD de SGU.
-- Los roles efectivos sobreviven al almacenamiento y recarga de la sesión
-  Symfony.
-- Los permisos funcionales locales distintos de `ROLE_USER` y `ROLE_ADMIN`
-  conservan su comportamiento acordado.
-- Las pruebas anteriores se ejecutan automáticamente sin usar Keycloak real ni
-  requerir intervención del usuario piloto.
-- La solución supera después el recorrido real con Identidad y recibe su
-  aprobación técnica.
+- La cuenta enlazada por `issuer + sub` inicia sesión sin depender de claims de roles.
+- Un usuario básico local obtiene 403 en `/administracion/usuario/`.
+- Un administrador local conserva el acceso aunque Keycloak no emita `ROLE_ADMIN`.
+- Un claim administrativo inesperado no eleva a un usuario local básico.
+- Una cuenta local inactiva es rechazada.
+- Identidad aprueba el recorrido de autenticación y la separación de responsabilidades.
 
 La aplicación conserva los tokens únicamente en la sesión del backend. Cuando
 el access token se aproxima a su expiración, usa el refresh token contra el

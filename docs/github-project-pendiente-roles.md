@@ -2,32 +2,29 @@
 
 ## Título
 
-`[BLOQUEANTE] Autorizar ROLE_USER y ROLE_ADMIN desde Keycloak sin persistirlos en User`
+`[BLOQUEANTE] Validar autenticación Keycloak con autorización local en SGU`
 
 ## Estado
 
-En progreso / implementación local completada / pendiente de validación real y
-aprobación de Identidad.
+Implementación local completada / pendiente de aprobación de Identidad.
 
 ## Descripción
 
-Los roles institucionales quedaron desacoplados del campo persistente de la
-entidad local `User`. Un proveedor de usuarios conserva los roles de sesión al
-refrescar la identidad y sustituye dinámicamente solo `ROLE_USER` y
-`ROLE_ADMIN`, sin retirar permisos funcionales locales.
+Keycloak autentica mediante LDAP, contraseña y TOTP. SGU enlaza la identidad
+por `issuer + sub` y conserva la responsabilidad exclusiva de todos sus roles
+y permisos. Los claims de roles OIDC no participan en la autorización.
 
 ## Criterios de aceptación
 
-- [x] `ROLE_USER` inicia sesión y recibe 403 en rutas administrativas.
-- [x] `ROLE_USER` + `ROLE_ADMIN` accede a rutas administrativas.
-- [x] Retirar `ROLE_ADMIN` y crear una sesión nueva elimina el privilegio.
-- [x] Ningún cambio de rol OIDC modifica permanentemente la entidad local `User`.
+- [x] Un usuario básico local recibe 403 en rutas administrativas.
+- [x] Un administrador local conserva acceso después de refrescar la sesión.
+- [x] Un claim OIDC `ROLE_ADMIN` no concede privilegios en SGU.
+- [x] No se solicitan roles funcionales en el scope OIDC.
 - [x] La sesión autenticada persiste correctamente después del callback y entre
   peticiones.
-- [x] Se conservan los permisos funcionales locales distintos de los roles institucionales.
-- [x] Existen pruebas automáticas para concesión, retirada, serialización de sesión
-  y autorización HTTP antes de repetir la prueba real con Identidad.
-- [ ] Repetir concesión y retirada con Keycloak real.
+- [x] Se conservan todos los roles y permisos funcionales locales.
+- [x] Existen pruebas automáticas para recarga de sesión y autorización HTTP.
+- [ ] Confirmar con Identidad que Keycloak autentica y SGU autoriza.
 - [ ] Recibir aprobación técnica de Identidad.
 
 ## Restricción

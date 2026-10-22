@@ -74,7 +74,6 @@ final class OidcAuthenticator extends AbstractAuthenticator
         if (!$user instanceof User || !$user->getActivo()) {
             throw new \RuntimeException('La identidad no está vinculada a una cuenta activa de SGU.');
         }
-        $user->setOidcRoles($identity['roles']);
         return $user;
     }
 }

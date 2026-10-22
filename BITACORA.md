@@ -152,8 +152,8 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 
 1. Ejecutar la UAT funcional P0/P1 definida en `docs/uat.md`, sin modificar
    datos reales fuera de una ventana y un conjunto controlado.
-2. Completar con Identidad la concesión y retirada real de `ROLE_ADMIN`, el 403
-   posterior y la aprobación técnica.
+2. Confirmar con Identidad que Keycloak autentica y SGU administra de forma
+   exclusiva sus roles y permisos; obtener la aprobación técnica.
 3. Congelar el candidato, ensayar respaldo/restauración y promover `dev` a
    `main` mediante revisión.
 4. Ejecutar el despliegue autorizado, humo posterior y observación reforzada.
@@ -313,7 +313,7 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
 - La regresión queda en 68 pruebas y 292 aserciones. UAT-101 a UAT-105,
   UAT-201 a UAT-204 y UAT-301 a UAT-305 están correctos. Permanecen por cerrar
   las comprobaciones manuales P0, archivos/reportes, integridad comparativa y
-  la prueba real de roles con el equipo de Identidad.
+  la aprobación de la integración por el equipo de Identidad.
 - La validación manual de UAT-006 detectó que los identificadores de los
   catálogos de trazas estaban en cero y que el interruptor ocultaba un fallo al
   persistir. Se alineó el entorno con la copia autorizada, se corrigió el
@@ -334,3 +334,20 @@ No diseñar integraciones basadas en esos IDs. Primero verificar producción y a
   Dos PDF de Convenios respondieron HTTP 200 interna y externamente. Falta la
   validación visual y una sincronización incremental final durante la ventana
   de transición, ya que el servidor anterior continúa activo.
+
+### 2026-10-21
+
+- Se fijó la frontera definitiva de seguridad: Keycloak autentica mediante
+  LDAP, contraseña y TOTP; SGU administra exclusivamente todos sus roles y
+  permisos funcionales. La pareja `issuer + sub` sigue siendo el enlace estable.
+- Se eliminó del usuario, proveedor y autenticador la sustitución de
+  `ROLE_USER`/`ROLE_ADMIN` por claims OIDC. SGU tampoco solicita el scope
+  `roles` ni exige roles en el token. Un claim administrativo inesperado no se
+  incorpora a la identidad autorizada por SGU.
+- La prueba pendiente con Identidad ya no consiste en conceder y retirar
+  `ROLE_ADMIN`: debe confirmar esta separación de responsabilidades y aprobar
+  el recorrido institucional de autenticación.
+- La regresión completa queda en 68 pruebas y 301 aserciones; contenedor, YAML
+  y 552 plantillas Twig validan correctamente. Se actualizó
+  `symfony/expression-language` de 6.4.45 a 6.4.48 por CVE-2026-109449 y la
+  auditoría de Composer no informa vulnerabilidades conocidas.

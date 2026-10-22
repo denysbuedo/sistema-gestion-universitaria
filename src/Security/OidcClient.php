@@ -35,7 +35,7 @@ final class OidcClient
         $query = http_build_query([
             'response_type' => 'code', 'client_id' => $this->oidcClientId,
             'redirect_uri' => $this->oidcRedirectUri,
-            'scope' => 'openid profile email roles acr', 'state' => $state, 'nonce' => $nonce,
+            'scope' => 'openid profile email acr', 'state' => $state, 'nonce' => $nonce,
             'code_challenge' => $this->base64Url(hash('sha256', $verifier, true)),
             'code_challenge_method' => 'S256',
         ], '', '&', PHP_QUERY_RFC3986);
@@ -69,12 +69,8 @@ final class OidcClient
         if (isset($access['typ']) && !in_array($access['typ'], ['Bearer', 'JWT'], true)) {
             throw new \RuntimeException('El tipo del access token no está permitido.');
         }
-        $roles = array_values(array_intersect((array) ($claims['roles'] ?? []), ['ROLE_USER', 'ROLE_ADMIN']));
-        if (!$roles) {
-            throw new \RuntimeException('La cuenta no tiene un rol autorizado para SGU.');
-        }
         return [
-            'issuer' => $claims['iss'], 'subject' => $claims['sub'], 'roles' => $roles,
+            'issuer' => $claims['iss'], 'subject' => $claims['sub'],
             'idToken' => $tokens['id_token'], 'refreshToken' => $tokens['refresh_token'],
             'accessExpiresAt' => (int) $access['exp'], 'mode' => $attempt['mode'] ?? 'login',
             'userId' => $attempt['userId'] ?? null,

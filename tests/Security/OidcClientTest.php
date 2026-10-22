@@ -24,11 +24,12 @@ final class OidcClientTest extends TestCase
         self::assertSame($start['attempt']['state'], $query['state']);
         self::assertSame($start['attempt']['nonce'], $query['nonce']);
         self::assertArrayNotHasKey('code_verifier', $query);
+        self::assertSame('openid profile email acr', $query['scope']);
 
         $claims = [
             'iss' => self::ISSUER, 'sub' => 'stable-subject', 'aud' => 'sgu-dev',
             'iat' => time(), 'exp' => time() + 300, 'nonce' => $start['attempt']['nonce'],
-            'roles' => ['ROLE_USER'], 'typ' => 'Bearer',
+            'roles' => ['ROLE_ADMIN'], 'typ' => 'Bearer',
         ];
         $token = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
         $finishClient = $this->client(new MockHttpClient([
@@ -40,7 +41,7 @@ final class OidcClientTest extends TestCase
 
         self::assertSame(self::ISSUER, $identity['issuer']);
         self::assertSame('stable-subject', $identity['subject']);
-        self::assertSame(['ROLE_USER'], $identity['roles']);
+        self::assertArrayNotHasKey('roles', $identity);
         self::assertSame('refresh-token', $identity['refreshToken']);
     }
 
@@ -72,7 +73,7 @@ final class OidcClientTest extends TestCase
         $claims = array_replace([
             'iss' => self::ISSUER, 'sub' => 'stable-subject', 'aud' => 'sgu-dev',
             'iat' => time(), 'exp' => time() + 300, 'nonce' => 'expected-nonce',
-            'roles' => ['ROLE_USER'], 'typ' => 'Bearer',
+            'typ' => 'Bearer',
         ], $changes);
         $token = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
         $client = $this->client(new MockHttpClient([
@@ -92,7 +93,6 @@ final class OidcClientTest extends TestCase
         yield 'wrong nonce' => [['nonce' => 'attacker-nonce']];
         yield 'future issued-at' => [['iat' => time() + 120]];
         yield 'expired token' => [['exp' => time() - 60]];
-        yield 'missing SGU role' => [['roles' => ['ROLE_OTHER']]];
     }
 
     public function testLogoutUsesTheApprovedPostLogoutAddress(): void
@@ -111,7 +111,7 @@ final class OidcClientTest extends TestCase
         [$privateKey, $jwk] = $this->keyPair();
         $claims = [
             'iss' => self::ISSUER, 'sub' => 'stable-subject', 'aud' => 'sgu-dev',
-            'iat' => time(), 'exp' => time() + 300, 'roles' => ['ROLE_USER'], 'typ' => 'Bearer',
+            'iat' => time(), 'exp' => time() + 300, 'typ' => 'Bearer',
         ];
         $accessToken = JWT::encode($claims, $privateKey, 'RS256', 'test-key');
         $client = $this->client(new MockHttpClient([
