@@ -21,7 +21,7 @@ class PortadaController extends AbstractController
     public function index(ConvenioRepository $convenioRepository)
     {
         // Estadísticas generales de convenios
-        $parametros['total_convenios'] = count($convenioRepository->findAll());
+        $parametros['total_convenios'] = $convenioRepository->count([]);
         
         // Convenios por estado (vigentes, vencidos, próximos a vencer)
         $parametros['convenios_vigentes'] = count($convenioRepository->getConveniosVigentes());

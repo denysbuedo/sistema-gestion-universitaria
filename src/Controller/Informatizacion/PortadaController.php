@@ -41,13 +41,13 @@ class PortadaController extends AbstractController
         $por_tipo_enlace    = $enlaceRepo->getCountByTipoConectividad();
 
         $parametros = [
-            'total_sistemas'    => count($sistemaRepo->findAll()),
-            'total_servicios'   => count($servicioRepo->findAll()),
-            'total_lineas'      => count($lineaRepo->findAll()),
-            'total_telefonos'   => count($telefonoRepo->findAll()),
-            'total_nauta'       => count($nautaRepo->findAll()),
-            'total_centros'     => count($centroRepo->findAll()),
-            'total_enlaces'     => count($enlaceRepo->findAll()),
+            'total_sistemas'    => $sistemaRepo->count([]),
+            'total_servicios'   => $servicioRepo->count([]),
+            'total_lineas'      => $lineaRepo->count([]),
+            'total_telefonos'   => $telefonoRepo->count([]),
+            'total_nauta'       => $nautaRepo->count([]),
+            'total_centros'     => $centroRepo->count([]),
+            'total_enlaces'     => $enlaceRepo->count([]),
 
             'por_tipo_sistema'       => $por_tipo_sistema,
             'por_tipo_sistema_json'  => json_encode($por_tipo_sistema),

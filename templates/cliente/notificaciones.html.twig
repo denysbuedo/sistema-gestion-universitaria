@@ -1,5 +1,5 @@
-<span class="dropdown-header"> {% if notificaciones | length == 1 %} {{ notificaciones | length }} notificación {% else %} {{ notificaciones | length }} notificaciones {% endif %}</span>
-<span class="dropdown-header cantidadContainer d-none">{{ notificaciones | length }}</span>
+<span class="dropdown-header"> {% if total_notificaciones == 1 %} {{ total_notificaciones }} notificación {% else %} {{ total_notificaciones }} notificaciones {% endif %}</span>
+<span class="dropdown-header cantidadContainer d-none">{{ total_notificaciones }}</span>
 {% for n in notificaciones %}
     <div class="dropdown-divider"></div>
     <a target="_blank" href="{% if n.url %} {{ n.url }} {% else %} # {% endif %}" class="dropdown-item" data-toggle="tooltip" data-placement="top" title="{{ n.texto }}">

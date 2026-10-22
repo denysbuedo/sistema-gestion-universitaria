@@ -21,7 +21,7 @@ class PortadaController extends AbstractController
     #[Route('', name: 'app_pregrado_portada', methods: ['GET'])]
     public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository, SolicitudProgramaAcademicoInstitucionRepository  $solicitudProgramaAcademicoInstitucionRepository)
     {
-        $parametros['total_solicitudes'] = count($solicitudProgramaAcademicoRepository->findAll());
+        $parametros['total_solicitudes'] = $solicitudProgramaAcademicoRepository->count([]);
 
         $parametros['carreras_aprobadas'] = count($solicitudProgramaAcademicoRepository->getSolicitudProgramaAcademicoAprobadoByTipo([2], 1));
         $parametros['ciclo_corto_aprobados'] = count($solicitudProgramaAcademicoRepository->getSolicitudProgramaAcademicoAprobadoByTipo([2], 2));

@@ -25,10 +25,13 @@ class NotificationController extends AbstractController
             return $this->redirectToRoute('app_notificaciones_usuario_todas');
         }
 
-        $notificaciones = $notificacionesUsuarioRepository->findBy(['usuarioRecive' => $this->getUser()], ['id' => 'DESC']);
+        $criteria = ['usuarioRecive' => $this->getUser()];
+        $totalNotificaciones = $notificacionesUsuarioRepository->count($criteria);
+        $notificaciones = $notificacionesUsuarioRepository->findBy($criteria, ['id' => 'DESC'], 10);
 
         return $this->render('cliente/notificaciones.html.twig', [
             'notificaciones' => $notificaciones,
+            'total_notificaciones' => $totalNotificaciones,
         ]);
     }
 
