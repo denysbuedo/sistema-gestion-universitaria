@@ -83,7 +83,8 @@
                 <thead>
                 <tr>
                     <th width="1%">No.</th>
-                    <th>Ministerio</th>
+                    <th>Universidad</th>
+                    <th>Organismo</th>
                     <th>Programa académico</th>
                     <th>Tipo de programa</th>
                     <th>Rama de la ciencia</th>
@@ -92,7 +93,8 @@
                 </tr>
                 <tr class="filter-row" style="background: #f8fafc;">
                     <th></th>
-                    <th><input type="text" placeholder="Filtrar ministerio..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar universidad..." class="filter-header-input responsive-input"/></th>
+                    <th><input type="text" placeholder="Filtrar organismo..." class="filter-header-input responsive-input"/></th>
                     <th><input type="text" placeholder="Filtrar programa..." class="filter-header-input responsive-input"/></th>
                     <th><input type="text" placeholder="Filtrar tipo..." class="filter-header-input responsive-input"/></th>
                     <th><input type="text" placeholder="Filtrar rama..." class="filter-header-input responsive-input"/></th>
@@ -104,6 +106,7 @@
                 {% for item in registros %}
                     <tr>
                         <td>{{ loop.index }}</td>
+                        <td>{{ item.nombre_universidad | default('') }}</td>
                         <td>{{ item.nombre_organismo | default('') }}</td>
                         <td>{{ item.programa_academico }}</td>
                         <td><span class="badge badge-light border">{{ item.tipo_programa_academico | default('') }}</span></td>

@@ -91,6 +91,7 @@ class ProgramaAcademicoPorUniversidadController extends AbstractController
         $ids = $request->getSession()->get('pregrado_programa_por_universidad', []);
         $ids = is_array($ids) ? array_values(array_filter(array_map('intval', $ids))) : [];
         $rows = array_map(static fn (array $item): array => [
+            $item['nombre_universidad'] ?? '',
             $item['nombre_organismo'] ?? '',
             $item['programa_academico'] ?? '',
             $item['tipo_programa_academico'] ?? '',
@@ -102,7 +103,7 @@ class ProgramaAcademicoPorUniversidadController extends AbstractController
         return $exporter->create(
             'programas-por-universidad-' . date('Y-m-d'),
             'Programas por universidad',
-            ['Organismo', 'Programa académico', 'Tipo de programa', 'Rama de la ciencia', 'Centro rector', 'Categoría de acreditación'],
+            ['Universidad', 'Organismo', 'Programa académico', 'Tipo de programa', 'Rama de la ciencia', 'Centro rector', 'Categoría de acreditación'],
             $rows
         );
     }
