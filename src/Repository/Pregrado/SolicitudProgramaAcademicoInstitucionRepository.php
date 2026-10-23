@@ -2,6 +2,8 @@
 
 namespace App\Repository\Pregrado;
 
+use Doctrine\DBAL\ArrayParameterType;
+
 use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -132,11 +134,11 @@ class SolicitudProgramaAcademicoInstitucionRepository extends ServiceEntityRepos
     }
 
 
-    public function getProgramasV3($id = null)
+    public function getProgramasV3(array $ids = [])
     {
         $where = "";
-        if ($id) {
-            $where = " AND t3_.id IN( $id )";
+        if ($ids !== []) {
+            $where = " AND t3_.id IN (:ids)";
         }
         $query = "SELECT 
                 t0_.id AS id_programa_institucion, 
@@ -165,15 +167,19 @@ ORDER BY t1_.nombre ASC;
 ";
 
         $connect = $this->getEntityManager()->getConnection();
-        $temp = $connect->executeQuery($query);
+        $temp = $connect->executeQuery(
+            $query,
+            $ids !== [] ? ['ids' => $ids] : [],
+            $ids !== [] ? ['ids' => ArrayParameterType::INTEGER] : []
+        );
         return $temp->fetchAllAssociative();
     }
 
-    public function getInstitucionesV3($id = null)
+    public function getInstitucionesV3(array $ids = [])
     {
         $where = "";
-        if ($id) {
-            $where = " AND t1_.id IN( $id )";
+        if ($ids !== []) {
+            $where = " AND t1_.id IN (:ids)";
         }
         $query = "	SELECT  
 	distinct t3_.id,
@@ -195,7 +201,11 @@ ORDER BY t3_.nombre ASC;
 ";
 
         $connect = $this->getEntityManager()->getConnection();
-        $temp = $connect->executeQuery($query);
+        $temp = $connect->executeQuery(
+            $query,
+            $ids !== [] ? ['ids' => $ids] : [],
+            $ids !== [] ? ['ids' => ArrayParameterType::INTEGER] : []
+        );
         return $temp->fetchAllAssociative();
     }
 }

@@ -38,6 +38,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
 use App\Services\HandlerFop;
 use App\Services\Utils;
+use App\Services\ExcelReportExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,12 +66,8 @@ class UniversidadPorProgramaAcademicoController extends AbstractController
     {
         $idPrograma = $request->getSession()->has('universidad_por_pregrado_programa') ? $request->getSession()->get('universidad_por_pregrado_programa') : [];
 
-        $filter = null;
-        if (is_array($idPrograma) && count($idPrograma) > 0) {
-            $filter = implode(',', $idPrograma);
-        }
-
-        $response = $solicitudProgramaAcademicoInstitucionRepository->getInstitucionesV3($filter);
+        $idPrograma = is_array($idPrograma) ? array_values(array_filter(array_map('intval', $idPrograma))) : [];
+        $response = $solicitudProgramaAcademicoInstitucionRepository->getInstitucionesV3($idPrograma);
         return $this->render('modules/pregrado/reportes/universidad/por_programa_academico/index.html.twig', [
             'registros' => $response,
             'programaAcademico' => $solicitudProgramaAcademicoRepository->getSolicitudProgramaAcademicoAprobadoFiltro([2, 4, 6, 7]),
@@ -89,5 +86,25 @@ class UniversidadPorProgramaAcademicoController extends AbstractController
         $idPrograma = $allPost['id_programa'] ?? null;
         $request->getSession()->set('universidad_por_pregrado_programa', $idPrograma);
         return $this->json(['response' => 'OK']);
+    }
+
+    #[Route('/exportar_excel', name: 'app_reporte_universidad_por_programa_academico_exportar_excel', methods: ['GET'])]
+    public function exportarExcel(Request $request, SolicitudProgramaAcademicoInstitucionRepository $repository, ExcelReportExporter $exporter): Response
+    {
+        $ids = $request->getSession()->get('universidad_por_pregrado_programa', []);
+        $ids = is_array($ids) ? array_values(array_filter(array_map('intval', $ids))) : [];
+        $rows = array_map(static fn (array $item): array => [
+            $item['nombre'] ?? '',
+            $item['siglas'] ?? '',
+            $item['rector'] ?? '',
+            $item['cat_acreditacion'] ?? '',
+        ], $repository->getInstitucionesV3($ids));
+
+        return $exporter->create(
+            'universidades-por-programa-' . date('Y-m-d'),
+            'Universidades por programa',
+            ['Universidad', 'Siglas', 'Rector', 'Categoría de acreditación'],
+            $rows
+        );
     }
 }

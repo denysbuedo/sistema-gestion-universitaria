@@ -15,8 +15,9 @@
         .config-table tbody tr:hover { background: #f8fafc; }
 
         .btn-lux-sm { padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; border: none; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.2s; }
-        .btn-lux-success { background: #10b981; color: #fff !important; }
-        .btn-lux-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-lux-primary { background: #134679; color: #fff !important; }
+        .btn-lux-primary:hover { background: #0f3560; }
+        .report-count { margin-left: 10px; color: #64748b; font-size: .8rem; font-weight: 500; }
 
         /* Accordion Customization */
         .search-accordion { margin-bottom: 1rem; }
@@ -34,10 +35,10 @@
 
     <div class="card card-luxury">
         <div class="card-header d-flex align-items-center">
-            <h3 class="card-title text-bold m-0"><i class="fas fa-graduation-cap label-icon"></i>Listado de Universidades por Programas Académicos</h3>
+            <h3 class="card-title m-0"><i class="fas fa-graduation-cap label-icon"></i>Universidades por programa <span class="report-count">{{ registros|length }} registros</span></h3>
             <div class="ml-auto">
-                <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
-                    <i class="fa fa-file-excel"></i> EXCEL
+                <a href="{{ path('app_reporte_universidad_por_programa_academico_exportar_excel') }}" title="Descargar reporte en Excel" class="btn-lux-sm btn-lux-primary">
+                    <i class="fa fa-download"></i> Exportar Excel
                 </a>
             </div>
         </div>
@@ -57,7 +58,7 @@
                         <div class="filter-container">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="filter-label" for="programa">SELECCIONE UNO O VARIOS PROGRAMAS <span class="text-danger">*</span></label>
+                                    <label class="filter-label" for="programa">Programas académicos</label>
                                     <select id="programa" name="programa[]" multiple
                                             class="form-control select2"
                                             data-placeholder="Haga clic para seleccionar">
@@ -99,12 +100,12 @@
                 {% for item in registros %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td class="font-weight-bold text-primary">{{ item.nombre_siglas | default('') }}</td>
+                        <td>{{ item.nombre_siglas | default('') }}</td>
                         <td class="text-center"><span class="badge badge-light border">{{ item.siglas | default('') }}</span></td>
                         <td>{{ item.rector | default('') }}</td>
                         <td class="text-center">
                             {% if item.cat_acreditacion %}
-                                <span class="badge badge-info shadow-sm" style="font-size: 0.72rem; padding: 4px 10px; border-radius: 6px;">{{ item.cat_acreditacion }}</span>
+                                <span class="badge badge-info" style="font-size: 0.72rem; padding: 4px 10px; border-radius: 6px;">{{ item.cat_acreditacion }}</span>
                             {% else %}
                                 -
                             {% endif %}

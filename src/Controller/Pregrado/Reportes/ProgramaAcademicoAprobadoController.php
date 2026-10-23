@@ -38,6 +38,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
 use App\Services\HandlerFop;
 use App\Services\Utils;
+use App\Services\ExcelReportExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,6 +75,29 @@ class ProgramaAcademicoAprobadoController extends AbstractController
         return $this->render('modules/pregrado/reportes/programa_academico_aprobado/index.html.twig', [
             'registros' => $response,
         ]);
+    }
+
+    #[Route('/exportar_excel', name: 'app_reporte_programa_academico_aprobado_exportar_excel', methods: ['GET'])]
+    public function exportarExcel(SolicitudProgramaAcademicoRepository $repository, ExcelReportExporter $exporter): Response
+    {
+        $rows = [];
+        foreach ($repository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]) as $item) {
+            $rows[] = [
+                $item->getOrganismoFormador()?->getNombre() ?? '',
+                $item->getNombre() ?? '',
+                $item->getTipoProgramaAcademico()?->getNombre() ?? '',
+                $item->getRamaCiencia()?->getNombre() ?? '',
+                $item->getCentroRector()?->getNombre() ?? '',
+                $item->getCategoriaAcreditacion()?->getNombre() ?? '',
+            ];
+        }
+
+        return $exporter->create(
+            'programas-aprobados-' . date('Y-m-d'),
+            'Programas aprobados',
+            ['Organismo', 'Programa académico', 'Tipo de programa', 'Rama de la ciencia', 'Centro rector', 'Categoría de acreditación'],
+            $rows
+        );
     }
 
 }
