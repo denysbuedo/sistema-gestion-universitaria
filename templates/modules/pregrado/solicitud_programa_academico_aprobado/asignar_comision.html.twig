@@ -24,10 +24,11 @@
 {% endblock %}
 {% block body %}
     <div class="card card-luxury">
-    <div class="card-header d-flex align-items-center">
+    <div class="card-header d-flex align-items-center program-action-header">
         <h3 class="card-title text-bold text-gray">Asignar comisión</h3>
+        <div class="program-header-actions"><a class="program-back-link" href="{{ path('app_solicitud_programa_academico_aprobado_index') }}"><i class="fas fa-arrow-left"></i>Volver a programas</a></div>
     </div>
-        {{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudProgramaAcademico, 'format':'col3' }) }}
+        <div class="program-summary">{{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudProgramaAcademico, 'format':'col3' }) }}</div>
         <!-- /.card-header -->
         {{ form_start(form) }}
         <div class="card-body">
