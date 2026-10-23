@@ -40,10 +40,9 @@
             <thead>
             <tr>
                 <th>No.</th>
-                <th>Ministerio</th>
+                <th>Organismo</th>
                 <th>Programa académico</th>
                 <th>Tipo de programa</th>
-                <th>Rama de la ciencia</th>
                 <th>Fecha de aprobación</th>
                 <th>Centro rector</th>
                 <th>Categoría de acreditación</th>
@@ -54,12 +53,21 @@
             {% for item in registros %}
                 <tr>
                     <td width="1%">{{ loop.index }}</td>
-                    <td>{{ item.organismoFormador.nombre | default('') }}</td>
+                    {% set organismos = {
+                        'Ministerio de Educación Superior': 'MES',
+                        'Ministerio de Salud Pública': 'MINSAP',
+                        'Ministerio de Cultura': 'MINCULT',
+                        'Ministerio del Interior': 'MININT',
+                        'Ministerio de las Fuerzas Armadas': 'MINFAR',
+                        'Ministerio de Relaciones Exteriores': 'MINREX'
+                    } %}
+                    {% set organismoNombre = item.organismoFormador.nombre | default('') %}
+                    <td title="{{ organismoNombre }}">{{ organismos[organismoNombre] | default(organismoNombre) }}</td>
                     <td>{{ item.nombre }}</td>
                     <td>{{ item.tipoProgramaAcademico.nombre | default('') }}</td>
-                    <td>{{ item.ramaCiencia.nombre | default('') }}</td>
                     <td>{% if item.fechaAprobacion is not null %}{{ item.fechaAprobacion | date('d/m/Y') }}{% endif %}</td>
-                    <td>{{ item.centroRector.nombre | default('') }}</td>
+                    {% set centroNombre = item.centroRector.nombre | default('') %}
+                    <td title="{{ centroNombre }}">{{ item.centroRector.siglas | default(centroNombre) }}</td>
                     <td>{{ item.categoriaAcreditacion.nombre | default('') }}</td>
                     <td width="5%">
                         <div class="dropdown d-flex justify-content-center">

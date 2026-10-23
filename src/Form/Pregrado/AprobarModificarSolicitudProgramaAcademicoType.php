@@ -15,7 +15,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -71,25 +70,34 @@ class AprobarModificarSolicitudProgramaAcademicoType extends AbstractType
 //                'empty_data' => null,
 //                'required' => false
 //            ])
-            ->add('duracionCursoDiurno', NumberType::class, [
-                'label' => '  ',
+            ->add('duracionCursoDiurno', IntegerType::class, [
+                'label' => 'Duración (años)',
                 'required' => false,
                 'attr' => [
-                    'min' => 1
+                    'min' => 1,
+                    'step' => 1,
+                    'inputmode' => 'numeric',
+                    'placeholder' => 'Ej.: 4'
                 ]
             ])
-            ->add('duracionCursoPorEncuentro', NumberType::class, [
-                'label' => '  ',
+            ->add('duracionCursoPorEncuentro', IntegerType::class, [
+                'label' => 'Duración (años)',
                 'required' => false,
                 'attr' => [
-                    'min' => 1
+                    'min' => 1,
+                    'step' => 1,
+                    'inputmode' => 'numeric',
+                    'placeholder' => 'Ej.: 5'
                 ]
             ])
-            ->add('duracionCursoADistancia', NumberType::class, [
-                'label' => '  ',
+            ->add('duracionCursoADistancia', IntegerType::class, [
+                'label' => 'Duración (años)',
                 'required' => false,
                 'attr' => [
-                    'min' => 1
+                    'min' => 1,
+                    'step' => 1,
+                    'inputmode' => 'numeric',
+                    'placeholder' => 'Ej.: 5'
                 ]
             ])
             ->add('descripcionAprobacion', TextareaType::class, [

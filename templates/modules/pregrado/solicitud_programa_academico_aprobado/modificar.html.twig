@@ -16,6 +16,9 @@
         .btn-fs-cancel:hover { background:#e2e8f0; color:#1e293b !important; transform:translateY(-1px); }
         .config-table th { background:#f1f5f9; color:#4a5568; font-size:0.82rem; font-weight:700; border-color:#e2e8f0; padding:8px 10px; }
         .config-table td { font-size:0.85rem; color:#1a2e44; border-color:#e2e8f0; padding:7px 10px; vertical-align:middle; }
+        .modality-help { margin:-6px 0 16px; color:#667786; font-size:0.82rem; }
+        .duration-input .input-group-text { min-width:58px; justify-content:center; border-color:#ced4da; background:#eef2f5; color:#526575; font-size:0.84rem; }
+        .duration-input input:disabled { background:#f3f5f7; color:#8a98a5; }
 </style>
 
     <div class="card card-luxury">
@@ -55,6 +58,7 @@
 
             <div class="program-form-section">
                 <h4>Modalidades y duración</h4>
+                <p class="modality-help">Seleccione las modalidades disponibles e indique para cada una la duración total del programa en años.</p>
                 <div class="row align-items-end">
                 <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.modalidadDiurno) }}
@@ -63,7 +67,7 @@
                 </div>
                 <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoDiurno) }}
-                    {{ form_widget(form.duracionCursoDiurno) }}
+                    <div class="input-group duration-input">{{ form_widget(form.duracionCursoDiurno) }}<div class="input-group-append"><span class="input-group-text">años</span></div></div>
                     {{ form_errors(form.duracionCursoDiurno) }}
                 </div>
                 </div>
@@ -75,7 +79,7 @@
                 </div>
                 <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoPorEncuentro) }}
-                    {{ form_widget(form.duracionCursoPorEncuentro) }}
+                    <div class="input-group duration-input">{{ form_widget(form.duracionCursoPorEncuentro) }}<div class="input-group-append"><span class="input-group-text">años</span></div></div>
                     {{ form_errors(form.duracionCursoPorEncuentro) }}
                 </div>
                 </div>
@@ -87,7 +91,7 @@
                 </div>
                 <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoADistancia) }}
-                    {{ form_widget(form.duracionCursoADistancia) }}
+                    <div class="input-group duration-input">{{ form_widget(form.duracionCursoADistancia) }}<div class="input-group-append"><span class="input-group-text">años</span></div></div>
                     {{ form_errors(form.duracionCursoADistancia) }}
                 </div>
                 </div>
@@ -111,56 +115,24 @@
 {% block javascripts %}
     <script>
 
-        $("#aprobar_modificar_solicitud_programa_academico_duracionCursoDiurno, #aprobar_modificar_solicitud_programa_academico_duracionCursoPorEncuentro, #aprobar_modificar_solicitud_programa_academico_duracionCursoADistancia").bind("keypress", function (event) {
-            if (event.charCode != 0) {
-                var regex = new RegExp("^[,0-9-]*$");
-                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-                if (!regex.test(key)) {
-                    event.preventDefault();
-                    return false;
+        const modalityDurationPairs = [
+            ['#aprobar_modificar_solicitud_programa_academico_modalidadDiurno', '#aprobar_modificar_solicitud_programa_academico_duracionCursoDiurno'],
+            ['#aprobar_modificar_solicitud_programa_academico_modalidadPorEncuentro', '#aprobar_modificar_solicitud_programa_academico_duracionCursoPorEncuentro'],
+            ['#aprobar_modificar_solicitud_programa_academico_modalidadADistancia', '#aprobar_modificar_solicitud_programa_academico_duracionCursoADistancia']
+        ];
+
+        modalityDurationPairs.forEach(function (pair) {
+            const $modality = $(pair[0]);
+            const $duration = $(pair[1]);
+            const syncDuration = function (clearValue) {
+                const enabled = $modality.prop('checked');
+                $duration.prop('disabled', !enabled);
+                if (!enabled && clearValue) {
+                    $duration.val('');
                 }
-            }
-        });
-        $('#aprobar_modificar_solicitud_programa_academico_modalidadDiurno').click(function () {
-            if (!$(this).prop('checked')) {
-                $('#aprobar_modificar_solicitud_programa_academico_duracionCursoDiurno').val(null);
-            }
-        });
-
-        $('#aprobar_modificar_solicitud_programa_academico_modalidadPorEncuentro').click(function () {
-            if (!$(this).prop('checked')) {
-                $('#aprobar_modificar_solicitud_programa_academico_duracionCursoPorEncuentro').val(null);
-            }
-        });
-        $('#aprobar_modificar_solicitud_programa_academico_modalidadADistancia').click(function () {
-            if (!$(this).prop('checked')) {
-                $('#aprobar_modificar_solicitud_programa_academico_duracionCursoADistancia').val(null);
-            }
-        });
-
-        $("#aprobar_modificar_solicitud_programa_academico_duracionCursoDiurno").on('keydown keypress change keyup', function (e) {
-            if ($("#aprobar_modificar_solicitud_programa_academico_duracionCursoDiurno").val() != "") {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadDiurno').prop('checked', true);
-            } else {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadDiurno').prop('checked', false);
-            }
-        });
-
-
-        $("#aprobar_modificar_solicitud_programa_academico_duracionCursoADistancia").on('keydown keypress change keyup', function (e) {
-            if ($("#aprobar_modificar_solicitud_programa_academico_duracionCursoADistancia").val() != "") {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadADistancia').prop('checked', true);
-            } else {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadADistancia').prop('checked', false);
-            }
-        });
-
-        $("#aprobar_modificar_solicitud_programa_academico_duracionCursoPorEncuentro").on('keydown keypress change keyup', function (e) {
-            if ($("#aprobar_modificar_solicitud_programa_academico_duracionCursoPorEncuentro").val() != "") {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadPorEncuentro').prop('checked', true);
-            } else {
-                $('#aprobar_modificar_solicitud_programa_academico_modalidadPorEncuentro').prop('checked', false);
-            }
+            };
+            $modality.on('change', function () { syncDuration(true); });
+            syncDuration(false);
         });
 
     </script>
