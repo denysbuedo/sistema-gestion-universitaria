@@ -1107,11 +1107,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
     });
 
-    // Cierre defensivo: evita dejar un menú huérfano si la tabla se redibuja,
-    // se pagina o cambia el tamaño de la ventana mientras está abierto.
-    $(window).on('resize.sguTableActions', function () {
-        $('table .dropdown.show [data-toggle="dropdown"]').dropdown('hide');
-    });
+    function closeOpenTableActionMenus() {
+        $('table .dropdown.show').each(function () {
+            $(this).find('[data-toggle="dropdown"]').first().dropdown('hide');
+        });
+    }
+
+    // Un menú separado de la tabla no debe permanecer abierto cuando su fila se
+    // desplaza. Capturamos también el scroll de contenedores internos de DataTables.
+    window.addEventListener('scroll', closeOpenTableActionMenus, { passive: true });
+    document.addEventListener('scroll', function (event) {
+        if (event.target !== document) {
+            closeOpenTableActionMenus();
+        }
+    }, true);
+    $(window).on('resize.sguTableActions', closeOpenTableActionMenus);
 
     $(document).ready(function () {
         $('.content-wrapper,.main-sidebar').on('click', function () {
