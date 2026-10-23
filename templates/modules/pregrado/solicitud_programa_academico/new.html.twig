@@ -53,6 +53,7 @@
                 <div class="fs-section-header">
                     <span class="fs-section-title"><i class="fas fa-university"></i> Datos del Programa Académico</span>
                 </div>
+                <div class="fs-section-content">
                 <div class="row">
                     <div class="col-md-4 form-group">
                         <label class="fs-label required">{{ form_label(form.tipoProgramaAcademico) }}</label>
@@ -95,12 +96,14 @@
                         {{ form_errors(form.solicitud) }}
                     </div>
                 </div>
+                </div>
             </div>
 
             <div class="fs-section mt-4">
                 <div class="fs-section-header">
                     <span class="fs-section-title"><i class="fas fa-user-tie"></i> Datos del Solicitante</span>
                 </div>
+                <div class="fs-section-content">
                 <div class="row">
                     <div class="col-md-4 form-group">
                         <label class="fs-label required">{{ form_label(form.nombreSolicitante) }}</label>
@@ -127,6 +130,7 @@
                         </div>
                         {{ form_errors(form.telefonoSolicitante) }}
                     </div>
+                </div>
                 </div>
             </div>
 

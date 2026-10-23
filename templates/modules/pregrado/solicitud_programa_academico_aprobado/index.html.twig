@@ -68,9 +68,9 @@
                                     type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 &#8942;
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right shadow-sm" style="border-radius:10px;border:none;min-width:230px;padding:6px 0;font-size:0.85rem;">
+                            <div class="dropdown-menu dropdown-menu-right program-actions-menu">
 
-                                <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Acciones</span>
+                                <span class="dropdown-header">Información</span>
                                 <button class="dropdown-item modalDetailAction" style="padding:8px 16px;"
                                         data-url="{{ path('app_solicitud_programa_academico_aprobado_detail', {'id': item.id}) }}"
                                         data-title="Detalles del Programa de Pregrado">
@@ -84,7 +84,7 @@
                                     </a>
 
                                     <div class="dropdown-divider my-1"></div>
-                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Asociaciones</span>
+                                    <span class="dropdown-header">Asociaciones</span>
                                     <a class="dropdown-item" style="padding:8px 16px;"
                                        href="{{ path('app_solicitud_programa_academico_aprobado_asignar_universidad', {'id': item.id}) }}">
                                         <i class="fa fa-university fa-fw mr-2 text-success"></i> Universidades donde se estudia
@@ -95,7 +95,7 @@
                                     </a>
 
                                     <div class="dropdown-divider my-1"></div>
-                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Gestión de programa</span>
+                                    <span class="dropdown-header">Estado del programa</span>
                                     <a class="dropdown-item" style="padding:8px 16px;"
                                        href="{{ path('app_solicitud_programa_academico_aprobado_reabrir', {'id': item.id}) }}">
                                         <i class="fa fa-redo fa-fw mr-2 text-info"></i> Reabrir programa
@@ -115,7 +115,7 @@
 
                                 {% if item.cartaAprobacion is not null or item.solicitud is not null or item.plan_estudio is not null %}
                                     <div class="dropdown-divider my-1"></div>
-                                    <span class="dropdown-header" style="font-size:0.65rem;font-weight:700;color:#adb5bd;letter-spacing:.5px;text-transform:uppercase;">Documentación</span>
+                                    <span class="dropdown-header">Documentación</span>
                                     {% if item.dictamen is not null %}
                                         <a class="dropdown-item" style="padding:8px 16px;" target="_blank"
                                            href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_programa_academico/dictamen/{{ item.dictamen }}">

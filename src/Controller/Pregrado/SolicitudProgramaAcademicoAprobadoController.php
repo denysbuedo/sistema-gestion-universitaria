@@ -211,9 +211,13 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
             $data = [];
             if (is_array($registros) && count($registros) > 0) {
                 foreach ($registros as $value) {
-                    $item['nombre'] = "(" . $value->getInstitucion()->getSiglas() . ") " . $value->getInstitucion()->getNombre();
-                    $item['centro_rector'] = ($value->getInstitucion()->getId() == $solicitudProgramaAcademico->getCentroRector()->getId()) ? "Sí" : "No";
-                    $item['categoria_acreditacion'] = method_exists($value->getCategoriaAcreditacion(), 'getNombre') ? $value->getCategoriaAcreditacion()->getNombre() : null;
+                    $institucion = $value->getInstitucion();
+                    $centroRector = $solicitudProgramaAcademico->getCentroRector();
+                    $item['nombre'] = $institucion
+                        ? "(" . $institucion->getSiglas() . ") " . $institucion->getNombre()
+                        : 'Institución no disponible';
+                    $item['centro_rector'] = ($institucion && $centroRector && $institucion->getId() === $centroRector->getId()) ? "Sí" : "No";
+                    $item['categoria_acreditacion'] = $value->getCategoriaAcreditacion()?->getNombre();
                     $item['asignada_a'] = $solicitudProgramaAcademico->getNombre();
                     $data[] = $item;
                 }
@@ -229,7 +233,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                 'idEntidad' => $idEntidad,
                 'isAdmin' => $isAdmin
             ]);
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->addFlash('error', $exception->getMessage());
             return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_index', [], Response::HTTP_SEE_OTHER);
         }

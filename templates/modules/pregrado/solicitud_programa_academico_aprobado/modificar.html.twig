@@ -22,7 +22,9 @@
     <div class="card-header d-flex align-items-center">
         <h3 class="card-title text-bold text-gray">Modificar información </h3>
     </div>
-        {{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudPrograma, 'format':'col3' }) }}
+        <div class="program-summary">
+            {{ include('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', { 'item': solicitudPrograma, 'format':'col3' }) }}
+        </div>
         <!-- /.card-header -->
         {{ form_start(form) }}
         <div class="card-body">
@@ -50,47 +52,43 @@
                 </div>
             </div>
 
-            <br>
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
-                    <label for="Modalidad">Tipo de curso</label>
-                </div>
-                <label for="Duración " style="margin-left: -15%">Duración </label>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-top: 1%">
+            <div class="program-form-section">
+                <h4>Modalidades y duración</h4>
+                <div class="row align-items-end">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.modalidadDiurno) }}
                     {{ form_widget(form.modalidadDiurno) }}
                     {{ form_errors(form.modalidadDiurno) }}
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-left: -15%">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoDiurno) }}
                     {{ form_widget(form.duracionCursoDiurno) }}
                     {{ form_errors(form.duracionCursoDiurno) }}
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-top: 1%">
+                </div>
+                <div class="row align-items-end">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.modalidadPorEncuentro) }}
                     {{ form_widget(form.modalidadPorEncuentro) }}
                     {{ form_errors(form.modalidadPorEncuentro) }}
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-left: -15%">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoPorEncuentro) }}
                     {{ form_widget(form.duracionCursoPorEncuentro) }}
                     {{ form_errors(form.duracionCursoPorEncuentro) }}
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-top: 1%">
+                </div>
+                <div class="row align-items-end">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.modalidadADistancia) }}
                     {{ form_widget(form.modalidadADistancia) }}
                     {{ form_errors(form.modalidadADistancia) }}
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group" style="margin-left: -15%">
+                <div class="col-12 col-md-6 form-group">
                     {{ form_label(form.duracionCursoADistancia) }}
                     {{ form_widget(form.duracionCursoADistancia) }}
                     {{ form_errors(form.duracionCursoADistancia) }}
+                </div>
                 </div>
             </div>
             <div class="row">
