@@ -1066,6 +1066,53 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {% block javascripts %}{% endblock %}
 <script>
 
+    // Los menús de acciones de las tablas se sacan temporalmente de su celda para
+    // evitar que DataTables los recorte. Conservamos su propietario para poder
+    // devolverlos al cerrar y usamos coordenadas del viewport por ser position:fixed.
+    $(document).on('shown.bs.dropdown.sguTableActions', 'table .dropdown', function () {
+        var $dropdown = $(this);
+        var $button = $dropdown.find('[data-toggle="dropdown"]').first();
+        var $menu = $('body > .dropdown-menu.show').last();
+
+        if (!$menu.length || !$button.length) {
+            return;
+        }
+
+        var rect = $button[0].getBoundingClientRect();
+        $dropdown.data('sgu-detached-menu', $menu);
+        $menu.data('sgu-dropdown-owner', $dropdown).css({
+            position: 'fixed',
+            top: rect.bottom + 2,
+            left: 'auto',
+            right: Math.max(8, window.innerWidth - rect.right),
+            display: 'block',
+            zIndex: 9999
+        });
+    });
+
+    $(document).on('hide.bs.dropdown.sguTableActions', 'table .dropdown', function () {
+        var $dropdown = $(this);
+        var $menu = $dropdown.data('sgu-detached-menu');
+
+        if ($menu && $menu.length) {
+            $menu.appendTo($dropdown).css({
+                position: '',
+                top: '',
+                left: '',
+                right: '',
+                display: '',
+                zIndex: ''
+            }).removeData('sgu-dropdown-owner');
+            $dropdown.removeData('sgu-detached-menu');
+        }
+    });
+
+    // Cierre defensivo: evita dejar un menú huérfano si la tabla se redibuja,
+    // se pagina o cambia el tamaño de la ventana mientras está abierto.
+    $(window).on('resize.sguTableActions', function () {
+        $('table .dropdown.show [data-toggle="dropdown"]').dropdown('hide');
+    });
+
     $(document).ready(function () {
         $('.content-wrapper,.main-sidebar').on('click', function () {
             if ($('.control-sidebar').css('display') == 'block') {
