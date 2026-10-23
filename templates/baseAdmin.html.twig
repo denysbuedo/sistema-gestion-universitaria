@@ -388,6 +388,149 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .main-sidebar .nav-treeview > .nav-item > .nav-link:hover,
         .main-sidebar .nav-treeview > .nav-item > .nav-link.active { background: rgba(255,255,255,.07); color: #fff; }
 
+        /* Lenguaje visual común para las pantallas operativas de Pregrado */
+        body.pregrado-workspace .content-wrapper { background: #f4f7f9; }
+        body.pregrado-workspace .content > .container-fluid { padding: 18px 22px 28px; }
+        body.pregrado-workspace .card,
+        body.pregrado-workspace .card-luxury,
+        body.pregrado-workspace .fs-section {
+            border: 1px solid #dce4ea !important;
+            border-top: 1px solid #dce4ea !important;
+            border-radius: 4px !important;
+            background: #fff;
+            box-shadow: none !important;
+        }
+        body.pregrado-workspace .card-header,
+        body.pregrado-workspace .card-luxury .card-header {
+            min-height: 64px;
+            padding: 16px 20px !important;
+            border-bottom: 1px solid #dce4ea !important;
+            border-radius: 0 !important;
+            background: #fff !important;
+        }
+        body.pregrado-workspace .card-title,
+        body.pregrado-workspace .card-luxury .card-title {
+            color: #263746 !important;
+            font-size: 17px !important;
+            font-weight: 500 !important;
+            letter-spacing: -.01em;
+        }
+        body.pregrado-workspace .card-title.text-bold { font-weight: 500 !important; }
+        body.pregrado-workspace .label-icon { margin-right: 9px; color: #102f4f !important; opacity: 1 !important; }
+        body.pregrado-workspace .card-body { padding: 20px !important; }
+
+        body.pregrado-workspace .table-responsive { border: 0; }
+        body.pregrado-workspace .table { margin-bottom: 0; background: #fff; color: #263746; font-size: 14px; }
+        body.pregrado-workspace .table thead th,
+        body.pregrado-workspace .config-table th {
+            padding: 11px 12px !important;
+            border: 1px solid #dce4ea !important;
+            background: #edf2f5 !important;
+            color: #425563 !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            letter-spacing: .02em;
+            text-transform: none;
+            vertical-align: middle;
+        }
+        body.pregrado-workspace .table tbody td,
+        body.pregrado-workspace .config-table td {
+            padding: 10px 12px !important;
+            border-color: #e1e7ec !important;
+            color: #344856 !important;
+            font-size: 13px !important;
+            font-weight: 400;
+            vertical-align: middle;
+        }
+        body.pregrado-workspace .table-striped tbody tr:nth-of-type(odd) { background: #fafbfc; }
+        body.pregrado-workspace .table tbody tr:hover { background: #f2f6f8 !important; }
+        body.pregrado-workspace .dataTables_wrapper .dataTables_filter input,
+        body.pregrado-workspace .dataTables_wrapper .dataTables_length select,
+        body.pregrado-workspace .filter-header-input,
+        body.pregrado-workspace .form-control,
+        body.pregrado-workspace .custom-select,
+        body.pregrado-workspace .select2-selection {
+            min-height: 40px;
+            border: 1px solid #cbd6de !important;
+            border-radius: 4px !important;
+            background: #fff;
+            color: #263746;
+            font-size: 14px;
+            box-shadow: none !important;
+        }
+        body.pregrado-workspace .filter-header-input { min-height: 34px; padding: 6px 9px; }
+        body.pregrado-workspace .form-control:focus,
+        body.pregrado-workspace .custom-select:focus,
+        body.pregrado-workspace .filter-header-input:focus {
+            border-color: #1769aa !important;
+            box-shadow: 0 0 0 3px rgba(23,105,170,.11) !important;
+        }
+        body.pregrado-workspace label,
+        body.pregrado-workspace .fs-label { color: #425563 !important; font-size: 13px !important; font-weight: 500 !important; }
+
+        body.pregrado-workspace .fs-title {
+            margin: 0 0 18px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            color: #102f4f !important;
+            font-size: 22px !important;
+            font-weight: 500 !important;
+        }
+        body.pregrado-workspace .fs-title small { margin-top: 5px; color: #6b7b88; font-size: 13px; }
+        body.pregrado-workspace .fs-section-title {
+            padding: 13px 18px !important;
+            border-bottom: 1px solid #dce4ea !important;
+            border-radius: 0 !important;
+            background: #f5f7f9 !important;
+            color: #425563 !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            letter-spacing: .04em;
+        }
+        body.pregrado-workspace .fs-section-body { padding: 18px 18px 5px !important; }
+
+        body.pregrado-workspace .btn-lux-sm,
+        body.pregrado-workspace .btn-fs-submit,
+        body.pregrado-workspace .btn-fs-cancel,
+        body.pregrado-workspace .btn-primary,
+        body.pregrado-workspace .btn-secondary,
+        body.pregrado-workspace .btn-success {
+            min-height: 38px;
+            padding: 8px 14px !important;
+            border-radius: 4px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0 !important;
+            text-transform: none !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        body.pregrado-workspace .btn-lux-primary,
+        body.pregrado-workspace .btn-fs-submit,
+        body.pregrado-workspace .btn-primary { border: 1px solid #102f4f !important; background: #102f4f !important; color: #fff !important; }
+        body.pregrado-workspace .btn-lux-secondary,
+        body.pregrado-workspace .btn-fs-cancel,
+        body.pregrado-workspace .btn-secondary { border: 1px solid #b8c5cf !important; background: #fff !important; color: #425563 !important; }
+        body.pregrado-workspace .btn-lux-success,
+        body.pregrado-workspace .btn-success { border: 1px solid #496b86 !important; background: #496b86 !important; color: #fff !important; }
+
+        body.pregrado-workspace table .dropdown > button {
+            width: 34px !important; height: 34px !important; border: 1px solid #cbd6de !important;
+            border-radius: 4px !important; background: #fff !important; color: #425563 !important; box-shadow: none !important;
+        }
+        body.pregrado-workspace .dropdown-menu { padding: 5px 0 !important; border: 1px solid #d5dee5 !important; border-radius: 4px !important; box-shadow: none !important; }
+        body.pregrado-workspace .dropdown-item { padding: 9px 14px !important; color: #344856; font-size: 13px !important; }
+        body.pregrado-workspace .dropdown-item:hover { background: #eef3f6; color: #102f4f; }
+        body.pregrado-workspace .badge { border-radius: 3px !important; box-shadow: none !important; font-weight: 500 !important; }
+        body.pregrado-workspace .modal-content { border: 1px solid #dce4ea; border-radius: 4px; box-shadow: none; }
+
+        @media (max-width: 767px) {
+            body.pregrado-workspace .content > .container-fluid { padding: 12px; }
+            body.pregrado-workspace .card-header { align-items: flex-start !important; gap: 12px; }
+            body.pregrado-workspace .card-body { padding: 14px !important; overflow-x: auto; }
+            body.pregrado-workspace .fs-actions { flex-wrap: wrap; }
+        }
+
             </style>
 
     {% block stylesheets %}
@@ -395,7 +538,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endblock %}
 
 </head>
-<body class="hold-transition layout-fixed layout-navbar-fixed">
+<body class="hold-transition layout-fixed layout-navbar-fixed{% if app.request.pathinfo|split('/')[1] == 'pregrado' %}{% if app.request.get('_route') == 'app_pregrado_portada' %} pregrado-portada{% else %} module-pregrado pregrado-workspace{% endif %}{% endif %}">
 <div class="wrapper">
 
     <!-- Navbar -->
