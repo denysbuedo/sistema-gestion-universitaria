@@ -1,0 +1,74 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Sedes donde se imparte{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .sede-card { border: 1px solid #dbe3eb; border-radius: 6px; margin-bottom: 14px; }
+        .sede-card__title { background: #f5f7f9; border-bottom: 1px solid #dbe3eb; padding: 10px 14px; font-size: .9rem; }
+        .sede-card__body { padding: 12px 14px; }
+        .modalidad-check { display: inline-flex; align-items: center; margin: 0 22px 6px 0; font-weight: 400; }
+        .modalidad-check input { margin-right: 7px; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="card border-0">
+    <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+        <div>
+            <h3 class="card-title m-0">Sedes donde se imparte</h3>
+            <div class="text-muted mt-1">
+                {{ programaInstitucion.solicitudProgramaAcademico.nombre }} ·
+                {{ programaInstitucion.institucion.siglas | default(programaInstitucion.institucion.nombre) }}
+            </div>
+        </div>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_solicitud_programa_academico_aprobado_index') }}">
+            <i class="fas fa-arrow-left mr-1"></i> Volver
+        </a>
+    </div>
+    <form method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('gestionar_sedes_' ~ programaInstitucion.id) }}">
+        <div class="card-body">
+            <p class="text-muted mb-4">Marque las modalidades que se imparten en cada sede. Una sede sin modalidades seleccionadas no quedará asociada al programa.</p>
+
+            <section class="sede-card">
+                <div class="sede-card__title"><i class="fas fa-university text-primary mr-2"></i><strong>Sede central</strong></div>
+                <div class="sede-card__body">
+                    {% for modalidad in modalidades %}
+                        <label class="modalidad-check">
+                            <input type="checkbox" name="sede_central[]" value="{{ modalidad }}"
+                                   {% if modalidad in programaInstitucion.modalidadesSedeCentral %}checked{% endif %}>
+                            {{ modalidad }}
+                        </label>
+                    {% else %}
+                        <span class="text-muted">El programa no tiene modalidades configuradas.</span>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <h4 class="h6 mt-4 mb-3">Centros Universitarios Municipales de {{ programaInstitucion.institucion.siglas | default(programaInstitucion.institucion.nombre) }}</h4>
+            {% for centro in cum %}
+                <section class="sede-card">
+                    <div class="sede-card__title"><i class="fas fa-map-marker-alt text-primary mr-2"></i><strong>{{ centro.nombreFacultad }}</strong></div>
+                    <div class="sede-card__body">
+                        {% for modalidad in modalidades %}
+                            <label class="modalidad-check">
+                                <input type="checkbox" name="cum[{{ centro.id }}][]" value="{{ modalidad }}"
+                                       {% if modalidad in seleccionActual[centro.id] | default([]) %}checked{% endif %}>
+                                {{ modalidad }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% else %}
+                <div class="alert alert-light border">Esta universidad no tiene CUM registrados.</div>
+            {% endfor %}
+        </div>
+        <div class="card-footer bg-white border-top text-right">
+            <a class="btn btn-outline-secondary mr-2" href="{{ path('app_solicitud_programa_academico_aprobado_index') }}">Cancelar</a>
+            <button class="btn btn-primary" type="submit"><i class="fas fa-save mr-1"></i> Guardar sedes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

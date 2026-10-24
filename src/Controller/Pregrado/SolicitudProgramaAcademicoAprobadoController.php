@@ -3,6 +3,7 @@
 namespace App\Controller\Pregrado;
 
 use App\Entity\Institucion\Institucion;
+use App\Entity\Institucion\InstitucionCum;
 use App\Entity\NotificacionesUsuario;
 use App\Entity\Pregrado\MiembrosComisionNacional;
 use App\Entity\Pregrado\ProgramaAcademicoDesactivado;
@@ -11,6 +12,7 @@ use App\Entity\Pregrado\ProgramaAcademicoReabiertoInstitucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Pregrado\SolicitudProgramaAcademicoComisionNacional;
 use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion;
+use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucionCum;
 use App\Entity\Pregrado\SolicitudProgramaAcademicoPlanEstudio;
 use App\Export\Personal\ExportListPersonaToPdf;
 use App\Export\Pregrado\ExportListSolicitudProgramaAcademicoToPdf;
@@ -24,6 +26,7 @@ use App\Form\Pregrado\SolicitudProgramaInstitucionType;
 use App\Form\Pregrado\SolicitudProgramaPlanEstudioType;
 use App\Repository\Institucion\CategoriaAcreditacionRepository;
 use App\Repository\Institucion\InstitucionRepository;
+use App\Repository\Institucion\InstitucionCumRepository;
 use App\Repository\NotificacionesUsuarioRepository;
 use App\Repository\Personal\PersonaRepository;
 use App\Repository\Pregrado\EstadoProgramaAcademicoRepository;
@@ -34,6 +37,7 @@ use App\Repository\Pregrado\ProgramaAcademicoReabiertoInstitucionRepository;
 use App\Repository\Pregrado\ProgramaAcademicoReabiertoRepository;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoComisionNacionalRepository;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoInstitucionRepository;
+use App\Repository\Pregrado\SolicitudProgramaAcademicoInstitucionCumRepository;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoPlanEstudioRepository;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
@@ -49,7 +53,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB') or is_granted('ROLE_PREGRADO_MIS_PROGRAMAS')"))]
 #[Route('/pregrado/solicitud_programa_academico_aprobado')]
 class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 {
@@ -59,10 +63,21 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_solicitud_programa_academico_aprobado_index', methods: ['GET'])]
-    public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository)
+    public function index(
+        SolicitudProgramaAcademicoRepository $solicitudProgramaRepository,
+        SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository,
+        SolicitudProgramaAcademicoInstitucionRepository $programaInstitucionRepository,
+        EntityManagerInterface $entityManager,
+        Utils $utils
+    )
     {
         $response = [];
-        $registros = $solicitudProgramaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]);
+        $accesoGlobal = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB');
+        $institucion = $accesoGlobal ? null : $this->getInstitucionUsuario($utils, $entityManager);
+        $registros = $accesoGlobal
+            ? $solicitudProgramaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7])
+            : ($institucion ? $solicitudProgramaRepository->getAprobadosPorInstitucion([2, 4, 6, 7], $institucion->getId()) : []);
+        $resumenSedes = [];
         if (is_array($registros)) {
             foreach ($registros as $value) {
                 $temp = $solicitudProgramaAcademicoPlanEstudioRepository->findBy(['solicitudProgramaAcademico' => $value->getId()]);
@@ -72,8 +87,179 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                 $response[] = $value;
             }
         }
+        $sedesAgrupadas = [];
+        foreach ($programaInstitucionRepository->getResumenSedes(
+            array_map(static fn (SolicitudProgramaAcademico $programa): int => $programa->getId(), $response),
+            $institucion?->getId()
+        ) as $fila) {
+            $programaId = (int) $fila['programa_id'];
+            $institucionNombre = $fila['institucion_siglas'] ?: $fila['institucion_nombre'];
+            $clave = $accesoGlobal ? $institucionNombre : '';
+            $central = json_decode((string) $fila['modalidades_sede_central'], true) ?: [];
+            if ($central !== []) {
+                $sedesAgrupadas[$programaId][$clave][] = 'Sede central';
+            }
+            if ($fila['cum_nombre']) {
+                $sedesAgrupadas[$programaId][$clave][] = $fila['cum_nombre'];
+            }
+        }
+        foreach ($sedesAgrupadas as $programaId => $porInstitucion) {
+            foreach ($porInstitucion as $institucionNombre => $sedes) {
+                $texto = implode(', ', array_values(array_unique($sedes)));
+                $resumenSedes[$programaId][] = $accesoGlobal ? $institucionNombre . ': ' . $texto : $texto;
+            }
+        }
         return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/index.html.twig', [
             'registros' => $response,
+            'accesoGlobal' => $accesoGlobal,
+            'institucionUsuario' => $institucion,
+            'resumenSedes' => $resumenSedes,
+        ]);
+    }
+
+    #[Route('/{id}/sedes', name: 'app_solicitud_programa_academico_aprobado_sedes', methods: ['GET'])]
+    public function sedes(
+        SolicitudProgramaAcademico $solicitudProgramaAcademico,
+        SolicitudProgramaAcademicoInstitucionRepository $programaInstitucionRepository,
+        EntityManagerInterface $entityManager,
+        Utils $utils
+    ): Response {
+        $accesoGlobal = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB');
+        $institucion = $accesoGlobal ? null : $this->getInstitucionUsuario($utils, $entityManager);
+        if (!$accesoGlobal && !$institucion) {
+            throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
+        }
+
+        $criterios = ['solicitudProgramaAcademico' => $solicitudProgramaAcademico];
+        if ($institucion) {
+            $criterios['institucion'] = $institucion;
+        }
+        $relaciones = $programaInstitucionRepository->findBy($criterios, ['id' => 'ASC']);
+        if (count($relaciones) === 1) {
+            return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_gestionar_sedes', ['id' => $relaciones[0]->getId()]);
+        }
+        if ($relaciones === []) {
+            throw $this->createNotFoundException('El programa no está asociado a una universidad accesible para su usuario.');
+        }
+
+        return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/seleccionar_sede_institucion.html.twig', [
+            'programa' => $solicitudProgramaAcademico,
+            'relaciones' => $relaciones,
+        ]);
+    }
+
+    #[Route('/sedes/{id}', name: 'app_solicitud_programa_academico_aprobado_gestionar_sedes', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
+    public function gestionarSedes(
+        Request $request,
+        SolicitudProgramaAcademicoInstitucion $programaInstitucion,
+        InstitucionCumRepository $institucionCumRepository,
+        SolicitudProgramaAcademicoInstitucionCumRepository $programaCumRepository,
+        EntityManagerInterface $entityManager,
+        Utils $utils
+    ): Response {
+        $this->validarAccesoInstitucion($programaInstitucion, $utils, $entityManager);
+        $modalidades = $this->modalidadesDisponibles($programaInstitucion->getSolicitudProgramaAcademico());
+        $cum = $institucionCumRepository->findBy(['institucion' => $programaInstitucion->getInstitucion()], ['nombreFacultad' => 'ASC']);
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('gestionar_sedes_' . $programaInstitucion->getId(), (string) $request->request->get('_token'))) {
+                throw $this->createAccessDeniedException('El formulario ha expirado. Intente nuevamente.');
+            }
+
+            $modalidadesCentral = array_values(array_intersect(
+                $modalidades,
+                (array) $request->request->all('sede_central')
+            ));
+            $programaInstitucion->setModalidadesSedeCentral($modalidadesCentral);
+
+            $existentes = $programaCumRepository->findBy(['solicitudProgramaAcademicoInstitucion' => $programaInstitucion]);
+            foreach ($existentes as $existente) {
+                $entityManager->remove($existente);
+            }
+
+            $seleccionCum = (array) $request->request->all('cum');
+            $cumPermitidos = [];
+            foreach ($cum as $centro) {
+                $cumPermitidos[$centro->getId()] = $centro;
+            }
+            foreach ($seleccionCum as $cumId => $seleccionadas) {
+                if (!isset($cumPermitidos[(int) $cumId])) {
+                    throw $this->createAccessDeniedException('Se intentó asociar un CUM ajeno a la universidad.');
+                }
+                foreach (array_intersect($modalidades, (array) $seleccionadas) as $modalidad) {
+                    $asignacion = new SolicitudProgramaAcademicoInstitucionCum();
+                    $asignacion->setSolicitudProgramaAcademicoInstitucion($programaInstitucion);
+                    $asignacion->setInstitucionCum($cumPermitidos[(int) $cumId]);
+                    $asignacion->setModalidad($modalidad);
+                    $entityManager->persist($asignacion);
+                }
+            }
+            $entityManager->persist($programaInstitucion);
+            $entityManager->flush();
+            $this->addFlash('success', 'Las sedes donde se imparte el programa fueron actualizadas.');
+
+            return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_gestionar_sedes', ['id' => $programaInstitucion->getId()]);
+        }
+
+        $seleccionActual = [];
+        foreach ($programaCumRepository->findBy(['solicitudProgramaAcademicoInstitucion' => $programaInstitucion]) as $asignacion) {
+            $seleccionActual[$asignacion->getInstitucionCum()->getId()][] = $asignacion->getModalidad();
+        }
+
+        return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/gestionar_sedes.html.twig', [
+            'programaInstitucion' => $programaInstitucion,
+            'modalidades' => $modalidades,
+            'cum' => $cum,
+            'seleccionActual' => $seleccionActual,
+        ]);
+    }
+
+    #[Route('/programas-por-cum', name: 'app_pregrado_programas_por_cum', methods: ['GET'])]
+    public function programasPorCum(
+        InstitucionCumRepository $institucionCumRepository,
+        SolicitudProgramaAcademicoInstitucionCumRepository $programaCumRepository,
+        EntityManagerInterface $entityManager,
+        Utils $utils
+    ): Response {
+        $accesoGlobal = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB');
+        $institucion = $accesoGlobal ? null : $this->getInstitucionUsuario($utils, $entityManager);
+        if (!$accesoGlobal && !$institucion) {
+            throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
+        }
+        $centros = $institucionCumRepository->findBy($institucion ? ['institucion' => $institucion] : [], ['nombreFacultad' => 'ASC']);
+        $totales = [];
+        foreach ($centros as $centro) {
+            $programas = [];
+            foreach ($programaCumRepository->findBy(['institucionCum' => $centro]) as $asignacion) {
+                $programas[$asignacion->getSolicitudProgramaAcademicoInstitucion()->getSolicitudProgramaAcademico()->getId()] = true;
+            }
+            $totales[$centro->getId()] = count($programas);
+        }
+
+        return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/programas_por_cum.html.twig', [
+            'centros' => $centros,
+            'totales' => $totales,
+            'accesoGlobal' => $accesoGlobal,
+        ]);
+    }
+
+    #[Route('/programas-por-cum/{id}', name: 'app_pregrado_programas_por_cum_detalle', requirements: ['id' => '\\d+'], methods: ['GET'])]
+    public function programasPorCumDetalle(
+        InstitucionCum $institucionCum,
+        SolicitudProgramaAcademicoInstitucionCumRepository $programaCumRepository,
+        EntityManagerInterface $entityManager,
+        Utils $utils
+    ): Response {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_GEST_PROGAPROB')) {
+            $institucion = $this->getInstitucionUsuario($utils, $entityManager);
+            if (!$institucion || $institucionCum->getInstitucion()?->getId() !== $institucion->getId()) {
+                throw $this->createAccessDeniedException('No puede consultar un CUM de otra universidad.');
+            }
+        }
+
+        return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/programas_cum_detalle.html.twig', [
+            'centro' => $institucionCum,
+            'asignaciones' => $programaCumRepository->findBy(['institucionCum' => $institucionCum], ['modalidad' => 'ASC']),
         ]);
     }
 
@@ -96,8 +282,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                            SolicitudProgramaAcademicoInstitucionRepository      $solicitudProgramaAcademicoInstitucionRepository,
                            SolicitudProgramaAcademicoComisionNacionalRepository $solComNac,
                            SolicitudProgramaAcademicoComisionNacionalRepository $solComisionNacional,
-                           MiembrosComisionNacionalRepository                   $miembrosComisionNacional)
+                           MiembrosComisionNacionalRepository                   $miembrosComisionNacional,
+                           EntityManagerInterface                               $entityManager,
+                           Utils                                                $utils)
     {
+
+        $this->validarAccesoPrograma($solicitudProgramaAcademico, $utils, $entityManager, $solicitudProgramaAcademicoInstitucionRepository);
 
         $planEstudio = $solicitudProgramaAcademicoPlanEstudioRepository->findBy(['solicitudProgramaAcademico' => $solicitudProgramaAcademico->getId()]);
         $planEstudioAsociado = -1;
@@ -115,12 +305,17 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
             $nombrePresidente = $presidente[0]->getMiembro()->getPrimerNombre() . ' ' . $presidente[0]->getMiembro()->getSegundoNombre() . $presidente[0]->getMiembro()->getPrimerApellido() . $presidente[0]->getMiembro()->getSegundoApellido();
         }
 
+        $criteriosUniversidad = ['solicitudProgramaAcademico' => $solicitudProgramaAcademico->getId()];
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_GEST_PROGAPROB')) {
+            $criteriosUniversidad['institucion'] = $this->getInstitucionUsuario($utils, $entityManager);
+        }
+
         return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', [
             'item' => $solicitudProgramaAcademico,
             'format' => 'col2',
             'presindeteComision' => $nombrePresidente,
             'comisionAsignada' => $solComNac->getComisionNacional($solicitudProgramaAcademico->getId()),
-            'universidades' => $solicitudProgramaAcademicoInstitucionRepository->findBy(['solicitudProgramaAcademico' => $solicitudProgramaAcademico->getId()]),
+            'universidades' => $solicitudProgramaAcademicoInstitucionRepository->findBy($criteriosUniversidad),
             'modificacionesPlanEstudio' => $modificacionPlanEstudioRepository->findBy(['planEstudio' => $planEstudioAsociado]),
             'universidadesIncorporadas' => isset($programaReabierto[0]) ? $programaAcademicoReabiertoInstitucionRepository->findBy(['programaAcademicoReabierto' => $programaReabierto[0]->getId()]) : []
         ]);
@@ -133,6 +328,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/asignar_universidad', name: 'app_solicitud_programa_academico_aprobado_asignar_universidad', methods: ['GET', 'POST'])]
     public function asignarUniversidad(Request $request, Utils $utils, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
@@ -244,6 +440,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/eliminar_universidad', name: 'app_solicitud_programa_academico_aprobado_eliminar_universidad', methods: ['GET'])]
     public function eliminarUniversidad(SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
@@ -268,6 +465,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/asignar_plan_estudio', name: 'app_solicitud_programa_academico_aprobado_asignar_plan_estudio', methods: ['GET', 'POST'])]
     public function asignarPlanEstudio(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
@@ -309,6 +507,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoPlanEstudio $solicitudProgramaAcademicoPlanEstudio
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/eliminar_plan_estudio', name: 'app_solicitud_programa_academico_aprobado_eliminar_plan_estudio', methods: ['GET'])]
     public function eliminarPlanEstudio(Utils $utils, SolicitudProgramaAcademicoPlanEstudio $solicitudProgramaAcademicoPlanEstudio, SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
@@ -340,6 +539,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/asignar_comision', name: 'app_solicitud_programa_academico_aprobado_asignar_comision', methods: ['GET', 'POST'])]
     public function asignarComision(Request $request, Utils $utils, MiembrosComisionNacionalRepository $miembrosComisionNacionalRepository, NotificacionesUsuarioRepository $notificacionesUsuarioRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademico $solicitudProgramaAcademico, SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
@@ -393,6 +593,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/eliminar_comision', name: 'app_solicitud_programa_academico_aprobado_eliminar_comision', methods: ['GET'])]
     public function eliminarComision(Utils $utils, SolicitudProgramaAcademicoComisionNacional $solicitudProgramaAcademicoComisionNacional, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, SolicitudProgramaAcademicoComisionNacionalRepository $solicitudProgramaAcademicoComisionNacionalRepository)
     {
@@ -425,6 +626,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/reabrir', name: 'app_solicitud_programa_academico_aprobado_reabrir', methods: ['GET', 'POST'])]
     public function reabrir(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoReabiertoRepository $programaAcademicoReabiertoRepository, ProgramaAcademicoReabiertoInstitucionRepository $programaAcademicoReabiertoInstitucionRepository, InstitucionRepository $institucionRepository, UploadedDocumentStorage $storage)
     {
@@ -506,6 +708,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/desactivar', name: 'app_solicitud_programa_academico_aprobado_desactivar', methods: ['GET', 'POST'])]
     public function desactivar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, ProgramaAcademicoDesactivadoRepository $programaAcademicoDesactivadoRepository, UploadedDocumentStorage $storage)
     {
@@ -569,6 +772,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoRepository $solicitudProgramaRepository
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/{id}/modificar', name: 'app_solicitud_programa_academico_aprobar_modificar', methods: ['GET', 'POST'])]
     public function aprobarModificar(Request $request, SolicitudProgramaAcademico $solicitudPrograma, EntityManagerInterface $em, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
@@ -629,6 +833,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository
      * @return JsonResponse
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/cambio_categoria_acreditacion', name: 'app_solicitud_programa_academico_aprobar_guardar_cambio_categoria_acreditacion', methods: ['POST'])]
     public function guardarConfiguracion(Request $request, EntityManagerInterface $em, CategoriaAcreditacionRepository $categoriaAcreditacionRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
@@ -658,6 +863,7 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
      * @param HandlerFop $handFop
      * @return Response
      */
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
     #[Route('/exportar_pdf', name: 'app_solicitud_programa_academico_aprobar_universidades_asignadas_exportar_pdf', methods: ['GET', 'POST'])]
     public function exportarPdf(Request $request, HandlerFop $handFop)
     {
@@ -665,5 +871,68 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
         $export = DoctrineHelper::toArray($export);
         return $handFop->exportToPdf(new ExportListSolicitudUniversidadesAsignadasToPdf($export, ['asignada_a' => $export[0]['asignada_a'] ?? null]));
 
+    }
+
+    private function getInstitucionUsuario(Utils $utils, EntityManagerInterface $entityManager): ?Institucion
+    {
+        $usuario = $this->getUser();
+        if (!$usuario) {
+            return null;
+        }
+        $datos = $utils->obtenerDatosEstructuraUsuarioAutenticado($usuario->getId());
+        $idEntidad = $datos['id_entidad'] ?? null;
+
+        return $idEntidad && $idEntidad > 0
+            ? $entityManager->getRepository(Institucion::class)->findOneBy(['estructura' => $idEntidad])
+            : null;
+    }
+
+    private function validarAccesoInstitucion(
+        SolicitudProgramaAcademicoInstitucion $programaInstitucion,
+        Utils $utils,
+        EntityManagerInterface $entityManager
+    ): void {
+        if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB')) {
+            return;
+        }
+        $institucion = $this->getInstitucionUsuario($utils, $entityManager);
+        if (!$institucion || $institucion->getId() !== $programaInstitucion->getInstitucion()->getId()) {
+            throw $this->createAccessDeniedException('No puede gestionar programas de otra universidad.');
+        }
+    }
+
+    private function modalidadesDisponibles(SolicitudProgramaAcademico $programa): array
+    {
+        $modalidades = [];
+        if ($programa->getModalidadDiurno()) {
+            $modalidades[] = 'Diurno';
+        }
+        if ($programa->getModalidadPorEncuentro()) {
+            $modalidades[] = 'Por encuentro';
+        }
+        if ($programa->getModalidadADistancia()) {
+            $modalidades[] = 'A distancia';
+        }
+
+        return $modalidades;
+    }
+
+    private function validarAccesoPrograma(
+        SolicitudProgramaAcademico $programa,
+        Utils $utils,
+        EntityManagerInterface $entityManager,
+        SolicitudProgramaAcademicoInstitucionRepository $programaInstitucionRepository
+    ): void {
+        if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB')) {
+            return;
+        }
+        $institucion = $this->getInstitucionUsuario($utils, $entityManager);
+        $asociacion = $institucion ? $programaInstitucionRepository->findOneBy([
+            'solicitudProgramaAcademico' => $programa,
+            'institucion' => $institucion,
+        ]) : null;
+        if (!$asociacion) {
+            throw $this->createAccessDeniedException('No puede consultar programas de otra universidad.');
+        }
     }
 }

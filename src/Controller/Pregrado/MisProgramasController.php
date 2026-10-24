@@ -64,6 +64,10 @@ class MisProgramasController extends AbstractController
     #[Route('/asignados', name: 'app_pregrado_mis_programas_asignados', methods: ['GET'])]
     public function misProgramasAsignados(Utils $utils, EntityManagerInterface $entityManager, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
+        return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_index', [], Response::HTTP_SEE_OTHER);
+
+        /* Compatibilidad histórica: la consulta se conserva temporalmente debajo
+           hasta retirar definitivamente este controlador. */
         // 1. Validar usuario autenticado
         $user = $this->getUser();
         if (!$user) {
@@ -136,6 +140,11 @@ class MisProgramasController extends AbstractController
     #[Route('/{id}/asignar_cum', name: 'app_pregrado_mis_programas_asignados_cum', methods: ['GET', 'POST'])]
     public function asignarCum(Utils $utils, SolicitudProgramaAcademicoInstitucionCumRepository $solicitudProgramaAcademicoInstitucionCumRepository, EntityManagerInterface $entityManager, InstitucionCumRepository $institucionCumRepository, SolicitudProgramaAcademicoInstitucion $solicitudProgramaAcademicoInstitucion, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
+        return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_gestionar_sedes', [
+            'id' => $solicitudProgramaAcademicoInstitucion->getId(),
+        ], Response::HTTP_SEE_OTHER);
+
+        /* Compatibilidad histórica: la pantalla anterior ya no gestiona sedes. */
         $datosEstructuraUsuarioAutenticado = $utils->obtenerDatosEstructuraUsuarioAutenticado($this->getUser()->getId());
         $idEntidad = $datosEstructuraUsuarioAutenticado['id_entidad'] ?? null;
         try {
@@ -180,6 +189,12 @@ class MisProgramasController extends AbstractController
     #[Route('/pregrado/mis-programas/asignar-cum-ajax', name: 'app_pregrado_mis_programas_asignar_cum_ajax', methods: ['POST'])]
     public function asignarCumAjax(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Esta operación fue sustituida por la pantalla Sedes donde se imparte.',
+        ], Response::HTTP_GONE);
+
+        /* Endpoint heredado deshabilitado: no debe modificar asociaciones sin CSRF. */
         $cumIds = $request->request->get('cum');
         $modalidadNombre = $request->request->get('modalidad'); // Recibido como string
         $solicitudInstitucionId = $request->request->get('solicitud_programa_academico_institucion_id');
@@ -256,6 +271,11 @@ class MisProgramasController extends AbstractController
     #[Route('/pregrado/mis-programas/eliminar-cum/{id}/{return}', name: 'app_pregrado_mis_programas_eliminar_cum')]
     public function eliminarUniversidadAjax(int $id, $return, EntityManagerInterface $em)
     {
+
+        $this->addFlash('warning', 'La eliminación directa fue sustituida por la gestión segura de sedes.');
+        return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_gestionar_sedes', ['id' => $return], Response::HTTP_SEE_OTHER);
+
+        /* Operación GET heredada deshabilitada: modificar datos requiere POST y CSRF. */
 
         $registro = $em->getRepository(SolicitudProgramaAcademicoInstitucionCum::class)->find($id);
         $em->remove($registro);

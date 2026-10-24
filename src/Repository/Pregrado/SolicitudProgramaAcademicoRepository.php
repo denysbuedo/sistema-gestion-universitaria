@@ -82,6 +82,26 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
         $resul = $qb->getQuery()->getResult();
         return $resul;
     }
+
+    /** @return SolicitudProgramaAcademico[] */
+    public function getAprobadosPorInstitucion(array $estadoIds, int $institucionId): array
+    {
+        return $this->createQueryBuilder('programa')
+            ->distinct()
+            ->innerJoin(
+                'App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion',
+                'programaInstitucion',
+                Join::WITH,
+                'programaInstitucion.solicitudProgramaAcademico = programa'
+            )
+            ->where('programa.estadoProgramaAcademico IN (:estados)')
+            ->andWhere('programaInstitucion.institucion = :institucion')
+            ->setParameter('estados', array_values($estadoIds))
+            ->setParameter('institucion', $institucionId)
+            ->orderBy('programa.nombre', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
     public function getSolicitudProgramaAcademicoAprobadoFiltro($estadoIds, $id = null)
     {
         $qb = $this->createQueryBuilder('qb')

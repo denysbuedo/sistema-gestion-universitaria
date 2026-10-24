@@ -4,36 +4,7 @@
         data-accordion="true">
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
-        {% if  hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-            <li class="nav-item">
-                <a href="#"
-                   class="nav-link nav-link-menu">
-                    <i class="nav-icon fas fa-graduation-cap"></i>
-                    <p>
-                        Mis programas
-                        <i class="right fas fa-angle-left"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    {% if hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_pregrado_mis_programas_asignados') }}"
-                               class="nav-link nav-link-menu">
-                                <p>Programas asignados</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ path('app_pregrado_mis_programas_asignados_en_cum') }}"
-                               class="nav-link nav-link-menu">
-                                <p>Programas asignados en Cum</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </li>
-        {% endif %}
-
-        {% if hasRoles('ROLE_GEST_PLANEST') or hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_GEST_PROGEXTINT') %}
+        {% if hasRoles('ROLE_GEST_PLANEST') or hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_GEST_PROGEXTINT') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
             <li class="nav-item">
                 <a href="#"
                    class="nav-link nav-link-menu">
@@ -60,11 +31,16 @@
                             </a>
                         </li>
                     {% endif %}
-                    {% if hasRoles('ROLE_GEST_PROGAPROB') %}
+                    {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
                         <li class="nav-item">
                             <a href="{{ path('app_solicitud_programa_academico_aprobado_index') }}"
                                class="nav-link nav-link-menu">
                                 <p>Programas aprobados</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_pregrado_programas_por_cum') }}" class="nav-link nav-link-menu">
+                                <p>Programas por CUM</p>
                             </a>
                         </li>
                     {% endif %}

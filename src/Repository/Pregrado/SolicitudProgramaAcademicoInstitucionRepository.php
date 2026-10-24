@@ -208,4 +208,34 @@ ORDER BY t3_.nombre ASC;
         );
         return $temp->fetchAllAssociative();
     }
+
+    public function getResumenSedes(array $programaIds, ?int $institucionId = null): array
+    {
+        if ($programaIds === []) {
+            return [];
+        }
+        $filtroInstitucion = $institucionId !== null ? ' AND relacion.institucion_id = :institucion' : '';
+        $parametros = ['programas' => $programaIds];
+        $tipos = ['programas' => ArrayParameterType::INTEGER];
+        if ($institucionId !== null) {
+            $parametros['institucion'] = $institucionId;
+        }
+
+        return $this->getEntityManager()->getConnection()->executeQuery(
+            "SELECT relacion.solicitud_programa_academico_id AS programa_id,
+                    institucion.siglas AS institucion_siglas,
+                    institucion.nombre AS institucion_nombre,
+                    relacion.modalidades_sede_central,
+                    cum.nombre_facultad AS cum_nombre
+               FROM pregrado.tbr_solicitud_programa_academico_institucion relacion
+               JOIN institucion.tbd_institucion institucion ON institucion.id = relacion.institucion_id
+          LEFT JOIN pregrado.tbr_solicitud_programa_academico_institucion_cum asignacion
+                 ON asignacion.solicitud_programa_academico_institucion_id = relacion.id
+          LEFT JOIN institucion.tbr_institucion_cum cum ON cum.id = asignacion.institucion_cum_id
+              WHERE relacion.solicitud_programa_academico_id IN (:programas)$filtroInstitucion
+           ORDER BY institucion.nombre, cum.nombre_facultad",
+            $parametros,
+            $tipos
+        )->fetchAllAssociative();
+    }
 }

@@ -44,6 +44,13 @@ class SolicitudProgramaAcademicoInstitucion extends BaseEntity
     private ?bool $modalidadADistancia = false;
 
     /**
+     * Modalidades en las que el programa se imparte en la sede central.
+     * Un arreglo vacío significa que la sede central no está configurada.
+     */
+    #[ORM\Column(type: 'json', nullable: false, options: ['default' => '[]'])]
+    private array $modalidadesSedeCentral = [];
+
+    /**
      * @return Institucion|null
      */
     public function getInstitucion(): ?Institucion
@@ -185,6 +192,16 @@ class SolicitudProgramaAcademicoInstitucion extends BaseEntity
     public function setModalidadADistancia(?bool $modalidadADistancia): void
     {
         $this->modalidadADistancia = $modalidadADistancia;
+    }
+
+    public function getModalidadesSedeCentral(): array
+    {
+        return $this->modalidadesSedeCentral;
+    }
+
+    public function setModalidadesSedeCentral(array $modalidadesSedeCentral): void
+    {
+        $this->modalidadesSedeCentral = array_values(array_unique($modalidadesSedeCentral));
     }
 
 

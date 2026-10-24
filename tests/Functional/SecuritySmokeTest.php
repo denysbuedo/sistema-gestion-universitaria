@@ -402,8 +402,8 @@ class SecuritySmokeTest extends WebTestCase
     public function criticalPregradoReadPageProvider(): iterable
     {
         yield 'programas aprobados' => ['/pregrado/solicitud_programa_academico_aprobado/'];
-        yield 'mis programas asignados' => ['/pregrado/mis_programas/asignados'];
         yield 'mis programas asignados en CUM' => ['/pregrado/mis_programas/asignados_en_cum'];
+        yield 'programas por CUM' => ['/pregrado/solicitud_programa_academico_aprobado/programas-por-cum'];
     }
 
     private function getLoginCsrfToken(KernelBrowser $client): string

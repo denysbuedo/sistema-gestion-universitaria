@@ -1,0 +1,29 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Programas por CUM{% endblock %}
+
+{% block body %}
+<div class="card border-0">
+    <div class="card-header bg-white border-bottom">
+        <h3 class="card-title m-0">Programas por Centro Universitario Municipal</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped dataTable">
+            <thead>
+            <tr><th>No.</th>{% if accesoGlobal %}<th>Universidad</th>{% endif %}<th>CUM</th><th>Programas</th><th>Opciones</th></tr>
+            </thead>
+            <tbody>
+            {% for centro in centros %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    {% if accesoGlobal %}<td>{{ centro.institucion.siglas | default(centro.institucion.nombre) }}</td>{% endif %}
+                    <td>{{ centro.nombreFacultad }}</td>
+                    <td>{{ totales[centro.id] | default(0) }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{{ path('app_pregrado_programas_por_cum_detalle', {'id': centro.id}) }}">Ver programas</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
