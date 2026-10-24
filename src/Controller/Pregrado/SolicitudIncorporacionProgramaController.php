@@ -97,7 +97,7 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
                 }
                 $em->persist($solicitud);
                 $em->flush();
-                $this->addFlash('success', 'La solicitud de incorporación fue registrada.');
+                $this->addFlash('success', 'La solicitud fue registrada y el documento PDF quedó adjuntado correctamente.');
                 return $this->redirectToRoute('app_pregrado_solicitud_incorporacion_index');
             }
         }

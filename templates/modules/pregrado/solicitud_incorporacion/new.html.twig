@@ -21,8 +21,28 @@
         {{ form_row(form.fundamentacion) }}
         <h4 class="h6 text-primary mt-4 mb-3">4. Documento de solicitud</h4>
         {{ form_row(form.documentoSolicitud) }}
+        <div id="documento-seleccionado" class="alert alert-light border mt-2 mb-0" role="status">
+            <i class="fas fa-paperclip text-muted mr-2"></i><span>Ningún documento seleccionado.</span>
+        </div>
     </div>
     <div class="card-footer bg-white text-right"><a class="btn btn-outline-secondary mr-2" href="{{ path('app_pregrado_solicitud_incorporacion_index') }}">Cancelar</a><button class="btn btn-primary" type="submit">Registrar solicitud</button></div>
     {{ form_end(form) }}
 </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('{{ form.documentoSolicitud.vars.id }}');
+            const estado = document.querySelector('#documento-seleccionado span');
+            const icono = document.querySelector('#documento-seleccionado i');
+            if (!input || !estado) return;
+            input.addEventListener('change', function () {
+                const archivo = input.files && input.files[0];
+                estado.textContent = archivo ? 'Documento seleccionado: ' + archivo.name : 'Ningún documento seleccionado.';
+                if (icono) {
+                    icono.className = archivo ? 'fas fa-check-circle text-success mr-2' : 'fas fa-paperclip text-muted mr-2';
+                }
+            });
+        });
+    </script>
 {% endblock %}
