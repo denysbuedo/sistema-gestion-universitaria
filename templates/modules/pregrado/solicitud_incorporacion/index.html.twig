@@ -4,7 +4,6 @@
 <div class="card border-0">
     <div class="card-header bg-white border-bottom d-flex align-items-center">
         <div><h3 class="card-title m-0" style="float:none!important;"><i class="fas fa-university text-primary mr-2"></i>Solicitudes para impartir un programa existente</h3><div class="text-muted mt-1">Una universidad solicita autorización para incorporar a su oferta un programa que ya existe en el catálogo nacional.</div></div>
-        {% if not global %}<div class="ml-auto"><a class="btn-lux-sm btn-lux-primary" href="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}"><i class="fas fa-plus"></i> Nueva solicitud</a></div>{% endif %}
     </div>
     <div class="card-body">
         <div class="alert alert-light border mb-4">
@@ -17,11 +16,11 @@
                 <div class="d-flex align-items-end" style="gap:10px;">
                     <div class="flex-grow-1">
                         <select id="programa_nacional" name="programa" class="form-control" required>
-                            <option value="">Seleccione el programa que su universidad desea impartir</option>
+                            <option value="">{{ programasNacionales is empty ? 'No hay programas disponibles para solicitar' : 'Seleccione el programa que su universidad desea impartir' }}</option>
                             {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right mr-1"></i> Continuar</button>
+                    <button type="submit" class="btn btn-primary"{% if programasNacionales is empty %} disabled{% endif %}><i class="fas fa-arrow-right mr-1"></i> Continuar</button>
                 </div>
                 <small class="form-text text-muted">La universidad se obtiene de su cuenta. Después podrá indicar las modalidades, fundamentar la apertura y adjuntar el documento formal.</small>
             </form>

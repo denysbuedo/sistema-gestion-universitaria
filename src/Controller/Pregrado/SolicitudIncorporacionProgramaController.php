@@ -26,12 +26,30 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
     public function index(EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
     {
         $global = $this->puedeProcesarSolicitudes();
-        $institucion = $global ? null : $this->institucionUsuario($utils, $em);
-        if (!$global && !$institucion) {
+        $institucionUsuario = $this->institucionUsuario($utils, $em);
+        if (!$global && !$institucionUsuario) {
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
         $programasNacionales = $programaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]);
-        $criterios = $institucion ? ['institucion' => $institucion] : [];
+        if ($institucionUsuario) {
+            $programasNoDisponibles = [];
+            foreach ($em->getRepository(SolicitudProgramaAcademicoInstitucion::class)->findBy(['institucion' => $institucionUsuario]) as $oferta) {
+                $programasNoDisponibles[$oferta->getSolicitudProgramaAcademico()->getId()] = true;
+            }
+            foreach ($em->getRepository(SolicitudIncorporacionPrograma::class)->findBy([
+                'institucion' => $institucionUsuario,
+                'estado' => SolicitudIncorporacionPrograma::PENDIENTE,
+            ]) as $solicitudPendiente) {
+                $programasNoDisponibles[$solicitudPendiente->getPrograma()->getId()] = true;
+            }
+            $programasNacionales = array_values(array_filter(
+                $programasNacionales,
+                static fn (SolicitudProgramaAcademico $programa): bool => !isset($programasNoDisponibles[$programa->getId()])
+            ));
+        } else {
+            $programasNacionales = [];
+        }
+        $criterios = $global ? [] : ['institucion' => $institucionUsuario];
         $registros = $em->getRepository(SolicitudIncorporacionPrograma::class)->findBy($criterios, ['creado' => 'DESC']);
 
         return $this->render('modules/pregrado/solicitud_incorporacion/index.html.twig', [
