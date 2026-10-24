@@ -1256,10 +1256,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         // Mantiene las exportaciones junto a las acciones principales del listado,
         // siguiendo el mismo patrón visual de los botones PDF y Nuevo.
-        if ($('.dataTable').length === 1) {
-            var $listCard = $('.dataTable').first().closest('.card');
+        $('.dataTable').each(function () {
+            var tableElement = this;
+            var $listCard = $(tableElement).closest('.card');
             var $listHeader = $listCard.children('.card-header').first();
-            var hasExcelAction = $listHeader.find('#exportExcel, a[href*="exportar_excel"]').length > 0;
+            var hasExcelAction = $listHeader.find('#exportExcel, .sgu-export-excel, a[href*="exportar_excel"]').length > 0;
 
             if ($listHeader.length && !hasExcelAction) {
                 $listHeader.addClass('d-flex align-items-center');
@@ -1267,10 +1268,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (!$headerActions.length) {
                     $headerActions = $('<div class="ml-auto d-flex" style="gap:8px;"></div>').appendTo($listHeader);
                 }
-                $('<button type="button" id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">' +
-                    '<i class="fa fa-file-excel"></i> Excel</button>').prependTo($headerActions);
+                $('<button type="button" title="Exportar a Excel" class="btn-lux-sm btn-lux-success sgu-export-excel">' +
+                    '<i class="fa fa-file-excel"></i> Excel</button>')
+                    .prependTo($headerActions)
+                    .on('click', function () {
+                        $(tableElement).DataTable().button('.buttons-excel').trigger();
+                    });
             }
-        }
+        });
 
         // Usa el botón situado en la cabecera en lugar del botón interno de DataTables.
         $('#exportExcel').on('click', function () {
