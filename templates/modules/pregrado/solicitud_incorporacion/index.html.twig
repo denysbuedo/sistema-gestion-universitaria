@@ -11,6 +11,24 @@
             <i class="fas fa-info-circle text-primary mr-2"></i>
             {% if global %}Revise las solicitudes enviadas por las universidades. Al aprobar una, el programa se incorpora a la oferta de esa institución sin duplicar el programa nacional.{% else %}Utilice esta pantalla cuando su universidad quiera comenzar a impartir una carrera ya aprobada nacionalmente. Para proponer una carrera que todavía no existe, use “Solicitar nuevo programa nacional”.{% endif %}
         </div>
+        <div class="border rounded p-3 mb-4 bg-light">
+            <label for="programa_nacional" class="mb-1">Programa nacional</label>
+            {% if global %}
+                <form method="get">
+                    <select id="programa_nacional" name="programa" class="form-control" onchange="this.form.submit()">
+                        <option value="">Todos los programas nacionales</option>
+                        {% for programa in programasNacionales %}<option value="{{ programa.id }}" {% if programaSeleccionado == programa.id %}selected{% endif %}>{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
+                    </select>
+                    <small class="form-text text-muted">Seleccione un programa para filtrar las solicitudes recibidas.</small>
+                </form>
+            {% else %}
+                <select id="programa_nacional" class="form-control" onchange="if (this.value) window.location.href='{{ path('app_pregrado_solicitud_incorporacion_nueva') }}?programa=' + encodeURIComponent(this.value)">
+                    <option value="">Seleccione el programa que su universidad desea impartir</option>
+                    {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
+                </select>
+                <small class="form-text text-muted">Al seleccionarlo se abrirá la solicitud para indicar modalidades y fundamentación.</small>
+            {% endif %}
+        </div>
         <table class="table table-bordered table-striped dataTable">
             <thead><tr><th>No.</th>{% if global %}<th>Universidad</th>{% endif %}<th>Programa nacional</th><th>Modalidades solicitadas</th><th>Estado</th><th>Fecha</th>{% if global %}<th>Opciones</th>{% endif %}</tr></thead>
             <tbody>

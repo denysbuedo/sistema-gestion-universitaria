@@ -5,8 +5,10 @@ namespace App\Controller\Pregrado;
 use App\Entity\Institucion\Institucion;
 use App\Entity\Pregrado\SolicitudIncorporacionPrograma;
 use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion;
+use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Form\Pregrado\SolicitudIncorporacionProgramaType;
 use App\Services\Utils;
+use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -20,30 +22,47 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class SolicitudIncorporacionProgramaController extends AbstractController
 {
     #[Route('/', name: 'app_pregrado_solicitud_incorporacion_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $em, Utils $utils): Response
+    public function index(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
     {
         $global = $this->esAdministrador();
         $institucion = $global ? null : $this->institucionUsuario($utils, $em);
         if (!$global && !$institucion) {
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
-        $registros = $em->getRepository(SolicitudIncorporacionPrograma::class)
-            ->findBy($institucion ? ['institucion' => $institucion] : [], ['creado' => 'DESC']);
+        $programasNacionales = $programaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]);
+        $programaSeleccionado = $request->query->getInt('programa');
+        $criterios = $institucion ? ['institucion' => $institucion] : [];
+        if ($global && $programaSeleccionado > 0) {
+            $programa = $em->getRepository(SolicitudProgramaAcademico::class)->find($programaSeleccionado);
+            if ($programa) {
+                $criterios['programa'] = $programa;
+            }
+        }
+        $registros = $em->getRepository(SolicitudIncorporacionPrograma::class)->findBy($criterios, ['creado' => 'DESC']);
 
         return $this->render('modules/pregrado/solicitud_incorporacion/index.html.twig', [
             'registros' => $registros,
             'global' => $global,
+            'programasNacionales' => $programasNacionales,
+            'programaSeleccionado' => $programaSeleccionado,
         ]);
     }
 
     #[Route('/nueva', name: 'app_pregrado_solicitud_incorporacion_nueva', methods: ['GET', 'POST'])]
-    public function nueva(Request $request, EntityManagerInterface $em, Utils $utils): Response
+    public function nueva(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
     {
         $institucion = $this->institucionUsuario($utils, $em);
         if (!$institucion) {
             throw $this->createAccessDeniedException('Para solicitar la incorporación debe utilizar una cuenta asociada a una universidad.');
         }
         $solicitud = (new SolicitudIncorporacionPrograma())->setInstitucion($institucion);
+        $programaId = $request->query->getInt('programa');
+        if ($programaId > 0) {
+            $programa = $programaRepository->find($programaId);
+            if ($programa && in_array($programa->getEstadoProgramaAcademico()?->getId(), [2, 4, 6, 7], true)) {
+                $solicitud->setPrograma($programa);
+            }
+        }
         $form = $this->createForm(SolicitudIncorporacionProgramaType::class, $solicitud);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
