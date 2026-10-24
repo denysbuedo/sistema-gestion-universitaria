@@ -1168,7 +1168,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         var hasMultipleHeaderRows = $('.dataTable thead tr').length > 1;
         var hasMultipleHeaderRows = $('.dataTable thead tr').length > 1;
         var table = $(".dataTable").DataTable({
-            "dom": '<"row"<"col-sm-6 text-left"f><"col-sm-6 text-right"l>>rt<"row"<"col-sm-12"p>>',
+            "dom": '<"d-none"B><"row"<"col-sm-6 text-left"f><"col-sm-6 text-right"l>>rt<"row"<"col-sm-12"p>>',
             "pagingType": "full_numbers",
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
@@ -1258,26 +1258,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
         // siguiendo el mismo patrón visual de los botones PDF y Nuevo.
         $('.dataTable').each(function () {
             var tableElement = this;
+            var dataTable = $(tableElement).DataTable();
+            var $excelButtons = $(dataTable.buttons().container());
             var $listCard = $(tableElement).closest('.card');
             var $listHeader = $listCard.children('.card-header').first();
-            var hasExcelAction = $listHeader.find('#exportExcel, .sgu-export-excel, a[href*="exportar_excel"]').length > 0;
+            var hasServerExcelAction = $listHeader.find('a[href*="exportar_excel"]').length > 0;
 
-            if ($listHeader.length && !hasExcelAction) {
+            if ($listHeader.length && !hasServerExcelAction && $excelButtons.length) {
                 $listHeader.addClass('d-flex align-items-center');
                 var $headerActions = $listHeader.children('.ml-auto').first();
                 if (!$headerActions.length) {
                     $headerActions = $('<div class="ml-auto d-flex" style="gap:8px;"></div>').appendTo($listHeader);
                 }
-                $('<button type="button" title="Exportar a Excel" class="btn-lux-sm btn-lux-success sgu-export-excel">' +
-                    '<i class="fa fa-file-excel"></i> Excel</button>')
-                    .prependTo($headerActions)
-                    .on('click', function () {
-                        $(tableElement).DataTable().button('.buttons-excel').trigger();
-                    });
+                $listHeader.find('#exportExcel, .sgu-export-excel').remove();
+                $excelButtons
+                    .removeClass('dt-buttons btn-group flex-wrap')
+                    .addClass('d-inline-flex')
+                    .find('.buttons-excel')
+                    .removeClass('btn-secondary btn-success dt-button')
+                    .addClass('btn-lux-sm btn-lux-success sgu-export-excel')
+                    .attr('title', 'Exportar a Excel')
+                    .html('<i class="fa fa-file-excel"></i> Excel');
+                $excelButtons.prependTo($headerActions);
+            } else if (hasServerExcelAction) {
+                $excelButtons.remove();
             }
         });
 
-        // Usa el botón situado en la cabecera en lugar del botón interno de DataTables.
+        // Compatibilidad con vistas heredadas que aún incluyen su propio disparador.
         $('#exportExcel').on('click', function () {
             table.button('.buttons-excel').trigger();
         });
