@@ -95,6 +95,55 @@
         font-size: 11px; font-weight: 700; text-transform: uppercase;
         letter-spacing: .8px; color: #9ca3af; margin: 8px 0 16px 2px;
     }
+
+    /* Lenguaje visual institucional compartido con Pregrado */
+    .rrhh-wrap { padding: 26px 30px 40px; background: #f4f7f9; color: #263746; }
+    .content-header { padding: 28px 35px 24px; border-bottom: 1px solid #dce4ea; background: #fff; }
+    .content-header h4 { color: #102f4f !important; font-size: 28px; font-weight: 500 !important; letter-spacing: -.015em; }
+    .content-header p { color: #6b7b88 !important; font-size: 14px !important; }
+    .kpi-card {
+        min-height: 104px; padding: 18px 20px; gap: 15px;
+        border: 1px solid #dce4ea; border-radius: 0; box-shadow: none;
+    }
+    .kpi-card:hover { transform: none; border-color: #c7d3dc; box-shadow: none; }
+    .kpi-card::before { height: 2px; border-radius: 0; background: #102f4f; }
+    .kpi-icon, .ki-aprobada, .ki-cubierta, .ki-vacantes, .ki-cobertura, .ki-proftc, .ki-contratos {
+        width: 42px; height: 42px; border: 1px solid #cfdae3; border-radius: 0;
+        background: #eaf1f6; color: #102f4f;
+    }
+    .kpi-label { color: #6b7b88; font-size: 12px; font-weight: 500; letter-spacing: .04em; }
+    .kpi-value, .kpi-value-pct { color: #102f4f; font-size: 31px; font-weight: 600; }
+    .kpi-sub { color: #788895; }
+    .section-label { margin: 5px 0 14px; color: #496b86; font-weight: 600; letter-spacing: .07em; }
+    .cc { margin-bottom: 20px; border: 1px solid #dce4ea; border-radius: 0; box-shadow: none; }
+    .cc-head { min-height: 57px; padding: 13px 18px; border-bottom-color: #e5ebef; }
+    .cc-dot { border-radius: 0; background: #102f4f !important; }
+    .cc-title { color: #263746; font-size: 15px; font-weight: 500; }
+    .cc-badge, .cc-badge[style] {
+        border: 1px solid #cfdae3 !important; border-radius: 0;
+        background: #eaf1f6 !important; color: #496b86 !important; font-weight: 500;
+    }
+    .cc-body { padding: 14px 18px; }
+    .ae3-pills { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; padding: 0; border: 1px solid #dce4ea; background: #fff; }
+    .ae3-pill { padding: 15px 17px; border: 0; border-right: 1px solid #dce4ea; border-radius: 0; background: #fff; }
+    .ae3-pill:last-child { border-right: 0; }
+    .ae3-pill-icon, .ae3-pill-icon[style] { color: #496b86 !important; }
+    .ae3-pill-value { color: #102f4f; font-size: 23px; font-weight: 600; }
+    .ae3-pill-label { color: #6b7b88; font-weight: 400; }
+    .dist-count { color: #102f4f; font-weight: 600; }
+    .dist-bar { border-radius: 0; }
+    .dist-fill { border-radius: 0; background: #496b86 !important; }
+    @media (max-width: 900px) {
+        .rrhh-wrap { padding: 20px 18px 32px; }
+        .content-header { padding: 22px 23px 20px; }
+        .ae3-pills { grid-template-columns: repeat(2, 1fr); }
+        .ae3-pill { border-bottom: 1px solid #dce4ea; }
+    }
+    @media (max-width: 560px) {
+        .content-header h4 { font-size: 24px; }
+        .ae3-pills { grid-template-columns: 1fr; }
+        .ae3-pill { border-right: 0; }
+    }
 </style>
 {% endblock %}
 
@@ -350,7 +399,7 @@
 <script>
 $(document).ready(function () {
 
-    var COLORS = ['#4f46e5','#059669','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2','#be185d'];
+    var COLORS = ['#102f4f','#496b86','#7892a6','#9fadb8','#c1cbd3','#2f5b7c'];
 
     var baseTooltip = {
         backgroundColor: '#1e1b4b',
@@ -412,8 +461,8 @@ $(document).ready(function () {
                 pointFormat: '<span style="color:{point.color}">●</span> {series.name}: <b>{point.y}</b><br/>'
             }),
             series: [
-                { name: 'Aprobada', data: cobAprobada, color: '#c7d2fe' },
-                { name: 'Cubierta', data: cobCubierta, color: '#059669' }
+                { name: 'Aprobada', data: cobAprobada, color: '#aebdc8' },
+                { name: 'Cubierta', data: cobCubierta, color: '#102f4f' }
             ],
             credits: { enabled: false }
         });
@@ -449,14 +498,14 @@ $(document).ready(function () {
             }),
             series: [
                 {
-                    name: 'Aprobada', data: tendAprobada, color: '#4f46e5',
+                    name: 'Aprobada', data: tendAprobada, color: '#7892a6',
                     fillColor: { linearGradient: { x1:0,y1:0,x2:0,y2:1 },
-                        stops: [[0,'rgba(79,70,229,.12)'],[1,'rgba(79,70,229,.01)']] }
+                        stops: [[0,'rgba(120,146,166,.12)'],[1,'rgba(120,146,166,.01)']] }
                 },
                 {
-                    name: 'Cubierta', data: tendCubierta, color: '#059669',
+                    name: 'Cubierta', data: tendCubierta, color: '#102f4f',
                     fillColor: { linearGradient: { x1:0,y1:0,x2:0,y2:1 },
-                        stops: [[0,'rgba(5,150,105,.12)'],[1,'rgba(5,150,105,.01)']] }
+                        stops: [[0,'rgba(16,47,79,.12)'],[1,'rgba(16,47,79,.01)']] }
                 }
             ],
             credits: { enabled: false }
@@ -468,14 +517,14 @@ $(document).ready(function () {
     var catsConDatos = catsData.filter(function(d){ return d.y > 0; });
     if (catsConDatos.length > 0) {
         Highcharts.chart('chart_categorias', {
-            chart: { type: 'column', spacing: [12,16,12,16], animation: { duration: 600 } },
+            chart: { type: 'bar', spacing: [12,16,12,16], animation: { duration: 600 } },
             title: { text: '' },
             xAxis: $.extend({}, baseAxis, { type: 'category' }),
             yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
             legend: { enabled: false },
             plotOptions: {
-                column: {
-                    borderRadius: 6, borderWidth: 0, colorByPoint: true, colors: COLORS,
+                bar: {
+                    borderRadius: 0, borderWidth: 0, colorByPoint: false, color: '#496b86',
                     dataLabels: {
                         enabled: true, format: '{point.y:.0f}',
                         style: { fontWeight: '700', color: '#1e1b4b', fontSize: '11px' }
@@ -501,7 +550,7 @@ $(document).ready(function () {
             plotOptions: {
                 pie: {
                     innerSize: '55%', allowPointSelect: true, cursor: 'pointer',
-                    colors: ['#7c3aed','#2563eb','#e5e7eb'],
+                    colors: ['#102f4f','#7892a6','#dce4ea'],
                     dataLabels: {
                         enabled: true, format: '<b>{point.name}</b>',
                         style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
