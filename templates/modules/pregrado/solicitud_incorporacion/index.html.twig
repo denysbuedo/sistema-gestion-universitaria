@@ -14,12 +14,13 @@
         <div class="border rounded p-3 mb-4 bg-light">
             <label for="programa_nacional" class="mb-1">Programa nacional</label>
             {% if global %}
-                <form method="get">
-                    <select id="programa_nacional" name="programa" class="form-control" onchange="this.form.submit()">
-                        <option value="">Todos los programas nacionales</option>
-                        {% for programa in programasNacionales %}<option value="{{ programa.id }}" {% if programaSeleccionado == programa.id %}selected{% endif %}>{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
-                    </select>
-                    <small class="form-text text-muted">Seleccione un programa para filtrar las solicitudes recibidas.</small>
+                <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">
+                    <div class="row align-items-end">
+                        <div class="col-md-5"><label for="institucion_solicitante" class="mb-1">Universidad solicitante</label><select id="institucion_solicitante" name="institucion" class="form-control" required><option value="">Seleccione una universidad</option>{% for universidad in universidades %}<option value="{{ universidad.id }}">{{ universidad.siglas ? '(' ~ universidad.siglas ~ ') ' : '' }}{{ universidad.nombre }}</option>{% endfor %}</select></div>
+                        <div class="col-md-5"><label for="programa_nacional" class="mb-1">Programa nacional</label><select id="programa_nacional" name="programa" class="form-control" required><option value="">Seleccione el programa que desea incorporar</option>{% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}</select></div>
+                        <div class="col-md-2"><button type="submit" class="btn btn-primary btn-block"><i class="fas fa-arrow-right mr-1"></i> Continuar</button></div>
+                    </div>
+                    <small class="form-text text-muted">Seleccione la universidad y el programa para registrar la solicitud en nombre de la institución.</small>
                 </form>
             {% else %}
                 <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">

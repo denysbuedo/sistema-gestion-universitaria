@@ -31,30 +31,27 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
         $programasNacionales = $programaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]);
-        $programaSeleccionado = $request->query->getInt('programa');
         $criterios = $institucion ? ['institucion' => $institucion] : [];
-        if ($global && $programaSeleccionado > 0) {
-            $programa = $em->getRepository(SolicitudProgramaAcademico::class)->find($programaSeleccionado);
-            if ($programa) {
-                $criterios['programa'] = $programa;
-            }
-        }
         $registros = $em->getRepository(SolicitudIncorporacionPrograma::class)->findBy($criterios, ['creado' => 'DESC']);
 
         return $this->render('modules/pregrado/solicitud_incorporacion/index.html.twig', [
             'registros' => $registros,
             'global' => $global,
             'programasNacionales' => $programasNacionales,
-            'programaSeleccionado' => $programaSeleccionado,
+            'universidades' => $global ? $em->getRepository(Institucion::class)->findBy(['activo' => true], ['nombre' => 'ASC']) : [],
         ]);
     }
 
     #[Route('/nueva', name: 'app_pregrado_solicitud_incorporacion_nueva', methods: ['GET', 'POST'])]
     public function nueva(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository, UploadedDocumentStorage $storage): Response
     {
-        $institucion = $this->institucionUsuario($utils, $em);
+        $global = $this->esAdministrador();
+        $institucion = $global
+            ? $em->getRepository(Institucion::class)->find($request->query->getInt('institucion'))
+            : $this->institucionUsuario($utils, $em);
         if (!$institucion) {
-            throw $this->createAccessDeniedException('Para solicitar la incorporación debe utilizar una cuenta asociada a una universidad.');
+            $this->addFlash('warning', 'Seleccione la universidad que solicita impartir el programa.');
+            return $this->redirectToRoute('app_pregrado_solicitud_incorporacion_index');
         }
         $solicitud = (new SolicitudIncorporacionPrograma())->setInstitucion($institucion);
         $programaId = $request->query->getInt('programa');
