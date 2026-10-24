@@ -128,7 +128,10 @@
             </li>
         {% endif %}
 
-        {% if hasRoles('ROLE_PREGRADO_REPORTE_PROG_APROBADOS') or hasRoles('ROLE_PREGRADO_REPORTE_PROG_POR_UNIVERSIDAD') or hasRoles('ROLE_PREGRADO_REPORTE_UNIVERSIDAD_POR_PROG') %}
+        {# Los reportes consolidados son exclusivos del administrador del módulo
+           y del administrador general. Los usuarios institucionales exportan
+           únicamente los listados que ya tienen autorizados. #}
+        {% if hasRoles('ROLE_GEST_PROGAPROB') %}
             <li class="nav-item">
                 <a href="#"
                    class="nav-link nav-link-menu">

@@ -49,7 +49,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_PREGRADO_REPORTE_UNIVERSIDAD_POR_PROG')"))]
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_PROGAPROB')"))]
 #[Route('/pregrado/reporte/universidad_por_programa_academico')]
 class UniversidadPorProgramaAcademicoController extends AbstractController
 {
