@@ -82,10 +82,14 @@ class AE3Repository extends ServiceEntityRepository
     }
 
 
-    public function getLatestPeriod(): ?array
+    public function getLatestPeriod(?int $entidadId = null): ?array
     {
-        return $this->createQueryBuilder('a')
-            ->select('a.anno, a.mes')
+        $qb = $this->createQueryBuilder('a')
+            ->select('a.anno, a.mes');
+        if ($entidadId !== null) {
+            $qb->andWhere('IDENTITY(a.entidad) = :entidadId')->setParameter('entidadId', $entidadId);
+        }
+        return $qb
             ->orderBy('a.anno', \SortDirection::Descending)
             ->addOrderBy('a.mes', \SortDirection::Descending)
             ->setMaxResults(1)
@@ -93,9 +97,10 @@ class AE3Repository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function getTotalesGlobales(int $anno, int $mes): array
+    public function getTotalesGlobales(int $anno, int $mes, ?int $entidadId = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
+        $scopeSql = $entidadId !== null ? ' AND entidad_id = :entidadId' : '';
         $sql = "
             SELECT
                 COALESCE(SUM(total_total_cubierta),                           0) AS total_cubierta,
@@ -106,14 +111,19 @@ class AE3Repository extends ServiceEntityRepository
                 COALESCE(SUM(total_pt),                                       0) AS total_pt,
                 COALESCE(SUM(total_pa),                                       0) AS total_pa
             FROM rrhh.tbd_ae3
-            WHERE anno = :anno AND mes = :mes
+            WHERE anno = :anno AND mes = :mes {$scopeSql}
         ";
-        return $conn->executeQuery($sql, ['anno' => $anno, 'mes' => $mes])->fetchAssociative() ?: [];
+        $params = ['anno' => $anno, 'mes' => $mes];
+        if ($entidadId !== null) {
+            $params['entidadId'] = $entidadId;
+        }
+        return $conn->executeQuery($sql, $params)->fetchAssociative() ?: [];
     }
 
-    public function getDistribucionCategorias(int $anno, int $mes): array
+    public function getDistribucionCategorias(int $anno, int $mes, ?int $entidadId = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
+        $scopeSql = $entidadId !== null ? ' AND entidad_id = :entidadId' : '';
         $sql = "
             SELECT
                 COALESCE(SUM(cuadros_docentes_total_cubierta),                0) AS docentes,
@@ -123,9 +133,13 @@ class AE3Repository extends ServiceEntityRepository
                 COALESCE(SUM(servicio_total_cubierta),                        0) AS servicio,
                 COALESCE(SUM(operarios_total_cubierta),                       0) AS operarios
             FROM rrhh.tbd_ae3
-            WHERE anno = :anno AND mes = :mes
+            WHERE anno = :anno AND mes = :mes {$scopeSql}
         ";
-        return $conn->executeQuery($sql, ['anno' => $anno, 'mes' => $mes])->fetchAssociative() ?: [];
+        $params = ['anno' => $anno, 'mes' => $mes];
+        if ($entidadId !== null) {
+            $params['entidadId'] = $entidadId;
+        }
+        return $conn->executeQuery($sql, $params)->fetchAssociative() ?: [];
     }
 
     public function getTotalDoctoresMasters($entidad, $mes, $anno)

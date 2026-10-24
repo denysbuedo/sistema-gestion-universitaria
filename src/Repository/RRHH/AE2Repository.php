@@ -183,10 +183,14 @@ class AE2Repository extends ServiceEntityRepository
         return $totales;
     }
 
-    public function getLatestPeriod(): ?array
+    public function getLatestPeriod(?int $entidadId = null): ?array
     {
-        return $this->createQueryBuilder('a')
-            ->select('a.anno, a.mes')
+        $qb = $this->createQueryBuilder('a')
+            ->select('a.anno, a.mes');
+        if ($entidadId !== null) {
+            $qb->andWhere('IDENTITY(a.entidad) = :entidadId')->setParameter('entidadId', $entidadId);
+        }
+        return $qb
             ->orderBy('a.anno', \SortDirection::Descending)
             ->addOrderBy('a.mes', \SortDirection::Descending)
             ->setMaxResults(1)
@@ -194,9 +198,10 @@ class AE2Repository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function getCoberturaByEntidad(int $anno, int $mes): array
+    public function getCoberturaByEntidad(int $anno, int $mes, ?int $entidadId = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
+        $scopeSql = $entidadId !== null ? ' AND ae.entidad_id = :entidadId' : '';
         $sql = "
             SELECT
                 e.siglas AS name,
@@ -207,27 +212,36 @@ class AE2Repository extends ServiceEntityRepository
                      ELSE 0 END AS pct
             FROM rrhh.tbd_ae2 ae
             JOIN estructura.tbd_estructura e ON e.id = ae.entidad_id
-            WHERE ae.mes = :mes AND ae.anno = :anno
+            WHERE ae.mes = :mes AND ae.anno = :anno {$scopeSql}
             ORDER BY ae.total_plantilla_cubierta DESC
             LIMIT 12
         ";
-        return $conn->executeQuery($sql, ['mes' => $mes, 'anno' => $anno])->fetchAllAssociative();
+        $params = ['mes' => $mes, 'anno' => $anno];
+        if ($entidadId !== null) {
+            $params['entidadId'] = $entidadId;
+        }
+        return $conn->executeQuery($sql, $params)->fetchAllAssociative();
     }
 
-    public function getTendenciaMensual(int $anno): array
+    public function getTendenciaMensual(int $anno, ?int $entidadId = null): array
     {
         $conn = $this->getEntityManager()->getConnection();
+        $scopeSql = $entidadId !== null ? ' AND entidad_id = :entidadId' : '';
         $sql = "
             SELECT
                 mes,
                 SUM(total_plantilla_aprobada) AS aprobada,
                 SUM(total_plantilla_cubierta) AS cubierta
             FROM rrhh.tbd_ae2
-            WHERE anno = :anno
+            WHERE anno = :anno {$scopeSql}
             GROUP BY mes
             ORDER BY mes ASC
         ";
-        return $conn->executeQuery($sql, ['anno' => $anno])->fetchAllAssociative();
+        $params = ['anno' => $anno];
+        if ($entidadId !== null) {
+            $params['entidadId'] = $entidadId;
+        }
+        return $conn->executeQuery($sql, $params)->fetchAllAssociative();
     }
 
     public function getUniversidadesAE2()
