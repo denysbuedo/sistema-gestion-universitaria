@@ -23,7 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class SolicitudIncorporacionProgramaController extends AbstractController
 {
     #[Route('/', name: 'app_pregrado_solicitud_incorporacion_index', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
+    public function index(EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
     {
         $global = $this->esAdministrador();
         $institucion = $global ? null : $this->institucionUsuario($utils, $em);
@@ -38,20 +38,15 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
             'registros' => $registros,
             'global' => $global,
             'programasNacionales' => $programasNacionales,
-            'universidades' => $global ? $em->getRepository(Institucion::class)->findBy(['activo' => true], ['nombre' => 'ASC']) : [],
         ]);
     }
 
     #[Route('/nueva', name: 'app_pregrado_solicitud_incorporacion_nueva', methods: ['GET', 'POST'])]
     public function nueva(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository, UploadedDocumentStorage $storage): Response
     {
-        $global = $this->esAdministrador();
-        $institucion = $global
-            ? $em->getRepository(Institucion::class)->find($request->query->getInt('institucion'))
-            : $this->institucionUsuario($utils, $em);
+        $institucion = $this->institucionUsuario($utils, $em);
         if (!$institucion) {
-            $this->addFlash('warning', 'Seleccione la universidad que solicita impartir el programa.');
-            return $this->redirectToRoute('app_pregrado_solicitud_incorporacion_index');
+            throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
         $solicitud = (new SolicitudIncorporacionPrograma())->setInstitucion($institucion);
         $programaId = $request->query->getInt('programa');

@@ -13,29 +13,18 @@
         </div>
         <div class="border rounded p-3 mb-4 bg-light">
             <label for="programa_nacional" class="mb-1">Programa nacional</label>
-            {% if global %}
-                <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">
-                    <div class="row align-items-end">
-                        <div class="col-md-5"><label for="institucion_solicitante" class="mb-1">Universidad solicitante</label><select id="institucion_solicitante" name="institucion" class="form-control" required><option value="">Seleccione una universidad</option>{% for universidad in universidades %}<option value="{{ universidad.id }}">{{ universidad.siglas ? '(' ~ universidad.siglas ~ ') ' : '' }}{{ universidad.nombre }}</option>{% endfor %}</select></div>
-                        <div class="col-md-5"><label for="programa_nacional" class="mb-1">Programa nacional</label><select id="programa_nacional" name="programa" class="form-control" required><option value="">Seleccione el programa que desea incorporar</option>{% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}</select></div>
-                        <div class="col-md-2"><button type="submit" class="btn btn-primary btn-block"><i class="fas fa-arrow-right mr-1"></i> Continuar</button></div>
+            <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">
+                <div class="d-flex align-items-end" style="gap:10px;">
+                    <div class="flex-grow-1">
+                        <select id="programa_nacional" name="programa" class="form-control" required>
+                            <option value="">Seleccione el programa que su universidad desea impartir</option>
+                            {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
+                        </select>
                     </div>
-                    <small class="form-text text-muted">Seleccione la universidad y el programa para registrar la solicitud en nombre de la institución.</small>
-                </form>
-            {% else %}
-                <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">
-                    <div class="d-flex align-items-end" style="gap:10px;">
-                        <div class="flex-grow-1">
-                            <select id="programa_nacional" name="programa" class="form-control" required>
-                                <option value="">Seleccione el programa que su universidad desea impartir</option>
-                                {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right mr-1"></i> Continuar</button>
-                    </div>
-                    <small class="form-text text-muted">Después podrá indicar las modalidades, fundamentar la apertura y adjuntar el documento formal.</small>
-                </form>
-            {% endif %}
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right mr-1"></i> Continuar</button>
+                </div>
+                <small class="form-text text-muted">La universidad se obtiene de su cuenta. Después podrá indicar las modalidades, fundamentar la apertura y adjuntar el documento formal.</small>
+            </form>
         </div>
         <table class="table table-bordered table-striped dataTable">
             <thead><tr><th>No.</th>{% if global %}<th>Universidad</th>{% endif %}<th>Programa nacional</th><th>Modalidades solicitadas</th><th>Documento</th><th>Estado</th><th>Fecha</th>{% if global %}<th>Opciones</th>{% endif %}</tr></thead>
