@@ -65,19 +65,12 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
     #[Route('/', name: 'app_solicitud_programa_academico_aprobado_index', methods: ['GET'])]
     public function index(
         SolicitudProgramaAcademicoRepository $solicitudProgramaRepository,
-        SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository,
-        SolicitudProgramaAcademicoInstitucionRepository $programaInstitucionRepository,
-        EntityManagerInterface $entityManager,
-        Utils $utils
+        SolicitudProgramaAcademicoPlanEstudioRepository $solicitudProgramaAcademicoPlanEstudioRepository
     )
     {
         $response = [];
         $accesoGlobal = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_PROGAPROB');
-        $institucion = $accesoGlobal ? null : $this->getInstitucionUsuario($utils, $entityManager);
-        $registros = $accesoGlobal
-            ? $solicitudProgramaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7])
-            : ($institucion ? $solicitudProgramaRepository->getAprobadosPorInstitucion([2, 4, 6, 7], $institucion->getId()) : []);
-        $resumenSedes = [];
+        $registros = $solicitudProgramaRepository->getSolicitudProgramaAcademicoAprobado([2, 4, 6, 7]);
         if (is_array($registros)) {
             foreach ($registros as $value) {
                 $temp = $solicitudProgramaAcademicoPlanEstudioRepository->findBy(['solicitudProgramaAcademico' => $value->getId()]);
@@ -87,33 +80,9 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                 $response[] = $value;
             }
         }
-        $sedesAgrupadas = [];
-        foreach ($programaInstitucionRepository->getResumenSedes(
-            array_map(static fn (SolicitudProgramaAcademico $programa): int => $programa->getId(), $response),
-            $institucion?->getId()
-        ) as $fila) {
-            $programaId = (int) $fila['programa_id'];
-            $institucionNombre = $fila['institucion_siglas'] ?: $fila['institucion_nombre'];
-            $clave = $accesoGlobal ? $institucionNombre : '';
-            $central = json_decode((string) $fila['modalidades_sede_central'], true) ?: [];
-            if ($central !== []) {
-                $sedesAgrupadas[$programaId][$clave][] = 'Sede central';
-            }
-            if ($fila['cum_nombre']) {
-                $sedesAgrupadas[$programaId][$clave][] = $fila['cum_nombre'];
-            }
-        }
-        foreach ($sedesAgrupadas as $programaId => $porInstitucion) {
-            foreach ($porInstitucion as $institucionNombre => $sedes) {
-                $texto = implode(', ', array_values(array_unique($sedes)));
-                $resumenSedes[$programaId][] = $accesoGlobal ? $institucionNombre . ': ' . $texto : $texto;
-            }
-        }
         return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/index.html.twig', [
             'registros' => $response,
             'accesoGlobal' => $accesoGlobal,
-            'institucionUsuario' => $institucion,
-            'resumenSedes' => $resumenSedes,
         ]);
     }
 
@@ -307,8 +276,6 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
                            Utils                                                $utils)
     {
 
-        $this->validarAccesoPrograma($solicitudProgramaAcademico, $utils, $entityManager, $solicitudProgramaAcademicoInstitucionRepository);
-
         $planEstudio = $solicitudProgramaAcademicoPlanEstudioRepository->findBy(['solicitudProgramaAcademico' => $solicitudProgramaAcademico->getId()]);
         $planEstudioAsociado = -1;
         if (is_array($planEstudio) && count($planEstudio) > 0) {
@@ -326,9 +293,6 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
         }
 
         $criteriosUniversidad = ['solicitudProgramaAcademico' => $solicitudProgramaAcademico->getId()];
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_GEST_PROGAPROB')) {
-            $criteriosUniversidad['institucion'] = $this->getInstitucionUsuario($utils, $entityManager);
-        }
 
         return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/detail.html.twig', [
             'item' => $solicitudProgramaAcademico,

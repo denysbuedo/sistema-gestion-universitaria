@@ -64,7 +64,7 @@ class MisProgramasController extends AbstractController
     #[Route('/asignados', name: 'app_pregrado_mis_programas_asignados', methods: ['GET'])]
     public function misProgramasAsignados(Utils $utils, EntityManagerInterface $entityManager, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository)
     {
-        return $this->redirectToRoute('app_solicitud_programa_academico_aprobado_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_pregrado_oferta_academica_index', [], Response::HTTP_SEE_OTHER);
 
         /* Compatibilidad histórica: la consulta se conserva temporalmente debajo
            hasta retirar definitivamente este controlador. */

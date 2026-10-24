@@ -63,8 +63,9 @@ class SolicitudProgramaAcademicoType extends AbstractType
                 'placeholder' => 'Seleccione',
                 'empty_data' => null,
                 'required' => false
-            ])
-            ->add('centroSolicitante', EntityType::class, [
+            ]);
+        if (!$options['institucion_fija']) {
+            $builder->add('centroSolicitante', EntityType::class, [
                 'label' => 'Centro solicitante',
                 'class' => Institucion::class,
                 'choice_label' => 'nombre',
@@ -74,8 +75,9 @@ class SolicitudProgramaAcademicoType extends AbstractType
                 'placeholder' => 'Seleccione',
                 'empty_data' => null,
                 'required' => false
-            ])
-            ->add('solicitud', FileType::class, [
+            ]);
+        }
+        $builder->add('solicitud', FileType::class, [
                 'label' => 'Solicitud',
                 'mapped' => false,
                 'required' => $options['action'] == 'registrar',
@@ -102,6 +104,8 @@ class SolicitudProgramaAcademicoType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => SolicitudProgramaAcademico::class,
+            'institucion_fija' => false,
         ]);
+        $resolver->setAllowedTypes('institucion_fija', 'bool');
     }
 }

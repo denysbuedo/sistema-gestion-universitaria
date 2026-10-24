@@ -1,0 +1,57 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Mapa de carreras{% endblock %}
+
+{% block body %}
+<div class="card border-0">
+    <div class="card-header bg-white border-bottom">
+        <h3 class="card-title m-0" style="float:none!important;"><i class="fas fa-map-marked-alt label-icon"></i>Mapa de carreras</h3>
+        <div class="text-muted mt-1">Distribución nacional de los programas académicos por universidad.</div>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#mapa-universidad">Carreras por universidad</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapa-programa">Universidades por carrera</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapa-matriz">Matriz nacional</a></li>
+        </ul>
+        <div class="tab-content pt-3">
+            <div class="tab-pane fade show active" id="mapa-universidad">
+                <table class="table table-bordered table-striped dataTable">
+                    <thead><tr><th>Universidad</th><th>Programa académico</th><th>Tipo</th><th>Categoría</th></tr></thead>
+                    <tbody>
+                    {% for universidadId, filas in porUniversidad %}
+                        {% for fila in filas %}
+                            <tr><td>{{ fila.nombre_universidad }}</td><td>{{ fila.programa_academico }}</td><td>{{ fila.tipo_programa_academico }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="mapa-programa">
+                <table class="table table-bordered table-striped dataTable">
+                    <thead><tr><th>Programa académico</th><th>Universidad</th><th>Tipo</th><th>Categoría</th></tr></thead>
+                    <tbody>
+                    {% for programaId, filas in porPrograma %}
+                        {% for fila in filas %}
+                            <tr><td>{{ fila.programa_academico }}</td><td>{{ fila.nombre_universidad }}</td><td>{{ fila.tipo_programa_academico }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="mapa-matriz">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead><tr><th>Programa académico</th>{% for universidad in universidades %}<th class="text-center" title="{{ universidad }}">{{ universidad }}</th>{% endfor %}</tr></thead>
+                        <tbody>
+                        {% for programaId, programa in programas %}
+                            <tr><td>{{ programa }}</td>{% for universidadId, universidad in universidades %}<td class="text-center">{{ matriz[programaId][universidadId] | default(false) ? '✓' : '—' }}</td>{% endfor %}</tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

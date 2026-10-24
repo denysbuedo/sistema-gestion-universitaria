@@ -50,7 +50,7 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
         }
     }
 
-    public function getSolicitudProgramaAcademico($estadoIds)
+    public function getSolicitudProgramaAcademico($estadoIds, ?int $institucionId = null)
     {
         $qb = $this->createQueryBuilder('qb')
             ->select("
@@ -66,6 +66,9 @@ class SolicitudProgramaAcademicoRepository extends ServiceEntityRepository
             ->join('qb.estadoProgramaAcademico', 'epa')
             ->where("qb.estadoProgramaAcademico IN(:valuesItems)")->setParameter('valuesItems', array_values($estadoIds))
             ->orderBy('qb.id', \SortDirection::Descending);
+        if ($institucionId !== null) {
+            $qb->andWhere('qb.centroSolicitante = :institucion')->setParameter('institucion', $institucionId);
+        }
         $resul = $qb->getQuery()->getResult();
 
         return $resul;

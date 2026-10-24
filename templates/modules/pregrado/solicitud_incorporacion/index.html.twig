@@ -1,0 +1,37 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Solicitudes de incorporación{% endblock %}
+{% block body %}
+<div class="card border-0">
+    <div class="card-header bg-white border-bottom d-flex align-items-center">
+        <div><h3 class="card-title m-0" style="float:none!important;">Solicitudes para impartir un programa existente</h3><div class="text-muted mt-1">Incorporación de programas del catálogo nacional a la oferta de una universidad.</div></div>
+        {% if not global %}<div class="ml-auto"><a class="btn-lux-sm btn-lux-primary" href="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}"><i class="fas fa-plus"></i> Nueva solicitud</a></div>{% endif %}
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped dataTable">
+            <thead><tr><th>No.</th>{% if global %}<th>Universidad</th>{% endif %}<th>Programa nacional</th><th>Modalidades solicitadas</th><th>Estado</th><th>Fecha</th>{% if global %}<th>Opciones</th>{% endif %}</tr></thead>
+            <tbody>
+            {% for item in registros %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    {% if global %}<td>{{ item.institucion.siglas | default(item.institucion.nombre) }}</td>{% endif %}
+                    <td>{{ item.programa.nombre }}</td>
+                    <td>{{ [item.modalidadDiurno ? 'Diurno' : null, item.modalidadPorEncuentro ? 'Por encuentro' : null, item.modalidadADistancia ? 'A distancia' : null] | filter(v => v) | join(', ') }}</td>
+                    <td>{{ item.estado | capitalize }}</td>
+                    <td>{{ item.creado | date('d/m/Y') }}</td>
+                    {% if global %}
+                        <td>
+                            {% if item.estado == constant('App\\Entity\\Pregrado\\SolicitudIncorporacionPrograma::PENDIENTE') %}
+                                <div class="d-flex" style="gap:6px;">
+                                    <form method="post" action="{{ path('app_pregrado_solicitud_incorporacion_aprobar', {'id': item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('aprobar_incorporacion_' ~ item.id) }}"><button class="btn btn-sm btn-outline-success">Aprobar</button></form>
+                                    <form method="post" action="{{ path('app_pregrado_solicitud_incorporacion_rechazar', {'id': item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('rechazar_incorporacion_' ~ item.id) }}"><button class="btn btn-sm btn-outline-danger">Rechazar</button></form>
+                                </div>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

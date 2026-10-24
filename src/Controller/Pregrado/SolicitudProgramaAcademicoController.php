@@ -2,6 +2,7 @@
 
 namespace App\Controller\Pregrado;
 
+use App\Entity\Institucion\Institucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion;
 use App\Entity\Security\User;
@@ -15,6 +16,7 @@ use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use App\Services\DoctrineHelper;
 use App\Services\Utils;
 use App\Services\UploadedDocumentStorage;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
+#[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG') or is_granted('ROLE_PREGRADO_MIS_PROGRAMAS')"))]
 #[Route('/pregrado/solicitud_programa_academico')]
 class SolicitudProgramaAcademicoController extends AbstractController
 {
@@ -32,11 +34,17 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_solicitud_programa_academico_index', methods: ['GET'])]
-    public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository)
+    public function index(SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, Utils $utils, EntityManagerInterface $em)
     {
-        $registros = $solicitudProgramaRepository->getSolicitudProgramaAcademico([1, 3, 5]);
+        $global = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_SOLPROG');
+        $institucion = $global ? null : $this->institucionUsuario($utils, $em);
+        if (!$global && !$institucion) {
+            throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
+        }
+        $registros = $solicitudProgramaRepository->getSolicitudProgramaAcademico([1, 3, 5], $institucion?->getId());
         return $this->render('modules/pregrado/solicitud_programa_academico/index.html.twig', [
-            'registros' => $registros
+            'registros' => $registros,
+            'accesoGlobal' => $global,
         ]);
     }
 
@@ -46,11 +54,19 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_solicitud_programa_academico_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, Utils $utils, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, UploadedDocumentStorage $storage)
+    public function registrar(Request $request, Utils $utils, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, EstadoProgramaAcademicoRepository $estadoProgramaAcademicoRepository, UploadedDocumentStorage $storage, EntityManagerInterface $em)
     {
         try {
             $solicitudProgramaAcademico = new SolicitudProgramaAcademico();
-            $form = $this->createForm(SolicitudProgramaAcademicoType::class, $solicitudProgramaAcademico, ['action' => 'registrar']);
+            $global = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_SOLPROG');
+            $institucion = $global ? null : $this->institucionUsuario($utils, $em);
+            if (!$global && !$institucion) {
+                throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
+            }
+            if ($institucion) {
+                $solicitudProgramaAcademico->setCentroSolicitante($institucion);
+            }
+            $form = $this->createForm(SolicitudProgramaAcademicoType::class, $solicitudProgramaAcademico, ['action' => 'registrar', 'institucion_fija' => $institucion !== null]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
 
@@ -83,6 +99,7 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_solicitud_programa_academico_modificar', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
     public function modificar(Request $request, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
@@ -113,8 +130,14 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/detail', name: 'app_solicitud_programa_academico_detail', methods: ['GET', 'POST'])]
-    public function detail(SolicitudProgramaAcademico $solicitudProgramaAcademico)
+    public function detail(SolicitudProgramaAcademico $solicitudProgramaAcademico, Utils $utils, EntityManagerInterface $em)
     {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_GEST_SOLPROG')) {
+            $institucion = $this->institucionUsuario($utils, $em);
+            if (!$institucion || $solicitudProgramaAcademico->getCentroSolicitante()?->getId() !== $institucion->getId()) {
+                throw $this->createAccessDeniedException('No puede consultar solicitudes de otra universidad.');
+            }
+        }
         return $this->render('modules/pregrado/solicitud_programa_academico/detail.html.twig', [
             'item' => $solicitudProgramaAcademico,
         ]);
@@ -126,6 +149,7 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_solicitud_programa_academico_eliminar', methods: ['GET'])]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
     public function eliminar(SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository)
     {
         try {
@@ -151,6 +175,7 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/aprobar', name: 'app_solicitud_programa_academico_aprobar', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
     public function aprobar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, SolicitudProgramaAcademicoInstitucionRepository $solicitudProgramaAcademicoInstitucionRepository, UploadedDocumentStorage $storage)
     {
         try {
@@ -213,6 +238,7 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/rechazar', name: 'app_solicitud_programa_academico_rechazar', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
     public function rechazar(Request $request, Utils $utils, EstadoProgramaAcademicoRepository $estadoProgramaRepository, SolicitudProgramaAcademico $solicitudPrograma, SolicitudProgramaAcademicoRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
     {
         try {
@@ -252,10 +278,18 @@ class SolicitudProgramaAcademicoController extends AbstractController
      * @return Response
      */
     #[Route('/exportar_pdf', name: 'app_solicitud_programa_academico_exportar_pdf', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_SOLPROG')"))]
     public function exportarPdf(Request $request, \App\Services\HandlerFop $handFop, SolicitudProgramaAcademicoRepository $solicitudProgramaAcademicoRepository)
     {
         $export = $solicitudProgramaAcademicoRepository->getSolicitudProgramaAcademico([1, 3]);
         $export = DoctrineHelper::toArray($export);
         return $handFop->exportToPdf(new ExportListSolicitudProgramaAcademicoToPdf($export));
+    }
+
+    private function institucionUsuario(Utils $utils, EntityManagerInterface $em): ?Institucion
+    {
+        $datos = $utils->obtenerDatosEstructuraUsuarioAutenticado($this->getUser()->getId());
+        $idEntidad = $datos['id_entidad'] ?? null;
+        return $idEntidad && $idEntidad > 0 ? $em->getRepository(Institucion::class)->findOneBy(['estructura' => $idEntidad]) : null;
     }
 }

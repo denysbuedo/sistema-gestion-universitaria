@@ -222,11 +222,13 @@ ORDER BY t3_.nombre ASC;
         }
 
         return $this->getEntityManager()->getConnection()->executeQuery(
-            "SELECT relacion.solicitud_programa_academico_id AS programa_id,
+            "SELECT relacion.id AS oferta_id,
+                    relacion.solicitud_programa_academico_id AS programa_id,
                     institucion.siglas AS institucion_siglas,
                     institucion.nombre AS institucion_nombre,
                     relacion.modalidades_sede_central,
-                    cum.nombre_facultad AS cum_nombre
+                    cum.nombre_facultad AS cum_nombre,
+                    asignacion.modalidad AS cum_modalidad
                FROM pregrado.tbr_solicitud_programa_academico_institucion relacion
                JOIN institucion.tbd_institucion institucion ON institucion.id = relacion.institucion_id
           LEFT JOIN pregrado.tbr_solicitud_programa_academico_institucion_cum asignacion
