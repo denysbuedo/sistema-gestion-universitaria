@@ -147,6 +147,7 @@ class SolicitudProgramaAcademicoInstitucionRepository extends ServiceEntityRepos
                 COALESCE(t1_.nombre, '') AS programa_academico,
                 t3_.id AS id_universidad,
                 COALESCE(t3_.nombre, '') AS nombre_universidad,
+                COALESCE(t3_.siglas, '') AS siglas_universidad,
                 COALESCE(t4_.nombre, '') AS tipo_programa_academico,
                 t1_.centro_rector_id,
                 t1_.rama_ciencia_id,

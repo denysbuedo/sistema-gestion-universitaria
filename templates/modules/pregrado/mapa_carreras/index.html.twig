@@ -1,57 +1,44 @@
 {% extends 'baseAdmin.html.twig' %}
-
 {% block title %}Mapa de carreras{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .map-heading .card-title { float:none!important; display:block; line-height:1.35; }
+        .map-heading .map-subtitle { display:block; clear:both; margin-top:5px; line-height:1.35; }
+        .matrix-head { writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap; max-height:130px; }
+    </style>
+{% endblock %}
 
 {% block body %}
 <div class="card border-0">
-    <div class="card-header bg-white border-bottom">
-        <h3 class="card-title m-0" style="float:none!important;"><i class="fas fa-map-marked-alt label-icon"></i>Mapa de carreras</h3>
-        <div class="text-muted mt-1">Distribución nacional de los programas académicos por universidad.</div>
+    <div class="card-header bg-white border-bottom map-heading">
+        <h3 class="card-title m-0"><i class="fas fa-map-marked-alt text-primary mr-2"></i>{{ global ? 'Mapa de carreras' : 'Mapa de programas por sede' }}</h3>
+        <div class="text-muted map-subtitle">{{ global ? 'Distribución nacional de los programas académicos por universidad.' : institucion.nombre }}</div>
     </div>
     <div class="card-body">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#mapa-universidad">Carreras por universidad</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapa-programa">Universidades por carrera</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapa-matriz">Matriz nacional</a></li>
-        </ul>
-        <div class="tab-content pt-3">
-            <div class="tab-pane fade show active" id="mapa-universidad">
-                <table class="table table-bordered table-striped dataTable">
-                    <thead><tr><th>Universidad</th><th>Programa académico</th><th>Tipo</th><th>Categoría</th></tr></thead>
-                    <tbody>
-                    {% for universidadId, filas in porUniversidad %}
-                        {% for fila in filas %}
-                            <tr><td>{{ fila.nombre_universidad }}</td><td>{{ fila.programa_academico }}</td><td>{{ fila.tipo_programa_academico }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>
-                        {% endfor %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="mapa-programa">
-                <table class="table table-bordered table-striped dataTable">
-                    <thead><tr><th>Programa académico</th><th>Universidad</th><th>Tipo</th><th>Categoría</th></tr></thead>
-                    <tbody>
-                    {% for programaId, filas in porPrograma %}
-                        {% for fila in filas %}
-                            <tr><td>{{ fila.programa_academico }}</td><td>{{ fila.nombre_universidad }}</td><td>{{ fila.tipo_programa_academico }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>
-                        {% endfor %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="mapa-matriz">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
-                        <thead><tr><th>Programa académico</th>{% for universidad in universidades %}<th class="text-center" title="{{ universidad }}">{{ universidad }}</th>{% endfor %}</tr></thead>
-                        <tbody>
-                        {% for programaId, programa in programas %}
-                            <tr><td>{{ programa }}</td>{% for universidadId, universidad in universidades %}<td class="text-center">{{ matriz[programaId][universidadId] | default(false) ? '✓' : '—' }}</td>{% endfor %}</tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+        {% if global %}
+            {% set activeTab = app.request.query.get('tab') | default('universidad') %}
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a class="nav-link {{ activeTab == 'universidad' ? 'active' : '' }}" data-toggle="tab" href="#mapa-universidad">Carreras por universidad</a></li>
+                <li class="nav-item"><a class="nav-link {{ activeTab == 'programa' ? 'active' : '' }}" data-toggle="tab" href="#mapa-programa">Universidades por carrera</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#mapa-matriz">Matriz nacional</a></li>
+            </ul>
+            <div class="tab-content pt-3">
+                <div class="tab-pane fade {{ activeTab == 'universidad' ? 'show active' : '' }}" id="mapa-universidad">
+                    <form method="get" class="mb-4"><input type="hidden" name="tab" value="universidad"><div class="row"><div class="col-md-8 col-lg-6"><label for="universidad">Universidad</label><select id="universidad" name="universidad" class="form-control" onchange="this.form.submit()"><option value="">Seleccione una universidad</option>{% for id, universidad in universidades %}<option value="{{ id }}" {% if universidadSeleccionada == id %}selected{% endif %}>{{ universidad.siglas ? '(' ~ universidad.siglas ~ ') ' : '' }}{{ universidad.nombre }}</option>{% endfor %}</select></div></div></form>
+                    {% if universidadSeleccionada %}<table class="table table-bordered table-striped dataTable"><thead><tr><th>Programa académico</th><th>Tipo</th><th>Categoría</th></tr></thead><tbody>{% for fila in carrerasUniversidad %}<tr><td>{{ fila.programa_academico }}</td><td>{{ fila.tipo_programa_academico }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>{% endfor %}</tbody></table>{% else %}<div class="alert alert-light border">Seleccione una universidad para consultar las carreras que imparte.</div>{% endif %}
                 </div>
+                <div class="tab-pane fade {{ activeTab == 'programa' ? 'show active' : '' }}" id="mapa-programa">
+                    <form method="get" class="mb-4"><input type="hidden" name="tab" value="programa"><div class="row"><div class="col-md-8 col-lg-6"><label for="programa">Carrera o programa académico</label><select id="programa" name="programa" class="form-control" onchange="this.form.submit()"><option value="">Seleccione una carrera</option>{% for id, programa in programas %}<option value="{{ id }}" {% if programaSeleccionado == id %}selected{% endif %}>{{ programa }}</option>{% endfor %}</select></div></div></form>
+                    {% if programaSeleccionado %}<table class="table table-bordered table-striped dataTable"><thead><tr><th>Universidad donde se estudia</th><th>Categoría</th></tr></thead><tbody>{% for fila in universidadesCarrera %}<tr><td>{{ fila.nombre_universidad }}</td><td>{{ fila.categoria_acreditacion }}</td></tr>{% endfor %}</tbody></table>{% else %}<div class="alert alert-light border">Seleccione una carrera para mostrar las universidades donde se estudia.</div>{% endif %}
+                </div>
+                <div class="tab-pane fade" id="mapa-matriz"><div class="table-responsive"><table class="table table-bordered table-sm"><thead><tr><th>Programa académico</th>{% for universidad in universidades %}<th class="text-center" title="{{ universidad.nombre }}"><span class="matrix-head">{{ universidad.siglas }}</span></th>{% endfor %}</tr></thead><tbody>{% for programaId, programa in programas %}<tr><td>{{ programa }}</td>{% for universidadId, universidad in universidades %}<td class="text-center">{{ matriz[programaId][universidadId] | default(false) ? '✓' : '—' }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div></div>
             </div>
-        </div>
+        {% else %}
+            <form method="get" class="mb-4"><div class="row"><div class="col-md-8 col-lg-6"><label for="sede">Sede donde se imparte</label><select id="sede" name="sede" class="form-control" onchange="this.form.submit()"><option value="">Seleccione una sede</option>{% for id, sede in sedes %}<option value="{{ id }}" {% if sedeSeleccionada == id %}selected{% endif %}>{{ sede }}</option>{% endfor %}</select></div></div></form>
+            {% if sedeSeleccionada %}<table class="table table-bordered table-striped dataTable"><thead><tr><th>Programa académico</th><th>Modalidades</th></tr></thead><tbody>{% for fila in filasSede %}<tr><td>{{ fila.programa }}</td><td>{{ fila.modalidades | join(', ') }}</td></tr>{% endfor %}</tbody></table>{% else %}<div class="alert alert-light border"><i class="fas fa-info-circle text-primary mr-2"></i>Seleccione la sede central o un CUM para consultar los programas que se imparten allí.</div>{% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -185,7 +185,9 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
 
     #[Route('/programas-por-cum', name: 'app_pregrado_programas_por_cum', methods: ['GET'])]
     public function programasPorCum(
+        Request $request,
         InstitucionCumRepository $institucionCumRepository,
+        InstitucionRepository $institucionRepository,
         SolicitudProgramaAcademicoInstitucionCumRepository $programaCumRepository,
         EntityManagerInterface $entityManager,
         Utils $utils
@@ -195,7 +197,11 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
         if (!$accesoGlobal && !$institucion) {
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
-        $centros = $institucionCumRepository->findBy($institucion ? ['institucion' => $institucion] : [], ['nombreFacultad' => 'ASC']);
+        if ($accesoGlobal) {
+            $institucionId = $request->query->getInt('institucion');
+            $institucion = $institucionId > 0 ? $institucionRepository->find($institucionId) : null;
+        }
+        $centros = $institucion ? $institucionCumRepository->findBy(['institucion' => $institucion], ['nombreFacultad' => 'ASC']) : [];
         $totales = [];
         foreach ($centros as $centro) {
             $programas = [];
@@ -209,6 +215,8 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
             'centros' => $centros,
             'totales' => $totales,
             'accesoGlobal' => $accesoGlobal,
+            'institucion' => $institucion,
+            'universidades' => $accesoGlobal ? $institucionRepository->findBy(['activo' => true], ['nombre' => 'ASC']) : [],
         ]);
     }
 

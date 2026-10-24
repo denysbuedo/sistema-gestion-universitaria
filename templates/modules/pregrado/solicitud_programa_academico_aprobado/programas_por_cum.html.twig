@@ -5,18 +5,27 @@
 {% block body %}
 <div class="card border-0">
     <div class="card-header bg-white border-bottom">
-        <h3 class="card-title m-0">Programas por Centro Universitario Municipal</h3>
+        <h3 class="card-title m-0" style="float:none!important;">Programas por Centro Universitario Municipal</h3>
     </div>
     <div class="card-body">
+        {% if accesoGlobal %}
+            <form method="get" class="mb-4"><div class="row"><div class="col-md-8 col-lg-6">
+                <label for="institucion">Universidad</label>
+                <select id="institucion" name="institucion" class="form-control" onchange="this.form.submit()">
+                    <option value="">Seleccione una universidad</option>
+                    {% for universidad in universidades %}<option value="{{ universidad.id }}" {% if institucion and institucion.id == universidad.id %}selected{% endif %}>{{ universidad.siglas ? '(' ~ universidad.siglas ~ ') ' : '' }}{{ universidad.nombre }}</option>{% endfor %}
+                </select>
+            </div></div></form>
+            {% if not institucion %}<div class="alert alert-light border"><i class="fas fa-info-circle text-primary mr-2"></i>Seleccione una universidad para mostrar exclusivamente sus CUM.</div>{% endif %}
+        {% endif %}
         <table class="table table-bordered table-striped dataTable">
             <thead>
-            <tr><th>No.</th>{% if accesoGlobal %}<th>Universidad</th>{% endif %}<th>CUM</th><th>Programas</th><th>Opciones</th></tr>
+            <tr><th>No.</th><th>CUM</th><th>Programas</th><th>Opciones</th></tr>
             </thead>
             <tbody>
             {% for centro in centros %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    {% if accesoGlobal %}<td>{{ centro.institucion.siglas | default(centro.institucion.nombre) }}</td>{% endif %}
                     <td>{{ centro.nombreFacultad }}</td>
                     <td>{{ totales[centro.id] | default(0) }}</td>
                     <td><a class="btn btn-sm btn-outline-primary" href="{{ path('app_pregrado_programas_por_cum_detalle', {'id': centro.id}) }}">Ver programas</a></td>
