@@ -6,6 +6,7 @@ use App\Entity\Security\User;
 use App\Entity\Personal\Persona;
 use App\Entity\Traza\ConfiguracionTraza;
 use App\Entity\Traza\Traza;
+use App\Repository\Personal\PersonaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -250,6 +251,24 @@ class SecuritySmokeTest extends WebTestCase
         $client->request('GET', $path);
 
         self::assertResponseIsSuccessful();
+    }
+
+    public function testAdministratorCanOpenTheirPersonEditForm(): void
+    {
+        $client = static::createClient();
+        $user = $this->fixtureAdminUser($client);
+        $persona = $client->getContainer()->get(EntityManagerInterface::class)
+            ->getRepository(Persona::class)
+            ->findOneBy(['usuario' => $user]);
+        self::assertInstanceOf(Persona::class, $persona);
+        $repository = $client->getContainer()->get(PersonaRepository::class);
+        self::assertSame($persona, $repository->edit($persona, false));
+        $client->loginUser($user, 'main');
+
+        $client->request('GET', '/personal/persona/' . $persona->getId() . '/modificar');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h3', 'Modificar Registro de Persona');
     }
 
     public function testNotificationFragmentAndFullPageUseTheirExpectedLayouts(): void

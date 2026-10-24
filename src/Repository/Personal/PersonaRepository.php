@@ -32,9 +32,10 @@ class PersonaRepository extends ServiceEntityRepository
 
     public function edit(Persona $entity, bool $flush = true): Persona
     {
-        $this->_em->persist($entity);
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $entityManager->flush();
         }
 
         return $entity;
