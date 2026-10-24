@@ -8,6 +8,7 @@ use App\Entity\Pregrado\SolicitudProgramaAcademicoInstitucion;
 use App\Entity\Pregrado\SolicitudProgramaAcademico;
 use App\Form\Pregrado\SolicitudIncorporacionProgramaType;
 use App\Services\Utils;
+use App\Services\UploadedDocumentStorage;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,7 +50,7 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
     }
 
     #[Route('/nueva', name: 'app_pregrado_solicitud_incorporacion_nueva', methods: ['GET', 'POST'])]
-    public function nueva(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
+    public function nueva(Request $request, EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository, UploadedDocumentStorage $storage): Response
     {
         $institucion = $this->institucionUsuario($utils, $em);
         if (!$institucion) {
@@ -63,7 +64,11 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
                 $solicitud->setPrograma($programa);
             }
         }
-        $form = $this->createForm(SolicitudIncorporacionProgramaType::class, $solicitud);
+        if (!$solicitud->getPrograma()) {
+            $this->addFlash('warning', 'Seleccione primero el programa nacional que desea impartir.');
+            return $this->redirectToRoute('app_pregrado_solicitud_incorporacion_index');
+        }
+        $form = $this->createForm(SolicitudIncorporacionProgramaType::class, $solicitud, ['programa_fijo' => $solicitud->getPrograma()]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $programa = $solicitud->getPrograma();
@@ -77,6 +82,9 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
             } elseif ($em->getRepository(SolicitudIncorporacionPrograma::class)->findOneBy(['institucion' => $institucion, 'programa' => $programa, 'estado' => SolicitudIncorporacionPrograma::PENDIENTE])) {
                 $this->addFlash('error', 'Ya existe una solicitud pendiente para incorporar este programa.');
             } else {
+                if (($archivo = $form['documentoSolicitud']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    $solicitud->setDocumentoSolicitud($storage->storeName($archivo, 'uploads/pregrado/solicitud_incorporacion/documento'));
+                }
                 $em->persist($solicitud);
                 $em->flush();
                 $this->addFlash('success', 'La solicitud de incorporación fue registrada.');

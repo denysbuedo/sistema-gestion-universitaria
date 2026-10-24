@@ -8,10 +8,19 @@
     </div>
     {{ form_start(form) }}
     <div class="card-body">
-        <p class="text-muted">Seleccione un programa ya aprobado en el catálogo nacional y las modalidades que la universidad solicita impartir.</p>
+        <div class="alert alert-light border"><i class="fas fa-info-circle text-primary mr-2"></i>Complete las modalidades en que se impartirá el programa, explique la necesidad de apertura y adjunte el documento formal de solicitud.</div>
+        <h4 class="h6 text-primary mb-3">1. Programa nacional seleccionado</h4>
         {{ form_row(form.programa) }}
+        <h4 class="h6 text-primary mt-4 mb-3">2. Modalidades solicitadas</h4>
+        <div class="form-group"><div class="row">
+            {% if form.modalidadDiurno is defined %}<div class="col-md-4">{{ form_row(form.modalidadDiurno) }}</div>{% endif %}
+            {% if form.modalidadPorEncuentro is defined %}<div class="col-md-4">{{ form_row(form.modalidadPorEncuentro) }}</div>{% endif %}
+            {% if form.modalidadADistancia is defined %}<div class="col-md-4">{{ form_row(form.modalidadADistancia) }}</div>{% endif %}
+        </div></div>
+        <h4 class="h6 text-primary mt-4 mb-3">3. Fundamentación</h4>
         {{ form_row(form.fundamentacion) }}
-        <div class="form-group"><label>Modalidades solicitadas</label><div class="row"><div class="col-md-4">{{ form_row(form.modalidadDiurno) }}</div><div class="col-md-4">{{ form_row(form.modalidadPorEncuentro) }}</div><div class="col-md-4">{{ form_row(form.modalidadADistancia) }}</div></div></div>
+        <h4 class="h6 text-primary mt-4 mb-3">4. Documento de solicitud</h4>
+        {{ form_row(form.documentoSolicitud) }}
     </div>
     <div class="card-footer bg-white text-right"><a class="btn btn-outline-secondary mr-2" href="{{ path('app_pregrado_solicitud_incorporacion_index') }}">Cancelar</a><button class="btn btn-primary" type="submit">Registrar solicitud</button></div>
     {{ form_end(form) }}

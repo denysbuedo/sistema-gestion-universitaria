@@ -42,6 +42,9 @@ class SolicitudIncorporacionPrograma extends BaseEntity
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $observaciones = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $documentoSolicitud = null;
+
     public function getPrograma(): ?SolicitudProgramaAcademico { return $this->programa; }
     public function setPrograma(?SolicitudProgramaAcademico $programa): self { $this->programa = $programa; return $this; }
     public function getInstitucion(): ?Institucion { return $this->institucion; }
@@ -58,6 +61,8 @@ class SolicitudIncorporacionPrograma extends BaseEntity
     public function setEstado(string $estado): self { $this->estado = $estado; return $this; }
     public function getObservaciones(): ?string { return $this->observaciones; }
     public function setObservaciones(?string $observaciones): self { $this->observaciones = $observaciones; return $this; }
+    public function getDocumentoSolicitud(): ?string { return $this->documentoSolicitud; }
+    public function setDocumentoSolicitud(?string $documentoSolicitud): self { $this->documentoSolicitud = $documentoSolicitud; return $this; }
 
     #[Assert\Callback]
     public function validarModalidad(\Symfony\Component\Validator\Context\ExecutionContextInterface $context): void

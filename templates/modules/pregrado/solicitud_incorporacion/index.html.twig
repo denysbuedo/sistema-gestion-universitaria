@@ -22,15 +22,22 @@
                     <small class="form-text text-muted">Seleccione un programa para filtrar las solicitudes recibidas.</small>
                 </form>
             {% else %}
-                <select id="programa_nacional" class="form-control" onchange="if (this.value) window.location.href='{{ path('app_pregrado_solicitud_incorporacion_nueva') }}?programa=' + encodeURIComponent(this.value)">
-                    <option value="">Seleccione el programa que su universidad desea impartir</option>
-                    {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
-                </select>
-                <small class="form-text text-muted">Al seleccionarlo se abrirá la solicitud para indicar modalidades y fundamentación.</small>
+                <form method="get" action="{{ path('app_pregrado_solicitud_incorporacion_nueva') }}">
+                    <div class="d-flex align-items-end" style="gap:10px;">
+                        <div class="flex-grow-1">
+                            <select id="programa_nacional" name="programa" class="form-control" required>
+                                <option value="">Seleccione el programa que su universidad desea impartir</option>
+                                {% for programa in programasNacionales %}<option value="{{ programa.id }}">{{ programa.nombre }} — {{ programa.tipoProgramaAcademico.nombre | default('') }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right mr-1"></i> Continuar</button>
+                    </div>
+                    <small class="form-text text-muted">Después podrá indicar las modalidades, fundamentar la apertura y adjuntar el documento formal.</small>
+                </form>
             {% endif %}
         </div>
         <table class="table table-bordered table-striped dataTable">
-            <thead><tr><th>No.</th>{% if global %}<th>Universidad</th>{% endif %}<th>Programa nacional</th><th>Modalidades solicitadas</th><th>Estado</th><th>Fecha</th>{% if global %}<th>Opciones</th>{% endif %}</tr></thead>
+            <thead><tr><th>No.</th>{% if global %}<th>Universidad</th>{% endif %}<th>Programa nacional</th><th>Modalidades solicitadas</th><th>Documento</th><th>Estado</th><th>Fecha</th>{% if global %}<th>Opciones</th>{% endif %}</tr></thead>
             <tbody>
             {% for item in registros %}
                 <tr>
@@ -38,6 +45,7 @@
                     {% if global %}<td>{{ item.institucion.siglas | default(item.institucion.nombre) }}</td>{% endif %}
                     <td>{{ item.programa.nombre }}</td>
                     <td>{{ [item.modalidadDiurno ? 'Diurno' : null, item.modalidadPorEncuentro ? 'Por encuentro' : null, item.modalidadADistancia ? 'A distancia' : null] | filter(v => v) | join(', ') }}</td>
+                    <td>{% if item.documentoSolicitud %}<a target="_blank" href="{{ app.request.getSchemeAndHttpHost() }}/uploads/pregrado/solicitud_incorporacion/documento/{{ item.documentoSolicitud }}"><i class="fas fa-file-pdf text-danger mr-1"></i>Ver solicitud</a>{% else %}<span class="text-muted">—</span>{% endif %}</td>
                     <td>{{ item.estado | capitalize }}</td>
                     <td>{{ item.creado | date('d/m/Y') }}</td>
                     {% if global %}
