@@ -198,6 +198,22 @@ class AE2Repository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /** @return array<int, array{anno: int|string, mes: int|string}> */
+    public function getPeriodosDisponibles(?int $entidadId = null): array
+    {
+        $scopeAE2 = $entidadId !== null ? ' WHERE entidad_id = :entidadId' : '';
+        $scopeAE3 = $entidadId !== null ? ' WHERE entidad_id = :entidadId' : '';
+        $sql = "
+            SELECT anno, mes FROM rrhh.tbd_ae2 {$scopeAE2}
+            UNION
+            SELECT anno, mes FROM rrhh.tbd_ae3 {$scopeAE3}
+            ORDER BY anno DESC, mes DESC
+        ";
+        $params = $entidadId !== null ? ['entidadId' => $entidadId] : [];
+
+        return $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAllAssociative();
+    }
+
     public function getCoberturaByEntidad(int $anno, int $mes, ?int $entidadId = null): array
     {
         $conn = $this->getEntityManager()->getConnection();

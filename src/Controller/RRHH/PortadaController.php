@@ -7,6 +7,7 @@ use App\Repository\RRHH\AE3Repository;
 use App\Services\Utils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -20,7 +21,7 @@ class PortadaController extends AbstractController
      * @return Response
      */
     #[Route('', name: 'app_rrhh_portada', methods: ['GET'])]
-    public function index(AE2Repository $ae2Repo, AE3Repository $ae3Repo, Utils $utils): Response
+    public function index(Request $request, AE2Repository $ae2Repo, AE3Repository $ae3Repo, Utils $utils): Response
     {
         $datosEntidad = $utils->obtenerDatosEstructuraUsuarioAutenticado($this->getUser()->getId());
         $esAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
@@ -37,13 +38,21 @@ class PortadaController extends AbstractController
             10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
         ];
 
-        // ── Período más reciente con datos AE2 ──────────────────────
-        $latestAE2 = $ae2Repo->getLatestPeriod($entidadId);
-        $anno      = $latestAE2 ? (int)$latestAE2['anno'] : (int)date('Y');
-        $mes       = $latestAE2 ? (int)$latestAE2['mes']  : (int)date('n');
-        $periodoLabel = $latestAE2
-            ? ($mesesNombres[$mes] . ' ' . $anno)
-            : 'Sin datos';
+        // ── Período solicitado o, por defecto, el más reciente con datos ──
+        $periodos = $ae2Repo->getPeriodosDisponibles($entidadId);
+        $annoSolicitado = $request->query->getInt('anno');
+        $mesSolicitado = $request->query->getInt('mes');
+        $periodoSeleccionado = null;
+        foreach ($periodos as $periodo) {
+            if ((int) $periodo['anno'] === $annoSolicitado && (int) $periodo['mes'] === $mesSolicitado) {
+                $periodoSeleccionado = $periodo;
+                break;
+            }
+        }
+        $periodoSeleccionado ??= $periodos[0] ?? null;
+        $anno = $periodoSeleccionado ? (int) $periodoSeleccionado['anno'] : (int) date('Y');
+        $mes = $periodoSeleccionado ? (int) $periodoSeleccionado['mes'] : (int) date('n');
+        $periodoLabel = $periodoSeleccionado ? ($mesesNombres[$mes] . ' ' . $anno) : 'Sin datos';
 
         // ── Totales AE2 del período actual ──────────────────────────
         $filtrosAE2 = ['anno' => $anno, 'mes' => $mes];
@@ -88,12 +97,8 @@ class PortadaController extends AbstractController
         $tendenciaCubierta = json_encode(array_map(function ($r) { return (int)$r['cubierta']; }, $tendencia));
 
         // ── Totales AE3 del período actual ──────────────────────────
-        $latestAE3   = $ae3Repo->getLatestPeriod($entidadId);
-        $annoAE3     = $latestAE3 ? (int)$latestAE3['anno'] : $anno;
-        $mesAE3      = $latestAE3 ? (int)$latestAE3['mes']  : $mes;
-
-        $ae3Totales  = $ae3Repo->getTotalesGlobales($annoAE3, $mesAE3, $entidadId);
-        $ae3Cats     = $ae3Repo->getDistribucionCategorias($annoAE3, $mesAE3, $entidadId);
+        $ae3Totales  = $ae3Repo->getTotalesGlobales($anno, $mes, $entidadId);
+        $ae3Cats     = $ae3Repo->getDistribucionCategorias($anno, $mes, $entidadId);
 
         $distribCategorias = json_encode([
             ['name' => 'Cuadros Docentes',   'y' => (int)($ae3Cats['docentes']        ?? 0)],
@@ -122,6 +127,9 @@ class PortadaController extends AbstractController
             'periodo_label'       => $periodoLabel,
             'alcance'             => $alcance,
             'anno'                => $anno,
+            'mes'                 => $mes,
+            'meses'               => $mesesNombres,
+            'periodos'            => $periodos,
             // KPIs AE2
             'aprobada'            => $aprobada,
             'cubierta'            => $cubierta,

@@ -101,6 +101,11 @@
     .content-header { padding: 28px 35px 24px; border-bottom: 1px solid #dce4ea; background: #fff; }
     .content-header h4 { color: #102f4f !important; font-size: 28px; font-weight: 500 !important; letter-spacing: -.015em; }
     .content-header p { color: #6b7b88 !important; font-size: 14px !important; }
+    .rrhh-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .rrhh-period-form { display: flex; align-items: flex-end; gap: 9px; }
+    .rrhh-period-field label { display: block; margin: 0 0 4px; color: #6b7b88; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+    .rrhh-period-field select { min-width: 112px; height: 36px; border: 1px solid #cbd6de; border-radius: 0; background: #fff; color: #263746; font-size: 13px; }
+    .rrhh-period-form button { height: 36px; padding: 0 16px; border: 1px solid #102f4f; border-radius: 0; background: #102f4f; color: #fff; font-size: 13px; }
     .kpi-card {
         min-height: 104px; padding: 18px 20px; gap: 15px;
         border: 1px solid #dce4ea; border-radius: 0; box-shadow: none;
@@ -138,6 +143,7 @@
         .content-header { padding: 22px 23px 20px; }
         .ae3-pills { grid-template-columns: repeat(2, 1fr); }
         .ae3-pill { border-bottom: 1px solid #dce4ea; }
+        .rrhh-heading { align-items: stretch; flex-direction: column; }
     }
     @media (max-width: 560px) {
         .content-header h4 { font-size: 24px; }
@@ -150,8 +156,29 @@
 {% block body %}
 <div class="content-header">
     <div class="container-fluid">
-        <h4 style="color:#1a2e44;font-weight:700;margin:0">Recursos Humanos</h4>
-        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">{{ alcance }} · Plantilla, contratos y calificación del personal · Período: {{ periodo_label }}</p>
+        <div class="rrhh-heading">
+            <div>
+                <h4 style="color:#1a2e44;font-weight:700;margin:0">Recursos Humanos</h4>
+                <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">{{ alcance }} · Plantilla, contratos y calificación del personal · Período mostrado: <strong>{{ periodo_label }}</strong></p>
+            </div>
+            {% set annosDisponibles = [] %}
+            {% for periodo in periodos %}{% if periodo.anno not in annosDisponibles %}{% set annosDisponibles = annosDisponibles|merge([periodo.anno]) %}{% endif %}{% endfor %}
+            <form method="get" class="rrhh-period-form" aria-label="Filtrar indicadores por período">
+                <div class="rrhh-period-field">
+                    <label for="rrhh-anno">Año</label>
+                    <select id="rrhh-anno" name="anno">
+                        {% for valorAnno in annosDisponibles %}<option value="{{ valorAnno }}"{{ valorAnno == anno ? ' selected' : '' }}>{{ valorAnno }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="rrhh-period-field">
+                    <label for="rrhh-mes">Mes</label>
+                    <select id="rrhh-mes" name="mes">
+                        {% for numeroMes, nombreMes in meses %}<option value="{{ numeroMes }}"{{ numeroMes == mes ? ' selected' : '' }}>{{ nombreMes }}</option>{% endfor %}
+                    </select>
+                </div>
+                <button type="submit"><i class="fas fa-filter mr-1"></i> Aplicar</button>
+            </form>
+        </div>
     </div>
 </div>
 
