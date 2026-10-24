@@ -4,11 +4,13 @@ namespace App\Controller\Pregrado;
 
 use App\Entity\Institucion\Institucion;
 use App\Repository\Pregrado\SolicitudProgramaAcademicoInstitucionRepository;
+use App\Repository\Institucion\InstitucionRepository;
 use App\Services\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -18,7 +20,9 @@ final class OfertaAcademicaController extends AbstractController
 {
     #[Route('/', name: 'app_pregrado_oferta_academica_index', methods: ['GET'])]
     public function index(
+        Request $request,
         SolicitudProgramaAcademicoInstitucionRepository $repository,
+        InstitucionRepository $institucionRepository,
         EntityManagerInterface $entityManager,
         Utils $utils
     ): Response {
@@ -28,13 +32,21 @@ final class OfertaAcademicaController extends AbstractController
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
         }
 
-        $ofertas = $repository->findBy($institucion ? ['institucion' => $institucion] : [], ['id' => 'ASC']);
+        $institucionSeleccionada = $institucion;
+        if ($accesoGlobal) {
+            $institucionId = $request->query->getInt('institucion');
+            $institucionSeleccionada = $institucionId > 0 ? $institucionRepository->find($institucionId) : null;
+        }
+
+        $ofertas = $institucionSeleccionada
+            ? $repository->findBy(['institucion' => $institucionSeleccionada], ['id' => 'ASC'])
+            : [];
         $programaIds = [];
         foreach ($ofertas as $oferta) {
             $programaIds[] = $oferta->getSolicitudProgramaAcademico()->getId();
         }
         $sedes = [];
-        foreach ($repository->getResumenSedes(array_values(array_unique($programaIds)), $institucion?->getId()) as $fila) {
+        foreach ($repository->getResumenSedes(array_values(array_unique($programaIds)), $institucionSeleccionada?->getId()) as $fila) {
             $ofertaId = (int) $fila['oferta_id'];
             $modalidadesCentral = json_decode((string) $fila['modalidades_sede_central'], true) ?: [];
             if ($modalidadesCentral !== []) {
@@ -50,7 +62,8 @@ final class OfertaAcademicaController extends AbstractController
             'ofertas' => $ofertas,
             'sedes' => $sedes,
             'accesoGlobal' => $accesoGlobal,
-            'institucion' => $institucion,
+            'institucion' => $institucionSeleccionada,
+            'universidades' => $accesoGlobal ? $institucionRepository->findBy(['activo' => true], ['nombre' => 'ASC']) : [],
         ]);
     }
 

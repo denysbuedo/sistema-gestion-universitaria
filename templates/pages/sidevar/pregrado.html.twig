@@ -2,75 +2,42 @@
     <ul class="nav nav-pills nav-sidebar flex-column nav-legacy nav-child-indent" data-widget="treeview"
         role="menu"
         data-accordion="true">
-        <!-- Add icons to the links using the .nav-icon class
-             with font-awesome or any other icon font library -->
         {% if hasRoles('ROLE_GEST_PLANEST') or hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_GEST_PROGEXTINT') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
             <li class="nav-item">
-                <a href="#"
-                   class="nav-link nav-link-menu">
+                <a href="#" class="nav-link nav-link-menu">
                     <i class="nav-icon fas fa-book"></i>
-                    <p>
-                        Catálogo y oferta
-                        <i class="right fas fa-angle-left"></i>
-                    </p>
+                    <p>Planificación nacional <i class="right fas fa-angle-left"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
-                    {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_solicitud_programa_academico_aprobado_index') }}" class="nav-link nav-link-menu">
-                                <p>Catálogo nacional</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_pregrado_oferta_academica_index') }}" class="nav-link nav-link-menu">
-                                <p>{{ hasRoles('ROLE_GEST_PROGAPROB') ? 'Oferta por universidades' : 'Programas de mi universidad' }}</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_solicitud_programa_academico_index') }}" class="nav-link nav-link-menu">
-                                <p>Solicitudes</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_pregrado_solicitud_incorporacion_index') }}" class="nav-link nav-link-menu">
-                                <p>Incorporar programa existente</p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_pregrado_programas_por_cum') }}" class="nav-link nav-link-menu">
-                                <p>Programas por CUM</p>
-                            </a>
-                        </li>
-                    {% endif %}
                     {% if hasRoles('ROLE_GEST_PLANEST') %}
                         <li class="nav-item"><a href="{{ path('app_plan_estudio_index') }}" class="nav-link nav-link-menu"><p>Planes de estudios</p></a></li>
                     {% endif %}
-                    {% if hasRoles('ROLE_GEST_PROGEXTINT') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_solicitud_programa_academico_extinto_index') }}"
-                               class="nav-link nav-link-menu">
-                                <p>Programas extintos</p>
-                            </a>
-                        </li>
+                    {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
+                        <li class="nav-item"><a href="{{ path('app_solicitud_programa_academico_aprobado_index') }}" class="nav-link nav-link-menu"><p>Catálogo nacional</p></a></li>
                     {% endif %}
                 </ul>
             </li>
-        {% endif %}
 
-        {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
-            <li class="nav-item">
-                <a href="{{ path('app_pregrado_mapa_carreras_index') }}" class="nav-link nav-link-menu">
-                    <i class="nav-icon fas fa-map-marked-alt"></i><p>Mapa de carreras</p>
-                </a>
-            </li>
+            {% if hasRoles('ROLE_GEST_PROGAPROB') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link nav-link-menu"><i class="nav-icon fas fa-university"></i><p>Oferta universitaria <i class="right fas fa-angle-left"></i></p></a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ path('app_pregrado_oferta_academica_index') }}" class="nav-link nav-link-menu"><p>{{ hasRoles('ROLE_GEST_PROGAPROB') ? 'Oferta por universidades' : 'Programas de mi universidad' }}</p></a></li>
+                        <li class="nav-item"><a href="{{ path('app_pregrado_programas_por_cum') }}" class="nav-link nav-link-menu"><p>Programas por CUM</p></a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a href="{{ path('app_pregrado_mapa_carreras_index') }}" class="nav-link nav-link-menu"><i class="nav-icon fas fa-map-marked-alt"></i><p>Mapa de carreras</p></a></li>
+            {% endif %}
+
+            {% if hasRoles('ROLE_GEST_SOLPROG') or hasRoles('ROLE_PREGRADO_MIS_PROGRAMAS') %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link nav-link-menu"><i class="nav-icon fas fa-file-signature"></i><p>Solicitudes académicas <i class="right fas fa-angle-left"></i></p></a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ path('app_solicitud_programa_academico_index') }}" class="nav-link nav-link-menu"><p>Solicitar nuevo programa nacional</p></a></li>
+                        <li class="nav-item"><a href="{{ path('app_pregrado_solicitud_incorporacion_index') }}" class="nav-link nav-link-menu"><p>Solicitar impartir programa existente</p></a></li>
+                    </ul>
+                </li>
+            {% endif %}
         {% endif %}
 
         {% if hasRoles('ROLE_GEST_CURACAD') or hasRoles('ROLE_GEST_ESTPROGACAD') or hasRoles('ROLE_GEST_COMNACION') or hasRoles('ROLE_GEST_TIPOPROGACAD')

@@ -14,11 +14,30 @@
         </div>
     </div>
     <div class="card-body px-4">
+        {% if accesoGlobal %}
+            <form method="get" class="mb-4">
+                <div class="row align-items-end">
+                    <div class="col-md-8 col-lg-6">
+                        <label for="institucion" class="mb-1">Universidad</label>
+                        <select id="institucion" name="institucion" class="form-control" onchange="this.form.submit()">
+                            <option value="">Seleccione una universidad</option>
+                            {% for universidad in universidades %}
+                                <option value="{{ universidad.id }}" {% if institucion and institucion.id == universidad.id %}selected{% endif %}>
+                                    {{ universidad.siglas ? '(' ~ universidad.siglas ~ ') ' : '' }}{{ universidad.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+            {% if not institucion %}
+                <div class="alert alert-light border"><i class="fas fa-info-circle text-primary mr-2"></i>Seleccione una universidad para consultar su oferta académica y las sedes donde imparte cada programa.</div>
+            {% endif %}
+        {% endif %}
         <table class="table config-table table-bordered table-striped dataTable">
             <thead>
             <tr>
                 <th>No.</th>
-                {% if accesoGlobal %}<th>Universidad</th>{% endif %}
                 <th>Programa académico</th>
                 <th>Tipo</th>
                 <th>Categoría de acreditación</th>
@@ -30,9 +49,6 @@
             {% for oferta in ofertas %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    {% if accesoGlobal %}
-                        <td title="{{ oferta.institucion.nombre }}">{{ oferta.institucion.siglas | default(oferta.institucion.nombre) }}</td>
-                    {% endif %}
                     <td>{{ oferta.solicitudProgramaAcademico.nombre }}</td>
                     <td>{{ oferta.solicitudProgramaAcademico.tipoProgramaAcademico.nombre | default('') }}</td>
                     <td>{{ oferta.categoriaAcreditacion.nombre | default('Sin categoría') }}</td>
