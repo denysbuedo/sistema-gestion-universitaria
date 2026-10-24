@@ -25,7 +25,7 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
     #[Route('/', name: 'app_pregrado_solicitud_incorporacion_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em, Utils $utils, SolicitudProgramaAcademicoRepository $programaRepository): Response
     {
-        $global = $this->esAdministrador();
+        $global = $this->puedeProcesarSolicitudes();
         $institucion = $global ? null : $this->institucionUsuario($utils, $em);
         if (!$global && !$institucion) {
             throw $this->createAccessDeniedException('Su usuario no está asociado a una universidad.');
@@ -93,7 +93,7 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
     #[Route('/{id}/aprobar', name: 'app_pregrado_solicitud_incorporacion_aprobar', requirements: ['id' => '\\d+'], methods: ['POST'])]
     public function aprobar(Request $request, SolicitudIncorporacionPrograma $solicitud, EntityManagerInterface $em): Response
     {
-        $this->exigirAdministrador();
+        $this->exigirPermisoProcesar();
         if (!$this->isCsrfTokenValid('aprobar_incorporacion_' . $solicitud->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('El formulario ha expirado.');
         }
@@ -128,7 +128,7 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
     #[Route('/{id}/rechazar', name: 'app_pregrado_solicitud_incorporacion_rechazar', requirements: ['id' => '\\d+'], methods: ['POST'])]
     public function rechazar(Request $request, SolicitudIncorporacionPrograma $solicitud, EntityManagerInterface $em): Response
     {
-        $this->exigirAdministrador();
+        $this->exigirPermisoProcesar();
         if (!$this->isCsrfTokenValid('rechazar_incorporacion_' . $solicitud->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('El formulario ha expirado.');
         }
@@ -141,15 +141,15 @@ final class SolicitudIncorporacionProgramaController extends AbstractController
         return $this->redirectToRoute('app_pregrado_solicitud_incorporacion_index');
     }
 
-    private function esAdministrador(): bool
+    private function puedeProcesarSolicitudes(): bool
     {
-        return $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GEST_SOLPROG');
+        return $this->isGranted('ROLE_ADMIN');
     }
 
-    private function exigirAdministrador(): void
+    private function exigirPermisoProcesar(): void
     {
-        if (!$this->esAdministrador()) {
-            throw $this->createAccessDeniedException('Solo el administrador de Pregrado puede procesar solicitudes.');
+        if (!$this->puedeProcesarSolicitudes()) {
+            throw $this->createAccessDeniedException('Solo un administrador puede aprobar o rechazar solicitudes.');
         }
     }
 
