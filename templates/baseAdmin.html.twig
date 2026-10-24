@@ -1168,7 +1168,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         var hasMultipleHeaderRows = $('.dataTable thead tr').length > 1;
         var hasMultipleHeaderRows = $('.dataTable thead tr').length > 1;
         var table = $(".dataTable").DataTable({
-            "dom": '<"row align-items-center mb-2"<"col-sm-12 col-lg-4 text-left"f><"col-sm-6 col-lg-4 text-center"B><"col-sm-6 col-lg-4 text-right"l>>rt<"row"<"col-sm-12"p>>',
+            "dom": '<"row"<"col-sm-6 text-left"f><"col-sm-6 text-right"l>>rt<"row"<"col-sm-12"p>>',
             "pagingType": "full_numbers",
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "responsive": true,
@@ -1254,7 +1254,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         });
 
-// Usa el botón de la vista en lugar del que genera DataTables
+        // Mantiene las exportaciones junto a las acciones principales del listado,
+        // siguiendo el mismo patrón visual de los botones PDF y Nuevo.
+        if ($('.dataTable').length === 1) {
+            var $listCard = $('.dataTable').first().closest('.card');
+            var $listHeader = $listCard.children('.card-header').first();
+            var hasExcelAction = $listHeader.find('#exportExcel, a[href*="exportar_excel"]').length > 0;
+
+            if ($listHeader.length && !hasExcelAction) {
+                $listHeader.addClass('d-flex align-items-center');
+                var $headerActions = $listHeader.children('.ml-auto').first();
+                if (!$headerActions.length) {
+                    $headerActions = $('<div class="ml-auto d-flex" style="gap:8px;"></div>').appendTo($listHeader);
+                }
+                $('<button type="button" id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">' +
+                    '<i class="fa fa-file-excel"></i> Excel</button>').prependTo($headerActions);
+            }
+        }
+
+        // Usa el botón situado en la cabecera en lugar del botón interno de DataTables.
         $('#exportExcel').on('click', function () {
             table.button('.buttons-excel').trigger();
         });
