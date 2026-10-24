@@ -257,9 +257,29 @@ class SolicitudProgramaAcademicoAprobadoController extends AbstractController
             }
         }
 
+        $programas = [];
+        foreach ($programaCumRepository->findBy(['institucionCum' => $institucionCum], ['modalidad' => 'ASC']) as $asignacion) {
+            $programa = $asignacion->getSolicitudProgramaAcademicoInstitucion()->getSolicitudProgramaAcademico();
+            $programaId = $programa->getId();
+            if (!isset($programas[$programaId])) {
+                $programas[$programaId] = [
+                    'nombre' => $programa->getNombre(),
+                    'tipo' => $programa->getTipoProgramaAcademico()?->getNombre(),
+                    'modalidades' => [],
+                ];
+            }
+            if ($asignacion->getModalidad()) {
+                $programas[$programaId]['modalidades'][] = $asignacion->getModalidad();
+            }
+        }
+        foreach ($programas as &$programa) {
+            $programa['modalidades'] = array_values(array_unique($programa['modalidades']));
+        }
+        unset($programa);
+
         return $this->render('modules/pregrado/solicitud_programa_academico_aprobado/programas_cum_detalle.html.twig', [
             'centro' => $institucionCum,
-            'asignaciones' => $programaCumRepository->findBy(['institucionCum' => $institucionCum], ['modalidad' => 'ASC']),
+            'programas' => array_values($programas),
         ]);
     }
 

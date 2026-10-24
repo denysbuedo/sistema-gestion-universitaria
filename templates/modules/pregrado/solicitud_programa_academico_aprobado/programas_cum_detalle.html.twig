@@ -15,12 +15,12 @@
         <table class="table table-bordered table-striped dataTable">
             <thead><tr><th>No.</th><th>Programa académico</th><th>Tipo</th><th>Modalidad</th></tr></thead>
             <tbody>
-            {% for asignacion in asignaciones %}
+            {% for programa in programas %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ asignacion.solicitudProgramaAcademicoInstitucion.solicitudProgramaAcademico.nombre }}</td>
-                    <td>{{ asignacion.solicitudProgramaAcademicoInstitucion.solicitudProgramaAcademico.tipoProgramaAcademico.nombre | default('') }}</td>
-                    <td>{{ asignacion.modalidad }}</td>
+                    <td>{{ programa.nombre }}</td>
+                    <td>{{ programa.tipo | default('') }}</td>
+                    <td>{{ programa.modalidades | join(', ') }}</td>
                 </tr>
             {% endfor %}
             </tbody>
