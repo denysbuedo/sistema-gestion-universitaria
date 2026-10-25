@@ -3,7 +3,7 @@
         /* Estilos optimizados para la tabla */
         .table-container {
             width: 100%;
-            overflow-x: auto;
+            overflow-x: hidden;
             max-height: 68vh;
             margin-bottom: 20px;
         }
@@ -13,13 +13,14 @@
             margin-bottom: 0;
             border-collapse: collapse;
             font-size: 0.76rem;
-            min-width: 1450px;
+            table-layout: fixed;
         }
 
         .table-indicadores th,
         .table-indicadores td {
             padding: 6px;
-            white-space: nowrap;
+            white-space: normal;
+            overflow-wrap: anywhere;
             border: 1px solid #dee2e6;
             vertical-align: middle;
         }
@@ -43,7 +44,8 @@
         .col-entidad {
             white-space: normal;
             text-align: left;
-            min-width: 180px;
+            width: 14%;
+            min-width: 0;
             position: sticky;
             left: 0;
             background-color: white;

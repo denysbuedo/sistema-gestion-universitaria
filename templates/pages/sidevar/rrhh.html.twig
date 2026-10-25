@@ -16,7 +16,6 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
-
                     {% if hasRoles('ROLE_GEST_ESTRUCT') %}
                         <li class="nav-item">
                             <a href="{{ path('app_estructura_index') }}"
@@ -137,6 +136,9 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
+                    {% if hasRoles('ROLE_RRHH_REPORTE_AE2_CONSOLIDADO') or hasRoles('ROLE_RRHH_REPORTE_AE3_CONSOLIDADO') %}
+                        <li class="nav-item"><a href="{{ path('app_rrhh_reporte_cumplimiento_partes') }}" class="nav-link nav-link-menu"><p>Cumplimiento de envíos <small class="d-block text-muted">AE2 y AE3 · Anual</small></p></a></li>
+                    {% endif %}
                     {% if hasRoles('ROLE_RRHH_REPORTE_AE2_CONSOLIDADO') %}
                         <li class="nav-item">
                             <a href="{{ path('app_rrhh_reporte_ae2_consolidado_index') }}"

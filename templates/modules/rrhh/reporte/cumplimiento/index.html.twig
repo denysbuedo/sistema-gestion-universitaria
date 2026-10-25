@@ -1,0 +1,46 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Cumplimiento de partes estadísticos{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% include 'pages/_luxury_list_styles.html.twig' %}
+    <style>
+        .compliance-table { width:100%; table-layout:fixed; font-size:.76rem; }
+        .compliance-table th, .compliance-table td { padding:6px 4px; text-align:center; vertical-align:middle; }
+        .compliance-table .entity { width:28%; text-align:left; overflow-wrap:anywhere; }
+        .sent { color:#237a49; } .missing { color:#a6afb7; }
+        .period-filter { max-width:180px; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% set meses = {1:'Ene',2:'Feb',3:'Mar',4:'Abr',5:'May',6:'Jun',7:'Jul',8:'Ago',9:'Sep',10:'Oct',11:'Nov',12:'Dic'} %}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <div><h3 class="card-title m-0"><i class="fas fa-clipboard-check label-icon"></i>Cumplimiento de partes estadísticos</h3><small class="text-muted">Seguimiento anual de envíos AE2 y AE3 por entidad</small></div>
+            <form method="get" class="ml-auto period-filter">
+                <label for="anno" class="sr-only">Año</label>
+                <select id="anno" name="anno" class="form-control no-select2" onchange="this.form.submit()">
+                    {% for item in annos %}<option value="{{ item }}" {% if item == anno %}selected{% endif %}>Año {{ item }}</option>{% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="card-body px-4">
+            <h4 class="h6 mb-2">AE2 · Cumplimiento mensual</h4>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped compliance-table">
+                    <thead><tr><th class="entity">Entidad</th>{% for mes, nombre in meses %}<th>{{ nombre }}</th>{% endfor %}<th>Total</th></tr></thead>
+                    <tbody>{% for entidad in entidades %}{% set total = 0 %}<tr><td class="entity">({{ entidad.siglas }}) {{ entidad.nombre }}</td>{% for mes in 1..12 %}{% set enviado = enviosAE2[entidad.id][mes]|default(false) %}{% if enviado %}{% set total = total + 1 %}{% endif %}<td title="{{ enviado ? 'Enviado' : 'Pendiente' }}"><i class="fas {{ enviado ? 'fa-check-circle sent' : 'fa-minus-circle missing' }}"></i></td>{% endfor %}<td><b>{{ total }}/12</b></td></tr>{% endfor %}</tbody>
+                </table>
+            </div>
+            <h4 class="h6 mb-2">AE3 · Cumplimiento trimestral</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped compliance-table">
+                    <thead><tr><th class="entity">Entidad</th>{% for mes, nombre in {3:'Marzo',6:'Junio',9:'Septiembre',12:'Diciembre'} %}<th>{{ nombre }}</th>{% endfor %}<th>Total</th></tr></thead>
+                    <tbody>{% for entidad in entidades %}{% set total = 0 %}<tr><td class="entity">({{ entidad.siglas }}) {{ entidad.nombre }}</td>{% for mes in [3,6,9,12] %}{% set enviado = enviosAE3[entidad.id][mes]|default(false) %}{% if enviado %}{% set total = total + 1 %}{% endif %}<td title="{{ enviado ? 'Enviado' : 'Pendiente' }}"><i class="fas {{ enviado ? 'fa-check-circle sent' : 'fa-minus-circle missing' }}"></i></td>{% endfor %}<td><b>{{ total }}/4</b></td></tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

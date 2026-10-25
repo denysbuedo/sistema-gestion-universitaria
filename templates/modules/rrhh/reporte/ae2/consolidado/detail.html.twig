@@ -1,13 +1,14 @@
 {% include 'pages/_detail_styles.html.twig' %}
 
-<div class="d-flex justify-content-end mb-3">
+<style>.ae2-export-button { align-self:flex-end; padding:5px 10px !important; font-size:.76rem !important; line-height:1.2; white-space:nowrap; }</style>
+<div class="d-flex justify-content-end align-items-end mb-3">
     <div class="mr-3" style="min-width:140px">
         <label for="ae2DetailYear" class="mb-1">Año</label>
         <select id="ae2DetailYear" class="form-control form-control-sm no-select2">
             {% for anno in annos %}<option value="{{ anno }}" {% if anno == annoSeleccionado %}selected{% endif %}>{{ anno }}</option>{% endfor %}
         </select>
     </div>
-    <a id="exportToExcel" class="btn-lux-sm btn-lux-success">
+    <a id="exportToExcel" class="btn-lux-sm btn-lux-success ae2-export-button">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
 </div>
