@@ -157,33 +157,57 @@ final class GestionCategoriaDocenteController extends AbstractController
             'proceso' => $proceso,
             'documentos' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:id ORDER BY creado DESC', ['id' => $id]),
             'movimientos' => $connection->fetchAllAssociative('SELECT m.*, u.email usuario FROM rrhh.tbd_movimiento_proceso_categoria m JOIN seguridad.tbd_usuario u ON u.id=m.realizado_por_id WHERE m.proceso_id=:id ORDER BY m.creado DESC', ['id' => $id]),
-            'tribunal' => $connection->fetchAssociative('SELECT * FROM rrhh.tbd_tribunal_categoria_docente WHERE proceso_id=:id', ['id' => $id]),
+            'tribunal' => $proceso['tribunal_id'] ? $connection->fetchAssociative('SELECT * FROM rrhh.tbd_tribunal_categoria_docente WHERE id=:id', ['id' => $proceso['tribunal_id']]) : false,
+            'tribunales_disponibles' => $connection->fetchAllAssociative("SELECT id, nombre, presidente, secretario FROM rrhh.tbd_tribunal_categoria_docente WHERE entidad_id=:entidad AND estado='ACTIVO' ORDER BY nombre", ['entidad' => $proceso['entidad_id']]),
             'ejercicios' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_ejercicio_categoria_docente WHERE proceso_id=:id ORDER BY fecha', ['id' => $id]),
             'dictamenes' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_dictamen_categoria_docente WHERE proceso_id=:id ORDER BY fecha', ['id' => $id]),
             'administrador_rrhh' => $esAdminRRHH,
         ]);
     }
 
+    #[Route('/tribunales', name: 'app_rrhh_gestion_tribunal_index', methods: ['GET'])]
+    public function tribunales(PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
+    {
+        $admin = $utils->esAdminRRHH($this->getUser()->getId());
+        $entidad = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
+        $scope = $admin ? '' : ' WHERE t.entidad_id=:entidad';
+        return $this->render('modules/rrhh/gestion_categoria_docente/tribunales.html.twig', [
+            'tribunales' => $entityManager->getConnection()->fetchAllAssociative("SELECT t.*, e.nombre entidad, e.siglas, (SELECT count(*) FROM rrhh.tbd_proceso_categoria_docente p WHERE p.tribunal_id=t.id) procesos FROM rrhh.tbd_tribunal_categoria_docente t JOIN estructura.tbd_estructura e ON e.id=t.entidad_id {$scope} ORDER BY e.nombre,t.nombre", $admin ? [] : ['entidad' => $entidad ?: -1]),
+            'administrador_rrhh' => $admin,
+        ]);
+    }
+
+    #[Route('/tribunales/nuevo', name: 'app_rrhh_gestion_tribunal_nuevo', methods: ['GET', 'POST'])]
+    public function nuevoTribunal(Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
+    {
+        if ($utils->esAdminRRHH($this->getUser()->getId())) throw $this->createAccessDeniedException('Los tribunales son gestionados por las universidades.');
+        $entidad = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
+        if (!$entidad) throw $this->createAccessDeniedException('Su usuario no tiene una entidad asociada.');
+        if ($request->isMethod('POST')) {
+            $this->validarCsrf($request, 'nuevo_tribunal_categoria');
+            $datos = ['nombre' => trim((string)$request->request->get('nombre')), 'fecha_constitucion' => $request->request->get('fecha_constitucion'), 'presidente' => trim((string)$request->request->get('presidente')), 'secretario' => trim((string)$request->request->get('secretario')), 'vocales' => trim((string)$request->request->get('vocales'))];
+            if (in_array('', $datos, true)) {
+                $this->addFlash('error', 'Debe completar todos los datos del tribunal.');
+            } else {
+                $entityManager->getConnection()->insert('rrhh.tbd_tribunal_categoria_docente', $datos + ['entidad_id' => $entidad, 'estado' => 'ACTIVO']);
+                $this->addFlash('success', 'El tribunal fue creado y ya puede asignarse a expedientes.');
+                return $this->redirectToRoute('app_rrhh_gestion_tribunal_index');
+            }
+        }
+        return $this->render('modules/rrhh/gestion_categoria_docente/tribunal_new.html.twig');
+    }
+
     #[Route('/expedientes/{id}/tribunal', name: 'app_rrhh_gestion_categoria_docente_tribunal', methods: ['POST'])]
-    public function tribunal(int $id, Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager, UploadedDocumentStorage $storage): Response
+    public function tribunal(int $id, Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
     {
         $this->validarCsrf($request, 'tribunal_categoria_' . $id);
         [$proceso, $connection] = $this->procesoUniversidad($id, $personaRepository, $utils, $entityManager);
-        foreach (['fecha_constitucion', 'presidente', 'secretario', 'vocales'] as $campo) {
-            if (!trim((string) $request->request->get($campo))) {
-                $this->addFlash('error', 'Debe completar todos los datos del tribunal.');
-                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
-            }
-        }
-        $acta = $request->files->get('acta');
-        $actaPath = $acta instanceof \Symfony\Component\HttpFoundation\File\UploadedFile ? $storage->store($acta, 'uploads/rrhh/categorias-docentes/tribunales')['path'] : null;
-        $connection->executeStatement(<<<'SQL'
-            INSERT INTO rrhh.tbd_tribunal_categoria_docente (proceso_id, fecha_constitucion, presidente, secretario, vocales, estado, acta)
-            VALUES (:proceso, :fecha, :presidente, :secretario, :vocales, 'CONSTITUIDO', :acta)
-            ON CONFLICT (proceso_id) DO UPDATE SET fecha_constitucion=EXCLUDED.fecha_constitucion, presidente=EXCLUDED.presidente, secretario=EXCLUDED.secretario, vocales=EXCLUDED.vocales, estado='CONSTITUIDO', acta=COALESCE(EXCLUDED.acta, rrhh.tbd_tribunal_categoria_docente.acta), actualizado=CURRENT_TIMESTAMP
-            SQL, ['proceso' => $id, 'fecha' => $request->request->get('fecha_constitucion'), 'presidente' => trim((string) $request->request->get('presidente')), 'secretario' => trim((string) $request->request->get('secretario')), 'vocales' => trim((string) $request->request->get('vocales')), 'acta' => $actaPath]);
-        $this->cambiarEstado($connection, $id, $proceso['estado'], 'EJERCICIOS', 'Tribunal constituido');
-        $this->addFlash('success', 'El tribunal quedó registrado.');
+        $tribunalId = $request->request->getInt('tribunal');
+        $valido = $connection->fetchOne("SELECT count(*) FROM rrhh.tbd_tribunal_categoria_docente WHERE id=:id AND entidad_id=:entidad AND estado='ACTIVO'", ['id' => $tribunalId, 'entidad' => $proceso['entidad_id']]);
+        if (!$valido) throw $this->createAccessDeniedException('El tribunal no pertenece a la universidad del expediente.');
+        $connection->update('rrhh.tbd_proceso_categoria_docente', ['tribunal_id' => $tribunalId, 'estado' => 'EJERCICIOS', 'actualizado' => date('Y-m-d H:i:s')], ['id' => $id]);
+        $this->registrarMovimiento($connection, $id, $proceso['estado'], 'EJERCICIOS', 'Tribunal asignado al expediente');
+        $this->addFlash('success', 'El tribunal fue asignado al expediente.');
         return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
     }
 
@@ -229,7 +253,7 @@ final class GestionCategoriaDocenteController extends AbstractController
         } elseif ($accion === 'RECHAZAR' && (($admin && $proceso['estado'] === 'PENDIENTE_MES') || (!$admin && (int)$proceso['entidad_id'] === $entidad && !in_array($proceso['estado'], ['OTORGADO', 'APROBADO_MES'], true)))) {
             $this->cambiarEstado($connection, $id, $proceso['estado'], 'NO_APROBADO', 'Expediente no aprobado', $observaciones, $admin ? 'MES' : 'UNIVERSIDAD');
         } elseif ($accion === 'ELEVAR' && !$admin && (int)$proceso['entidad_id'] === $entidad) {
-            $tribunal = (int) $connection->fetchOne('SELECT count(*) FROM rrhh.tbd_tribunal_categoria_docente WHERE proceso_id=:id', ['id' => $id]);
+            $tribunal = (int) $connection->fetchOne('SELECT count(*) FROM rrhh.tbd_proceso_categoria_docente WHERE id=:id AND tribunal_id IS NOT NULL', ['id' => $id]);
             $apto = (int) $connection->fetchOne("SELECT count(*) FROM rrhh.tbd_ejercicio_categoria_docente WHERE proceso_id=:id AND resultado='APTO'", ['id' => $id]);
             if (!$tribunal || !$apto) {
                 $this->addFlash('error', 'Debe registrar el tribunal y al menos un ejercicio con resultado Apto.');
