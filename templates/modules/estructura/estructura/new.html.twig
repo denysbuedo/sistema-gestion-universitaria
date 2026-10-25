@@ -16,7 +16,7 @@
 
 <div class="card card-luxury">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-sitemap label-icon"></i>Adicionar Estructura {% if entidad is defined and entidad %}<span class="text-muted font-weight-normal">({{ entidad.siglas|default('') }}) {{ entidad.nombre|default('') }}</span>{% endif %}</h3>
+        <h3 class="card-title"><i class="fas fa-sitemap label-icon"></i>Adicionar Estructura {% if not administrador_rrhh and entidad is defined and entidad %}<span class="text-muted font-weight-normal">({{ entidad.siglas|default('') }}) {{ entidad.nombre|default('') }}</span>{% endif %}</h3>
     </div>
     <!-- /.card-header -->
     {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}

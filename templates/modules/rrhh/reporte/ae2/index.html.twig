@@ -13,6 +13,12 @@
             <div class="ml-auto d-flex" style="gap:8px;"><a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_rrhh_reporte_ae2_registrar') }}"><i class="fa fa-plus"></i> Nuevo</a></div>
         </div>
         <div class="card-body px-4">
+            {% set annos = [] %}
+            {% set instituciones = [] %}
+            {% for registro in registros %}
+                {% if registro.anno not in annos %}{% set annos = annos|merge([registro.anno]) %}{% endif %}
+                {% if registro.entidad and registro.entidad.nombre not in instituciones %}{% set instituciones = instituciones|merge([registro.entidad.nombre]) %}{% endif %}
+            {% endfor %}
             <table class="table config-table table-bordered table-striped dataTable">
                 <thead>
                 <tr>
@@ -24,9 +30,9 @@
                 </tr>
                 <tr>
                     <th></th>
-                    <th><input type="text" placeholder="Filtrar por Año" class="responsive-input"/></th>
-                    <th><input type="text" placeholder="Filtrar por Mes" class="responsive-input"/></th>
-                    <th><input type="text" placeholder="Filtrar por Institución" class="responsive-input"/></th>
+                    <th><select class="responsive-input"><option value="">Todos los años</option>{% for anno in annos|sort|reverse %}<option value="{{ anno }}">{{ anno }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input"><option value="">Todos los meses</option>{% for mes in ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] %}<option value="{{ mes }}">{{ mes }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input"><option value="">Todas las instituciones</option>{% for institucion in instituciones|sort %}<option value="{{ institucion }}">{{ institucion }}</option>{% endfor %}</select></th>
                     <th></th>
                 </tr>
                 </thead>

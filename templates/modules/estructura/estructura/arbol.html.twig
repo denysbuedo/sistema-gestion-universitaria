@@ -128,6 +128,7 @@
                 </div>
         </div>
         <div class="card-body">
+            {% if not administrador_rrhh %}
             <div class="row mb-4">
                 <div class="col-6 text-gray">
                     <h5>
@@ -138,6 +139,7 @@
                 </div>
             </div>
             <hr>
+            {% endif %}
             <div class="tree-help"><i class="fas fa-mouse-pointer mr-2"></i><strong>Detalles:</strong> haga doble clic sobre el nombre. <strong>Reorganizar:</strong> arrastre una estructura y suéltela sobre su nueva superior; el sistema pedirá confirmación.</div>
             <div class="tree-toolbar">
                 <div class="input-group tree-search">

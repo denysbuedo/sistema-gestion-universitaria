@@ -106,6 +106,7 @@ class EstructuraController extends AbstractController
                 'registros' => $registros,
                 'dataShow' => $data,
                 'entidad' => $entidad,
+                'administrador_rrhh' => $utils->esAdminRRHH($this->getUser()->getId()),
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
@@ -153,7 +154,8 @@ class EstructuraController extends AbstractController
 
         return $this->render('modules/estructura/estructura/arbol.html.twig', [
             'registros' => $registros,
-            'entidad' => $entidad
+            'entidad' => $entidad,
+            'administrador_rrhh' => $utils->esAdminRRHH($this->getUser()->getId()),
         ]);
     }
 
@@ -313,7 +315,8 @@ class EstructuraController extends AbstractController
             return $this->render('modules/estructura/estructura/new.html.twig', [
                 'form' => $form->createView(),
                 'accion' => 'add',
-                'entidad' => $entidad
+                'entidad' => $entidad,
+                'administrador_rrhh' => $utils->esAdminRRHH($this->getUser()->getId()),
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
@@ -340,6 +343,10 @@ class EstructuraController extends AbstractController
             if ($isAdmin) {
                 $estructuraNegocio = [];
             }
+            $entidadEstructura = $estructura;
+            while ($entidadEstructura && !$entidadEstructura->getEsEntidad()) {
+                $entidadEstructura = $entidadEstructura->getEstructura();
+            }
 
             $form = $this->createForm(EstructuraType::class, $estructura, ['action' => 'modificar', 'data_choices' => $estructura->getProvincia()->getId(), 'estructuraNegocio' => $estructuraNegocio]);
             $form->handleRequest($request);
@@ -355,14 +362,14 @@ class EstructuraController extends AbstractController
             if ($request->isXmlHttpRequest()) {
                 return $this->render('modules/estructura/estructura/edit_ajax.html.twig', [
                     'estructura' => $estructura,
-                    'entidad' => $estructura,
+                    'entidad' => $entidadEstructura,
                     'form' => $form->createView(),
                 ]);
             }
             return $this->render('modules/estructura/estructura/edit.html.twig', [
                 'form' => $form->createView(),
                 'estructura' => $estructura,
-                'entidad' => $entidad
+                'entidad' => $entidadEstructura,
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
