@@ -96,7 +96,7 @@ final class GestionCategoriaDocenteController extends AbstractController
                     JOIN personal.tbn_categoria_docente c ON c.id=p.categoria_docente_id
                     JOIN personal.tbn_categoria_docente solicitada ON solicitada.id=:categoria
                     WHERE p.persona_id=:persona
-                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO', 'OTORGADO')
+                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO')
                       AND c.orden <= solicitada.orden
                     ORDER BY c.orden ASC, p.creado DESC
                     LIMIT 1
@@ -255,11 +255,12 @@ final class GestionCategoriaDocenteController extends AbstractController
             $this->addFlash('error', 'Debe indicar número y fecha de la resolución.');
             return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
         }
-        $connection->transactional(function ($connection) use ($id, $proceso, $numero, $fecha): void {
+        $autoridad = (string) $connection->fetchOne('SELECT autoridad_otorgamiento FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
+        $connection->transactional(function ($connection) use ($id, $proceso, $numero, $fecha, $autoridad): void {
             $connection->update('rrhh.tbd_proceso_categoria_docente', ['estado' => 'OTORGADO', 'nivel_actual' => 'CERRADO', 'numero_resolucion' => $numero, 'fecha_resolucion' => $fecha, 'resultado_final' => 'APROBADO', 'actualizado' => date('Y-m-d H:i:s')], ['id' => $id]);
             $connection->update('personal.tbd_persona', ['categoria_docente_id' => $proceso['categoria_docente_id']], ['id' => $proceso['persona_id']]);
             $connection->executeStatement('UPDATE rrhh.tbd_historial_categoria_docente SET activo=false, actualizado=CURRENT_TIMESTAMP WHERE persona_id=:persona AND activo=true', ['persona' => $proceso['persona_id']]);
-            $connection->insert('rrhh.tbd_historial_categoria_docente', ['proceso_id' => $id, 'persona_id' => $proceso['persona_id'], 'categoria_docente_id' => $proceso['categoria_docente_id'], 'entidad_id' => $proceso['entidad_id'], 'fecha_otorgamiento' => $fecha, 'numero_resolucion' => $numero, 'autoridad' => 'Rector', 'activo' => true, 'creado' => date('Y-m-d H:i:s'), 'actualizado' => date('Y-m-d H:i:s')]);
+            $connection->insert('rrhh.tbd_historial_categoria_docente', ['proceso_id' => $id, 'persona_id' => $proceso['persona_id'], 'categoria_docente_id' => $proceso['categoria_docente_id'], 'entidad_id' => $proceso['entidad_id'], 'fecha_otorgamiento' => $fecha, 'numero_resolucion' => $numero, 'autoridad' => $autoridad ?: 'Rector', 'activo' => true, 'creado' => date('Y-m-d H:i:s'), 'actualizado' => date('Y-m-d H:i:s')]);
         });
         $this->registrarMovimiento($connection, $id, $proceso['estado'], 'OTORGADO', 'Categoría otorgada mediante resolución', $numero);
         $this->addFlash('success', 'La categoría fue otorgada y actualizada en la ficha del profesor.');

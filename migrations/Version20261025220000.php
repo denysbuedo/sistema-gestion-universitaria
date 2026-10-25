@@ -26,7 +26,7 @@ final class Version20261025220000 extends AbstractMigration
                     JOIN personal.tbn_categoria_docente existente ON existente.id=p.categoria_docente_id
                     JOIN personal.tbn_categoria_docente solicitada ON solicitada.id=NEW.categoria_docente_id
                     WHERE p.persona_id=NEW.persona_id
-                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO', 'OTORGADO')
+                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO')
                       AND existente.orden <= solicitada.orden
                 ) THEN
                     RAISE EXCEPTION 'Ya existe un expediente activo para la misma categoría o una superior.' USING ERRCODE='23505';
