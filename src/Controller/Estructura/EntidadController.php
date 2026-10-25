@@ -50,15 +50,12 @@ class EntidadController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_entidad_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, EntidadRepository $entidadRepository, MunicipioRepository $municipioRepository)
+    public function registrar(Request $request, PersonaRepository $personaRepository, EstructuraRepository $estructuraRepository, EntidadRepository $entidadRepository, MunicipioRepository $municipioRepository, Utils $utils)
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
         $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
-        $estructuraNegocio = [$entidad->getId()];
-        if ($isAdmin) {
-            $estructuraNegocio = [];
-        }
+        $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
+        $estructuraNegocio = !$isAdmin && $entidad ? [$entidad->getId()] : [];
 
         $form = $this->createForm(EntidadType::class, null, ['data_choices' => -1, 'estructuraNegocio' => $estructuraNegocio]);
         $form->handleRequest($request);
@@ -74,7 +71,7 @@ class EntidadController extends AbstractController
 
         return $this->render('modules/estructura/entidad/new.html.twig', [
             'form' => $form->createView(),
-            'entidad' => $entidad
+            'entidad' => $isAdmin ? null : $entidad
         ]);
 
     }

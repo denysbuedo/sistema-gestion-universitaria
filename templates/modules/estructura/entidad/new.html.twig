@@ -3,19 +3,16 @@
 {% block title %}Adicionar entidad{% endblock %}
 
 {% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
 
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <div class="row" style="display: flex; justify-content: space-between; align-items: center">
-
-                <h3 class="card-title text-bold text-gray">Adicionar entidad</h3>
-
-            </div>
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+            <h3 class="card-title m-0"><i class="fas fa-city label-icon"></i>Adicionar entidad</h3>
         </div>
         <!-- /.card-header -->
         {{ form_start(form) }}
         <div class="card-body">
-            <div class="row mb-4">
+            {% if entidad %}<div class="row mb-4">
                 <div class="col-6 text-gray">
                     <h5>
                         <b>
@@ -23,8 +20,7 @@
                         </b> ({{ entidad.siglas | default('') }}) {{ entidad.nombre | default('') }}
                     </h5>
                 </div>
-            </div>
-            <hr>
+            </div><hr>{% endif %}
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
                     {{ form_label(form.categoriaEstructura) }}

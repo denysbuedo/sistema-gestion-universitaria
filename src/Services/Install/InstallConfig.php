@@ -618,7 +618,16 @@ class InstallConfig
             ->addFunctionality("ROLE_RRHH_REPORTE_1_4")
             ->addFunctionality("ROLE_RRHH_CLAUSTRO_DRC_PT")
             ->addFunctionality("ROLE_RRHH_GEST_PLANTILLA")
-            ->addFunctionality("ROLE_RRHH_GEST_GRUPOS");
+            ->addFunctionality("ROLE_RRHH_GEST_GRUPOS")
+            ->addFunctionality("ROLE_GEST_ENTITY")
+            ->addFunctionality("ROLE_ESTRUCTURA_EMPRESA")
+            ->addFunctionality("ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA_TRATAMIENTO_ESPECIAL")
+            ->addFunctionality("ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA")
+            ->addFunctionality("ROLE_ESTRUCTURA_INTERFACES_MYPIMES")
+            ->addFunctionality("ROLE_GEST_CATGEST")
+            ->addFunctionality("ROLE_GEST_TYPEESTR")
+            ->addFunctionality("ROLE_GEST_CATRESP")
+            ->addFunctionality("ROLE_GEST_RESPON");
         return $roles;
     }
 }
