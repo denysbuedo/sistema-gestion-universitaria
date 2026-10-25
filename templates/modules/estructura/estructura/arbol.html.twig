@@ -204,6 +204,7 @@
             const treeData = {{ registros|json_encode|raw }};
             let selectedNodeId = null;
             let allNodes = [];
+            const escapeHtml = value => $('<div>').text(String(value)).html();
 
             // Construir el árbol
             function buildTree(parentId = '#') {
@@ -264,19 +265,31 @@
                 const nuevoPadreId = this.id === 'tree-root-drop' ? 0 : Number($(this).data('id'));
                 const nuevoPadreNombre = this.id === 'tree-root-drop' ? 'el nivel principal de la universidad' : String($(this).data('name'));
                 if (!draggedNodeId || draggedNodeId === nuevoPadreId) return;
-                if (!window.confirm(`¿Confirma que “${draggedNodeName}” pase a depender de “${nuevoPadreNombre}”?`)) return;
-                $.ajax({
-                    url: '{{ path('app_estructura_mover') }}',
-                    method: 'POST',
-                    data: { estructura: draggedNodeId, padre: nuevoPadreId, _token: '{{ csrf_token('mover_estructura') }}' },
-                    success: function (response) {
-                        toastr.success(response.message || 'Estructura reorganizada correctamente.');
-                        window.location.reload();
+                const estructuraId = draggedNodeId;
+                const estructuraNombre = draggedNodeName;
+                bootbox.confirm({
+                    title: '<i class="fas fa-sitemap mr-2"></i>Cambiar subordinación',
+                    message: `<p class="mb-2">La estructura <strong>${escapeHtml(estructuraNombre)}</strong> pasará a depender de:</p><div class="border p-3 bg-light"><i class="fas fa-level-down-alt mr-2 text-primary"></i><strong>${escapeHtml(nuevoPadreNombre)}</strong></div>`,
+                    buttons: {
+                        confirm: { label: '<i class="fas fa-check mr-1"></i> Confirmar cambio', className: 'btn-primary' },
+                        cancel: { label: 'Cancelar', className: 'btn-outline-secondary' }
                     },
-                    error: function (xhr) {
-                        const message = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible reorganizar la estructura.';
-                        toastr.error(message);
-                        window.location.reload();
+                    callback: function (confirmado) {
+                        if (!confirmado) return;
+                        $.ajax({
+                            url: '{{ path('app_estructura_mover') }}',
+                            method: 'POST',
+                            data: { estructura: estructuraId, padre: nuevoPadreId, _token: '{{ csrf_token('mover_estructura') }}' },
+                            success: function (response) {
+                                toastr.success(response.message || 'Estructura reorganizada correctamente.');
+                                window.location.reload();
+                            },
+                            error: function (xhr) {
+                                const message = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible reorganizar la estructura.';
+                                toastr.error(message);
+                                window.location.reload();
+                            }
+                        });
                     }
                 });
             });
