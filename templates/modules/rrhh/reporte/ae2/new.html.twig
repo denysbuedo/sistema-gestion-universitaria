@@ -20,12 +20,15 @@
             color: #000;
             background-color: #f8fafc;
         }
+        .rrhh-form-heading .card-title { float: none !important; margin: 0 0 3px; line-height: 1.3; }
+        .rrhh-form-heading small { display: block; line-height: 1.35; }
+        .selected-file-name { display: block; min-height: 18px; margin-top: 6px; color: #496b86; font-size: 12px; }
     </style>
 {% endblock %}
 {% block body %}
     <div class="card card-luxury">
         <div class="card-header">
-            <div><h3 class="card-title"><i class="fas fa-plus-circle label-icon"></i>Registrar plantilla y contratación laboral</h3><small class="text-muted">Modelo 223.216 (I) — AE2 · Información mensual</small></div>
+            <div class="rrhh-form-heading"><h3 class="card-title"><i class="fas fa-plus-circle label-icon"></i>Registrar plantilla y contratación laboral</h3><small class="text-muted">Modelo 223.216 (I) — AE2 · Información mensual</small></div>
         </div>
 
         {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
@@ -59,8 +62,7 @@
                     <div class="form-group">
                         <label><i class="fas fa-file-upload label-icon"></i>AE-2 firmado</label>
                         {{ form_widget(form.documento, {'attr': {'class': 'form-control form-control-luxury'}}) }}
-                        <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;"
-                              class="cargar-archivo"> </span>
+                        <span class="cargar-archivo selected-file-name">Ningún archivo seleccionado</span>
                         {{ form_errors(form.documento) }}
                     </div>
                 </div>
@@ -141,7 +143,7 @@
 
         $('#ae2_documento').change(function () {
             var filename = jQuery(this).val().split('\\').pop();
-            $('.cargar-archivo').html(filename);
+            $('.cargar-archivo').text(filename ? 'Archivo seleccionado: ' + filename : 'Ningún archivo seleccionado');
         })
         $('[data-mask]').inputmask()
 

@@ -22,14 +22,17 @@
             color: #000;
         }
 
-        .table {
-            table-layout: fixed;
-        }
+        .table { table-layout: fixed; }
 
-        .input-number {
-            min-width: 50px;
-            max-width: 70px;
-        }
+        .input-number { width: 100% !important; min-width: 0; max-width: none; padding: 2px 3px !important; }
+        .rrhh-form-heading .card-title { float: none !important; margin: 0 0 3px; line-height: 1.3; }
+        .rrhh-form-heading small { display: block; line-height: 1.35; }
+        .selected-file-name { display: block; min-height: 18px; margin-top: 6px; color: #496b86; font-size: 12px; }
+        .ae3-table-wrap { width: 100%; max-width: 100%; overflow-x: hidden; }
+        .ae3-matrix { width: 100% !important; min-width: 0; font-size: .72rem !important; }
+        .ae3-matrix th, .ae3-matrix td { padding: 3px !important; vertical-align: middle; word-break: normal; }
+        .ae3-matrix th { white-space: normal; line-height: 1.15; }
+        .ae3-matrix .indicator-cell { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 
         .readonly-field {
             background-color: #ffffcc !important;
@@ -42,20 +45,16 @@
                 font-size: 0.8rem;
             }
 
-            .input-number {
-                min-width: 40px;
-                max-width: 60px;
-                padding: 0.1rem !important;
-                height: 25px !important;
-            }
+            .input-number { min-width: 0; max-width: none; padding: 1px 2px !important; height: 25px !important; }
         }
+        @media (max-width: 900px) { .ae3-table-wrap { overflow-x: auto; } .ae3-matrix { min-width: 980px; } }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="card card-luxury">
         <div class="card-header">
-            <div><h3 class="card-title"><i class="fas fa-edit label-icon"></i>Modificar composición de la fuerza laboral</h3><small class="text-muted">Modelo 223.216 (II) — AE3 · Información trimestral</small></div>
+            <div class="rrhh-form-heading"><h3 class="card-title"><i class="fas fa-edit label-icon"></i>Modificar composición de la fuerza laboral</h3><small class="text-muted">Modelo 223.216 (II) — AE3 · Información trimestral</small></div>
         </div>
 
         {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
@@ -89,8 +88,7 @@
                     <div class="form-group">
                         <label><i class="fas fa-file-upload label-icon"></i>AE-3 firmado</label>
                         {{ form_widget(form.documento, {'attr': {'class': 'form-control form-control-luxury'}}) }}
-                        <span style="margin-top: 1%;position: absolute;margin-left: -95%;z-index: 100;"
-                              class="cargar-archivo"> </span>
+                        <span class="cargar-archivo selected-file-name">Ningún archivo nuevo seleccionado</span>
                         {{ form_errors(form.documento) }}
                     </div>
                 </div>
@@ -115,10 +113,10 @@
                 'profesores_tipo_parcial': 'Profesores a Tiempo Parcial'
             } %}
 
-            <div class="table-responsive">
-                <table class="table config-table table-bordered table-striped" style="font-size: 0.85rem; width: auto;">
+            <div class="table-responsive ae3-table-wrap">
+                <table class="table config-table table-bordered table-striped ae3-matrix">
                     <colgroup>
-                        <col style="width: 25%; min-width: 200px;"> {# INDICADORES #}
+                        <col style="width: 25%;"> {# INDICADORES #}
                         <col style="width: 5%;"> {# FILA #}
                         <col style="width: 5%;"> {# Total #}
                         <col style="width: 5%;"> {# Fem. #}
@@ -187,7 +185,7 @@
                     <tbody>
                     {% for key, label in indicadores %}
                         <tr>
-                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ label }}</td>
+                            <td class="indicator-cell">{{ label }}</td>
                             <td style="text-align: center;">{{ "%02d"|format(loop.index) }}</td>
 
                             {# Total Cubierta #}
@@ -325,7 +323,7 @@
         $(document).ready(function () {
             $('#ae3_documento').change(function () {
                 var filename = jQuery(this).val().split('\\').pop();
-                $('.cargar-archivo').html(filename);
+                $('.cargar-archivo').text(filename ? 'Archivo seleccionado: ' + filename : 'Ningún archivo nuevo seleccionado');
             })
             $('[data-mask]').inputmask()
 
