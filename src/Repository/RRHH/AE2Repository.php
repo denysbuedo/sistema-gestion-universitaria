@@ -61,10 +61,10 @@ class AE2Repository extends ServiceEntityRepository
                 ->setParameter('entidadId', $entidadId);
         }
 
-//        if ($mes !== null) {
-//            $qb->andWhere('a.mes = :mes')
-//                ->setParameter('mes', $mes);
-//        }
+        if ($mes !== null) {
+            $qb->andWhere('a.mes = :mes')
+                ->setParameter('mes', $mes);
+        }
 
         if ($anno !== null) {
             $qb->andWhere('a.anno = :anno')
@@ -87,10 +87,10 @@ class AE2Repository extends ServiceEntityRepository
 //                ->setParameter('entidad', $filters['entidad']);
 //        }
 //
-//        if (!empty($filters['mes'])) {
-//            $qb->andWhere('a.mes = :mes')
-//                ->setParameter('mes', $filters['mes']);
-//        }
+        if (!empty($filters['mes'])) {
+            $qb->andWhere('a.mes = :mes')
+                ->setParameter('mes', $filters['mes']);
+        }
 
         if (!empty($filters['anno'])) {
             $qb->andWhere('a.anno = :anno')

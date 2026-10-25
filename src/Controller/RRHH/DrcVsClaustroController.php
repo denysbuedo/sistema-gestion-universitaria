@@ -116,8 +116,10 @@ class DrcVsClaustroController extends AbstractController
                 if ($grupoDeLaEntidad !== null) {
                     $grupoId = $grupoDeLaEntidad->getId();
                     if (!isset($centrosPorGrupo[$grupoId])) {
+                        $nombreGrupo = preg_replace('/^sub-?total\s+/iu', '', $grupoDeLaEntidad->getNombre());
                         $centrosPorGrupo[$grupoId] = [
                             'grupo' => $grupoDeLaEntidad,
+                            'nombre' => $nombreGrupo,
                             'centros' => []
                         ];
                     }
@@ -132,7 +134,7 @@ class DrcVsClaustroController extends AbstractController
             foreach ($centrosPorGrupo as $grupoData) {
                 if (!empty($grupoData['centros'])) {
                     $datos[] = [
-                        'nombre' => $grupoData['grupo']->getNombre(),
+                        'nombre' => $grupoData['nombre'],
                         'grupo_id' => $grupoData['grupo']->getId(),
                         'centros' => $grupoData['centros']
                     ];
@@ -141,11 +143,11 @@ class DrcVsClaustroController extends AbstractController
 
             // Agregar centros sin grupo como una categoría especial
             if (!empty($centrosSinGrupo)) {
-                $datos[] = [
-                    'nombre' => 'Sin Agrupación',
+                array_unshift($datos, [
+                    'nombre' => null,
                     'grupo_id' => null,
                     'centros' => $centrosSinGrupo
-                ];
+                ]);
             }
         }
 
@@ -153,7 +155,11 @@ class DrcVsClaustroController extends AbstractController
             usort($grupoOrdenado['centros'], static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
         }
         unset($grupoOrdenado);
-        usort($datos, static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
+        usort($datos, static function (array $a, array $b): int {
+            if ($a['grupo_id'] === null) return -1;
+            if ($b['grupo_id'] === null) return 1;
+            return strnatcasecmp($a['nombre'], $b['nombre']);
+        });
 
         // Calcular subtotales para cada grupo
         foreach ($datos as &$grupo) {

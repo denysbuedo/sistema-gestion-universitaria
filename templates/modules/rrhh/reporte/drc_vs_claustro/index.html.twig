@@ -161,8 +161,13 @@
             <div class="table-container" style="overflow-x: auto;">
                 <table class="table config-table table-bordered table-striped " id="tabla-modelo-14" style="min-width: 1000px;">
                     <thead>
+                    <tr>
+                        <th rowspan="2" class="sticky-header">Centros</th>
+                        <th colspan="3">Categorías docentes</th>
+                        <th colspan="3">Categorías científicas</th>
+                        <th colspan="5">Resumen del claustro</th>
+                    </tr>
                     <tr class="header-row">
-                        <th class="sticky-header">CENTROS</th>
                         <th class="sticky-header">PT</th>
                         <th class="sticky-header">PA</th>
                         <th class="sticky-header">AS</th>
@@ -178,9 +183,11 @@
                     </thead>
                     <tbody>
                     {% for grupo in grupos %}
+                        {% if grupo.grupo_id is not null %}
                         <tr class="group-header">
-                            <td colspan="12" class="sticky-group">{{ grupo.nombre | default('') }}</td>
+                            <td colspan="12" class="sticky-group">Agrupación {{ grupo.nombre }}</td>
                         </tr>
+                        {% endif %}
 
                         {% for centro in grupo.centros %}
                             <tr>
@@ -199,8 +206,9 @@
                             </tr>
                         {% endfor %}
 
+                        {% if grupo.grupo_id is not null %}
                         <tr class="subtotal-row">
-                            <td class="">Subtotal — {{ grupo.nombre }}</td>
+                            <td class="">Subtotal {{ grupo.nombre }}</td>
                             <td>{{ grupo.subtotal.cuadros_docentes.pt | default(0) }}</td>
                             <td>{{ grupo.subtotal.cuadros_docentes.pa | default(0) }}</td>
                             <td>{{ grupo.subtotal.cuadros_docentes.as  | default(0) }}</td>
@@ -213,6 +221,7 @@
                             <td>{{ grupo.subtotal.total_msc | default(0) }}</td>
                             <td>{{ grupo.subtotal.porcentaje_msc | default(0) }}%</td>
                         </tr>
+                        {% endif %}
                     {% endfor %}
 
                     <tr class="total-row">

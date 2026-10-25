@@ -6,6 +6,7 @@ use App\Entity\Estructura\Entidad;
 use App\Entity\Estructura\Estructura;
 use App\Entity\RRHH\AE3;
 use App\Repository\RRHH\AE3Repository;
+use App\Repository\Estructura\EstructuraRepository;
 use App\Services\Utils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -104,7 +105,7 @@ class AE3ConsolidadoController extends AbstractController
     /**
      */
     #[Route('/ae3/cargar-datos', name: 'ae3_cargar_datos', methods: ['POST'])]
-    public function cargarDatos(Request $request, Utils $utils)
+    public function cargarDatos(Request $request, Utils $utils, AE3Repository $ae3Repository, EstructuraRepository $estructuraRepository)
     {
         $mes = (int)$request->request->get('mes');
         $anno = (int)$request->request->get('anno');
@@ -117,8 +118,7 @@ class AE3ConsolidadoController extends AbstractController
             ], 400);
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entidad = $entityManager->getRepository(Estructura::class)->find($entidadId);
+        $entidad = $estructuraRepository->find($entidadId);
 
         if (!$entidad) {
             return $this->json([
@@ -128,7 +128,7 @@ class AE3ConsolidadoController extends AbstractController
         }
 
 
-        $ae3 = $entityManager->getRepository(AE3::class)->findOneBy([
+        $ae3 = $ae3Repository->findOneBy([
             'entidad' => $entidad,
             'mes' => $mes,
             'anno' => $anno
