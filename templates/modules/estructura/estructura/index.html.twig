@@ -4,6 +4,7 @@
 
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
+    <style>.card-luxury { border: 1px solid #dce4ea; border-top: 3px solid #102f4f; border-radius: 0; box-shadow: none; }</style>
 
     {% include 'pages/modalDetail.html.twig' %}
 
@@ -53,20 +54,20 @@
 
     <div class="card card-luxury">
         <div class="card-header d-flex align-items-center">
-            <h3 class="card-title text-bold m-0"><i class="fas fa-sitemap label-icon"></i>Listado de estructuras</h3>
-            <div class="ml-auto d-flex" style="gap:8px;">
+            <h3 class="card-title m-0"><i class="fas fa-sitemap label-icon"></i>Estructuras organizativas</h3>
+            <div class="ml-auto d-flex flex-wrap justify-content-end" style="gap:8px;">
                 <a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_estructura_registrar') }}">
                     <i class="fa fa-plus"></i> Nuevo
                 </a>
                 <a title="Vista de árbol" href="{{ path('app_estructura_index_arbol') }}" class="btn-lux-sm btn-lux-primary">
-                    <i class="fas fa-sitemap"></i> Árbol
-                </a>
-                <a title="Exportar a pdf" class="btn-lux-sm btn-lux-success" target="_blank"
-                   href="{{ path('app_estructura_exportar_pdf') }}">
-                    <i class="fa fa-file-pdf"></i> PDF
+                    <i class="fas fa-sitemap"></i> Ver como árbol
                 </a>
                 <a id="exportExcel" title="Exportar a Excel" class="btn-lux-sm btn-lux-success">
                     <i class="fa fa-file-excel"></i> Excel
+                </a>
+                <a title="Exportar a PDF" class="btn-lux-sm btn-lux-success" target="_blank"
+                   href="{{ path('app_estructura_exportar_pdf') }}">
+                    <i class="fa fa-file-pdf"></i> PDF
                 </a>
             </div>
         </div>

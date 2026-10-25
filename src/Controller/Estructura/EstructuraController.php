@@ -87,11 +87,12 @@ class EstructuraController extends AbstractController
             $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
             $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
             $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
-            $estructuraNegocio = 1;// $entidad->getId();
-            //$isAdmin = false;
+            $estructuraNegocio = $entidad ? $entidad->getId() : null;
 
             if (!$isAdmin) {
-                $registros = $estructuraRepository->getEstructurasNegocios($estructuraNegocio);
+                $registros = $estructuraNegocio
+                    ? $estructuraRepository->getEstructurasNegocios($estructuraNegocio)
+                    : [];
             } else {
                 $registros = $estructuraRepository->findBy([], ['activo' => 'desc', 'id' => 'desc']);
             }
@@ -99,7 +100,7 @@ class EstructuraController extends AbstractController
 
             $data = [];
             foreach ($registros as $value) {
-                $data[$value->getId()] = !in_array($value->getId(), [$estructuraNegocio]);
+                $data[$value->getId()] = $value->getId() !== $estructuraNegocio;
             }
             return $this->render('modules/estructura/estructura/index.html.twig', [
                 'registros' => $registros,

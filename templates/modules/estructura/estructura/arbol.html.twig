@@ -4,7 +4,9 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    {% include 'pages/_luxury_list_styles.html.twig' %}
     <style>
+        .card-luxury { border: 1px solid #dce4ea; border-top: 3px solid #102f4f; border-radius: 0; box-shadow: none; }
         .modal-estructura .modal-dialog {
             max-width: 80%;  /* Ocupa el 90% del ancho de la pantalla */
             min-width: 800px;  /* Mínimo 800px de ancho */
@@ -19,11 +21,10 @@
             overflow-y: auto; /* Scroll vertical si es necesario */
         }
         .tree-container {
-            font-family: Arial, sans-serif;
-            padding: 15px;
+            padding: 18px;
             background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #dce4ea;
+            border-radius: 0;
             min-height: 500px;
         }
 
@@ -53,10 +54,10 @@
             display: flex;
             align-items: center;
             padding: 5px 10px;
-            border-radius: 4px;
+            border-radius: 0;
             cursor: pointer;
             user-select: none;
-            transition: background-color 0.2s;
+            transition: background-color 0.15s;
         }
 
         .tree-item:hover {
@@ -105,23 +106,22 @@
             padding: 20px;
             text-align: center;
         }
+        .tree-help { margin-bottom: 14px; padding: 10px 13px; border-left: 3px solid #102f4f; background: #eef3f6; color: #49616f; font-size: 13px; }
+        .tree-item span::after { content: 'Ver y modificar'; margin-left: 12px; color: #7892a6; font-size: 11px; opacity: 0; }
+        .tree-item:hover span::after { opacity: 1; }
+        .tree-toolbar .btn, .tree-toolbar .form-control { border-radius: 0; }
     </style>
 {% endblock %}
 
 {% block body %}
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <div class="row" style="display: flex; justify-content: space-between; align-items: center">
-                <h3 class="card-title text-bold text-gray">Árbol de estructuras</h3>
-                <div>
-                    <a title="Vista de tabla" href="{{ path('app_estructura_index') }}" class="btn btn-primary">
-                        <i class="fa fa-table"></i>
-                    </a>
-                    {#                    <a title="Adicionar" class="btn btn-primary mr-2" href="{{ path('app_estructura_registrar') }}">#}
-                    {#                        <i class="fa fa-plus"></i>#}
-                    {#                    </a>#}
+    <div class="card card-luxury">
+        <div class="card-header d-flex align-items-center">
+                <h3 class="card-title m-0"><i class="fas fa-sitemap label-icon"></i>Árbol de estructuras organizativas</h3>
+                <div class="ml-auto d-flex flex-wrap justify-content-end" style="gap:8px;">
+                    <a title="Adicionar estructura" class="btn-lux-sm btn-lux-primary" href="{{ path('app_estructura_registrar') }}"><i class="fa fa-plus"></i> Nuevo</a>
+                    <a title="Vista de listado" href="{{ path('app_estructura_index') }}" class="btn-lux-sm btn-lux-primary"><i class="fa fa-table"></i> Ver como listado</a>
+                    <a title="Exportar a PDF" class="btn-lux-sm btn-lux-success" target="_blank" href="{{ path('app_estructura_exportar_pdf') }}"><i class="fa fa-file-pdf"></i> PDF</a>
                 </div>
-            </div>
         </div>
         <div class="card-body">
             <div class="row mb-4">
@@ -134,6 +134,7 @@
                 </div>
             </div>
             <hr>
+            <div class="tree-help"><i class="fas fa-info-circle mr-2"></i>Use un clic para expandir o contraer. Haga doble clic sobre una estructura para <strong>verla y modificarla</strong>.</div>
             <div class="tree-toolbar">
                 <div class="input-group tree-search">
                     <input type="text" id="tree-search" class="form-control" placeholder="Buscar estructura...">
@@ -186,7 +187,7 @@
             <i class="fa fa-info-circle mr-2 text-primary"></i>Ver detalles
         </div>
         <div class="context-menu-item" id="editEstructura">
-            <i class="fa fa-edit mr-2 text-primary"></i>Editar estructura
+            <i class="fa fa-edit mr-2 text-primary"></i>Ver y modificar
         </div>
     </div>
 {% endblock %}
@@ -280,7 +281,7 @@
                 const editUrl = '{{ path('app_estructura_modificar', {'id': 0}) }}'.replace('0', id);
 
                 $('#estructuraModalBody').html('<div class="text-center py-4"><i class="fa fa-spinner fa-spin fa-2x text-primary"></i><p>Cargando formulario...</p></div>');
-                $('.modal-title').text('Editar Estructura');
+                $('.modal-title').text('Ver y modificar estructura');
                 $('#estructuraModal').modal('show');
 
                 // 1. Cargar el formulario vía AJAX (GET)
