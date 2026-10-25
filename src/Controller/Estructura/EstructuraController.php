@@ -99,12 +99,24 @@ class EstructuraController extends AbstractController
 
 
             $data = [];
+            $filtroSuperiores = [];
+            $ancestrosPorEstructura = [];
             foreach ($registros as $value) {
                 $data[$value->getId()] = $value->getId() !== $estructuraNegocio;
+                $tokensAncestros = [];
+                for ($superior = $value->getEstructura(); $superior !== null; $superior = $superior->getEstructura()) {
+                    $tokensAncestros[] = 'estructura-' . $superior->getId();
+                    $prefijo = $superior->getEstructura()?->getSiglas();
+                    $filtroSuperiores[$superior->getId()] = ($prefijo ? sprintf('(%s) ', $prefijo) : '') . $superior->getNombre();
+                }
+                $ancestrosPorEstructura[$value->getId()] = implode(' ', $tokensAncestros);
             }
+            asort($filtroSuperiores, SORT_NATURAL | SORT_FLAG_CASE);
             return $this->render('modules/estructura/estructura/index.html.twig', [
                 'registros' => $registros,
                 'dataShow' => $data,
+                'filtroSuperiores' => $filtroSuperiores,
+                'ancestrosPorEstructura' => $ancestrosPorEstructura,
                 'entidad' => $entidad,
                 'administrador_rrhh' => $utils->esAdminRRHH($this->getUser()->getId()),
             ]);

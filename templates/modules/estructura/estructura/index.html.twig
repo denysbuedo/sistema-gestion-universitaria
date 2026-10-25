@@ -84,11 +84,9 @@
             </div>
             <hr>
             {% endif %}
-            {% set superiores = [] %}
             {% set nombres = [] %}
             {% set categorias = [] %}
             {% for registro in registros %}
-                {% if registro.estructura and registro.estructura.nombre not in superiores %}{% set superiores = superiores|merge([registro.estructura.nombre]) %}{% endif %}
                 {% if registro.nombre not in nombres %}{% set nombres = nombres|merge([registro.nombre]) %}{% endif %}
                 {% if registro.categoriaEstructura and registro.categoriaEstructura.nombre not in categorias %}{% set categorias = categorias|merge([registro.categoriaEstructura.nombre]) %}{% endif %}
             {% endfor %}
@@ -104,7 +102,7 @@
                 </tr>
                 <tr>
                     <th></th>
-                    <th><select class="responsive-input"><option value="">Todas las superiores</option>{% for superior in superiores|sort %}<option value="{{ superior }}">{{ superior }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input hierarchy-filter"><option value="">Todas las superiores</option>{% for id, superior in filtroSuperiores %}<option value="{{ id }}">{{ superior }}</option>{% endfor %}</select></th>
                     <th><select class="responsive-input"><option value="">Todas las estructuras</option>{% for nombre in nombres|sort %}<option value="{{ nombre }}">{{ nombre }}</option>{% endfor %}</select></th>
                     <th><select class="responsive-input"><option value="">Todas las categorías</option>{% for categoria in categorias|sort %}<option value="{{ categoria }}">{{ categoria }}</option>{% endfor %}</select></th>
                     <th><select class="responsive-input"><option value="">Todos los estados</option><option value="Habilitado">Habilitado</option><option value="Deshabilitado">Deshabilitado</option></select></th>
@@ -115,7 +113,7 @@
                 {% for item in registros %}
                     <tr>
                         <td width="1%">{{ loop.index }}</td>
-                        <td>
+                        <td data-search="{{ ancestrosPorEstructura[item.id]|default('') }}">
                             {% if item.estructura is not null
                                 and item.estructura.estructura is not null
                                 and item.estructura.estructura.siglas is not empty %}

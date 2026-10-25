@@ -1296,8 +1296,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
         // Filtros individuales por columna
         $('.dataTable thead tr:eq(1) th').each(function (i) {
             $('input, select', this).on('keyup change', function () {
-                if (table.column(i).search() !== this.value) {
-                    table.column(i).search(this.value).draw();
+                var value = this.value;
+                var isSelect = this.tagName === 'SELECT';
+                var expression = value;
+                var useRegex = false;
+
+                if ($(this).hasClass('hierarchy-filter')) {
+                    expression = value ? '(^|\\s)estructura-' + $.fn.dataTable.util.escapeRegex(value) + '(\\s|$)' : '';
+                    useRegex = Boolean(value);
+                } else if (isSelect && value) {
+                    expression = '^\\s*' + $.fn.dataTable.util.escapeRegex(value) + '\\s*$';
+                    useRegex = true;
+                }
+
+                if (table.column(i).search() !== expression) {
+                    table.column(i).search(expression, useRegex, !useRegex).draw();
                 }
             });
         });
