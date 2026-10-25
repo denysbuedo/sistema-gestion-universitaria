@@ -1295,7 +1295,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
         // Filtros individuales por columna
         $('.dataTable thead tr:eq(1) th').each(function (i) {
-            $('input, select', this).on('keyup change', function () {
+            $('input, select', this)
+                .on('click mousedown', function (event) {
+                    event.stopPropagation();
+                })
+                .on('keyup change', function () {
                 var value = this.value;
                 var isSelect = this.tagName === 'SELECT';
                 var expression = value;
@@ -1312,7 +1316,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (table.column(i).search() !== expression) {
                     table.column(i).search(expression, useRegex, !useRegex).draw();
                 }
-            });
+                });
         });
 
         // Controla el ordenamiento solo cuando no hay filtros aplicados

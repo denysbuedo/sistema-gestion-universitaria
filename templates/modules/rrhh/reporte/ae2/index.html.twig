@@ -30,9 +30,9 @@
                 </tr>
                 <tr>
                     <th></th>
-                    <th><select class="responsive-input"><option value="">Todos los años</option>{% for anno in annos|sort|reverse %}<option value="{{ anno }}">{{ anno }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input"><option value="">Todos los meses</option>{% for mes in ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] %}<option value="{{ mes }}">{{ mes }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input"><option value="">Todas las instituciones</option>{% for institucion in instituciones|sort %}<option value="{{ institucion }}">{{ institucion }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todos los años</option>{% for anno in annos|sort|reverse %}<option value="{{ anno }}">{{ anno }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todos los meses</option>{% for mes in ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] %}<option value="{{ mes }}">{{ mes }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todas las instituciones</option>{% for institucion in instituciones|sort %}<option value="{{ institucion }}">{{ institucion }}</option>{% endfor %}</select></th>
                     <th></th>
                 </tr>
                 </thead>

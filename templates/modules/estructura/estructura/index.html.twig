@@ -102,10 +102,10 @@
                 </tr>
                 <tr>
                     <th></th>
-                    <th><select class="responsive-input hierarchy-filter"><option value="">Todas las superiores</option>{% for id, superior in filtroSuperiores %}<option value="{{ id }}">{{ superior }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input"><option value="">Todas las estructuras</option>{% for nombre in nombres|sort %}<option value="{{ nombre }}">{{ nombre }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input"><option value="">Todas las categorías</option>{% for categoria in categorias|sort %}<option value="{{ categoria }}">{{ categoria }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input"><option value="">Todos los estados</option><option value="Habilitado">Habilitado</option><option value="Deshabilitado">Deshabilitado</option></select></th>
+                    <th><select class="responsive-input hierarchy-filter no-select2"><option value="">Todas las superiores</option>{% for id, superior in filtroSuperiores %}<option value="{{ id }}">{{ superior }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todas las estructuras</option>{% for nombre in nombres|sort %}<option value="{{ nombre }}">{{ nombre }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todas las categorías</option>{% for categoria in categorias|sort %}<option value="{{ categoria }}">{{ categoria }}</option>{% endfor %}</select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todos los estados</option><option value="Habilitado">Habilitado</option><option value="Deshabilitado">Deshabilitado</option></select></th>
                     <th></th>
                 </tr>
                 </thead>
