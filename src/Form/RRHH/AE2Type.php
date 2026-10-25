@@ -3,6 +3,9 @@
 namespace App\Form\RRHH;
 
 use App\Entity\RRHH\AE2;
+use App\Entity\Estructura\Estructura;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -26,6 +29,17 @@ class AE2Type extends AbstractType
         ];
 
         $builder
+            ->add('entidad', EntityType::class, [
+                'class' => Estructura::class,
+                'choice_label' => static fn (Estructura $entidad) => sprintf('(%s) %s', $entidad->getSiglas(), $entidad->getNombre()),
+                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('e')
+                    ->andWhere('e.activo = true')
+                    ->andWhere('e.esEntidad = true')
+                    ->orderBy('e.nombre', 'ASC'),
+                'placeholder' => 'Seleccione la universidad',
+                'required' => true,
+                'disabled' => !$options['administrador_rrhh'],
+            ])
             ->add('mes', ChoiceType::class, [
                 'label' => 'Mes',
                 'choices' => [
@@ -125,6 +139,7 @@ class AE2Type extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => AE2::class,
+            'administrador_rrhh' => false,
         ]);
     }
 }

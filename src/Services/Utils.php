@@ -207,16 +207,17 @@ class Utils
     public function esAdminRRHH($idUsuario)
     {
         $usuario = $this->em->getRepository(User::class)->find($idUsuario);
+        if (!$usuario) {
+            return false;
+        }
+
         $roles = [];
         foreach ($usuario->getUserRoles() as $value) {
-            $roles[] = $value->getId();
+            $roles[] = $value->getRoleKey();
         }
-        if (in_array($this->container->get('ROL_ADMINISTRADOR'), $roles) || in_array($this->container->get('ROL_ADMINISTRADOR_RRHH'), $roles)) {
-            $res = true;
-        } else {
-            $res = false;
-        }
-        return $res;
+
+        return in_array('ROL_RRHH', $roles, true)
+            || in_array($this->container->get('ROL_ADMINISTRADOR'), $usuario->getRoles(), true);
     }
 
     public function obtenerDatosEstructuraUsuarioAutenticado($idUsuario): array

@@ -39,12 +39,12 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_rrhh_reporte_ae2_index', methods: ['GET'])]
-    public function index(AE2Repository $AE2Repository, PersonaRepository $personaRepository)
+    public function index(AE2Repository $AE2Repository, PersonaRepository $personaRepository, Utils $utils)
     {
-        $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
-        $entidad = $persona[0]->getEntidad();
+        $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
+        $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         return $this->render('modules/rrhh/reporte/ae2/index.html.twig', [
-            'registros' => $AE2Repository->findBy(['entidad' => $entidad], ['id' => 'desc']),
+            'registros' => $AE2Repository->findBy($esAdminRRHH ? [] : ['entidad' => $persona?->getEntidad()], ['id' => 'desc']),
         ]);
     }
 
@@ -55,7 +55,7 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae2_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
+    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
     {
         try {
             $ae2 = new AE2();
@@ -65,38 +65,30 @@ class AE2Controller extends AbstractController
             if (!$ae2->getAnno()) {
                 $ae2->setAnno((int)date('Y'));
             }
-            $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
-            if (isset($persona[0]) && $persona[0]->getEntidad()) {
-                $ae2->setEntidad($persona[0]->getEntidad());
+            $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
+            $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
+            if (!$esAdminRRHH && $persona?->getEntidad()) {
+                $ae2->setEntidad($persona->getEntidad());
             }
 
-            $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'registrar']);
+            $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'registrar', 'administrador_rrhh' => $esAdminRRHH]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     $ae2->setDocumento($storage->storeName($file, 'uploads/rrhh/ae2/documento'));
                 }
 
-                $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
-                if (isset($persona[0])) {
-                    if (!$persona[0]->getEntidad()) {
-                        $this->addFlash('error', 'La institucion no es correcta.');
-                    }
-                    if (empty($ae2->getEntidad())) {
-                        $this->addFlash('error', 'La institucion no es correcta.');
-                    }
-
+                if ($ae2->getEntidad()) {
                     $aE2Repository->add($ae2, true);
                     $this->addFlash('success', 'El elemento ha sido creado satisfactoriamente.');
                     return $this->redirectToRoute('app_rrhh_reporte_ae2_index', [], Response::HTTP_SEE_OTHER);
                 }
-                $this->addFlash('error', 'Persona no encontrada.');
+                $this->addFlash('error', 'Debe seleccionar una universidad válida.');
             }
-            $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
-            $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
             return $this->render('modules/rrhh/reporte/ae2/new.html.twig', [
                 'form' => $form->createView(),
-                'entidad' => $entidad
+                'entidad' => $ae2->getEntidad(),
+                'administrador_rrhh' => $esAdminRRHH,
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
@@ -112,10 +104,11 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae2_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage)
+    public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
     {
         try {
-            $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'modificar']);
+            $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
+            $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'modificar', 'administrador_rrhh' => $esAdminRRHH]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -134,6 +127,7 @@ class AE2Controller extends AbstractController
             return $this->render('modules/rrhh/reporte/ae2/edit.html.twig', [
                 'form' => $form->createView(),
                 'entidad' => $entidad,
+                'administrador_rrhh' => $esAdminRRHH,
                 'ae2' => $ae2
             ]);
         } catch (\Exception $exception) {

@@ -605,8 +605,8 @@ class InstallConfig
             ->addFunctionality("ROLE_GEST_VISIBILIDAD");
 
         $roles[] = Role::createRole('ROL_RRHH', "Administrador de RRHH", "Rol con permiso a la gestion de RRHH")
-            ->addFunctionality("ROL_RRHH")
             ->addFunctionality("ROLE_HOME_RRHH")
+            ->addFunctionality("ROLE_GEST_ESTRUCT")
             ->addFunctionality("ROLE_RRHH_REPORTE_AE2")
             ->addFunctionality("ROLE_RRHH_REPORTE_AE3")
             ->addFunctionality("ROLE_RRHH_GEST_CAT_DOC")

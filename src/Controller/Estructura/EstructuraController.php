@@ -86,7 +86,7 @@ class EstructuraController extends AbstractController
         try {
             $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
             $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-            $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
+            $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
             $estructuraNegocio = $entidad ? $entidad->getId() : null;
 
             if (!$isAdmin) {
@@ -123,7 +123,7 @@ class EstructuraController extends AbstractController
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
         $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
+        $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
 
         $estructuraNegocio = $entidad ? $entidad->getId() : -1;
 
@@ -159,7 +159,7 @@ class EstructuraController extends AbstractController
 
     #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/mover', name: 'app_estructura_mover', methods: ['POST'])]
-    public function mover(Request $request, EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository, EntityManagerInterface $entityManager): JsonResponse
+    public function mover(Request $request, EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository, EntityManagerInterface $entityManager, Utils $utils): JsonResponse
     {
         if (!$this->isCsrfTokenValid('mover_estructura', (string) $request->request->get('_token'))) {
             return $this->json(['success' => false, 'message' => 'La operación ha expirado. Recargue la página.'], 403);
@@ -167,7 +167,7 @@ class EstructuraController extends AbstractController
 
         $estructura = $estructuraRepository->find($request->request->getInt('estructura'));
         $nuevoPadreId = $request->request->getInt('padre');
-        $esAdmin = $this->isGranted('ROLE_ADMIN');
+        $esAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
         $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
         $raizInstitucional = $persona?->getEntidad();
 
@@ -247,13 +247,11 @@ class EstructuraController extends AbstractController
 */
 #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/estructuras/mapa', name: 'app_estructura_index_mapa', methods: ['GET'])]
-    public function indexMapa(EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository): Response
+    public function indexMapa(EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository, Utils $utils): Response
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
         $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
-
-        $isAdmin = false;
+        $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
         // Obtener registros según el rol
         if ($isAdmin) {
             $registros = $estructuraRepository->findBy(['activo' => true], ['nombre' => 'ASC']);
@@ -278,7 +276,7 @@ class EstructuraController extends AbstractController
     {
         $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
         $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
+        $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
         $estructuraNegocio = [$entidad ? $entidad->getId() : -1];
         if ($isAdmin) {
             $estructuraNegocio = [];
@@ -337,7 +335,7 @@ class EstructuraController extends AbstractController
         try {
             $persona = $personaRepository->findBy(['usuario' => $this->getUser()->getId()]);
             $entidad = isset($persona[0]) ? $persona[0]->getEntidad() : null;
-            $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
+            $isAdmin = $this->isGranted('ROLE_ADMIN') || $utils->esAdminRRHH($this->getUser()->getId());
             $estructuraNegocio = [$entidad ? $entidad->getId() : -1];
             if ($isAdmin) {
                 $estructuraNegocio = [];
