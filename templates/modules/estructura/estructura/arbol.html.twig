@@ -107,7 +107,7 @@
             text-align: center;
         }
         .tree-help { margin-bottom: 14px; padding: 10px 13px; border-left: 3px solid #102f4f; background: #eef3f6; color: #49616f; font-size: 13px; }
-        .tree-item span::after { content: 'Ver y modificar'; margin-left: 12px; color: #7892a6; font-size: 11px; opacity: 0; }
+        .tree-item span::after { content: 'Detalles'; margin-left: 12px; padding: 1px 6px; border: 1px solid #cbd6de; color: #60798c; font-size: 11px; opacity: 0; }
         .tree-item:hover span::after { opacity: 1; }
         .tree-toolbar .btn, .tree-toolbar .form-control { border-radius: 0; }
     </style>
@@ -134,7 +134,7 @@
                 </div>
             </div>
             <hr>
-            <div class="tree-help"><i class="fas fa-info-circle mr-2"></i>Use un clic para expandir o contraer. Haga doble clic sobre una estructura para <strong>verla y modificarla</strong>.</div>
+            <div class="tree-help"><i class="fas fa-mouse-pointer mr-2"></i><strong>Para abrir los detalles:</strong> haga doble clic sobre el nombre de una estructura. Desde esa pantalla podrá verla y modificarla. Use un clic para expandir o contraer sus dependencias.</div>
             <div class="tree-toolbar">
                 <div class="input-group tree-search">
                     <input type="text" id="tree-search" class="form-control" placeholder="Buscar estructura...">

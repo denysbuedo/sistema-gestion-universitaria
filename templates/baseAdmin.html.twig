@@ -1270,6 +1270,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (!$headerActions.length) {
                     $headerActions = $('<div class="ml-auto d-flex" style="gap:8px;"></div>').appendTo($listHeader);
                 }
+                var $exportActions = $headerActions.find('.sgu-export-actions').first();
+                if (!$exportActions.length) {
+                    $exportActions = $headerActions;
+                }
                 $listHeader.find('#exportExcel, .sgu-export-excel').remove();
                 $excelButtons
                     .removeClass('dt-buttons btn-group flex-wrap')
@@ -1279,7 +1283,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     .addClass('btn-lux-sm btn-lux-success sgu-export-excel')
                     .attr('title', 'Exportar a Excel')
                     .html('<i class="fa fa-file-excel"></i> Excel');
-                $excelButtons.prependTo($headerActions);
+                $excelButtons.prependTo($exportActions);
             } else if (hasServerExcelAction) {
                 $excelButtons.remove();
             }
