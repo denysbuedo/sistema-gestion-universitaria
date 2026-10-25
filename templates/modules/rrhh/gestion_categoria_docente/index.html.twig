@@ -1,25 +1,15 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Gestión de categorías docentes{% endblock %}
+{% block title %}Expedientes de categorías docentes{% endblock %}
 
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
-<div class="row mb-3">
-    <div class="col-md-4 mb-3">
-        <div class="card card-luxury h-100"><div class="card-body"><div class="text-muted small text-uppercase">Catálogo normativo</div><div class="h3 mb-0">{{ registros|length }}</div><div class="text-muted">Figuras docentes vigentes</div></div></div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card card-luxury h-100"><div class="card-body"><div class="text-muted small text-uppercase">Resuelve la universidad</div><div class="h3 mb-0">{{ resumen.UNIVERSIDAD }}</div><div class="text-muted">Otorgamiento mediante resolución rectoral</div></div></div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card card-luxury h-100"><div class="card-body"><div class="text-muted small text-uppercase">Requieren aprobación del MES</div><div class="h3 mb-0">{{ resumen.MES }}</div><div class="text-muted">Expedientes elevados por la universidad</div></div></div>
-    </div>
-</div>
-
 <div class="card card-luxury mb-4">
-    <div class="card-header d-flex align-items-center">
-        <div><h3 class="card-title m-0"><i class="fas fa-folder-open label-icon"></i>Expedientes de categorización</h3><small class="text-muted">Tramitación según el nivel de aprobación establecido</small></div>
-        <a href="{{ path('app_rrhh_gestion_categoria_docente_nuevo') }}" class="btn-lux-sm btn-lux-primary ml-auto"><i class="fas fa-plus"></i> Nuevo expediente</a>
+    <div class="card-header d-flex align-items-center flex-wrap" style="gap:12px">
+        <div><h3 class="card-title m-0"><i class="fas fa-folder-open label-icon"></i>Expedientes de categorías docentes</h3><small class="text-muted">Solicitudes registradas por las universidades y tramitación según el nivel competente</small></div>
+        <div class="ml-auto d-flex flex-wrap align-items-center sgu-export-actions" style="gap:8px">
+            <a href="{{ path('app_rrhh_gestion_categoria_docente_nuevo') }}" class="btn-lux-sm btn-lux-primary"><i class="fas fa-plus"></i> Nuevo expediente</a>
+        </div>
     </div>
     <div class="card-body px-4">
         <table class="table config-table table-bordered table-striped dataTable">
@@ -28,47 +18,11 @@
                 <td>{{ item.numero_expediente }}</td><td>{{ item.persona }}</td><td>{{ item.siglas ?: item.entidad }}</td><td>{{ item.categoria }}</td><td>{{ item.fecha_solicitud|date('d/m/Y') }}</td>
                 <td>{{ item.estado|replace({'_':' '})|title }}</td><td>{{ item.nivel_actual }}</td>
                 <td class="text-center">
-                    {% if item.estado == 'REVISION_UNIVERSIDAD' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_tramitar', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('tramitar_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-primary" title="Continuar tramitación"><i class="fas fa-paper-plane"></i></button></form>{% endif %}
-                    {% if administrador_rrhh and item.estado == 'PENDIENTE_MES' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_aprobar_mes', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('aprobar_mes_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-success" title="Aprobar por el MES"><i class="fas fa-check"></i></button></form>{% endif %}
+                    {% if item.estado == 'REVISION_UNIVERSIDAD' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_tramitar', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('tramitar_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-primary" title="Continuar la tramitación"><i class="fas fa-paper-plane"></i> {{ item.requiere_aprobacion_mes ? 'Enviar al MES' : 'Tramitar en la universidad' }}</button></form>{% endif %}
+                    {% if administrador_rrhh and item.estado == 'PENDIENTE_MES' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_aprobar_mes', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('aprobar_mes_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-success" title="Registrar aprobación del Ministerio de Educación Superior"><i class="fas fa-check"></i> Aprobar por el MES</button></form>{% endif %}
                 </td>
             </tr>{% else %}<tr><td colspan="8" class="text-center text-muted py-4">No existen expedientes de categorización.</td></tr>{% endfor %}</tbody>
         </table>
     </div>
 </div>
-
-<div class="card card-luxury">
-    <div class="card-header">
-        <div>
-            <h3 class="card-title m-0"><i class="fas fa-chalkboard-teacher label-icon"></i>Categorías docentes</h3>
-            <small class="text-muted">Clasificación y nivel de aprobación conforme a la Resolución 117/2023</small>
-        </div>
-    </div>
-    <div class="card-body px-4">
-        <table class="table config-table table-bordered table-striped dataTable">
-            <thead>
-            <tr><th>Orden</th><th>Código</th><th>Categoría o condición</th><th>Clasificación</th><th>Aprobación</th><th>Otorgamiento</th><th>Vigencia especial</th></tr>
-            <tr>
-                <th></th><th></th><th></th>
-                <th><select class="responsive-input no-select2"><option value="">Todas</option><option value="Principal">Principal</option><option value="Transitoria">Transitoria</option><option value="Complementaria">Complementaria</option><option value="Especial">Especial</option><option value="Condición especial">Condición especial</option></select></th>
-                <th><select class="responsive-input no-select2"><option value="">Todos</option><option value="Universidad">Universidad</option><option value="MES">MES</option></select></th>
-                <th></th><th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for item in registros %}
-                <tr>
-                    <td>{{ item.orden }}</td>
-                    <td><span class="badge badge-light border">{{ item.codigo }}</span></td>
-                    <td>{{ item.nombre }}</td>
-                    <td>{{ item.clasificacion }}</td>
-                    <td>{% if item.requiereAprobacionMes %}<span class="status-pill -on">MES</span>{% else %}<span class="status-pill">Universidad</span>{% endif %}</td>
-                    <td>{{ item.autoridadOtorgamiento }}</td>
-                    <td>{{ item.duracionMaximaAnnos ? item.duracionMaximaAnnos ~ ' años' : 'Sin término general' }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="alert alert-info mt-3 mb-0"><i class="fas fa-info-circle mr-2"></i>El catálogo normativo no se administra como un nomenclador libre. El próximo bloque incorporará documentación, tribunales, ejercicios y otorgamiento con historial individual.</div>
 {% endblock %}

@@ -18,13 +18,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class GestionCategoriaDocenteController extends AbstractController
 {
     #[Route('/', name: 'app_rrhh_gestion_categoria_docente_index', methods: ['GET'])]
-    public function index(CategoriaDocenteRepository $repository, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
+    public function index(PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
     {
-        $registros = $repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']);
-        $resumen = ['UNIVERSIDAD' => 0, 'MES' => 0];
-        foreach ($registros as $registro) {
-            $resumen[$registro->isRequiereAprobacionMes() ? 'MES' : 'UNIVERSIDAD']++;
-        }
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         $entidadId = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
         $scope = !$esAdminRRHH ? ' WHERE p.entidad_id = :entidad' : '';
@@ -43,10 +38,16 @@ final class GestionCategoriaDocenteController extends AbstractController
             SQL, $params);
 
         return $this->render('modules/rrhh/gestion_categoria_docente/index.html.twig', [
-            'registros' => $registros,
-            'resumen' => $resumen,
             'expedientes' => $expedientes,
             'administrador_rrhh' => $esAdminRRHH,
+        ]);
+    }
+
+    #[Route('/catalogo', name: 'app_rrhh_gestion_categoria_docente_catalogo', methods: ['GET'])]
+    public function catalogo(CategoriaDocenteRepository $repository): Response
+    {
+        return $this->render('modules/rrhh/gestion_categoria_docente/catalogo.html.twig', [
+            'registros' => $repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']),
         ]);
     }
 

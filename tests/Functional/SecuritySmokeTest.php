@@ -128,6 +128,21 @@ class SecuritySmokeTest extends WebTestCase
         self::assertSelectorNotExists('link[href*="fonts.googleapis.com"]');
     }
 
+    public function testAdministratorCanOpenTeachingCategoryManagement(): void
+    {
+        $client = static::createClient();
+        $client->loginUser($this->fixtureAdminUser($client), 'main');
+
+        $client->request('GET', '/rrhh/gestion-categorias-docentes/');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h3', 'Expedientes de categorías docentes');
+
+        $client->request('GET', '/rrhh/gestion-categorias-docentes/catalogo');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h3', 'Catálogo de categorías docentes');
+    }
+
     public function testLogoutInvalidatesTheAuthenticatedSession(): void
     {
         $client = static::createClient();

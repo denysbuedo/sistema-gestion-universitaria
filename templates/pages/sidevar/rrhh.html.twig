@@ -155,11 +155,15 @@
         {% endif %}
 
         {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') %}
-            <li class="nav-item">
-                <a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="nav-link nav-link-menu">
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link nav-link-menu">
                     <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                    <p> Categorías docentes <small class="d-block text-muted">Procesos y control normativo</small></p>
+                    <p>Categorías docentes <i class="right fas fa-angle-left"></i></p>
                 </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="nav-link nav-link-menu"><p>Expedientes <small class="d-block text-muted">Solicitudes y tramitación</small></p></a></li>
+                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_catalogo') }}" class="nav-link nav-link-menu"><p>Catálogo normativo <small class="d-block text-muted">Categorías y competencia</small></p></a></li>
+                </ul>
             </li>
         {% endif %}
 
