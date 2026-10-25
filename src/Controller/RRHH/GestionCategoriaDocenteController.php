@@ -56,6 +56,9 @@ final class GestionCategoriaDocenteController extends AbstractController
     {
         $connection = $entityManager->getConnection();
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
+        if ($esAdminRRHH) {
+            throw $this->createAccessDeniedException('El registro corresponde a la universidad solicitante.');
+        }
         $entidadId = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
         $params = [];
         $scope = ' WHERE pe.activo = true';
@@ -124,6 +127,9 @@ final class GestionCategoriaDocenteController extends AbstractController
             throw $this->createNotFoundException('El expediente no está disponible para tramitar.');
         }
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
+        if ($esAdminRRHH) {
+            throw $this->createAccessDeniedException('La tramitación universitaria no corresponde al administrador del MES.');
+        }
         $entidadUsuario = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
         if (!$esAdminRRHH && (int) $proceso['entidad_id'] !== $entidadUsuario) {
             throw $this->createAccessDeniedException();

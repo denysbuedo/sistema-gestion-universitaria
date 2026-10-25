@@ -137,6 +137,10 @@ class SecuritySmokeTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h3', 'Expedientes de categorías docentes');
+        self::assertSelectorNotExists('a[href="/rrhh/gestion-categorias-docentes/expedientes/nuevo"]');
+
+        $client->request('GET', '/rrhh/gestion-categorias-docentes/expedientes/nuevo');
+        self::assertResponseStatusCodeSame(403);
 
         $client->request('GET', '/rrhh/gestion-categorias-docentes/catalogo');
         self::assertResponseIsSuccessful();
