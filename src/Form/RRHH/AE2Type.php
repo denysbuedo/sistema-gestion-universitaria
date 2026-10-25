@@ -68,7 +68,10 @@ class AE2Type extends AbstractType
                 'placeholder' => 'Seleccione un año',
                 'required' => true,
             ])
-            ->add('totalPlantillaAprobada', NumberType::class, $commonFieldOptions)
+            ->add('totalPlantillaAprobada', NumberType::class, array_merge($commonFieldOptions, [
+                'disabled' => true,
+                'label' => 'Total plantilla aprobada (definida por el Administrador de RRHH)',
+            ]))
             ->add('totalPlantillaCubierta', NumberType::class, $commonFieldOptions)
             ->add('totalGeneralContratos', NumberType::class, array_merge($commonFieldOptions, [
                 'label' => 'Total General de Contratos (4+7+14)',

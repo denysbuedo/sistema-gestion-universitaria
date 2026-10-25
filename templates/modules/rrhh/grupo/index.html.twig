@@ -1,6 +1,6 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Grupos{% endblock %}
+{% block title %}Agrupaciones del claustro{% endblock %}
 
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
@@ -22,10 +22,8 @@
 
     <div class="card card-luxury">
         <div class="card-header d-flex align-items-center">
-            <h3 class="card-title text-bold m-0"><i class="fas fa-layer-group label-icon"></i>Listado de Grupos</h3>
-            <a title="Adicionar" class="btn-lux-sm btn-lux-primary ml-auto" href="{{ path('app_grupo_registrar') }}">
-                <i class="fa fa-plus"></i> Nuevo
-            </a>
+            <div><h3 class="card-title m-0"><i class="fas fa-layer-group label-icon"></i>Agrupaciones del claustro</h3><small class="text-muted">Universidades y centros asociados para los reportes de cualificación</small></div>
+            <div class="ml-auto d-flex sgu-header-actions" style="gap:8px"><a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_grupo_registrar') }}"><i class="fa fa-plus"></i> Nueva agrupación</a></div>
         </div>
         <div class="card-body px-4">
             <table class="table config-table table-bordered table-striped dataTable">

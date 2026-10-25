@@ -16,6 +16,10 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
+                    {% if hasRoles('ROLE_RRHH_GEST_PLANTILLA') %}
+                        <li class="nav-item"><a href="#" class="nav-link nav-link-menu disabled" aria-disabled="true" title="Próximamente"><p>Solicitudes de cambio <small class="d-block text-muted">Próximamente</small></p></a></li>
+                        <li class="nav-item"><a href="{{ path('app_rrhh_plantilla_aprobada_index') }}" class="nav-link nav-link-menu"><p>Gestionar plantilla</p></a></li>
+                    {% endif %}
                     {% if hasRoles('ROLE_GEST_ESTRUCT') %}
                         <li class="nav-item">
                             <a href="{{ path('app_estructura_index') }}"
@@ -217,7 +221,7 @@
                         <li class="nav-item">
                             <a href="{{ path('app_grupo_index') }}"
                                class="nav-link nav-link-menu">
-                                <p>Grupos</p>
+                                <p>Agrupaciones del claustro</p>
                             </a>
                         </li>
                     {% endif %}

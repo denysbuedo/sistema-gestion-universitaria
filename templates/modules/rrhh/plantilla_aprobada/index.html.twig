@@ -1,0 +1,11 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Gestionar plantilla aprobada{% endblock %}
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+<div class="card card-luxury">
+    <div class="card-header"><div><h3 class="card-title m-0"><i class="fas fa-users-cog label-icon"></i>Gestionar plantilla aprobada</h3><small class="text-muted">Valor institucional utilizado en los partes mensuales AE2</small></div></div>
+    <div class="card-body px-4"><table class="table config-table table-bordered table-striped dataTable"><thead><tr><th>No.</th><th>Entidad</th><th>Plantilla aprobada</th><th>Actualización</th></tr><tr><th></th><th><select class="responsive-input no-select2"><option value="">Todas las entidades</option>{% for item in registros %}<option value="{{ item.nombre }}">{{ item.nombre }}</option>{% endfor %}</select></th><th></th><th></th></tr></thead><tbody>
+    {% for item in registros %}<tr><td>{{ loop.index }}</td><td>({{ item.siglas }}) {{ item.nombre }}</td><td><form method="post" class="d-flex align-items-center" style="gap:8px"><input type="hidden" name="_token" value="{{ csrf_token('actualizar_plantilla') }}"><input type="hidden" name="entidad" value="{{ item.id }}"><input type="number" min="0" step="1" name="total" value="{{ item.total }}" class="form-control form-control-sm" style="max-width:130px" required><button class="btn-lux-sm btn-lux-primary" type="submit"><i class="fas fa-save"></i> Guardar</button></form></td><td>{{ item.actualizado ? item.actualizado|date('d/m/Y H:i') : 'Inicial' }}</td></tr>{% endfor %}
+    </tbody></table></div>
+</div>
+{% endblock %}

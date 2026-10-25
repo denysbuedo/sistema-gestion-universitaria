@@ -422,6 +422,7 @@ class InstallConfig
         $functionalities[] = Functionality::createFunctionality("MODULE_RRHH", "ROLE_RRHH_REPORTE_1_4", "Modelo 1.4", "Modelo 1.4");
         $functionalities[] = Functionality::createFunctionality("MODULE_RRHH", "ROLE_RRHH_CLAUSTRO_DRC_PT", "Claustro DrC y PT", "Claustro DrC y PT");
         $functionalities[] = Functionality::createFunctionality("MODULE_RRHH", "ROLE_RRHH_GEST_GRUPOS", "Gestión de grupos", "Gestión de grupos");
+        $functionalities[] = Functionality::createFunctionality("MODULE_RRHH", "ROLE_RRHH_GEST_PLANTILLA", "Gestionar plantilla aprobada", "Gestionar plantilla aprobada por entidad");
 
 
         return $functionalities;
@@ -616,6 +617,7 @@ class InstallConfig
             ->addFunctionality("ROLE_RRHH_GEST_ESPECIALIDAD")
             ->addFunctionality("ROLE_RRHH_REPORTE_1_4")
             ->addFunctionality("ROLE_RRHH_CLAUSTRO_DRC_PT")
+            ->addFunctionality("ROLE_RRHH_GEST_PLANTILLA")
             ->addFunctionality("ROLE_RRHH_GEST_GRUPOS");
         return $roles;
     }

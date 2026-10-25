@@ -11,6 +11,8 @@
         .compliance-table .entity { width:28%; text-align:left; overflow-wrap:anywhere; }
         .sent { color:#237a49; } .missing { color:#a6afb7; }
         .period-filter { max-width:180px; }
+        .compliance-tabs .nav-link { border-radius:0; color:#496b86; }
+        .compliance-tabs .nav-link.active { color:#102f4f; font-weight:600; border-top:3px solid #102f4f; }
     </style>
 {% endblock %}
 
@@ -27,20 +29,54 @@
             </form>
         </div>
         <div class="card-body px-4">
-            <h4 class="h6 mb-2">AE2 · Cumplimiento mensual</h4>
+            <ul class="nav nav-tabs compliance-tabs mb-3" role="tablist">
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#cumplimiento-ae2">AE2 · Mensual</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#cumplimiento-ae3">AE3 · Trimestral</a></li>
+            </ul>
+            <div class="tab-content">
+            <div class="tab-pane fade show active" id="cumplimiento-ae2">
+            <div class="d-flex justify-content-between align-items-center mb-2"><h4 class="h6 mb-0">AE2 · Cumplimiento mensual</h4><button type="button" class="btn-lux-sm btn-lux-success export-compliance" data-table="cumplimientoAE2" data-name="Cumplimiento_AE2_{{ anno }}"><i class="fa fa-file-excel"></i> Excel</button></div>
             <div class="table-responsive mb-4">
-                <table class="table table-bordered table-striped compliance-table">
+                <table id="cumplimientoAE2" class="table table-bordered table-striped compliance-table">
                     <thead><tr><th class="entity">Entidad</th>{% for mes, nombre in meses %}<th>{{ nombre }}</th>{% endfor %}<th>Total</th></tr></thead>
                     <tbody>{% for entidad in entidades %}{% set total = 0 %}<tr><td class="entity">({{ entidad.siglas }}) {{ entidad.nombre }}</td>{% for mes in 1..12 %}{% set enviado = enviosAE2[entidad.id][mes]|default(false) %}{% if enviado %}{% set total = total + 1 %}{% endif %}<td title="{{ enviado ? 'Enviado' : 'Pendiente' }}"><i class="fas {{ enviado ? 'fa-check-circle sent' : 'fa-minus-circle missing' }}"></i></td>{% endfor %}<td><b>{{ total }}/12</b></td></tr>{% endfor %}</tbody>
                 </table>
             </div>
-            <h4 class="h6 mb-2">AE3 · Cumplimiento trimestral</h4>
+            </div>
+            <div class="tab-pane fade" id="cumplimiento-ae3">
+            <div class="d-flex justify-content-between align-items-center mb-2"><h4 class="h6 mb-0">AE3 · Cumplimiento trimestral</h4><button type="button" class="btn-lux-sm btn-lux-success export-compliance" data-table="cumplimientoAE3" data-name="Cumplimiento_AE3_{{ anno }}"><i class="fa fa-file-excel"></i> Excel</button></div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped compliance-table">
+                <table id="cumplimientoAE3" class="table table-bordered table-striped compliance-table">
                     <thead><tr><th class="entity">Entidad</th>{% for mes, nombre in {3:'Marzo',6:'Junio',9:'Septiembre',12:'Diciembre'} %}<th>{{ nombre }}</th>{% endfor %}<th>Total</th></tr></thead>
                     <tbody>{% for entidad in entidades %}{% set total = 0 %}<tr><td class="entity">({{ entidad.siglas }}) {{ entidad.nombre }}</td>{% for mes in [3,6,9,12] %}{% set enviado = enviosAE3[entidad.id][mes]|default(false) %}{% if enviado %}{% set total = total + 1 %}{% endif %}<td title="{{ enviado ? 'Enviado' : 'Pendiente' }}"><i class="fas {{ enviado ? 'fa-check-circle sent' : 'fa-minus-circle missing' }}"></i></td>{% endfor %}<td><b>{{ total }}/4</b></td></tr>{% endfor %}</tbody>
                 </table>
             </div>
+            </div>
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/excel/exceljs.js') }}"></script>
+    <script src="{{ asset('assets/js/excel/fileSaver.js') }}"></script>
+    <script>
+        $('.export-compliance').on('click', async function () {
+            const table = document.getElementById($(this).data('table'));
+            const workbook = new ExcelJS.Workbook();
+            const sheet = workbook.addWorksheet('Cumplimiento');
+            table.querySelectorAll('tr').forEach(function (row) {
+                const values = Array.from(row.querySelectorAll('th,td')).map(function (cell) {
+                    const icon = cell.querySelector('.fa-check-circle, .fa-minus-circle');
+                    return icon ? (icon.classList.contains('fa-check-circle') ? 'Enviado' : 'Pendiente') : cell.innerText.trim();
+                });
+                sheet.addRow(values);
+            });
+            sheet.getRow(1).font = {bold:true};
+            sheet.columns.forEach(function (column, index) { column.width = index === 0 ? 45 : 12; });
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), $(this).data('name') + '.xlsx');
+        });
+    </script>
 {% endblock %}

@@ -55,7 +55,7 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae2_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
+    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils, EntityManagerInterface $entityManager)
     {
         try {
             $ae2 = new AE2();
@@ -69,10 +69,14 @@ class AE2Controller extends AbstractController
             $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
             if (!$esAdminRRHH && $persona?->getEntidad()) {
                 $ae2->setEntidad($persona->getEntidad());
+                $ae2->setTotalPlantillaAprobada($this->obtenerPlantillaAprobada($entityManager, $persona->getEntidad()->getId()));
             }
 
             $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'registrar', 'administrador_rrhh' => $esAdminRRHH]);
             $form->handleRequest($request);
+            if ($form->isSubmitted() && $ae2->getEntidad()) {
+                $ae2->setTotalPlantillaAprobada($this->obtenerPlantillaAprobada($entityManager, $ae2->getEntidad()->getId()));
+            }
             if ($form->isSubmitted() && $form->isValid()) {
                 if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     $ae2->setDocumento($storage->storeName($file, 'uploads/rrhh/ae2/documento'));
@@ -89,6 +93,7 @@ class AE2Controller extends AbstractController
                 'form' => $form->createView(),
                 'entidad' => $ae2->getEntidad(),
                 'administrador_rrhh' => $esAdminRRHH,
+                'plantillas_aprobadas' => $this->obtenerPlantillasAprobadas($entityManager),
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
@@ -172,4 +177,21 @@ class AE2Controller extends AbstractController
         }
     }
 
+    private function obtenerPlantillaAprobada(EntityManagerInterface $entityManager, int $entidadId): int
+    {
+        return (int) ($entityManager->getConnection()->fetchOne(
+            'SELECT total FROM rrhh.tbd_plantilla_aprobada WHERE entidad_id = :entidad',
+            ['entidad' => $entidadId]
+        ) ?: 0);
+    }
+
+    private function obtenerPlantillasAprobadas(EntityManagerInterface $entityManager): array
+    {
+        $filas = $entityManager->getConnection()->fetchAllAssociative('SELECT entidad_id, total FROM rrhh.tbd_plantilla_aprobada');
+        $resultado = [];
+        foreach ($filas as $fila) {
+            $resultado[(int) $fila['entidad_id']] = (int) $fila['total'];
+        }
+        return $resultado;
+    }
 }

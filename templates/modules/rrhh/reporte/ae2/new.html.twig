@@ -145,9 +145,16 @@
     </div>
 {% endblock %}
 {% block javascripts %}
+    {{ parent() }}
     {% include 'pages/_luxury_form_toggle_js.html.twig' with {
         cancelUrl: path('app_rrhh_reporte_ae2_index')
     } %}
+    <script>
+        const plantillasAprobadas = {{ plantillas_aprobadas|default({})|json_encode|raw }};
+        $('#ae2_entidad').on('change', function () {
+            $('#ae2_totalPlantillaAprobada').val(plantillasAprobadas[this.value] || 0);
+        }).trigger('change');
+    </script>
     <script>
 
         $('#ae2_documento').change(function () {

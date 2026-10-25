@@ -38,7 +38,7 @@ class GrupoType extends AbstractType
                 'required' => false,
             ])
             ->add('estructuras', EntityType::class, [
-                'label' => 'Estructuras del Grupo',
+                'label' => 'Entidades de la agrupación',
                 'class' => Estructura::class,
                 'choice_label' => function (Estructura $estructura) {
                     $siglas = $estructura->getSiglas() ? '(' . $estructura->getSiglas() . ') ' : '';
