@@ -5,6 +5,7 @@ namespace App\Controller\Estructura;
 use App\Entity\Estructura\Entidad;
 use App\Entity\Estructura\Estructura;
 use App\Form\Estructura\EntidadType;
+use App\Form\Estructura\GestionEntidadType;
 use App\Repository\Estructura\EntidadRepository;
 use App\Repository\Estructura\EstructuraRepository;
 use App\Repository\Estructura\MunicipioRepository;
@@ -86,6 +87,29 @@ class EntidadController extends AbstractController
             'entidad' => $isAdmin ? null : $entidad
         ]);
 
+    }
+
+    #[Route('/{id}/modificar', name: 'app_entidad_modificar_clasificacion', methods: ['GET', 'POST'])]
+    public function modificarClasificacion(Request $request, Estructura $estructura, EstructuraRepository $estructuraRepository): Response
+    {
+        if (!$estructura->getEsEntidad()) {
+            throw $this->createNotFoundException('La estructura seleccionada no está registrada como entidad.');
+        }
+
+        $form = $this->createForm(GestionEntidadType::class, $estructura);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $estructuraRepository->edit($estructura, true);
+            $this->addFlash('success', 'La clasificación de la entidad fue actualizada satisfactoriamente.');
+
+            return $this->redirectToRoute('app_estructura_entidad_index');
+        }
+
+        return $this->render('modules/estructura/entidad/edit_gestion.html.twig', [
+            'estructura' => $estructura,
+            'form' => $form->createView(),
+        ]);
     }
 
 }

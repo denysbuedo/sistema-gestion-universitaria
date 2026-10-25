@@ -1,0 +1,37 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modificar clasificación de entidad{% endblock %}
+
+{% block body %}
+{% include 'pages/_luxury_form_styles.html.twig' %}
+<div class="card card-luxury">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-city label-icon"></i>Modificar clasificación de entidad</h3>
+    </div>
+    {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
+    <div class="card-body px-4">
+        <div class="mb-4">
+            <div class="text-muted small">Entidad</div>
+            <div class="h5 mb-1">{{ estructura.siglas ? '(' ~ estructura.siglas ~ ') ' : '' }}{{ estructura.nombre }}</div>
+            <div class="text-muted">El nombre, la subordinación y los datos generales se modifican desde Estructuras organizativas.</div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                {{ form_label(form.categoriaEstructura) }}
+                {{ form_widget(form.categoriaEstructura, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                {{ form_errors(form.categoriaEstructura) }}
+            </div>
+            <div class="col-md-6 form-group">
+                {{ form_label(form.clasificacionPresupuestaria) }}
+                {{ form_widget(form.clasificacionPresupuestaria, {'attr': {'class': 'form-control form-control-luxury'}}) }}
+                {{ form_errors(form.clasificacionPresupuestaria) }}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white border-top-0 d-flex justify-content-end" style="gap:10px">
+        <a href="{{ path('app_estructura_entidad_index') }}" class="btn-lux-sm btn-lux-outline-danger"><i class="fas fa-times"></i> Cancelar</a>
+        <button type="submit" class="btn-lux-sm btn-lux-primary"><i class="fas fa-save"></i> Guardar cambios</button>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

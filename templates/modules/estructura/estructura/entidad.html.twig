@@ -70,6 +70,12 @@
                                             data-title="Detalles de la estructura">
                                         <i class="fa fa-eye fa-fw mr-2 text-primary"></i> Ver detalles
                                     </button>
+                                    <a class="dropdown-item" href="{{ path('app_entidad_modificar_clasificacion', {'id': item.id}) }}">
+                                        <i class="fa fa-tags fa-fw mr-2 text-primary"></i> Editar clasificación
+                                    </a>
+                                    <a class="dropdown-item" href="{{ path('app_estructura_plaza', {'id': item.id}) }}">
+                                        <i class="fa fa-user-tag fa-fw mr-2 text-primary"></i> Gestionar responsabilidades
+                                    </a>
                                     <div class="dropdown-divider my-1"></div>
                                     <button class="dropdown-item elementRemove text-danger"
                                             data-url="{{ path('app_estructura_eliminar', {'id': item.id}) }}">
