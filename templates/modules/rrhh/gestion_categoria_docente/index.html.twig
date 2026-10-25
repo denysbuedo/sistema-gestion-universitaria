@@ -21,8 +21,6 @@
                 <td>{{ item.estado|replace({'_':' '})|title }}</td><td>{{ item.nivel_actual }}</td>
                 <td class="text-center">
                     <a href="{{ path('app_rrhh_gestion_categoria_docente_detalle', {'id':item.id}) }}" class="btn-lux-sm btn-lux-outline-primary" title="Abrir expediente"><i class="fas fa-folder-open"></i> Ver expediente</a>
-                    {% if not administrador_rrhh and item.estado == 'REVISION_UNIVERSIDAD' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_tramitar', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('tramitar_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-primary" title="Continuar la tramitación"><i class="fas fa-paper-plane"></i> {{ item.requiere_aprobacion_mes ? 'Enviar al MES' : 'Tramitar en la universidad' }}</button></form>{% endif %}
-                    {% if administrador_rrhh and item.estado == 'PENDIENTE_MES' %}<form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_aprobar_mes', {'id':item.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('aprobar_mes_categoria_' ~ item.id) }}"><button class="btn-lux-sm btn-lux-success" title="Registrar aprobación del Ministerio de Educación Superior"><i class="fas fa-check"></i> Aprobar por el MES</button></form>{% endif %}
                 </td>
             </tr>{% else %}<tr><td colspan="8" class="text-center text-muted py-4">No existen expedientes de categorización.</td></tr>{% endfor %}</tbody>
         </table>
