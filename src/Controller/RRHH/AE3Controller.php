@@ -114,6 +114,7 @@ class AE3Controller extends AbstractController
     #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae3_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, AE3 $ae3, AE3Repository $ae3Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae3->getEntidad()?->getId(), $personaRepository, $utils);
         try {
             $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
             $form = $this->createForm(AE3Type::class, $ae3, ['action' => 'modificar', 'administrador_rrhh' => $esAdminRRHH]);
@@ -150,8 +151,9 @@ class AE3Controller extends AbstractController
      * @throws ExceptionInterface
      */
     #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae3_detail', methods: ['GET', 'POST'])]
-    public function detail(AE3 $ae3)
+    public function detail(AE3 $ae3, PersonaRepository $personaRepository, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae3->getEntidad()?->getId(), $personaRepository, $utils);
         $ae3Array = $this->normalizer->normalize($ae3, null, [
             'circular_reference_handler' => function ($object) {
                 return method_exists($object, 'getId') ? $object->getId() : null;
@@ -170,8 +172,9 @@ class AE3Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_rrhh_reporte_ae3_eliminar', methods: ['GET'])]
-    public function eliminar(Request $request, AE3 $ae3, AE3Repository $ae3Repository)
+    public function eliminar(Request $request, AE3 $ae3, AE3Repository $ae3Repository, PersonaRepository $personaRepository, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae3->getEntidad()?->getId(), $personaRepository, $utils);
         try {
             if ($ae3Repository->find($ae3) instanceof AE3) {
                 $ae3Repository->remove($ae3, true);
@@ -183,6 +186,17 @@ class AE3Controller extends AbstractController
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
             return $this->redirectToRoute('app_rrhh_reporte_ae3_index', [], Response::HTTP_SEE_OTHER);
+        }
+    }
+
+    private function assertEntidadPermitida(?int $entidadId, PersonaRepository $personaRepository, Utils $utils): void
+    {
+        if ($utils->esAdminRRHH($this->getUser()->getId())) {
+            return;
+        }
+        $entidadUsuario = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
+        if (!$entidadUsuario || $entidadUsuario !== $entidadId) {
+            throw $this->createAccessDeniedException('El parte no pertenece a su entidad.');
         }
     }
 }

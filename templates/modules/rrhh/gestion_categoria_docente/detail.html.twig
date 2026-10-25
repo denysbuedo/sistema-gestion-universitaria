@@ -1,0 +1,29 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Expediente {{ proceso.numero_expediente }}{% endblock %}
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+{% include 'pages/_luxury_form_styles.html.twig' %}
+<div class="d-flex flex-wrap align-items-center mb-3" style="gap:10px">
+    <a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="btn-lux-sm btn-lux-outline-primary"><i class="fas fa-arrow-left"></i> Volver</a>
+    <div><h2 class="h4 mb-0">{{ proceso.numero_expediente }}</h2><span class="text-muted">{{ proceso.persona }} · {{ proceso.categoria }}</span></div>
+    <span class="status-pill -on ml-auto">{{ proceso.estado|replace({'_':' '})|title }}</span>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-luxury mb-3"><div class="card-header"><h3 class="card-title m-0"><i class="fas fa-file-alt label-icon"></i>Documentos y evidencias</h3></div><div class="card-body px-4">
+            {% if not administrador_rrhh and proceso.estado in ['REVISION_UNIVERSIDAD','SUBSANACION'] %}
+            <form method="post" enctype="multipart/form-data" action="{{ path('app_rrhh_gestion_categoria_docente_documento', {'id':proceso.id}) }}" class="mb-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('documento_categoria_' ~ proceso.id) }}">
+                <div class="row align-items-end"><div class="col-md-4 form-group"><label>Tipo de evidencia</label><select name="tipo" class="form-control no-select2"><option value="SOLICITUD">Solicitud institucional</option><option value="CURRICULUM">Currículo</option><option value="CERTIFICACION">Certificación</option><option value="AVAL">Aval</option><option value="OTRA_EVIDENCIA">Otra evidencia</option></select></div><div class="col-md-5 form-group"><label>Documento</label><input type="file" name="documento" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt" required></div><div class="col-md-3 form-group"><button class="btn-lux-sm btn-lux-primary w-100"><i class="fas fa-upload"></i> Incorporar</button></div></div>
+                <input type="text" name="descripcion" class="form-control" placeholder="Descripción breve (opcional)">
+            </form>
+            {% endif %}
+            <div class="table-responsive"><table class="table config-table table-bordered"><thead><tr><th>Tipo</th><th>Documento</th><th>Descripción</th><th>Fecha</th></tr></thead><tbody>{% for doc in documentos %}<tr><td>{{ doc.tipo|replace({'_':' '})|title }}</td><td><a href="/{{ doc.archivo }}" target="_blank" rel="noopener"><i class="fas fa-paperclip mr-1"></i>{{ doc.nombre_original }}</a></td><td>{{ doc.descripcion ?: '—' }}</td><td>{{ doc.creado|date('d/m/Y H:i') }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted py-4">Todavía no se han incorporado evidencias.</td></tr>{% endfor %}</tbody></table></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card card-luxury mb-3"><div class="card-header"><h3 class="card-title m-0"><i class="fas fa-info-circle label-icon"></i>Resumen</h3></div><div class="card-body"><dl class="mb-0"><dt>Entidad</dt><dd>{{ proceso.siglas ?: proceso.entidad }}</dd><dt>Nivel actual</dt><dd>{{ proceso.nivel_actual }}</dd><dt>Fecha de solicitud</dt><dd>{{ proceso.fecha_solicitud|date('d/m/Y') }}</dd><dt>Competencia</dt><dd>{{ proceso.requiere_aprobacion_mes ? 'MES' : 'Universidad' }}</dd></dl></div></div>
+        <div class="card card-luxury"><div class="card-header"><h3 class="card-title m-0"><i class="fas fa-history label-icon"></i>Trazabilidad</h3></div><div class="card-body">{% for mov in movimientos %}<div class="border-left pl-3 pb-3"><strong>{{ mov.accion }}</strong><div class="small text-muted">{{ mov.creado|date('d/m/Y H:i') }} · {{ mov.usuario }}</div>{% if mov.observaciones %}<div class="small">{{ mov.observaciones }}</div>{% endif %}</div>{% else %}<span class="text-muted">Sin movimientos registrados.</span>{% endfor %}</div></div>
+    </div>
+</div>
+{% endblock %}

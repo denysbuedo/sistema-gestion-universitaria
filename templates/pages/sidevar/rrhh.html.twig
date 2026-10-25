@@ -5,7 +5,7 @@
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
 
-        {% if hasRoles('ROLE_GEST_ESTRUCT') %}
+        {% if hasRoles('ROLE_GEST_ESTRUCT') or hasRoles('ROLE_GEST_ENTITY') %}
             <li class="nav-item">
                 <a href="#"
                    class="nav-link nav-link-menu">
@@ -28,27 +28,11 @@
                             </a>
                         </li>
                     {% endif %}
-
-                </ul>
-            </li>
-        {% endif %}
-
-        {% if hasRoles('ROLE_GEST_ENTITY') %}
-            <li class="nav-item">
-                <a href="#"
-                   class="nav-link nav-link-menu">
-                    <i class="nav-icon fas fa-cog"></i>
-                    <p>
-                        Gestión de entidades
-                        <i class="right fas fa-angle-left"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
                     {% if hasRoles('ROLE_GEST_ENTITY') %}
                         <li class="nav-item">
                             <a href="{{ path('app_estructura_entidad_index') }}"
                                class="nav-link nav-link-menu">
-                                <p>Listado de entidades</p>
+                                <p>Entidades</p>
                             </a>
                         </li>
                     {% endif %}
@@ -57,8 +41,18 @@
             </li>
         {% endif %}
 
-
-
+        {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') %}
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link nav-link-menu">
+                    <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                    <p>Categorías docentes <i class="right fas fa-angle-left"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="nav-link nav-link-menu"><p>Expedientes <small class="d-block text-muted">Solicitudes y tramitación</small></p></a></li>
+                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_catalogo') }}" class="nav-link nav-link-menu"><p>Catálogo normativo <small class="d-block text-muted">Categorías y competencia</small></p></a></li>
+                </ul>
+            </li>
+        {% endif %}
 
         {% if hasRoles('ROLE_RRHH_REPORTE_AE2') or  hasRoles('ROLE_RRHH_REPORTE_AE3') %}
             <li class="nav-item">
@@ -153,20 +147,6 @@
                 </ul>
             </li>
         {% endif %}
-
-        {% if hasRoles('ROLE_RRHH_GEST_CAT_DOC') %}
-            <li class="nav-item has-treeview">
-                <a href="#" class="nav-link nav-link-menu">
-                    <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                    <p>Categorías docentes <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="nav-link nav-link-menu"><p>Expedientes <small class="d-block text-muted">Solicitudes y tramitación</small></p></a></li>
-                    <li class="nav-item"><a href="{{ path('app_rrhh_gestion_categoria_docente_catalogo') }}" class="nav-link nav-link-menu"><p>Catálogo normativo <small class="d-block text-muted">Categorías y competencia</small></p></a></li>
-                </ul>
-            </li>
-        {% endif %}
-
 
         {% if hasRoles('ROLE_RRHH_GEST_ESPECIALIDAD') or hasRoles('ROLE_RRHH_GEST_GRUPOS') or hasRoles('ROLE_GEST_CATRESP') or hasRoles('ROLE_GEST_RESPON') or hasRoles('ROLE_GEST_PROVIN') or hasRoles('ROLE_GEST_MUNICP') or hasRoles('ROLE_GEST_CATGEST') or hasRoles('ROLE_GEST_TYPEESTR') %}
             <li class="nav-item">

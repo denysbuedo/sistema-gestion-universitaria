@@ -119,6 +119,7 @@ class AE2Controller extends AbstractController
     #[Route('/{id}/modificar', name: 'app_rrhh_reporte_ae2_modificar', methods: ['GET', 'POST'])]
     public function modificar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae2->getEntidad()?->getId(), $personaRepository, $utils);
         try {
             $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
             $form = $this->createForm(AE2Type::class, $ae2, ['action' => 'modificar', 'administrador_rrhh' => $esAdminRRHH]);
@@ -155,8 +156,9 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae2_detail', methods: ['GET', 'POST'])]
-    public function detail(AE2 $ae2)
+    public function detail(AE2 $ae2, PersonaRepository $personaRepository, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae2->getEntidad()?->getId(), $personaRepository, $utils);
         return $this->render('modules/rrhh/reporte/ae2/detail.html.twig', [
             'item' => $ae2,
         ]);
@@ -169,8 +171,9 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_rrhh_reporte_ae2_eliminar', methods: ['GET'])]
-    public function eliminar(Request $request, AE2 $ae2, AE2Repository $ae2Repository)
+    public function eliminar(Request $request, AE2 $ae2, AE2Repository $ae2Repository, PersonaRepository $personaRepository, Utils $utils)
     {
+        $this->assertEntidadPermitida($ae2->getEntidad()?->getId(), $personaRepository, $utils);
         try {
             if ($ae2Repository->find($ae2) instanceof AE2) {
                 $ae2Repository->remove($ae2, true);
@@ -201,5 +204,16 @@ class AE2Controller extends AbstractController
             $resultado[(int) $fila['entidad_id']] = (int) $fila['total'];
         }
         return $resultado;
+    }
+
+    private function assertEntidadPermitida(?int $entidadId, PersonaRepository $personaRepository, Utils $utils): void
+    {
+        if ($utils->esAdminRRHH($this->getUser()->getId())) {
+            return;
+        }
+        $entidadUsuario = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
+        if (!$entidadUsuario || $entidadUsuario !== $entidadId) {
+            throw $this->createAccessDeniedException('El parte no pertenece a su entidad.');
+        }
     }
 }
