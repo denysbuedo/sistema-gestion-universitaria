@@ -29,12 +29,24 @@ class EntidadController extends AbstractController
 */
 #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
     #[Route('/', name: 'app_estructura_entidad_index', methods: ['GET'])]
-    public function indexEstructurasEntidades(EstructuraRepository $estructuraRepository, Utils $utils)
+    public function indexEstructurasEntidades(Request $request, EstructuraRepository $estructuraRepository, Utils $utils)
     {
         try {
             $registros = $estructuraRepository->findBy(['esEntidad' => 1], ['activo' => 'desc', 'id' => 'desc']);
+            $tipo = strtoupper((string) $request->query->get('tipo', ''));
+            if ($tipo !== '') {
+                $registros = array_values(array_filter($registros, static function (Estructura $estructura) use ($tipo): bool {
+                    return match ($tipo) {
+                        'UP', 'UPTE' => $estructura->getClasificacionPresupuestaria() === $tipo,
+                        'EMPRESA' => $estructura->getCategoriaEstructura()?->getId() === 7,
+                        'INTERFAZ' => $estructura->getCategoriaEstructura()?->getId() === 20,
+                        default => true,
+                    };
+                }));
+            }
             return $this->render('modules/estructura/estructura/entidad.html.twig', [
-                'registros' => $registros
+                'registros' => $registros,
+                'tipoSeleccionado' => $tipo,
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());

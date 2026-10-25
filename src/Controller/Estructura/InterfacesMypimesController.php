@@ -31,15 +31,7 @@ class InterfacesMypimesController extends AbstractController
     #[Route('/', name: 'app_estructura_interfaces_mypimes_index', methods: ['GET'])]
     public function index(EstructuraRepository $estructuraRepository, Utils $utils)
     {
-        try {
-            $registros = $estructuraRepository->findBy(['categoriaEstructura' => 20, 'esEntidad'=>true], ['activo' => 'desc', 'id' => 'desc']);
-            return $this->render('modules/estructura/estructura/interfacesMypimes.html.twig', [
-                'registros' => $registros
-            ]);
-        } catch (\Exception $exception) {
-            $this->addFlash('error', $exception->getMessage());
-            return $this->redirectToRoute('app_estructura_interfaces_mypimes_index', [], Response::HTTP_SEE_OTHER);
-        }
+        return $this->redirectToRoute('app_estructura_entidad_index', ['tipo' => 'INTERFAZ']);
     }
 
     /**

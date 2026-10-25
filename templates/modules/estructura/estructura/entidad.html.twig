@@ -1,6 +1,6 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Entidades{% endblock %}
+{% block title %}Gestión de entidades{% endblock %}
 
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
@@ -9,7 +9,10 @@
 
     <div class="card card-luxury">
         <div class="card-header d-flex align-items-center">
-            <h3 class="card-title text-bold m-0"><i class="fas fa-city label-icon"></i>Listado de entidades</h3>
+            <div>
+                <h3 class="card-title text-bold m-0"><i class="fas fa-city label-icon"></i>Gestión de entidades</h3>
+                <small class="text-muted">Registro nacional de universidades, unidades presupuestadas, empresas e interfaces</small>
+            </div>
             <div class="ml-auto d-flex" style="gap:8px;">
                 <a title="Adicionar" class="btn-lux-sm btn-lux-primary" href="{{ path('app_entidad_registrar') }}">
                     <i class="fa fa-plus"></i> Nuevo
@@ -27,8 +30,7 @@
                     <th>No.</th>
                     <th>Estructura superior</th>
                     <th>Nombre</th>
-                    <th>Categoría de estructura</th>
-                    <th>Clasificación Presupuestaria</th>
+                    <th>Tipo de entidad</th>
                     <th>Estado</th>
                     <th class="text-center">Opciones</th>
                 </tr>
@@ -36,8 +38,7 @@
                     <th></th>
                     <th><select class="responsive-input no-select2"><option value="">Todas</option>{% set opciones = [] %}{% for item in registros %}{% set valor = item.estructura.nombre|default('') %}{% if valor and valor not in opciones %}{% set opciones = opciones|merge([valor]) %}<option value="{{ valor }}">{{ valor }}</option>{% endif %}{% endfor %}</select></th>
                     <th><select class="responsive-input no-select2"><option value="">Todas</option>{% for item in registros %}<option value="{{ item.nombre|default('') }}">{{ item.nombre|default('') }}</option>{% endfor %}</select></th>
-                    <th><select class="responsive-input no-select2"><option value="">Todas</option>{% set opciones = [] %}{% for item in registros %}{% set valor = item.categoriaEstructura.nombre|default('') %}{% if valor and valor not in opciones %}{% set opciones = opciones|merge([valor]) %}<option value="{{ valor }}">{{ valor }}</option>{% endif %}{% endfor %}</select></th>
-                    <th><select class="responsive-input no-select2"><option value="">Todas</option><option value="UP">UP</option><option value="UPTE">UPTE</option></select></th>
+                    <th><select class="responsive-input no-select2"><option value="">Todos los tipos</option><option value="Unidad Presupuestada (UP)" {{ tipoSeleccionado == 'UP' ? 'selected' : '' }}>Unidad Presupuestada (UP)</option><option value="Unidad Presupuestada con Tratamiento Especial (UPTE)" {{ tipoSeleccionado == 'UPTE' ? 'selected' : '' }}>Unidad Presupuestada con Tratamiento Especial (UPTE)</option><option value="Empresa" {{ tipoSeleccionado == 'EMPRESA' ? 'selected' : '' }}>Empresa</option><option value="Interfaces y MiPYMES" {{ tipoSeleccionado == 'INTERFAZ' ? 'selected' : '' }}>Interfaces y MiPYMES</option>{% set opciones = [] %}{% for item in registros %}{% if not item.clasificacionPresupuestaria and item.categoriaEstructura.id|default(0) not in [7, 20] %}{% set valor = item.categoriaEstructura.nombre|default('Otra entidad') %}{% if valor not in opciones %}{% set opciones = opciones|merge([valor]) %}<option value="{{ valor }}">{{ valor }}</option>{% endif %}{% endif %}{% endfor %}</select></th>
                     <th><select class="responsive-input no-select2"><option value="">Todos</option><option value="Habilitado">Habilitado</option><option value="Deshabilitado">Deshabilitado</option></select></th>
                     <th></th>
                 </tr>
@@ -48,8 +49,7 @@
                         <td width="1%">{{ loop.index }}</td>
                         <td>{{ item.estructura.nombre | default('') }}</td>
                         <td>{{ item.nombre | default('') }}</td>
-                        <td>{{ item.categoriaEstructura.nombre | default('') }}</td>
-                        <td>{{ item.clasificacionPresupuestaria | default('') }}</td>
+                        <td>{% if item.clasificacionPresupuestaria == 'UP' %}Unidad Presupuestada (UP){% elseif item.clasificacionPresupuestaria == 'UPTE' %}Unidad Presupuestada con Tratamiento Especial (UPTE){% elseif item.categoriaEstructura.id|default(0) == 7 %}Empresa{% elseif item.categoriaEstructura.id|default(0) == 20 %}Interfaces y MiPYMES{% else %}{{ item.categoriaEstructura.nombre|default('Otra entidad') }}{% endif %}</td>
                         <td width="10%">
                             {% if '1' == item.activo %}
                                 <span class="status-pill -on"><i class="fas fa-circle"></i>Habilitado</span>

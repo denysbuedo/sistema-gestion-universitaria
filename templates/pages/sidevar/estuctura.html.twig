@@ -31,13 +31,13 @@
             </li>
         {% endif %}
 
-        {% if hasRoles('ROLE_GEST_ENTITY') or hasRoles('ROLE_ESTRUCTURA_EMPRESA') or hasRoles('ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA_TRATAMIENTO_ESPECIAL') or hasRoles('ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA') or hasRoles('ROLE_ESTRUCTURA_INTERFACES_MYPIMES') %}
+        {% if hasRoles('ROLE_GEST_ENTITY') %}
             <li class="nav-item">
                 <a href="#"
                    class="nav-link nav-link-menu">
                     <i class="nav-icon fas fa-cog"></i>
                     <p>
-                        Entidades
+                        Gestión de entidades
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
@@ -46,42 +46,7 @@
                         <li class="nav-item">
                             <a href="{{ path('app_estructura_entidad_index') }}"
                                class="nav-link nav-link-menu">
-                                <p>Entidades</p>
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% if hasRoles('ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_estructura_unidad_presupuestada_index') }}"
-                               class="nav-link nav-link-menu">
-                                <p>Unidades Presupuestadas (UP)
-                                </p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_ESTRUCTURA_UNIDAD_PRESUPUESTADA_TRATAMIENTO_ESPECIAL') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_estructura_unidad_presupuestada_tratamiento_especial_index') }}"
-                               class="nav-link nav-link-menu">
-                                <p> Unidades Presupuestadas con Tratamiento Especial (UPTE)
-                                </p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_ESTRUCTURA_INTERFACES_MYPIMES') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_estructura_interfaces_mypimes_index') }}"
-                               class="nav-link nav-link-menu">
-                                <p> Interfaces y MiPYMES </p>
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if hasRoles('ROLE_ESTRUCTURA_EMPRESA') %}
-                        <li class="nav-item">
-                            <a href="{{ path('app_estructura_empresa_index') }}"
-                               class="nav-link nav-link-menu">
-                                <p>Empresas</p>
+                                <p>Listado de entidades</p>
                             </a>
                         </li>
                     {% endif %}
