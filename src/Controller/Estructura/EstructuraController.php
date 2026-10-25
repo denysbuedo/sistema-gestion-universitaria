@@ -104,7 +104,12 @@ class EstructuraController extends AbstractController
             foreach ($registros as $value) {
                 $data[$value->getId()] = $value->getId() !== $estructuraNegocio;
                 $tokensAncestros = [];
+                $ancestrosVisitados = [];
                 for ($superior = $value->getEstructura(); $superior !== null; $superior = $superior->getEstructura()) {
+                    if (isset($ancestrosVisitados[$superior->getId()])) {
+                        break;
+                    }
+                    $ancestrosVisitados[$superior->getId()] = true;
                     $tokensAncestros[] = 'estructura-' . $superior->getId();
                     $prefijo = $superior->getEstructura()?->getSiglas();
                     $filtroSuperiores[$superior->getId()] = ($prefijo ? sprintf('(%s) ', $prefijo) : '') . $superior->getNombre();
