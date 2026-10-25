@@ -143,6 +143,7 @@ class EstructuraController extends AbstractController
                 'parent' => $parent,
                 'text' => $el->getNombre(),
                 'color' => $color,
+                'movable' => $isAdmin || $el->getId() !== $estructuraNegocio,
                 'a_attr' => [
                     'style' => "color: {$color};",
                     'data-id' => $el->getId()
@@ -153,6 +154,66 @@ class EstructuraController extends AbstractController
         return $this->render('modules/estructura/estructura/arbol.html.twig', [
             'registros' => $registros,
             'entidad' => $entidad
+        ]);
+    }
+
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_ESTRUCT')"))]
+    #[Route('/mover', name: 'app_estructura_mover', methods: ['POST'])]
+    public function mover(Request $request, EstructuraRepository $estructuraRepository, PersonaRepository $personaRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('mover_estructura', (string) $request->request->get('_token'))) {
+            return $this->json(['success' => false, 'message' => 'La operación ha expirado. Recargue la página.'], 403);
+        }
+
+        $estructura = $estructuraRepository->find($request->request->getInt('estructura'));
+        $nuevoPadreId = $request->request->getInt('padre');
+        $esAdmin = $this->isGranted('ROLE_ADMIN');
+        $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
+        $raizInstitucional = $persona?->getEntidad();
+
+        if (!$estructura) {
+            return $this->json(['success' => false, 'message' => 'La estructura seleccionada no existe.'], 404);
+        }
+
+        if (!$esAdmin) {
+            if (!$raizInstitucional) {
+                return $this->json(['success' => false, 'message' => 'Su usuario no está asociado a una universidad.'], 403);
+            }
+            $permitidas = $estructuraRepository->getEstructurasNegocios($raizInstitucional->getId());
+            $idsPermitidos = array_fill_keys(array_map(static fn (Estructura $item): int => $item->getId(), $permitidas), true);
+            if (!isset($idsPermitidos[$estructura->getId()]) || $estructura->getId() === $raizInstitucional->getId()) {
+                return $this->json(['success' => false, 'message' => 'No puede mover la raíz institucional ni estructuras ajenas.'], 403);
+            }
+            $nuevoPadre = $nuevoPadreId > 0 ? $estructuraRepository->find($nuevoPadreId) : $raizInstitucional;
+            if (!$nuevoPadre || !isset($idsPermitidos[$nuevoPadre->getId()])) {
+                return $this->json(['success' => false, 'message' => 'El destino no pertenece a su universidad.'], 403);
+            }
+        } else {
+            $nuevoPadre = $nuevoPadreId > 0 ? $estructuraRepository->find($nuevoPadreId) : null;
+            if ($nuevoPadreId > 0 && !$nuevoPadre) {
+                return $this->json(['success' => false, 'message' => 'La estructura de destino no existe.'], 404);
+            }
+        }
+
+        if ($nuevoPadre === $estructura) {
+            return $this->json(['success' => false, 'message' => 'Una estructura no puede depender de sí misma.'], 422);
+        }
+        for ($ascendiente = $nuevoPadre; $ascendiente !== null; $ascendiente = $ascendiente->getEstructura()) {
+            if ($ascendiente->getId() === $estructura->getId()) {
+                return $this->json(['success' => false, 'message' => 'El movimiento crearía un ciclo en la jerarquía.'], 422);
+            }
+        }
+
+        $padreAnterior = $estructura->getEstructura()?->getNombre() ?? 'Nivel principal';
+        $padreNuevo = $nuevoPadre?->getNombre() ?? 'Nivel principal';
+        $estructura->setEstructura($nuevoPadre);
+        $entityManager->flush();
+
+        return $this->json([
+            'success' => true,
+            'message' => sprintf('%s ahora depende de %s.', $estructura->getNombre(), $padreNuevo),
+            'anterior' => $padreAnterior,
+            'nuevo' => $padreNuevo,
         ]);
     }
 

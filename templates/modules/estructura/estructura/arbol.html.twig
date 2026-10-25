@@ -110,6 +110,10 @@
         .tree-item span::after { content: 'Detalles'; margin-left: 12px; padding: 1px 6px; border: 1px solid #cbd6de; color: #60798c; font-size: 11px; opacity: 0; }
         .tree-item:hover span::after { opacity: 1; }
         .tree-toolbar .btn, .tree-toolbar .form-control { border-radius: 0; }
+        .tree-drag-handle { margin-right: 8px; color: #7892a6; cursor: grab; }
+        .tree-item.is-dragging { opacity: .45; }
+        .tree-item.drop-target, .tree-root-drop.drop-target { outline: 2px solid #496b86; background: #eaf1f6; }
+        .tree-root-drop { margin-bottom: 12px; padding: 10px 13px; border: 1px dashed #9fb0bd; background: #f8fafb; color: #60798c; font-size: 13px; }
     </style>
 {% endblock %}
 
@@ -134,7 +138,7 @@
                 </div>
             </div>
             <hr>
-            <div class="tree-help"><i class="fas fa-mouse-pointer mr-2"></i><strong>Para abrir los detalles:</strong> haga doble clic sobre el nombre de una estructura. Desde esa pantalla podrá verla y modificarla. Use un clic para expandir o contraer sus dependencias.</div>
+            <div class="tree-help"><i class="fas fa-mouse-pointer mr-2"></i><strong>Detalles:</strong> haga doble clic sobre el nombre. <strong>Reorganizar:</strong> arrastre una estructura y suéltela sobre su nueva superior; el sistema pedirá confirmación.</div>
             <div class="tree-toolbar">
                 <div class="input-group tree-search">
                     <input type="text" id="tree-search" class="form-control" placeholder="Buscar estructura...">
@@ -153,6 +157,7 @@
             </div>
 
             <div class="tree-container">
+                <div id="tree-root-drop" class="tree-root-drop"><i class="fas fa-level-up-alt mr-2"></i>Soltar aquí para mover al nivel principal de la universidad</div>
                 <div id="tree-view"></div>
                 <div id="no-results" class="no-results" style="display: none;">
                     No se encontraron resultados
@@ -214,8 +219,11 @@
                 <li class="tree-li" data-id="${child.id}">
                     <div class="tree-item ${hasChildren ? 'has-children' : ''}"
                          data-id="${child.id}"
+                         data-name="${child.text.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"
+                         draggable="${child.movable ? 'true' : 'false'}"
+                         title="${child.movable ? 'Doble clic: detalles. Arrastre para cambiar subordinación.' : 'Raíz institucional'}"
                          style="color: ${nodeColor}">
-                        <span>${child.text}</span>
+                        ${child.movable ? '<i class="fas fa-grip-vertical tree-drag-handle" aria-hidden="true"></i>' : ''}<span>${child.text}</span>
                     </div>
                     ${buildTree(child.id)}
                 </li>
@@ -228,6 +236,50 @@
             // Inicializar el árbol
             $('#tree-view').html(buildTree());
             allNodes = $('.tree-li').toArray();
+
+            let draggedNodeId = null;
+            let draggedNodeName = '';
+
+            $(document).on('dragstart', '.tree-item[draggable="true"]', function (e) {
+                draggedNodeId = Number($(this).data('id'));
+                draggedNodeName = String($(this).data('name'));
+                $(this).addClass('is-dragging');
+                e.originalEvent.dataTransfer.effectAllowed = 'move';
+                e.originalEvent.dataTransfer.setData('text/plain', String(draggedNodeId));
+            });
+            $(document).on('dragend', '.tree-item', function () {
+                $('.tree-item, .tree-root-drop').removeClass('is-dragging drop-target');
+            });
+            $(document).on('dragover', '.tree-item, #tree-root-drop', function (e) {
+                if (!draggedNodeId) return;
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = 'move';
+                $(this).addClass('drop-target');
+            });
+            $(document).on('dragleave', '.tree-item, #tree-root-drop', function () { $(this).removeClass('drop-target'); });
+            $(document).on('drop', '.tree-item, #tree-root-drop', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('.tree-item, .tree-root-drop').removeClass('drop-target');
+                const nuevoPadreId = this.id === 'tree-root-drop' ? 0 : Number($(this).data('id'));
+                const nuevoPadreNombre = this.id === 'tree-root-drop' ? 'el nivel principal de la universidad' : String($(this).data('name'));
+                if (!draggedNodeId || draggedNodeId === nuevoPadreId) return;
+                if (!window.confirm(`¿Confirma que “${draggedNodeName}” pase a depender de “${nuevoPadreNombre}”?`)) return;
+                $.ajax({
+                    url: '{{ path('app_estructura_mover') }}',
+                    method: 'POST',
+                    data: { estructura: draggedNodeId, padre: nuevoPadreId, _token: '{{ csrf_token('mover_estructura') }}' },
+                    success: function (response) {
+                        toastr.success(response.message || 'Estructura reorganizada correctamente.');
+                        window.location.reload();
+                    },
+                    error: function (xhr) {
+                        const message = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible reorganizar la estructura.';
+                        toastr.error(message);
+                        window.location.reload();
+                    }
+                });
+            });
 
             // Manejar clic en elementos con hijos
             $(document).on('click', '.tree-item.has-children', function (e) {
