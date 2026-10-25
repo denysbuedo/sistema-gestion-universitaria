@@ -44,7 +44,7 @@ class AE2Controller extends AbstractController
         $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         return $this->render('modules/rrhh/reporte/ae2/index.html.twig', [
-            'registros' => $AE2Repository->findBy($esAdminRRHH ? [] : ['entidad' => $persona?->getEntidad()], ['id' => 'desc']),
+            'registros' => $AE2Repository->findBy($esAdminRRHH ? [] : ['entidad' => $persona?->getEntidad()], ['anno' => 'DESC', 'mes' => 'ASC']),
         ]);
     }
 

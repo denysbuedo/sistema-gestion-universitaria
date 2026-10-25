@@ -4,6 +4,7 @@
         .table-container {
             width: 100%;
             overflow-x: auto;
+            max-height: 68vh;
             margin-bottom: 20px;
         }
 
@@ -11,12 +12,14 @@
             width: 100%;
             margin-bottom: 0;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.78rem;
+            table-layout: fixed;
         }
 
         .table-indicadores th,
         .table-indicadores td {
-            padding: 8px 12px;
+            padding: 6px;
+            overflow-wrap: anywhere;
             border: 1px solid #dee2e6;
             vertical-align: middle;
         }

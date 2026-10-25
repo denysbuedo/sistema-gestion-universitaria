@@ -149,6 +149,12 @@ class DrcVsClaustroController extends AbstractController
             }
         }
 
+        foreach ($datos as &$grupoOrdenado) {
+            usort($grupoOrdenado['centros'], static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
+        }
+        unset($grupoOrdenado);
+        usort($datos, static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
+
         // Calcular subtotales para cada grupo
         foreach ($datos as &$grupo) {
             $grupo['subtotal'] = $this->calcularSubtotal($grupo['centros']);

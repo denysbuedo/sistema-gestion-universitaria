@@ -67,6 +67,9 @@ class AE2MesController extends AbstractController
         if (!$filAnno) {
             $filAnno = date('Y');
         }
+        if (!$filMes) {
+            $filMes = date('n');
+        }
         // Filtros a usar
         $filters = [
             'mes' => $filMes,
@@ -93,7 +96,7 @@ class AE2MesController extends AbstractController
             }
         }
 
-        $textFil = "Año: " . ($filAnno ?? ' ');
+        $textFil = "Período: " . ($mesNombre ?? ' ') . ' de ' . ($filAnno ?? ' ');
 //        $textFil = "Mes: " . ($mesNombre ?? ' ') . " | Año: " . ($filAnno ?? ' ') . " | Universidad: " . ($nombreUniversidad ?? ' ');
 
         return $this->render('modules/rrhh/reporte/ae2/mes/index.html.twig', [

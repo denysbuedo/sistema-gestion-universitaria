@@ -1,6 +1,12 @@
 {% include 'pages/_detail_styles.html.twig' %}
 
 <div class="d-flex justify-content-end mb-3">
+    <div class="mr-3" style="min-width:140px">
+        <label for="ae2DetailYear" class="mb-1">Año</label>
+        <select id="ae2DetailYear" class="form-control form-control-sm no-select2">
+            {% for anno in annos %}<option value="{{ anno }}" {% if anno == annoSeleccionado %}selected{% endif %}>{{ anno }}</option>{% endfor %}
+        </select>
+    </div>
     <a id="exportToExcel" class="btn-lux-sm btn-lux-success">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
@@ -26,7 +32,8 @@
     </div>
 </div>
 
-<table id="tbl_details" class="table detail-table table-bordered">
+<div class="table-responsive" style="max-width:100%; overflow-x:auto">
+<table id="tbl_details" class="table detail-table table-bordered" style="font-size:.78rem; table-layout:auto">
     <thead class="thead-light text-center">
     <tr>
         <th>Indicadores</th>
@@ -34,8 +41,8 @@
 {#        {% for trimestre in item %}#}
 {#            <th>{{ romanos[loop.index0] }}</th>#}
 {#        {% endfor %}#}
-        {% for item1 in mesesB  %}
-            <th>{{ item1  }}</th>
+        {% for registro in item %}
+            <th class="ae2-period" data-year="{{ registro.anno }}">{{ mesesB[registro.mes] }}</th>
         {% endfor %}
 {#        <th>Total</th>#}
     </tr>
@@ -76,7 +83,7 @@
             {% set total = 0 %}
             {% for trimestre in item %}
                 {% set valor = attribute(trimestre, indicador.key)|default(0) %}
-                <td class="text-center">{{ valor }}</td>
+                <td class="text-center ae2-period" data-year="{{ trimestre.anno }}">{{ valor }}</td>
                 {% set total = total + valor %}
             {% endfor %}
 {#            <td class="text-center font-weight-bold">{{ total }}</td>#}
@@ -86,7 +93,7 @@
     <tr>
         <td style="font-weight: bold">AE2 firmado</td>
         {% for trimestre in item %}
-            <td class="text-center">
+            <td class="text-center ae2-period" data-year="{{ trimestre.anno }}">
                 {% if trimestre.documento %}
                     <div class="col-10 text-center">
                         <a target="_blank"
@@ -104,6 +111,7 @@
     </tr>
     </tbody>
 </table>
+</div>
 
 
 <!-- Carga de bibliotecas necesarias -->
@@ -112,6 +120,14 @@
 
 <script>
     $(document).ready(function () {
+        function mostrarAnnoAE2() {
+            var anno = String($('#ae2DetailYear').val() || '');
+            $('.ae2-period').each(function () {
+                $(this).toggle(String($(this).data('year')) === anno);
+            });
+        }
+        $('#ae2DetailYear').on('change', mostrarAnnoAE2);
+        mostrarAnnoAE2();
         $('#exportToExcel').on('click', function (e) {
             e.preventDefault();
 

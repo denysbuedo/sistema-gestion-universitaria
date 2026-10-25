@@ -1,6 +1,6 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Reporte de Modelo 223.216 (I) (AE2)-MES{% endblock %}
+{% block title %}Consolidado nacional de plantilla y contratación{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -87,7 +87,7 @@
 {% block body %}
     <div class="card card-luxury">
         <div class="card-header d-flex align-items-center">
-            <h3 class="card-title text-bold m-0"><i class="fas fa-file-invoice label-icon"></i>Reporte de Modelo 223.216 (I) (AE2)-MES</h3>
+            <div><h3 class="card-title m-0"><i class="fas fa-file-invoice label-icon"></i>Consolidado nacional de plantilla y contratación</h3><small class="text-muted">Modelo 223.216 (I) — AE2 · Información por período</small></div>
         </div>
 
         {# Filtros #}
@@ -106,22 +106,17 @@
                     <div class="card-body">
                         <div class="row">
                             <!-- Select de Meses -->
-                            {#                            <div class="col-md-4"> #}
-                            {#                                <label class="required" for="mesFicha">Mes</label> #}
-                            {#                                <select id="mesFicha" name="mesFicha" class="form-control"> #}
-                            {#                                    <option value="">Seleccione</option> #}
-                            {#                                    {% for id, nombre in meses %} #}
-                            {#                                        <option value="{{ id }}" {% if id == fil_mes %} selected {% endif %}> #}
-                            {#                                            {{ nombre }} #}
-                            {#                                        </option> #}
-                            {#                                    {% endfor %} #}
-                            {#                                </select> #}
-                            {#                            </div> #}
+                            <div class="col-md-4">
+                                <label class="required" for="mesFicha">Mes</label>
+                                <select id="mesFicha" name="mesFicha" class="form-control no-select2">
+                                    {% for id, nombre in meses %}<option value="{{ id }}" {% if id == fil_mes %}selected{% endif %}>{{ nombre }}</option>{% endfor %}
+                                </select>
+                            </div>
 
                             <!-- Select de Años -->
                             <div class="col-md-4">
                                 <label class="required" for="annoFicha">Año</label>
-                                <select id="annoFicha" name="annoFicha" class="form-control">
+                                <select id="annoFicha" name="annoFicha" class="form-control no-select2">
                                     <option value="">Seleccione</option>
                                     {% set annoActual = "now"|date("Y") %}
                                     {% set annoInicial = annoActual - 5 %}
@@ -158,7 +153,7 @@
                             <thead>
                             <tr>
                                 <th class="col-indicador">Indicador</th>
-                                {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                {% for mesData in datos.meses|sort((a, b) => a.anno == b.anno ? a.mes <=> b.mes : a.anno <=> b.anno) %}
                                     <th class="col-mes" style="white-space: nowrap;">
                                         {{ meses[mesData.mes] }}/{{ mesData.anno }}
                                         <span style="display: inline-flex; gap: 4px; margin-left: 8px;">
@@ -189,7 +184,7 @@
                             {% for field in fields %}
                                 <tr>
                                     <td class="col-indicador">{{ field.label }}</td>
-                                    {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                    {% for mesData in datos.meses|sort((a, b) => a.anno == b.anno ? a.mes <=> b.mes : a.anno <=> b.anno) %}
                                         <td>{{ mesData.valores[field.field] ?? 0 }}</td>
                                     {% endfor %}
                                 </tr>

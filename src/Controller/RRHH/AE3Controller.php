@@ -38,7 +38,7 @@ class AE3Controller extends AbstractController
         $persona = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         return $this->render('modules/rrhh/reporte/ae3/index.html.twig', [
-            'registros' => $AE3Repository->findBy($esAdminRRHH ? [] : ['entidad' => $persona?->getEntidad()], ['id' => 'desc']),
+            'registros' => $AE3Repository->findBy($esAdminRRHH ? [] : ['entidad' => $persona?->getEntidad()], ['anno' => 'DESC', 'mes' => 'ASC']),
         ]);
     }
 

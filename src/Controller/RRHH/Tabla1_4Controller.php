@@ -649,6 +649,12 @@ class Tabla1_4Controller extends AbstractController
 //            ]
 //        ];
 
+        foreach ($datos as &$grupoOrdenado) {
+            usort($grupoOrdenado['centros'], static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
+        }
+        unset($grupoOrdenado);
+        usort($datos, static fn (array $a, array $b): int => strnatcasecmp($a['nombre'], $b['nombre']));
+
         // Calcular subtotales para cada grupo
         foreach ($datos as &$grupo) {
             $grupo['subtotal'] = $this->calcularSubtotal($grupo['centros']);
@@ -706,6 +712,8 @@ class Tabla1_4Controller extends AbstractController
             unset($valores); // Romper la referencia
         }
 
+        $this->recalcularTotalesCategorias($subtotal);
+
         return $subtotal;
     }
 
@@ -736,7 +744,19 @@ class Tabla1_4Controller extends AbstractController
             unset($valores); // Romper la referencia
         }
 
+        $this->recalcularTotalesCategorias($totalGeneral);
+
         return $totalGeneral;
+    }
+
+    private function recalcularTotalesCategorias(array &$datos): void
+    {
+        foreach (['cuadros_docentes', 'profesores_completo', 'asesores'] as $categoria) {
+            $datos[$categoria]['tot'] = array_sum(array_diff_key($datos[$categoria], ['tot' => true]));
+        }
+        foreach (['cuadros_investigacion', 'investigadores'] as $categoria) {
+            $datos[$categoria]['tot'] = array_sum(array_diff_key($datos[$categoria], ['tot' => true]));
+        }
     }
 
 }

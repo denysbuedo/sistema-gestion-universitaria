@@ -142,7 +142,7 @@
                             <thead>
                             <tr>
                                 <th class="col-indicador">Indicador</th>
-                                {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                {% for mesData in datos.meses|sort((a, b) => a.anno == b.anno ? a.mes <=> b.mes : a.anno <=> b.anno) %}
                                     <th class="col-mes" style="white-space: nowrap;">
                                         {{ meses[mesData.mes] }}/{{ mesData.anno }}
                                         <span style="display: inline-flex; gap: 4px; margin-left: 8px;">
@@ -173,7 +173,7 @@
                             {% for field in fields %}
                                 <tr>
                                     <td class="col-indicador">{{ field.label }}</td>
-                                    {% for mesData in datos.meses|sort((a, b) => a.anno <=> b.anno ?? a.mes <=> b.mes) %}
+                                    {% for mesData in datos.meses|sort((a, b) => a.anno == b.anno ? a.mes <=> b.mes : a.anno <=> b.anno) %}
                                         <td>{{ mesData.valores[field.field] ?? 0 }}</td>
                                     {% endfor %}
                                 </tr>

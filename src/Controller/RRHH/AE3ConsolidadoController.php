@@ -61,11 +61,13 @@ class AE3ConsolidadoController extends AbstractController
             $idEntidad = null;
         }
 
+        $meses = $utils->getMesesNombres();
         $response = $this->render('modules/rrhh/reporte/ae3/consolidado/index.html.twig', [
             'registros' => $AE3Repository->findDistinctEntidades($idEntidad, $request->getSession()->get('ae3_mes'), $request->getSession()->get('ae3_anno')),
             'fil_mes' => $request->getSession()->get('ae3_mes'),
             'fil_anno' => $request->getSession()->get('ae3_anno'),
-            'text_fil' => "Año: " . $request->getSession()->get('ae3_anno'),
+            'meses' => $meses,
+            'text_fil' => "Período: " . ($meses[$request->getSession()->get('ae3_mes')] ?? '') . " de " . $request->getSession()->get('ae3_anno'),
         ]);
         return $response;
     }
@@ -78,7 +80,7 @@ class AE3ConsolidadoController extends AbstractController
     #[Route('/{id}/detail', name: 'app_rrhh_reporte_ae3_consolidado_detail', methods: ['GET', 'POST'])]
     public function detail($id, AE3Repository $ae3Repository)
     {
-        $ae3 = $ae3Repository->findBy(['entidad' => $id], ['mes' => 'asc']);
+        $ae3 = $ae3Repository->findBy(['entidad' => $id], ['anno' => 'DESC', 'mes' => 'ASC']);
         $ae3Array = [];
         $temp = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $meses = [];
