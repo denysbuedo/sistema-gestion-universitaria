@@ -159,7 +159,7 @@
         <div class="rrhh-heading">
             <div>
                 <h4 style="color:#1a2e44;font-weight:700;margin:0">Recursos Humanos</h4>
-                <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">{{ alcance }} · Plantilla, contratos y calificación del personal · Período mostrado: <strong>{{ periodo_label }}</strong></p>
+                <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">{{ alcance }} · AE2 mensual: <strong>{{ periodo_label }}</strong> · AE3 trimestral disponible: <strong>{{ periodo_ae3_label }}</strong></p>
             </div>
             {% set annosDisponibles = [] %}
             {% for periodo in periodos %}{% if periodo.anno not in annosDisponibles %}{% set annosDisponibles = annosDisponibles|merge([periodo.anno]) %}{% endif %}{% endfor %}
@@ -321,7 +321,7 @@
     </div>
 
     {# ── Sección: Personal (AE3) ──────────────────────────── #}
-    <div class="section-label">Composición del personal (AE3)</div>
+    <div class="section-label">Composición del personal (AE3 — {{ periodo_ae3_label }})</div>
 
     {# Pills de métricas AE3 #}
     <div class="ae3-pills" style="margin-bottom:20px;">

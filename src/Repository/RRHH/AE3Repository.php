@@ -82,12 +82,17 @@ class AE3Repository extends ServiceEntityRepository
     }
 
 
-    public function getLatestPeriod(?int $entidadId = null): ?array
+    public function getLatestPeriod(?int $entidadId = null, ?int $hastaAnno = null, ?int $hastaMes = null): ?array
     {
         $qb = $this->createQueryBuilder('a')
             ->select('a.anno, a.mes');
         if ($entidadId !== null) {
             $qb->andWhere('IDENTITY(a.entidad) = :entidadId')->setParameter('entidadId', $entidadId);
+        }
+        if ($hastaAnno !== null && $hastaMes !== null) {
+            $qb->andWhere('(a.anno < :hastaAnno OR (a.anno = :hastaAnno AND a.mes <= :hastaMes))')
+                ->setParameter('hastaAnno', $hastaAnno)
+                ->setParameter('hastaMes', $hastaMes);
         }
         return $qb
             ->orderBy('a.anno', \SortDirection::Descending)

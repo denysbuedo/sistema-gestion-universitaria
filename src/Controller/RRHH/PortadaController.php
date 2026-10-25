@@ -38,21 +38,16 @@ class PortadaController extends AbstractController
             10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
         ];
 
-        // ── Período solicitado o, por defecto, el más reciente con datos ──
+        // ── AE2 es mensual: se respeta cualquier mes solicitado ──────────
         $periodos = $ae2Repo->getPeriodosDisponibles($entidadId);
+        $latestAE2 = $ae2Repo->getLatestPeriod($entidadId);
         $annoSolicitado = $request->query->getInt('anno');
         $mesSolicitado = $request->query->getInt('mes');
-        $periodoSeleccionado = null;
-        foreach ($periodos as $periodo) {
-            if ((int) $periodo['anno'] === $annoSolicitado && (int) $periodo['mes'] === $mesSolicitado) {
-                $periodoSeleccionado = $periodo;
-                break;
-            }
-        }
-        $periodoSeleccionado ??= $periodos[0] ?? null;
-        $anno = $periodoSeleccionado ? (int) $periodoSeleccionado['anno'] : (int) date('Y');
-        $mes = $periodoSeleccionado ? (int) $periodoSeleccionado['mes'] : (int) date('n');
-        $periodoLabel = $periodoSeleccionado ? ($mesesNombres[$mes] . ' ' . $anno) : 'Sin datos';
+        $solicitudValida = $annoSolicitado >= 2000 && $annoSolicitado <= ((int) date('Y') + 1)
+            && $mesSolicitado >= 1 && $mesSolicitado <= 12;
+        $anno = $solicitudValida ? $annoSolicitado : (int) ($latestAE2['anno'] ?? $periodos[0]['anno'] ?? date('Y'));
+        $mes = $solicitudValida ? $mesSolicitado : (int) ($latestAE2['mes'] ?? $periodos[0]['mes'] ?? date('n'));
+        $periodoLabel = $mesesNombres[$mes] . ' ' . $anno;
 
         // ── Totales AE2 del período actual ──────────────────────────
         $filtrosAE2 = ['anno' => $anno, 'mes' => $mes];
@@ -97,8 +92,13 @@ class PortadaController extends AbstractController
         $tendenciaCubierta = json_encode(array_map(function ($r) { return (int)$r['cubierta']; }, $tendencia));
 
         // ── Totales AE3 del período actual ──────────────────────────
-        $ae3Totales  = $ae3Repo->getTotalesGlobales($anno, $mes, $entidadId);
-        $ae3Cats     = $ae3Repo->getDistribucionCategorias($anno, $mes, $entidadId);
+        // ── AE3 es trimestral: último cierre disponible hasta el mes AE2 ──
+        $latestAE3 = $ae3Repo->getLatestPeriod($entidadId, $anno, $mes);
+        $annoAE3 = $latestAE3 ? (int) $latestAE3['anno'] : $anno;
+        $mesAE3 = $latestAE3 ? (int) $latestAE3['mes'] : $mes;
+        $periodoAE3Label = $latestAE3 ? ($mesesNombres[$mesAE3] . ' ' . $annoAE3) : 'Sin datos registrados';
+        $ae3Totales  = $latestAE3 ? $ae3Repo->getTotalesGlobales($annoAE3, $mesAE3, $entidadId) : [];
+        $ae3Cats     = $latestAE3 ? $ae3Repo->getDistribucionCategorias($annoAE3, $mesAE3, $entidadId) : [];
 
         $distribCategorias = json_encode([
             ['name' => 'Cuadros Docentes',   'y' => (int)($ae3Cats['docentes']        ?? 0)],
@@ -125,6 +125,7 @@ class PortadaController extends AbstractController
         return $this->render('modules/rrhh/portada/index.html.twig', [
             // Período
             'periodo_label'       => $periodoLabel,
+            'periodo_ae3_label'   => $periodoAE3Label,
             'alcance'             => $alcance,
             'anno'                => $anno,
             'mes'                 => $mes,
