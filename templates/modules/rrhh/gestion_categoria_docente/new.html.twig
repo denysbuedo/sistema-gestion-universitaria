@@ -1,0 +1,21 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Nuevo expediente de categoría docente{% endblock %}
+{% block body %}
+{% include 'pages/_luxury_form_styles.html.twig' %}
+<div class="card card-luxury">
+    <div class="card-header"><h3 class="card-title"><i class="fas fa-folder-plus label-icon"></i>Nuevo expediente de categoría docente</h3></div>
+    <form method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('nuevo_expediente_categoria') }}">
+        <div class="card-body px-4">
+            <div class="row">
+                <div class="col-md-6 form-group"><label class="required">Profesor o aspirante</label><select name="persona" class="form-control form-control-luxury" required><option value="">Seleccione</option>{% for p in personas %}<option value="{{ p.id }}">{{ p.siglas ? '(' ~ p.siglas ~ ') ' : '' }}{{ p.nombre }}</option>{% endfor %}</select></div>
+                <div class="col-md-6 form-group"><label class="required">Categoría solicitada</label><select name="categoria" class="form-control form-control-luxury" required><option value="">Seleccione</option>{% for c in categorias %}<option value="{{ c.id }}">{{ c.nombre }} — {{ c.requiere_aprobacion_mes ? 'Aprobación MES' : 'Universidad' }}</option>{% endfor %}</select></div>
+                <div class="col-md-4 form-group"><label class="required">Fecha de solicitud</label><input type="date" name="fecha_solicitud" value="{{ 'now'|date('Y-m-d') }}" class="form-control form-control-luxury" required></div>
+                <div class="col-md-8 form-group"><label>Observaciones iniciales</label><textarea name="observaciones" rows="3" class="form-control form-control-luxury"></textarea></div>
+            </div>
+            <div class="alert alert-info mb-0"><i class="fas fa-route mr-2"></i>El sistema determinará automáticamente si el expediente termina en la universidad o debe elevarse al MES.</div>
+        </div>
+        <div class="card-footer bg-white border-top-0 d-flex justify-content-end" style="gap:10px"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="btn-lux-sm btn-lux-outline-danger">Cancelar</a><button class="btn-lux-sm btn-lux-primary"><i class="fas fa-save"></i> Crear expediente</button></div>
+    </form>
+</div>
+{% endblock %}
