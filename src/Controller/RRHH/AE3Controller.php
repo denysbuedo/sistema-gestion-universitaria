@@ -8,6 +8,8 @@ use App\Repository\Personal\PersonaRepository;
 use App\Repository\RRHH\AE3Repository;
 use App\Services\UploadedDocumentStorage;
 use App\Services\Utils;
+use App\Services\RRHH\PartesEstadisticosValidator;
+use App\Repository\RRHH\AE2Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +50,7 @@ class AE3Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae3_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE3Repository $aE3Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils)
+    public function registrar(Request $request, AE3Repository $aE3Repository, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils, PartesEstadisticosValidator $validator)
     {
         try {
             $ae3 = new AE3();
@@ -67,6 +69,17 @@ class AE3Controller extends AbstractController
             $form = $this->createForm(AE3Type::class, $ae3, ['action' => 'registrar', 'administrador_rrhh' => $esAdminRRHH]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
+                $ae2 = $ae3->getEntidad() ? $aE2Repository->findOneBy([
+                    'entidad' => $ae3->getEntidad(),
+                    'mes' => $ae3->getMes(),
+                    'anno' => $ae3->getAnno(),
+                ]) : null;
+                $erroresValidacion = $validator->validarAE3($ae3, $ae2);
+                if ($erroresValidacion !== []) {
+                    foreach ($erroresValidacion as $error) {
+                        $form->addError(new \Symfony\Component\Form\FormError($error));
+                    }
+                } else {
                 if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     $ae3->setDocumento($storage->storeName($file, 'uploads/rrhh/ae3/documento'));
                 }
@@ -77,6 +90,7 @@ class AE3Controller extends AbstractController
                     return $this->redirectToRoute('app_rrhh_reporte_ae3_index', [], Response::HTTP_SEE_OTHER);
                 }
                 $this->addFlash('error', 'Debe seleccionar una universidad válida.');
+                }
             }
 
 

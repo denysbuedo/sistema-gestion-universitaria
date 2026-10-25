@@ -14,6 +14,7 @@ use App\Repository\RRHH\CategoriaDocenteRepository;
 use App\Repository\Security\UserRepository;
 use App\Services\Utils;
 use App\Services\UploadedDocumentStorage;
+use App\Services\RRHH\PartesEstadisticosValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -55,7 +56,7 @@ class AE2Controller extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_rrhh_reporte_ae2_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils, EntityManagerInterface $entityManager)
+    public function registrar(Request $request, AE2Repository $aE2Repository, PersonaRepository $personaRepository, UploadedDocumentStorage $storage, Utils $utils, EntityManagerInterface $entityManager, PartesEstadisticosValidator $validator)
     {
         try {
             $ae2 = new AE2();
@@ -78,6 +79,12 @@ class AE2Controller extends AbstractController
                 $ae2->setTotalPlantillaAprobada($this->obtenerPlantillaAprobada($entityManager, $ae2->getEntidad()->getId()));
             }
             if ($form->isSubmitted() && $form->isValid()) {
+                $erroresValidacion = $validator->validarAE2($ae2);
+                if ($erroresValidacion !== []) {
+                    foreach ($erroresValidacion as $error) {
+                        $form->addError(new \Symfony\Component\Form\FormError($error));
+                    }
+                } else {
                 if (($file = $form['documento']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     $ae2->setDocumento($storage->storeName($file, 'uploads/rrhh/ae2/documento'));
                 }
@@ -88,6 +95,7 @@ class AE2Controller extends AbstractController
                     return $this->redirectToRoute('app_rrhh_reporte_ae2_index', [], Response::HTTP_SEE_OTHER);
                 }
                 $this->addFlash('error', 'Debe seleccionar una universidad válida.');
+                }
             }
             return $this->render('modules/rrhh/reporte/ae2/new.html.twig', [
                 'form' => $form->createView(),

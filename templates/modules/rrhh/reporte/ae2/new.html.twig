@@ -34,6 +34,12 @@
         {{ form_start(form, {'attr': {'id': 'luxury-form'}}) }}
 
         <div class="card-body px-4 pt-3">
+            {% if form.vars.errors|length %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>No se puede registrar el AE2:</strong>
+                    <ul class="mb-0 mt-2">{% for error in form.vars.errors %}<li>{{ error.message }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
             <div class="row mb-3">
                 <div class="col-12 text-gray">
                     {% if administrador_rrhh %}
