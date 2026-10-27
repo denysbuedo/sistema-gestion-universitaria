@@ -3,6 +3,16 @@
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
 {% include 'pages/_luxury_form_styles.html.twig' %}
+<style>
+    .categoria-docente-expediente .card,
+    .categoria-docente-expediente .card-luxury,
+    .categoria-docente-expediente .card::before,
+    .categoria-docente-expediente .card::after {
+        box-shadow: none !important;
+        filter: none !important;
+    }
+</style>
+<div class="categoria-docente-expediente">
 <div class="d-flex flex-wrap align-items-center mb-3" style="gap:10px"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="btn-lux-sm btn-lux-outline-primary"><i class="fas fa-arrow-left"></i> Volver</a><div><h2 class="h4 mb-0">{{ proceso.numero_expediente }}</h2><span class="text-muted">{{ proceso.persona }} · {{ proceso.categoria }}</span></div><span class="status-pill -on ml-auto">{{ proceso.estado|replace({'_':' '})|title }}</span></div>
 <div class="row"><div class="col-lg-8">
     <div class="card card-luxury mb-3"><div class="card-header"><h3 class="card-title m-0"><i class="fas fa-clipboard-check label-icon"></i>Documentación requerida</h3></div><div class="card-body px-4">
@@ -18,4 +28,5 @@
     {% if not administrador_rrhh and proceso.estado in ['PREPARACION_EXPEDIENTE','REVISION_UNIVERSIDAD'] %}<div class="card card-luxury mt-3"><div class="card-body"><form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_eliminar', {'id':proceso.id}) }}" onsubmit="return confirm('¿Eliminar definitivamente este expediente en preparación?')"><input type="hidden" name="_token" value="{{ csrf_token('eliminar_categoria_' ~ proceso.id) }}"><button class="btn-lux-sm btn-lux-outline-danger w-100"><i class="fas fa-trash"></i> Eliminar expediente</button></form></div></div>{% endif %}
     {% if not administrador_rrhh and proceso.estado in ['PENDIENTE_MES','SUBSANACION'] %}<div class="card card-luxury mt-3"><div class="card-header"><h3 class="card-title m-0">Desistir del proceso</h3></div><div class="card-body"><form method="post" action="{{ path('app_rrhh_gestion_categoria_docente_decision', {'id':proceso.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('decision_categoria_' ~ proceso.id) }}"><textarea name="observaciones" class="form-control mb-2" required placeholder="Motivo institucional del desistimiento"></textarea><button name="accion" value="DESISTIR" class="btn-lux-sm btn-lux-outline-danger">Desistir sin eliminar el historial</button></form></div></div>{% endif %}
 </div></div>
+</div>
 {% endblock %}
