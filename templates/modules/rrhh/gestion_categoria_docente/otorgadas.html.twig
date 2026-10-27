@@ -1,0 +1,17 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Categorías docentes otorgadas{% endblock %}
+{% block body %}
+{% include 'pages/_luxury_list_styles.html.twig' %}
+<div class="card card-luxury">
+    <div class="card-header"><h3 class="card-title m-0"><i class="fas fa-award label-icon"></i>Categorías docentes otorgadas</h3><small class="text-muted">Registro institucional con acceso al expediente completo</small></div>
+    <div class="card-body px-4">
+        <table class="table config-table table-bordered table-striped dataTable">
+            <thead>
+            <tr><th>Persona</th><th>Categoría</th><th>Resolución rectoral</th>{% if administrador_rrhh %}<th>Universidad</th>{% endif %}<th>Fecha</th><th>Acciones</th></tr>
+            <tr><th><input class="responsive-input" placeholder="Buscar persona"></th><th><select class="responsive-input no-select2"><option value="">Todas</option>{% set categorias=[] %}{% for item in registros %}{% if item.categoria not in categorias %}{% set categorias= categorias|merge([item.categoria]) %}<option>{{ item.categoria }}</option>{% endif %}{% endfor %}</select></th><th><input class="responsive-input" placeholder="Número"></th>{% if administrador_rrhh %}<th><select class="responsive-input no-select2"><option value="">Todas</option>{% set entidades=[] %}{% for item in registros %}{% set entidad=item.siglas ?: item.entidad %}{% if entidad not in entidades %}{% set entidades=entidades|merge([entidad]) %}<option>{{ entidad }}</option>{% endif %}{% endfor %}</select></th>{% endif %}<th><input class="responsive-input" placeholder="Año o fecha"></th><th></th></tr>
+            </thead>
+            <tbody>{% for item in registros %}<tr><td>{{ item.persona }}</td><td>{{ item.categoria }}</td><td>{% if item.documento %}<a href="/{{ item.documento }}" target="_blank" rel="noopener"><i class="fas fa-file-pdf mr-1"></i>{{ item.numero_resolucion ?: 'N/A' }}</a>{% else %}{{ item.numero_resolucion ?: 'N/A' }}{% endif %}</td>{% if administrador_rrhh %}<td>{{ item.siglas ?: item.entidad }}</td>{% endif %}<td>{{ item.fecha_otorgamiento|date('d/m/Y') }}</td><td><a href="{{ path('app_rrhh_gestion_categoria_docente_detalle', {'id':item.proceso_id}) }}" class="btn-lux-sm btn-lux-outline-primary"><i class="fas fa-folder-open"></i> Ver expediente</a></td></tr>{% else %}<tr><td colspan="{{ administrador_rrhh ? 6 : 5 }}" class="text-center text-muted py-4">Todavía no existen categorías otorgadas.</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

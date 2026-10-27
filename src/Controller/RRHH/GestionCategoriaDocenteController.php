@@ -18,6 +18,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/rrhh/gestion-categorias-docentes')]
 final class GestionCategoriaDocenteController extends AbstractController
 {
+    private const MAX_DOCUMENT_BYTES = 10_485_760;
+
     #[Route('/', name: 'app_rrhh_gestion_categoria_docente_index', methods: ['GET'])]
     public function index(PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
     {
@@ -35,6 +37,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             JOIN personal.tbn_categoria_docente c ON c.id = p.categoria_docente_id
             JOIN estructura.tbd_estructura e ON e.id = p.entidad_id
             WHERE c.codigo IN ('PT','PA','PI','PE','DHC')
+              AND p.estado NOT IN ('OTORGADO','NO_APROBADO','DESISTIDO')
             {$scope}
             ORDER BY p.creado DESC
             SQL, $params);
@@ -50,6 +53,31 @@ final class GestionCategoriaDocenteController extends AbstractController
     {
         return $this->render('modules/rrhh/gestion_categoria_docente/catalogo.html.twig', [
             'registros' => array_values(array_filter($repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']), static fn ($categoria): bool => in_array($categoria->getCodigo(), ['PT', 'PA', 'PI', 'PE', 'DHC'], true))),
+        ]);
+    }
+
+    #[Route('/otorgadas', name: 'app_rrhh_gestion_categoria_docente_otorgadas', methods: ['GET'])]
+    public function otorgadas(PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
+    {
+        $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
+        $entidadId = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
+        $scope = $esAdminRRHH ? '' : ' AND h.entidad_id=:entidad';
+        $params = $esAdminRRHH ? [] : ['entidad' => $entidadId ?: -1];
+        $registros = $entityManager->getConnection()->fetchAllAssociative(<<<SQL
+            SELECT h.id, h.proceso_id, h.fecha_otorgamiento, h.numero_resolucion, h.documento,
+                   c.nombre categoria, e.nombre entidad, e.siglas,
+                   trim(concat_ws(' ', pe.primer_nombre, pe.segundo_nombre, pe.primer_apellido, pe.segundo_apellido)) persona
+            FROM rrhh.tbd_historial_categoria_docente h
+            JOIN personal.tbd_persona pe ON pe.id=h.persona_id
+            JOIN personal.tbn_categoria_docente c ON c.id=h.categoria_docente_id
+            JOIN estructura.tbd_estructura e ON e.id=h.entidad_id
+            WHERE h.proceso_id IS NOT NULL {$scope}
+            ORDER BY h.fecha_otorgamiento DESC, persona
+            SQL, $params);
+
+        return $this->render('modules/rrhh/gestion_categoria_docente/otorgadas.html.twig', [
+            'registros' => $registros,
+            'administrador_rrhh' => $esAdminRRHH,
         ]);
     }
 
@@ -158,6 +186,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             SELECT p.*, c.nombre categoria, c.codigo categoria_codigo, e.nombre entidad, e.siglas, pais.nombre pais,
                    ia.tipo instrumento_tipo, ia.numero instrumento_numero, ia.fecha instrumento_fecha,
                    ia.documento instrumento_documento, ia.nombre_original instrumento_nombre,
+                   h.documento resolucion_rectoral_documento,
                    trim(concat_ws(' ', pe.primer_nombre, pe.segundo_nombre, pe.primer_apellido, pe.segundo_apellido)) persona
             FROM rrhh.tbd_proceso_categoria_docente p
             JOIN personal.tbd_persona pe ON pe.id=p.persona_id
@@ -165,6 +194,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             JOIN estructura.tbd_estructura e ON e.id=p.entidad_id
             LEFT JOIN estructura.tbn_pais pais ON pais.id=p.pais_id
             LEFT JOIN rrhh.tbd_instrumento_aprobacion_categoria ia ON ia.id=p.instrumento_aprobacion_id
+            LEFT JOIN rrhh.tbd_historial_categoria_docente h ON h.proceso_id=p.id
             WHERE p.id=:id
             SQL, ['id' => $id]);
         if (!$proceso) {
@@ -312,23 +342,39 @@ final class GestionCategoriaDocenteController extends AbstractController
     }
 
     #[Route('/expedientes/{id}/resolucion', name: 'app_rrhh_gestion_categoria_docente_resolucion', methods: ['POST'])]
-    public function resolucion(int $id, Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager): Response
+    public function resolucion(int $id, Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager, UploadedDocumentStorage $storage): Response
     {
         $this->validarCsrf($request, 'resolucion_categoria_' . $id);
         [$proceso, $connection] = $this->procesoUniversidad($id, $personaRepository, $utils, $entityManager);
         if (!in_array($proceso['estado'], ['PENDIENTE_RECTOR', 'APROBADO_MES'], true)) throw $this->createAccessDeniedException();
         $numero = trim((string) $request->request->get('numero_resolucion'));
         $fecha = (string) $request->request->get('fecha_resolucion');
-        if (!$numero || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            $this->addFlash('error', 'Debe indicar número y fecha de la resolución.');
+        $archivo = $request->files->get('documento_resolucion');
+        if (!$numero || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha) || !$archivo instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+            $this->addFlash('error', 'Debe indicar número, fecha y documento PDF de la resolución rectoral.');
             return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
         }
-        $autoridad = (string) $connection->fetchOne('SELECT autoridad_otorgamiento FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
-        $connection->transactional(function ($connection) use ($id, $proceso, $numero, $fecha, $autoridad): void {
+        try {
+            $this->validarPdf($archivo);
+            $resolucionGuardada = $storage->store($archivo, 'uploads/rrhh/categorias-docentes/resoluciones-rectorales');
+        } catch (\InvalidArgumentException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+            return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+        }
+        $categoria = $connection->fetchAssociative('SELECT codigo FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
+        $connection->transactional(function ($connection) use ($id, $proceso, $numero, $fecha, $categoria, $resolucionGuardada): void {
             $connection->update('rrhh.tbd_proceso_categoria_docente', ['estado' => 'OTORGADO', 'nivel_actual' => 'CERRADO', 'numero_resolucion' => $numero, 'fecha_resolucion' => $fecha, 'resultado_final' => 'APROBADO', 'actualizado' => date('Y-m-d H:i:s')], ['id' => $id]);
-            $connection->update('personal.tbd_persona', ['categoria_docente_id' => $proceso['categoria_docente_id']], ['id' => $proceso['persona_id']]);
-            $connection->executeStatement('UPDATE rrhh.tbd_historial_categoria_docente SET activo=false, actualizado=CURRENT_TIMESTAMP WHERE persona_id=:persona AND activo=true', ['persona' => $proceso['persona_id']]);
-            $connection->insert('rrhh.tbd_historial_categoria_docente', ['proceso_id' => $id, 'persona_id' => $proceso['persona_id'], 'categoria_docente_id' => $proceso['categoria_docente_id'], 'entidad_id' => $proceso['entidad_id'], 'fecha_otorgamiento' => $fecha, 'numero_resolucion' => $numero, 'autoridad' => $autoridad ?: 'Rector', 'activo' => true, 'creado' => date('Y-m-d H:i:s'), 'actualizado' => date('Y-m-d H:i:s')]);
+            if (in_array($categoria['codigo'] ?? null, ['PT', 'PA'], true)) {
+                $connection->update('personal.tbd_persona', ['categoria_docente_id' => $proceso['categoria_docente_id']], ['id' => $proceso['persona_id']]);
+                $connection->executeStatement(<<<'SQL'
+                    UPDATE rrhh.tbd_historial_categoria_docente h
+                    SET activo=false, actualizado=CURRENT_TIMESTAMP
+                    FROM personal.tbn_categoria_docente c
+                    WHERE c.id=h.categoria_docente_id AND c.codigo IN ('PT','PA','AS','I')
+                      AND h.persona_id=:persona AND h.activo=true
+                    SQL, ['persona' => $proceso['persona_id']]);
+            }
+            $connection->insert('rrhh.tbd_historial_categoria_docente', ['proceso_id' => $id, 'persona_id' => $proceso['persona_id'], 'categoria_docente_id' => $proceso['categoria_docente_id'], 'entidad_id' => $proceso['entidad_id'], 'fecha_otorgamiento' => $fecha, 'numero_resolucion' => $numero, 'autoridad' => 'Rector', 'activo' => true, 'documento' => $resolucionGuardada['path'], 'creado' => date('Y-m-d H:i:s'), 'actualizado' => date('Y-m-d H:i:s')]);
         });
         $this->registrarMovimiento($connection, $id, $proceso['estado'], 'OTORGADO', 'Categoría otorgada mediante resolución', $numero);
         $this->addFlash('success', 'La categoría fue otorgada y actualizada en la ficha del profesor.');
@@ -357,6 +403,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
         }
         try {
+            $this->validarPdf($archivo);
             $guardado = $storage->store($archivo, 'uploads/rrhh/categorias-docentes/evidencias');
             $tipo = (string) $request->request->get('tipo', 'OTRA_EVIDENCIA');
             $codigo = (string) $connection->fetchOne('SELECT codigo FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
@@ -459,6 +506,7 @@ final class GestionCategoriaDocenteController extends AbstractController
                 return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
             }
             try {
+                $this->validarPdf($archivo);
                 $guardado = $storage->store($archivo, 'uploads/rrhh/categorias-docentes/aprobaciones-mes');
                 $instrumentoId = (int) $connection->fetchOne(<<<'SQL'
                     INSERT INTO rrhh.tbd_instrumento_aprobacion_categoria
@@ -559,5 +607,18 @@ final class GestionCategoriaDocenteController extends AbstractController
         return $instrumento['tipo'] === 'RESOLUCION'
             ? 'Resolución ' . $instrumento['numero']
             : 'Carta del Ministro de ' . (new \DateTimeImmutable((string) $instrumento['fecha']))->format('d/m/Y');
+    }
+
+    private function validarPdf(\Symfony\Component\HttpFoundation\File\UploadedFile $archivo): void
+    {
+        if (!$archivo->isValid()) {
+            throw new \InvalidArgumentException('No se pudo recibir el documento. Compruebe que no exceda los 10 MB.');
+        }
+        if (($archivo->getSize() ?: 0) > self::MAX_DOCUMENT_BYTES) {
+            throw new \InvalidArgumentException('El documento excede el tamaño máximo permitido de 10 MB.');
+        }
+        if (!in_array($archivo->getMimeType(), ['application/pdf', 'application/x-pdf'], true) || strtolower($archivo->getClientOriginalExtension()) !== 'pdf') {
+            throw new \InvalidArgumentException('Solo se admiten documentos PDF.');
+        }
     }
 }
