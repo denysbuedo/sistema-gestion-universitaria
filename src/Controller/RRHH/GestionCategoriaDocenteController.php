@@ -34,7 +34,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             JOIN personal.tbd_persona pe ON pe.id = p.persona_id
             JOIN personal.tbn_categoria_docente c ON c.id = p.categoria_docente_id
             JOIN estructura.tbd_estructura e ON e.id = p.entidad_id
-            WHERE c.codigo IN ('PT','PA','PE','DHC')
+            WHERE c.codigo IN ('PT','PA','PI','PE','DHC')
             {$scope}
             ORDER BY p.creado DESC
             SQL, $params);
@@ -49,7 +49,7 @@ final class GestionCategoriaDocenteController extends AbstractController
     public function catalogo(CategoriaDocenteRepository $repository): Response
     {
         return $this->render('modules/rrhh/gestion_categoria_docente/catalogo.html.twig', [
-            'registros' => array_values(array_filter($repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']), static fn ($categoria): bool => in_array($categoria->getCodigo(), ['PT', 'PA', 'PE', 'DHC'], true))),
+            'registros' => array_values(array_filter($repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']), static fn ($categoria): bool => in_array($categoria->getCodigo(), ['PT', 'PA', 'PI', 'PE', 'DHC'], true))),
         ]);
     }
 
@@ -77,7 +77,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             {$scope}
             ORDER BY pe.primer_apellido, pe.primer_nombre
             SQL, $params);
-        $categorias = $connection->fetchAllAssociative("SELECT id, codigo, nombre, clasificacion, requiere_aprobacion_mes FROM personal.tbn_categoria_docente WHERE activo=true AND codigo IN ('PT','PA','PE','DHC') ORDER BY orden");
+        $categorias = $connection->fetchAllAssociative("SELECT id, codigo, nombre, clasificacion, requiere_aprobacion_mes FROM personal.tbn_categoria_docente WHERE activo=true AND codigo IN ('PT','PA','PI','PE','DHC') ORDER BY orden");
         $paises = $connection->fetchAllAssociative("SELECT id, nombre FROM estructura.tbn_pais WHERE activo=true AND upper(iso2)<>'CU' ORDER BY nombre");
 
         if ($request->isMethod('POST')) {
@@ -145,12 +145,15 @@ final class GestionCategoriaDocenteController extends AbstractController
         $connection = $entityManager->getConnection();
         $proceso = $connection->fetchAssociative(<<<'SQL'
             SELECT p.*, c.nombre categoria, c.codigo categoria_codigo, e.nombre entidad, e.siglas, pais.nombre pais,
+                   ia.tipo instrumento_tipo, ia.numero instrumento_numero, ia.fecha instrumento_fecha,
+                   ia.documento instrumento_documento, ia.nombre_original instrumento_nombre,
                    trim(concat_ws(' ', pe.primer_nombre, pe.segundo_nombre, pe.primer_apellido, pe.segundo_apellido)) persona
             FROM rrhh.tbd_proceso_categoria_docente p
             JOIN personal.tbd_persona pe ON pe.id=p.persona_id
             JOIN personal.tbn_categoria_docente c ON c.id=p.categoria_docente_id
             JOIN estructura.tbd_estructura e ON e.id=p.entidad_id
             LEFT JOIN estructura.tbn_pais pais ON pais.id=p.pais_id
+            LEFT JOIN rrhh.tbd_instrumento_aprobacion_categoria ia ON ia.id=p.instrumento_aprobacion_id
             WHERE p.id=:id
             SQL, ['id' => $id]);
         if (!$proceso) {
@@ -166,6 +169,9 @@ final class GestionCategoriaDocenteController extends AbstractController
             'documentos' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:id ORDER BY creado DESC', ['id' => $id]),
             'movimientos' => $connection->fetchAllAssociative('SELECT m.*, u.email usuario FROM rrhh.tbd_movimiento_proceso_categoria m JOIN seguridad.tbd_usuario u ON u.id=m.realizado_por_id WHERE m.proceso_id=:id ORDER BY m.creado DESC', ['id' => $id]),
             'requisitos' => $this->requisitosExpediente($proceso['categoria_codigo'], filter_var($proceso['es_extranjero'], FILTER_VALIDATE_BOOL)),
+            'instrumentos' => $esAdminRRHH && $proceso['estado'] === 'PENDIENTE_MES'
+                ? $connection->fetchAllAssociative("SELECT id, tipo, numero, fecha, nombre_original, (SELECT count(*) FROM rrhh.tbd_proceso_categoria_docente p WHERE p.instrumento_aprobacion_id=i.id) expedientes FROM rrhh.tbd_instrumento_aprobacion_categoria i ORDER BY fecha DESC, id DESC")
+                : [],
             'administrador_rrhh' => $esAdminRRHH,
         ]);
     }
@@ -394,7 +400,7 @@ final class GestionCategoriaDocenteController extends AbstractController
     }
 
     #[Route('/expedientes/{id}/aprobar-mes', name: 'app_rrhh_gestion_categoria_docente_aprobar_mes', methods: ['POST'])]
-    public function aprobarMes(int $id, Request $request, Utils $utils, EntityManagerInterface $entityManager): Response
+    public function aprobarMes(int $id, Request $request, Utils $utils, EntityManagerInterface $entityManager, UploadedDocumentStorage $storage): Response
     {
         if (!$utils->esAdminRRHH($this->getUser()->getId())) {
             throw $this->createAccessDeniedException();
@@ -402,16 +408,71 @@ final class GestionCategoriaDocenteController extends AbstractController
         if (!$this->isCsrfTokenValid('aprobar_mes_categoria_' . $id, (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('La operación ha expirado.');
         }
-        $actualizados = $entityManager->getConnection()->executeStatement(<<<'SQL'
-            UPDATE rrhh.tbd_proceso_categoria_docente
-            SET estado='APROBADO_MES', nivel_actual='UNIVERSIDAD', fecha_aprobacion_mes=CURRENT_DATE, actualizado=CURRENT_TIMESTAMP
-            WHERE id=:id AND estado='PENDIENTE_MES' AND requiere_aprobacion_mes=true
-            SQL, ['id' => $id]);
-        if ($actualizados) {
-            $this->registrarMovimiento($entityManager->getConnection(), $id, 'PENDIENTE_MES', 'APROBADO_MES', 'Aprobación registrada por el MES');
-            $this->addFlash('success', 'La categoría fue aprobada por el MES y devuelta a la universidad para su otorgamiento.');
+        $connection = $entityManager->getConnection();
+        $proceso = $connection->fetchAssociative("SELECT * FROM rrhh.tbd_proceso_categoria_docente WHERE id=:id AND estado='PENDIENTE_MES' AND requiere_aprobacion_mes=true", ['id' => $id]);
+        if (!$proceso) {
+            throw $this->createAccessDeniedException('El expediente no está pendiente de aprobación ministerial.');
         }
-        return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_index');
+
+        $instrumentoId = $request->request->getInt('instrumento_existente');
+        $descripcionInstrumento = null;
+        if ($instrumentoId > 0) {
+            $instrumento = $connection->fetchAssociative('SELECT * FROM rrhh.tbd_instrumento_aprobacion_categoria WHERE id=:id', ['id' => $instrumentoId]);
+            if (!$instrumento) {
+                $this->addFlash('error', 'El instrumento ministerial seleccionado no existe.');
+                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+            }
+            $descripcionInstrumento = $this->descripcionInstrumento($instrumento);
+        } else {
+            $tipo = strtoupper(trim((string) $request->request->get('tipo_instrumento')));
+            $numero = trim((string) $request->request->get('numero_instrumento')) ?: null;
+            $fecha = (string) $request->request->get('fecha_instrumento');
+            $archivo = $request->files->get('documento_instrumento');
+            if (!in_array($tipo, ['RESOLUCION', 'CARTA'], true) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha) || ($tipo === 'RESOLUCION' && !$numero) || !$archivo instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
+                $this->addFlash('error', 'Seleccione un instrumento existente o complete el tipo, la fecha, el número de resolución cuando corresponda y el documento escaneado.');
+                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+            }
+            if ($tipo === 'RESOLUCION' && $connection->fetchOne('SELECT id FROM rrhh.tbd_instrumento_aprobacion_categoria WHERE tipo=:tipo AND numero=:numero AND fecha=:fecha', ['tipo' => $tipo, 'numero' => $numero, 'fecha' => $fecha])) {
+                $this->addFlash('error', 'Esa resolución ya está registrada. Selecciónela en «Instrumento ya registrado» para reutilizar el documento.');
+                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+            }
+            try {
+                $guardado = $storage->store($archivo, 'uploads/rrhh/categorias-docentes/aprobaciones-mes');
+                $instrumentoId = (int) $connection->fetchOne(<<<'SQL'
+                    INSERT INTO rrhh.tbd_instrumento_aprobacion_categoria
+                        (tipo, numero, fecha, documento, nombre_original, observaciones, creado_por_id)
+                    VALUES (:tipo, :numero, :fecha, :documento, :nombre, :observaciones, :usuario)
+                    RETURNING id
+                    SQL, [
+                        'tipo' => $tipo,
+                        'numero' => $numero,
+                        'fecha' => $fecha,
+                        'documento' => $guardado['path'],
+                        'nombre' => $guardado['originalName'],
+                        'observaciones' => trim((string) $request->request->get('observaciones_instrumento')) ?: null,
+                        'usuario' => $this->getUser()->getId(),
+                    ]);
+                $descripcionInstrumento = $tipo === 'RESOLUCION' ? "Resolución {$numero}" : 'Carta del Ministro';
+            } catch (\InvalidArgumentException $exception) {
+                $this->addFlash('error', $exception->getMessage());
+                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+            }
+        }
+
+        $connection->transactional(function ($connection) use ($id, $instrumentoId, $descripcionInstrumento): void {
+            $actualizados = $connection->executeStatement(<<<'SQL'
+                UPDATE rrhh.tbd_proceso_categoria_docente
+                SET estado='APROBADO_MES', nivel_actual='UNIVERSIDAD', fecha_aprobacion_mes=CURRENT_DATE,
+                    instrumento_aprobacion_id=:instrumento, actualizado=CURRENT_TIMESTAMP
+                WHERE id=:id AND estado='PENDIENTE_MES' AND requiere_aprobacion_mes=true
+                SQL, ['id' => $id, 'instrumento' => $instrumentoId]);
+            if ($actualizados !== 1) {
+                throw new \RuntimeException('El expediente cambió de estado durante la aprobación.');
+            }
+            $this->registrarMovimiento($connection, $id, 'PENDIENTE_MES', 'APROBADO_MES', 'Aprobación registrada por el MES', $descripcionInstrumento);
+        });
+        $this->addFlash('success', 'La categoría fue aprobada por el MES y vinculada al instrumento ministerial.');
+        return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
     }
 
     private function registrarMovimiento(\Doctrine\DBAL\Connection $connection, int $procesoId, ?string $origen, string $destino, string $accion, ?string $observaciones = null): void
@@ -464,9 +525,17 @@ final class GestionCategoriaDocenteController extends AbstractController
         $requisitos = in_array($codigo, ['PT', 'PA'], true)
             ? ['RESOLUCION_RECTORAL' => 'Resolución rectoral de aprobación del tribunal', 'ACTAS_EJERCICIOS' => 'Actas firmadas de todos los ejercicios']
             : ['FOTO' => 'Foto carné en colores', 'CURRICULUM' => 'Síntesis del currículum vitae', 'FUNDAMENTACION' => 'Fundamentación de la propuesta'];
-        if ($esExtranjero) {
+        if ($esExtranjero && in_array($codigo, ['PE', 'PI'], true)) {
             $requisitos['AVAL_DRI_MES'] = 'Aval de la Dirección de Relaciones Internacionales del MES';
         }
         return $requisitos;
+    }
+
+    /** @param array<string,mixed> $instrumento */
+    private function descripcionInstrumento(array $instrumento): string
+    {
+        return $instrumento['tipo'] === 'RESOLUCION'
+            ? 'Resolución ' . $instrumento['numero']
+            : 'Carta del Ministro de ' . (new \DateTimeImmutable((string) $instrumento['fecha']))->format('d/m/Y');
     }
 }

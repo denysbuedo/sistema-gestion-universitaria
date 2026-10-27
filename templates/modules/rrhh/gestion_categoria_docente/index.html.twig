@@ -6,7 +6,7 @@
 {% include 'pages/_luxury_list_styles.html.twig' %}
 <div class="card card-luxury mb-4">
     <div class="card-header d-flex align-items-center flex-wrap" style="gap:12px">
-        <div><h3 class="card-title m-0"><i class="fas fa-folder-open label-icon"></i>Expedientes para aprobación del MES</h3><small class="text-muted">Profesor Titular, Profesor Auxiliar, Profesor Emérito y Doctor Honoris Causa</small></div>
+        <div><h3 class="card-title m-0"><i class="fas fa-folder-open label-icon"></i>Expedientes para aprobación del MES</h3><small class="text-muted">Profesor Titular, Profesor Auxiliar, Profesor Invitado, Profesor Emérito y Doctor Honoris Causa</small></div>
         <div class="ml-auto d-flex flex-wrap align-items-center sgu-export-actions" style="gap:8px">
             {% if not administrador_rrhh %}
             <a href="{{ path('app_rrhh_gestion_categoria_docente_nuevo') }}" class="btn-lux-sm btn-lux-primary"><i class="fas fa-plus"></i> Nuevo expediente</a>
