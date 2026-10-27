@@ -78,6 +78,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             ORDER BY pe.primer_apellido, pe.primer_nombre
             SQL, $params);
         $categorias = $connection->fetchAllAssociative("SELECT id, codigo, nombre, clasificacion, requiere_aprobacion_mes FROM personal.tbn_categoria_docente WHERE activo=true AND codigo IN ('PT','PA','PE','DHC') ORDER BY orden");
+        $paises = $connection->fetchAllAssociative("SELECT id, nombre FROM estructura.tbn_pais WHERE activo=true AND upper(iso2)<>'CU' ORDER BY nombre");
 
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('nuevo_expediente_categoria', (string) $request->request->get('_token'))) {
@@ -85,10 +86,13 @@ final class GestionCategoriaDocenteController extends AbstractController
             }
             $personaId = $request->request->getInt('persona');
             $categoriaId = $request->request->getInt('categoria');
+            $esExtranjero = $request->request->getBoolean('es_extranjero');
+            $paisId = $request->request->getInt('pais');
             $fecha = (string) $request->request->get('fecha_solicitud');
             $personaSeleccionada = array_values(array_filter($personas, static fn (array $p): bool => (int) $p['id'] === $personaId))[0] ?? null;
             $categoriaSeleccionada = array_values(array_filter($categorias, static fn (array $c): bool => (int) $c['id'] === $categoriaId))[0] ?? null;
-            if (!$personaSeleccionada || !$categoriaSeleccionada || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $paisValido = !$esExtranjero || array_filter($paises, static fn (array $pais): bool => (int) $pais['id'] === $paisId);
+            if (!$personaSeleccionada || !$categoriaSeleccionada || !$paisValido || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
                 $this->addFlash('error', 'Debe seleccionar una persona, categoría y fecha válidas.');
             } else {
                 $expedienteActivo = $connection->fetchAssociative(<<<'SQL'
@@ -97,26 +101,27 @@ final class GestionCategoriaDocenteController extends AbstractController
                     JOIN personal.tbn_categoria_docente c ON c.id=p.categoria_docente_id
                     JOIN personal.tbn_categoria_docente solicitada ON solicitada.id=:categoria
                     WHERE p.persona_id=:persona
-                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO')
+                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO', 'DESISTIDO')
                       AND c.orden <= solicitada.orden
                     ORDER BY c.orden ASC, p.creado DESC
                     LIMIT 1
                     SQL, ['persona' => $personaId, 'categoria' => $categoriaId]);
                 if ($expedienteActivo) {
                     $this->addFlash('error', sprintf('Ya existe el expediente activo %s para %s. Solo puede solicitarse una categoría superior.', $expedienteActivo['numero_expediente'], $expedienteActivo['categoria']));
-                    return $this->render('modules/rrhh/gestion_categoria_docente/new.html.twig', ['personas' => $personas, 'categorias' => $categorias]);
+                    return $this->render('modules/rrhh/gestion_categoria_docente/new.html.twig', ['personas' => $personas, 'categorias' => $categorias, 'paises' => $paises]);
                 }
                 $id = (int) $connection->fetchOne(<<<'SQL'
                     INSERT INTO rrhh.tbd_proceso_categoria_docente
-                        (persona_id, categoria_docente_id, entidad_id, fecha_solicitud, estado, nivel_actual, requiere_aprobacion_mes, es_extranjero, observaciones, creado, actualizado)
-                    VALUES (:persona, :categoria, :entidad, :fecha, 'PREPARACION_EXPEDIENTE', 'UNIVERSIDAD', TRUE, CAST(:extranjero AS BOOLEAN), :observaciones, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                        (persona_id, categoria_docente_id, entidad_id, fecha_solicitud, estado, nivel_actual, requiere_aprobacion_mes, es_extranjero, pais_id, observaciones, creado, actualizado)
+                    VALUES (:persona, :categoria, :entidad, :fecha, 'PREPARACION_EXPEDIENTE', 'UNIVERSIDAD', TRUE, CAST(:extranjero AS BOOLEAN), :pais, :observaciones, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     RETURNING id
                     SQL, [
                         'persona' => $personaId,
                         'categoria' => $categoriaId,
                         'entidad' => (int) $personaSeleccionada['entidad_id'],
                         'fecha' => $fecha,
-                        'extranjero' => $request->request->getBoolean('es_extranjero') ? 'true' : 'false',
+                        'extranjero' => $esExtranjero ? 'true' : 'false',
+                        'pais' => $esExtranjero ? $paisId : null,
                         'observaciones' => trim((string) $request->request->get('observaciones')) ?: null,
                     ]);
                 $numero = sprintf('CAT-%s-%05d', date('Y', strtotime($fecha)), $id);
@@ -130,6 +135,7 @@ final class GestionCategoriaDocenteController extends AbstractController
         return $this->render('modules/rrhh/gestion_categoria_docente/new.html.twig', [
             'personas' => $personas,
             'categorias' => $categorias,
+            'paises' => $paises,
         ]);
     }
 
@@ -138,12 +144,13 @@ final class GestionCategoriaDocenteController extends AbstractController
     {
         $connection = $entityManager->getConnection();
         $proceso = $connection->fetchAssociative(<<<'SQL'
-            SELECT p.*, c.nombre categoria, c.codigo categoria_codigo, e.nombre entidad, e.siglas,
+            SELECT p.*, c.nombre categoria, c.codigo categoria_codigo, e.nombre entidad, e.siglas, pais.nombre pais,
                    trim(concat_ws(' ', pe.primer_nombre, pe.segundo_nombre, pe.primer_apellido, pe.segundo_apellido)) persona
             FROM rrhh.tbd_proceso_categoria_docente p
             JOIN personal.tbd_persona pe ON pe.id=p.persona_id
             JOIN personal.tbn_categoria_docente c ON c.id=p.categoria_docente_id
             JOIN estructura.tbd_estructura e ON e.id=p.entidad_id
+            LEFT JOIN estructura.tbn_pais pais ON pais.id=p.pais_id
             WHERE p.id=:id
             SQL, ['id' => $id]);
         if (!$proceso) {
@@ -248,6 +255,8 @@ final class GestionCategoriaDocenteController extends AbstractController
         $observaciones = trim((string) $request->request->get('observaciones')) ?: null;
         if ($accion === 'DEVOLVER' && $admin && $proceso['estado'] === 'PENDIENTE_MES') {
             $this->cambiarEstado($connection, $id, $proceso['estado'], 'SUBSANACION', 'Expediente devuelto para subsanación', $observaciones, 'UNIVERSIDAD');
+        } elseif ($accion === 'DESISTIR' && !$admin && (int)$proceso['entidad_id'] === $entidad && in_array($proceso['estado'], ['PENDIENTE_MES', 'SUBSANACION'], true) && $observaciones) {
+            $this->cambiarEstado($connection, $id, $proceso['estado'], 'DESISTIDO', 'La universidad desistió del expediente', $observaciones, 'CERRADO');
         } elseif ($accion === 'RECHAZAR' && (($admin && $proceso['estado'] === 'PENDIENTE_MES') || (!$admin && (int)$proceso['entidad_id'] === $entidad && !in_array($proceso['estado'], ['OTORGADO', 'APROBADO_MES'], true)))) {
             $this->cambiarEstado($connection, $id, $proceso['estado'], 'NO_APROBADO', 'Expediente no aprobado', $observaciones, $admin ? 'MES' : 'UNIVERSIDAD');
         } elseif ($accion === 'ELEVAR' && !$admin && (int)$proceso['entidad_id'] === $entidad) {
@@ -264,6 +273,25 @@ final class GestionCategoriaDocenteController extends AbstractController
             throw $this->createAccessDeniedException('La acción no corresponde al estado o nivel del expediente.');
         }
         return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
+    }
+
+    #[Route('/expedientes/{id}/eliminar', name: 'app_rrhh_gestion_categoria_docente_eliminar', methods: ['POST'])]
+    public function eliminar(int $id, Request $request, PersonaRepository $personaRepository, Utils $utils, EntityManagerInterface $entityManager, UploadedDocumentStorage $storage): Response
+    {
+        $this->validarCsrf($request, 'eliminar_categoria_' . $id);
+        [$proceso, $connection] = $this->procesoUniversidad($id, $personaRepository, $utils, $entityManager);
+        if (!in_array($proceso['estado'], ['PREPARACION_EXPEDIENTE', 'REVISION_UNIVERSIDAD'], true)) {
+            throw $this->createAccessDeniedException('Después del envío el expediente solo puede desistirse, no eliminarse.');
+        }
+        $archivos = $connection->fetchFirstColumn('SELECT archivo FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:id', ['id' => $id]);
+        $connection->transactional(static function ($connection) use ($id): void {
+            $connection->executeStatement('DELETE FROM rrhh.tbd_proceso_categoria_docente WHERE id=:id', ['id' => $id]);
+        });
+        foreach ($archivos as $archivo) {
+            $storage->delete(dirname((string) $archivo), basename((string) $archivo));
+        }
+        $this->addFlash('success', 'El expediente en preparación fue eliminado.');
+        return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_index');
     }
 
     #[Route('/expedientes/{id}/resolucion', name: 'app_rrhh_gestion_categoria_docente_resolucion', methods: ['POST'])]

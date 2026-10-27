@@ -896,7 +896,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                  class="img-circle" alt="Usuario autenticado">
             <div class="control-user">
                 <h5 class="control-user-name">{{ app.session.get('nombre_usuario_autenticado') }}</h5>
-                <h6 class="control-user-role">{{ app.session.get('responsabilidad_usuario_autenticado') }}</h6>
+                <h6 class="control-user-role mb-0">{{ app.session.get('rol_usuario_autenticado') ?? 'Usuario del sistema' }}</h6>
+                {% if app.session.get('entidad_usuario_autenticado') %}<small class="d-block text-muted">{{ app.session.get('entidad_usuario_autenticado') }}</small>{% endif %}
             </div>
         </div>
         <ul class="nav nav-pills nav-sidebar flex-column p-2" data-widget="treeview" role="menu" data-accordion="false">
