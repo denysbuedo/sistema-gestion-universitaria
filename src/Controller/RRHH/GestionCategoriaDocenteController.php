@@ -23,7 +23,7 @@ final class GestionCategoriaDocenteController extends AbstractController
     {
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         $entidadId = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
-        $scope = !$esAdminRRHH ? ' WHERE p.entidad_id = :entidad' : '';
+        $scope = !$esAdminRRHH ? ' AND p.entidad_id = :entidad' : '';
         $params = !$esAdminRRHH ? ['entidad' => $entidadId ?: -1] : [];
         $expedientes = $entityManager->getConnection()->fetchAllAssociative(<<<SQL
             SELECT p.id, p.numero_expediente, p.fecha_solicitud, p.estado, p.nivel_actual,
@@ -34,6 +34,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             JOIN personal.tbd_persona pe ON pe.id = p.persona_id
             JOIN personal.tbn_categoria_docente c ON c.id = p.categoria_docente_id
             JOIN estructura.tbd_estructura e ON e.id = p.entidad_id
+            WHERE c.codigo IN ('PT','PA','PE','DHC')
             {$scope}
             ORDER BY p.creado DESC
             SQL, $params);
@@ -48,7 +49,7 @@ final class GestionCategoriaDocenteController extends AbstractController
     public function catalogo(CategoriaDocenteRepository $repository): Response
     {
         return $this->render('modules/rrhh/gestion_categoria_docente/catalogo.html.twig', [
-            'registros' => $repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']),
+            'registros' => array_values(array_filter($repository->findBy(['activo' => true], ['orden' => 'ASC', 'nombre' => 'ASC']), static fn ($categoria): bool => in_array($categoria->getCodigo(), ['PT', 'PA', 'PE', 'DHC'], true))),
         ]);
     }
 
@@ -76,7 +77,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             {$scope}
             ORDER BY pe.primer_apellido, pe.primer_nombre
             SQL, $params);
-        $categorias = $connection->fetchAllAssociative('SELECT id, codigo, nombre, clasificacion, requiere_aprobacion_mes FROM personal.tbn_categoria_docente WHERE activo=true ORDER BY orden');
+        $categorias = $connection->fetchAllAssociative("SELECT id, codigo, nombre, clasificacion, requiere_aprobacion_mes FROM personal.tbn_categoria_docente WHERE activo=true AND codigo IN ('PT','PA','PE','DHC') ORDER BY orden");
 
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('nuevo_expediente_categoria', (string) $request->request->get('_token'))) {
@@ -107,22 +108,22 @@ final class GestionCategoriaDocenteController extends AbstractController
                 }
                 $id = (int) $connection->fetchOne(<<<'SQL'
                     INSERT INTO rrhh.tbd_proceso_categoria_docente
-                        (persona_id, categoria_docente_id, entidad_id, fecha_solicitud, estado, nivel_actual, requiere_aprobacion_mes, observaciones, creado, actualizado)
-                    VALUES (:persona, :categoria, :entidad, :fecha, 'REVISION_UNIVERSIDAD', 'UNIVERSIDAD', CAST(:requiere_mes AS BOOLEAN), :observaciones, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                        (persona_id, categoria_docente_id, entidad_id, fecha_solicitud, estado, nivel_actual, requiere_aprobacion_mes, es_extranjero, observaciones, creado, actualizado)
+                    VALUES (:persona, :categoria, :entidad, :fecha, 'PREPARACION_EXPEDIENTE', 'UNIVERSIDAD', TRUE, CAST(:extranjero AS BOOLEAN), :observaciones, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     RETURNING id
                     SQL, [
                         'persona' => $personaId,
                         'categoria' => $categoriaId,
                         'entidad' => (int) $personaSeleccionada['entidad_id'],
                         'fecha' => $fecha,
-                        'requiere_mes' => $categoriaSeleccionada['requiere_aprobacion_mes'] ? 'true' : 'false',
+                        'extranjero' => $request->request->getBoolean('es_extranjero') ? 'true' : 'false',
                         'observaciones' => trim((string) $request->request->get('observaciones')) ?: null,
                     ]);
                 $numero = sprintf('CAT-%s-%05d', date('Y', strtotime($fecha)), $id);
                 $connection->update('rrhh.tbd_proceso_categoria_docente', ['numero_expediente' => $numero], ['id' => $id]);
-                $this->registrarMovimiento($connection, $id, null, 'REVISION_UNIVERSIDAD', 'Expediente registrado', trim((string) $request->request->get('observaciones')) ?: null);
-                $this->addFlash('success', "El expediente {$numero} fue creado para revisión universitaria.");
-                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_index');
+                $this->registrarMovimiento($connection, $id, null, 'PREPARACION_EXPEDIENTE', 'Expediente MES registrado', trim((string) $request->request->get('observaciones')) ?: null);
+                $this->addFlash('success', "El expediente {$numero} fue creado. Incorpore los documentos requeridos antes de enviarlo al MES.");
+                return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
             }
         }
 
@@ -157,10 +158,7 @@ final class GestionCategoriaDocenteController extends AbstractController
             'proceso' => $proceso,
             'documentos' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:id ORDER BY creado DESC', ['id' => $id]),
             'movimientos' => $connection->fetchAllAssociative('SELECT m.*, u.email usuario FROM rrhh.tbd_movimiento_proceso_categoria m JOIN seguridad.tbd_usuario u ON u.id=m.realizado_por_id WHERE m.proceso_id=:id ORDER BY m.creado DESC', ['id' => $id]),
-            'tribunal' => $proceso['tribunal_id'] ? $connection->fetchAssociative('SELECT * FROM rrhh.tbd_tribunal_categoria_docente WHERE id=:id', ['id' => $proceso['tribunal_id']]) : false,
-            'tribunales_disponibles' => $connection->fetchAllAssociative("SELECT id, nombre, presidente, secretario FROM rrhh.tbd_tribunal_categoria_docente WHERE entidad_id=:entidad AND estado='ACTIVO' ORDER BY nombre", ['entidad' => $proceso['entidad_id']]),
-            'ejercicios' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_ejercicio_categoria_docente WHERE proceso_id=:id ORDER BY fecha', ['id' => $id]),
-            'dictamenes' => $connection->fetchAllAssociative('SELECT * FROM rrhh.tbd_dictamen_categoria_docente WHERE proceso_id=:id ORDER BY fecha', ['id' => $id]),
+            'requisitos' => $this->requisitosExpediente($proceso['categoria_codigo'], filter_var($proceso['es_extranjero'], FILTER_VALIDATE_BOOL)),
             'administrador_rrhh' => $esAdminRRHH,
         ]);
     }
@@ -253,14 +251,15 @@ final class GestionCategoriaDocenteController extends AbstractController
         } elseif ($accion === 'RECHAZAR' && (($admin && $proceso['estado'] === 'PENDIENTE_MES') || (!$admin && (int)$proceso['entidad_id'] === $entidad && !in_array($proceso['estado'], ['OTORGADO', 'APROBADO_MES'], true)))) {
             $this->cambiarEstado($connection, $id, $proceso['estado'], 'NO_APROBADO', 'Expediente no aprobado', $observaciones, $admin ? 'MES' : 'UNIVERSIDAD');
         } elseif ($accion === 'ELEVAR' && !$admin && (int)$proceso['entidad_id'] === $entidad) {
-            $tribunal = (int) $connection->fetchOne('SELECT count(*) FROM rrhh.tbd_proceso_categoria_docente WHERE id=:id AND tribunal_id IS NOT NULL', ['id' => $id]);
-            $apto = (int) $connection->fetchOne("SELECT count(*) FROM rrhh.tbd_ejercicio_categoria_docente WHERE proceso_id=:id AND resultado='APTO'", ['id' => $id]);
-            if (!$tribunal || !$apto) {
-                $this->addFlash('error', 'Debe registrar el tribunal y al menos un ejercicio con resultado Apto.');
+            $codigo = (string) $connection->fetchOne('SELECT codigo FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
+            $requisitos = $this->requisitosExpediente($codigo, filter_var($proceso['es_extranjero'], FILTER_VALIDATE_BOOL));
+            $presentados = $connection->fetchFirstColumn('SELECT DISTINCT tipo FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:id', ['id' => $id]);
+            $faltantes = array_diff(array_keys($requisitos), $presentados);
+            if ($faltantes !== []) {
+                $this->addFlash('error', 'No puede enviarse al MES. Faltan: ' . implode(', ', array_map(fn (string $tipo): string => $requisitos[$tipo], $faltantes)) . '.');
                 return $this->redirectToRoute('app_rrhh_gestion_categoria_docente_detalle', ['id' => $id]);
             }
-            $destino = filter_var($proceso['requiere_aprobacion_mes'], FILTER_VALIDATE_BOOL) ? 'PENDIENTE_MES' : 'PENDIENTE_RECTOR';
-            $this->cambiarEstado($connection, $id, $proceso['estado'], $destino, $destino === 'PENDIENTE_MES' ? 'Expediente elevado al MES' : 'Expediente remitido para resolución rectoral', $observaciones, $destino === 'PENDIENTE_MES' ? 'MES' : 'UNIVERSIDAD');
+            $this->cambiarEstado($connection, $id, $proceso['estado'], 'PENDIENTE_MES', 'Expediente enviado al MES', $observaciones, 'MES');
         } else {
             throw $this->createAccessDeniedException('La acción no corresponde al estado o nivel del expediente.');
         }
@@ -304,7 +303,7 @@ final class GestionCategoriaDocenteController extends AbstractController
         }
         $esAdminRRHH = $utils->esAdminRRHH($this->getUser()->getId());
         $entidadUsuario = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()])?->getEntidad()?->getId();
-        if ($esAdminRRHH || (int) $proceso['entidad_id'] !== $entidadUsuario || !in_array($proceso['estado'], ['REVISION_UNIVERSIDAD', 'SUBSANACION'], true)) {
+        if ($esAdminRRHH || (int) $proceso['entidad_id'] !== $entidadUsuario || !in_array($proceso['estado'], ['PREPARACION_EXPEDIENTE', 'SUBSANACION'], true)) {
             throw $this->createAccessDeniedException('El expediente no admite documentos de la universidad en este estado.');
         }
         $archivo = $request->files->get('documento');
@@ -314,9 +313,15 @@ final class GestionCategoriaDocenteController extends AbstractController
         }
         try {
             $guardado = $storage->store($archivo, 'uploads/rrhh/categorias-docentes/evidencias');
+            $tipo = (string) $request->request->get('tipo', 'OTRA_EVIDENCIA');
+            $codigo = (string) $connection->fetchOne('SELECT codigo FROM personal.tbn_categoria_docente WHERE id=:id', ['id' => $proceso['categoria_docente_id']]);
+            $tiposPermitidos = [...array_keys($this->requisitosExpediente($codigo, filter_var($proceso['es_extranjero'], FILTER_VALIDATE_BOOL))), 'OTRA_EVIDENCIA'];
+            if (!in_array($tipo, $tiposPermitidos, true)) {
+                throw new \InvalidArgumentException('El tipo de documento no corresponde a este expediente.');
+            }
             $connection->insert('rrhh.tbd_documento_proceso_categoria', [
                 'proceso_id' => $id,
-                'tipo' => (string) $request->request->get('tipo', 'OTRA_EVIDENCIA'),
+                'tipo' => $tipo,
                 'nombre_original' => $guardado['originalName'],
                 'archivo' => $guardado['path'],
                 'descripcion' => trim((string) $request->request->get('descripcion')) ?: null,
@@ -423,5 +428,17 @@ final class GestionCategoriaDocenteController extends AbstractController
         $connection->update('rrhh.tbd_proceso_categoria_docente', $datos, ['id' => $id]);
         $this->registrarMovimiento($connection, $id, $origen, $destino, $accion, $observaciones);
         $this->addFlash('success', $accion . '.');
+    }
+
+    /** @return array<string,string> */
+    private function requisitosExpediente(string $codigo, bool $esExtranjero): array
+    {
+        $requisitos = in_array($codigo, ['PT', 'PA'], true)
+            ? ['RESOLUCION_RECTORAL' => 'Resolución rectoral de aprobación del tribunal', 'ACTAS_EJERCICIOS' => 'Actas firmadas de todos los ejercicios']
+            : ['FOTO' => 'Foto carné en colores', 'CURRICULUM' => 'Síntesis del currículum vitae', 'FUNDAMENTACION' => 'Fundamentación de la propuesta'];
+        if ($esExtranjero) {
+            $requisitos['AVAL_DRI_MES'] = 'Aval de la Dirección de Relaciones Internacionales del MES';
+        }
+        return $requisitos;
     }
 }

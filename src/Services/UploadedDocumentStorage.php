@@ -15,6 +15,8 @@ final class UploadedDocumentStorage
         'application/vnd.ms-excel' => 'xls',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
         'application/vnd.oasis.opendocument.text' => 'odt',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
     ];
 
     private string $publicDirectory;
