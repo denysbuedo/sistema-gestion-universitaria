@@ -95,19 +95,30 @@ final class GestionCategoriaDocenteController extends AbstractController
             if (!$personaSeleccionada || !$categoriaSeleccionada || !$paisValido || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
                 $this->addFlash('error', 'Debe seleccionar una persona, categoría y fecha válidas.');
             } else {
-                $expedienteActivo = $connection->fetchAssociative(<<<'SQL'
+                $expedienteExistente = $connection->fetchAssociative(<<<'SQL'
                     SELECT p.numero_expediente, c.nombre categoria
                     FROM rrhh.tbd_proceso_categoria_docente p
                     JOIN personal.tbn_categoria_docente c ON c.id=p.categoria_docente_id
-                    JOIN personal.tbn_categoria_docente solicitada ON solicitada.id=:categoria
                     WHERE p.persona_id=:persona
-                      AND p.estado NOT IN ('RECHAZADO', 'NO_APROBADO', 'DESISTIDO')
-                      AND c.orden <= solicitada.orden
-                    ORDER BY c.orden ASC, p.creado DESC
+                      AND p.categoria_docente_id=:categoria
+                    ORDER BY p.creado DESC
                     LIMIT 1
                     SQL, ['persona' => $personaId, 'categoria' => $categoriaId]);
-                if ($expedienteActivo) {
-                    $this->addFlash('error', sprintf('Ya existe el expediente activo %s para %s. Solo puede solicitarse una categoría superior.', $expedienteActivo['numero_expediente'], $expedienteActivo['categoria']));
+                if ($expedienteExistente) {
+                    $this->addFlash('error', sprintf('Ya existe el expediente %s para %s. No puede tramitarse dos veces la misma categoría.', $expedienteExistente['numero_expediente'], $expedienteExistente['categoria']));
+                    return $this->render('modules/rrhh/gestion_categoria_docente/new.html.twig', ['personas' => $personas, 'categorias' => $categorias, 'paises' => $paises]);
+                }
+                $categoriaActual = $connection->fetchAssociative(<<<'SQL'
+                    SELECT actual.nombre,
+                           CASE actual.codigo WHEN 'PT' THEN 1 WHEN 'PA' THEN 2 WHEN 'AS' THEN 3 WHEN 'I' THEN 4 END rango_actual,
+                           CASE solicitada.codigo WHEN 'PT' THEN 1 WHEN 'PA' THEN 2 WHEN 'AS' THEN 3 WHEN 'I' THEN 4 END rango_solicitado
+                    FROM personal.tbd_persona persona
+                    LEFT JOIN personal.tbn_categoria_docente actual ON actual.id=persona.categoria_docente_id
+                    JOIN personal.tbn_categoria_docente solicitada ON solicitada.id=:categoria
+                    WHERE persona.id=:persona
+                    SQL, ['persona' => $personaId, 'categoria' => $categoriaId]);
+                if ($categoriaActual && $categoriaActual['rango_actual'] !== null && $categoriaActual['rango_solicitado'] !== null && (int) $categoriaActual['rango_solicitado'] > (int) $categoriaActual['rango_actual']) {
+                    $this->addFlash('error', sprintf('No puede solicitarse una categoría principal inferior a %s, que es la que ya posee el profesor.', $categoriaActual['nombre']));
                     return $this->render('modules/rrhh/gestion_categoria_docente/new.html.twig', ['personas' => $personas, 'categorias' => $categorias, 'paises' => $paises]);
                 }
                 $id = (int) $connection->fetchOne(<<<'SQL'
@@ -353,16 +364,27 @@ final class GestionCategoriaDocenteController extends AbstractController
             if (!in_array($tipo, $tiposPermitidos, true)) {
                 throw new \InvalidArgumentException('El tipo de documento no corresponde a este expediente.');
             }
-            $connection->insert('rrhh.tbd_documento_proceso_categoria', [
-                'proceso_id' => $id,
-                'tipo' => $tipo,
-                'nombre_original' => $guardado['originalName'],
-                'archivo' => $guardado['path'],
-                'descripcion' => trim((string) $request->request->get('descripcion')) ?: null,
-                'creado_por_id' => $this->getUser()->getId(),
-            ]);
-            $this->registrarMovimiento($connection, $id, $proceso['estado'], $proceso['estado'], 'Documento incorporado', $guardado['originalName']);
-            $this->addFlash('success', 'La evidencia fue incorporada al expediente.');
+            $documentoAnterior = $tipo !== 'OTRA_EVIDENCIA'
+                ? $connection->fetchAssociative('SELECT id, archivo, nombre_original FROM rrhh.tbd_documento_proceso_categoria WHERE proceso_id=:proceso AND tipo=:tipo ORDER BY creado DESC, id DESC LIMIT 1', ['proceso' => $id, 'tipo' => $tipo])
+                : false;
+            $connection->transactional(function ($connection) use ($id, $tipo, $guardado, $documentoAnterior, $request, $proceso): void {
+                if ($documentoAnterior) {
+                    $connection->delete('rrhh.tbd_documento_proceso_categoria', ['id' => $documentoAnterior['id']]);
+                }
+                $connection->insert('rrhh.tbd_documento_proceso_categoria', [
+                    'proceso_id' => $id,
+                    'tipo' => $tipo,
+                    'nombre_original' => $guardado['originalName'],
+                    'archivo' => $guardado['path'],
+                    'descripcion' => trim((string) $request->request->get('descripcion')) ?: null,
+                    'creado_por_id' => $this->getUser()->getId(),
+                ]);
+                $this->registrarMovimiento($connection, $id, $proceso['estado'], $proceso['estado'], $documentoAnterior ? 'Documento sustituido' : 'Documento incorporado', $guardado['originalName']);
+            });
+            if ($documentoAnterior) {
+                $storage->delete(dirname((string) $documentoAnterior['archivo']), basename((string) $documentoAnterior['archivo']));
+            }
+            $this->addFlash('success', $documentoAnterior ? 'La nueva versión sustituyó al documento anterior.' : 'La evidencia fue incorporada al expediente.');
         } catch (\InvalidArgumentException $exception) {
             $this->addFlash('error', $exception->getMessage());
         }
