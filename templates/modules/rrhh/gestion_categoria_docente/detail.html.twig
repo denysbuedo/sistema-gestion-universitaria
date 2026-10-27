@@ -11,6 +11,11 @@
         box-shadow: none !important;
         filter: none !important;
     }
+    .categoria-docente-expediente .card,
+    .categoria-docente-expediente .card-luxury {
+        border: 1px solid #e1e7ec !important;
+        border-top: 1px solid #e1e7ec !important;
+    }
 </style>
 <div class="categoria-docente-expediente">
 <div class="d-flex flex-wrap align-items-center mb-3" style="gap:10px"><a href="{{ path('app_rrhh_gestion_categoria_docente_index') }}" class="btn-lux-sm btn-lux-outline-primary"><i class="fas fa-arrow-left"></i> Volver</a><div><h2 class="h4 mb-0">{{ proceso.numero_expediente }}</h2><span class="text-muted">{{ proceso.persona }} · {{ proceso.categoria }}</span></div><span class="status-pill -on ml-auto">{{ proceso.estado|replace({'_':' '})|title }}</span></div>
