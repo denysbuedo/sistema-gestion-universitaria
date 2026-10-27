@@ -70,8 +70,10 @@ final class UserSessionInitializer
     /** @return array{0:string,1:bool} */
     private function resolverIdentidadInstitucional(User $user): array
     {
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            return ['Administrador del sistema', true];
+        }
         $homologados = [
-            'ROLE_ADMIN' => 'Administrador del sistema',
             'ROL_RRHH' => 'Administrador de Recursos Humanos',
             'ROL_PREGRADO' => 'Administrador de Pregrado',
             'ROL_POSGRADO' => 'Administrador de Posgrado',
