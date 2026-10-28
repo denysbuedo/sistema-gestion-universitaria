@@ -564,7 +564,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
         body.module-transformacion-digital .td-legacy-title { min-width: 0; }
         body.module-transformacion-digital .td-header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
         body.module-transformacion-digital .td-header-actions .btn { margin: 0 !important; }
+        body.module-transformacion-digital .td-title-icon { margin-right: 9px; color: #1769aa; font-size: 14px; }
         body.module-transformacion-digital .td-back-link { display: inline-flex; align-items: center; gap: 6px; }
+        body.module-transformacion-digital .td-university-filter {
+            margin: 0 0 16px; padding: 12px 14px; border: 1px solid #dce4ea; border-radius: 4px; background: #f8fafb;
+        }
+        body.module-transformacion-digital .td-university-filter__field { width: min(100%, 380px); }
+        body.module-transformacion-digital .td-university-filter label { display: block; margin: 0 0 5px; color: #526675; font-size: 12px; font-weight: 500; }
+        body.module-transformacion-digital .td-university-filter select {
+            width: 100%; height: 38px; padding: 6px 10px; border: 1px solid #cbd6de; border-radius: 4px;
+            background: #fff; color: #263746; font-size: 13px; box-shadow: none;
+        }
         body.module-transformacion-digital .card-footer { border-top: 1px solid #dce4ea; background: #f8fafb; }
         body.module-transformacion-digital .card-footer .btn-danger,
         body.module-transformacion-digital .card-footer .btn-cancel {
@@ -1172,11 +1182,26 @@ scratch. This page gets rid of all links and provides the needed markup only.
         // Adapta las cabeceras heredadas del módulo al mismo patrón visual sin
         // duplicar plantillas ni alterar sus reglas funcionales.
         if ($('body').hasClass('module-transformacion-digital')) {
+            var tdIconMap = {
+                'centro_dato_virtual': 'database', 'enlace_conectividad': 'network-wired',
+                'linea_celular': 'sim-card', 'telefono_celular': 'mobile-alt', 'nauta_hogar': 'wifi',
+                'sistema_informatico': 'laptop-code', 'servicio': 'concierge-bell',
+                'marca': 'tags', 'modelo': 'mobile-alt', 'publico_objetivo': 'users',
+                'sistema_operativo': 'desktop', 'tipo_conectividad': 'project-diagram',
+                'tipo_sistema': 'layer-group', 'visibilidad': 'eye', 'servicio_contratado': 'file-contract',
+                'proceso': 'sitemap'
+            };
             $('.card-header > .row').each(function () {
                 var $row = $(this);
                 var $header = $row.closest('.card-header');
                 var $title = $row.find('.card-title').first();
                 if (!$title.length) return;
+
+                if (!$title.find('i').length) {
+                    var routePart = Object.keys(tdIconMap).find(function (part) { return window.location.pathname.indexOf('/' + part) !== -1; });
+                    var icon = routePart ? tdIconMap[routePart] : 'cog';
+                    $title.prepend('<i class="fas fa-' + icon + ' td-title-icon"></i>');
+                }
 
                 var $actions = $('<div class="td-header-actions ml-auto"></div>');
                 var $newAction = $row.find('a[title="Adicionar"]').first();
@@ -1202,6 +1227,43 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var $titleWrap = $('<div class="td-legacy-title"></div>').append($title);
                 $header.empty().append($titleWrap);
                 if ($actions.children().length) $header.append($actions);
+            });
+
+            // Los listados heredados que contienen Universidad/Institución
+            // reciben un selector exacto fuera de la cabecera de la tabla.
+            $('.dataTable').each(function (tableIndex) {
+                var $table = $(this);
+                var $cardBody = $table.closest('.card-body');
+                if ($cardBody.find('.nh-filters, .td-list-filters, .td-university-filter').length) return;
+
+                var institutionColumn = -1;
+                $table.find('thead tr:first th').each(function (columnIndex) {
+                    var title = $.trim($(this).text()).toLowerCase();
+                    if (title === 'institución' || title === 'universidad') institutionColumn = columnIndex;
+                });
+                if (institutionColumn < 0) return;
+
+                var institutions = [];
+                $table.find('tbody tr').each(function () {
+                    var value = $.trim($(this).children('td').eq(institutionColumn).text()).replace(/\s+/g, ' ');
+                    if (value && institutions.indexOf(value) === -1) institutions.push(value);
+                });
+                institutions.sort(function (a, b) { return a.localeCompare(b, 'es'); });
+
+                var filterId = 'td-university-' + tableIndex;
+                var $filter = $('<div class="td-university-filter"><div class="td-university-filter__field"><label for="' + filterId + '">Universidad</label><select class="no-select2" id="' + filterId + '" data-column="' + institutionColumn + '"><option value="">Todas las universidades</option></select></div></div>');
+                institutions.forEach(function (institution) {
+                    $('<option></option>').val(institution).text(institution).appendTo($filter.find('select'));
+                });
+                var $responsive = $table.closest('.table-responsive');
+                ($responsive.length ? $responsive : $table).before($filter);
+            });
+
+            $(document).on('change', '.td-university-filter select', function () {
+                var $table = $(this).closest('.card-body').find('.dataTable').first();
+                if (!$table.length || !$.fn.dataTable.isDataTable($table[0])) return;
+                var value = $.fn.dataTable.util.escapeRegex(this.value);
+                $table.DataTable().column(parseInt(this.dataset.column, 10)).search(value ? '^' + value + '$' : '', true, false).draw();
             });
         }
 
