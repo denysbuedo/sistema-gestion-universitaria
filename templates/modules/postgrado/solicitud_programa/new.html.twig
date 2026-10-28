@@ -41,7 +41,7 @@
 
     <div class="card card-luxury">
     <div class="card-header d-flex align-items-center">
-        <h3 class="card-title text-bold">Adicionar solicitud de programa</h3>
+        <h3 class="card-title text-bold">Nueva solicitud de {{ academic_domain|default('postgrado') == 'grado_cientifico' ? 'programa doctoral' : 'maestría o especialidad' }}</h3>
     </div>
         <!-- /.card-header -->
         {{ form_start(form) }}
@@ -159,7 +159,7 @@
             </div>
         </div>
         <div class="card-footer" style="display: flex; justify-content: flex-end; align-items: center;">
-            <a class="btn-fs-cancel btn-cancel" data-url="{{ path('app_solicitud_programa_index') }}" data-content="¿Está seguro que desea realizar la acción?"><i class="fas fa-times mr-2"></i>Cancelar</a>
+            <a class="btn-fs-cancel btn-cancel" data-url="{{ path(academic_domain|default('postgrado') == 'grado_cientifico' ? 'app_grado_cientifico_solicitud_index' : 'app_solicitud_programa_index') }}" data-content="¿Está seguro que desea realizar la acción?"><i class="fas fa-times mr-2"></i>Cancelar</a>
             <button type="submit" class="btn-fs-submit"><i class="fas fa-check mr-2"></i>Aceptar</button>
         </div>
         {{ form_end(form) }}

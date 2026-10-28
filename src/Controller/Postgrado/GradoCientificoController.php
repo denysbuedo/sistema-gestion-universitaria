@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted(new Expression("is_granted('ROLE_ADMIN') or is_granted('ROLE_GEST_GRADO_CIENTIFICO')"))]
-#[Route('/postgrado/programas_aprobados')]
+#[Route('/grado-cientifico/programas')]
 class GradoCientificoController extends AbstractController
 {
 

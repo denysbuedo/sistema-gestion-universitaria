@@ -623,7 +623,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endblock %}
 
 </head>
-<body class="hold-transition layout-fixed layout-navbar-fixed{% if app.request.pathinfo|split('/')[1] == 'pregrado' %}{% if app.request.get('_route') == 'app_pregrado_portada' %} pregrado-portada{% else %} module-pregrado pregrado-workspace{% endif %}{% endif %}{% if app.request.pathinfo|split('/')[1] == 'informatizacion' %} module-transformacion-digital pregrado-workspace{% endif %}{% if app.request.pathinfo|split('/')[1] == 'postgrado' %} module-posgrado pregrado-workspace{% endif %}">
+<body class="hold-transition layout-fixed layout-navbar-fixed{% if app.request.pathinfo|split('/')[1] == 'pregrado' %}{% if app.request.get('_route') == 'app_pregrado_portada' %} pregrado-portada{% else %} module-pregrado pregrado-workspace{% endif %}{% endif %}{% if app.request.pathinfo|split('/')[1] == 'informatizacion' %} module-transformacion-digital pregrado-workspace{% endif %}{% if app.request.pathinfo|split('/')[1] == 'postgrado' %} module-posgrado pregrado-workspace{% endif %}{% if app.request.pathinfo|split('/')[1] == 'grado-cientifico' %} module-posgrado module-grado-cientifico pregrado-workspace{% endif %}">
 <div class="wrapper">
 
     <!-- Navbar -->
@@ -646,6 +646,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class=" d-none d-sm-inline-block">
                         <a href="{{ path('app_postgrado_portada') }}"
                            class="nav-link {% if app.request.pathinfo|split('/')[1] == 'postgrado' %} active {% endif %}">Posgrado</a>
+                    </li>
+                {% endif %}
+
+                {% if hasRoles('ROLE_HOME_GRADO_CIENTIFICO') or hasRoles('ROLE_GEST_GRADO_CIENTIFICO') or hasRoles('ROLE_GEST_FORMACION_DOCTORES') or hasRoles('ROLE_GEST_REPORTE_GRADO_CIENTIFICO') %}
+                    <li class="d-none d-sm-inline-block">
+                        <a href="{{ path('app_grado_cientifico_portada') }}"
+                           class="nav-link {% if app.request.pathinfo|split('/')[1] == 'grado-cientifico' %} active {% endif %}">Grado Científico</a>
                     </li>
                 {% endif %}
 
@@ -855,6 +862,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 {% if app.request.pathinfo|split('/')[1] == 'postgrado' %}
                     {% include 'pages/sidevar/postgrado.html.twig' %}
+                {% endif %}
+                {% if app.request.pathinfo|split('/')[1] == 'grado-cientifico' %}
+                    {% include 'pages/sidevar/grado_cientifico.html.twig' %}
                 {% endif %}
 
                 {% if app.request.pathinfo|split('/')[1] == 'pregrado' %}

@@ -99,8 +99,12 @@ class SolicitudProgramaType extends AbstractType
                 'required' => false,
                 'mapped' => false,
                 'choice_label' => 'nombre',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')->where('u.estadoPrograma=7 and u.activo = true')->orderBy('u.nombre', 'ASC');
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('u')->join('u.tipoPrograma', 'tp')->where('u.estadoPrograma=7 and u.activo = true');
+                    $condition = 'LOWER(tp.nombre) LIKE :doctorado';
+                    $qb->andWhere($options['academic_domain'] === 'grado_cientifico' ? $condition : 'NOT (' . $condition . ')')
+                        ->setParameter('doctorado', '%doctor%');
+                    return $qb->orderBy('u.nombre', 'ASC');
                 },
                 'placeholder' => 'Seleccione',
                 'empty_data' => null
@@ -109,8 +113,12 @@ class SolicitudProgramaType extends AbstractType
                 'label' => 'Tipo de programa',
                 'class' => TipoPrograma::class,
                 'choice_label' => 'nombre',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')->where('u.activo = true')->orderBy('u.nombre', 'ASC');
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('u')->where('u.activo = true');
+                    $condition = 'LOWER(u.nombre) LIKE :doctorado';
+                    $qb->andWhere($options['academic_domain'] === 'grado_cientifico' ? $condition : 'NOT (' . $condition . ')')
+                        ->setParameter('doctorado', '%doctor%');
+                    return $qb->orderBy('u.nombre', 'ASC');
                 },
                 'placeholder' => 'Seleccione',
                 'empty_data' => null
@@ -191,6 +199,8 @@ class SolicitudProgramaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => SolicitudPrograma::class,
+            'academic_domain' => 'postgrado',
         ]);
+        $resolver->setAllowedValues('academic_domain', ['postgrado', 'grado_cientifico']);
     }
 }

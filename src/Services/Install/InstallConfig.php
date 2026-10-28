@@ -30,6 +30,7 @@ class InstallConfig
         $modules[] = Module::createModule("MODULE_INSTIT", "Módulo de Intituciones", "Módulo de Intituciones");
         $modules[] = Module::createModule("MODULE_PREGR", "Módulo de Pregrado", "Módulo de Pregrado");
         $modules[] = Module::createModule("MODULE_POSTG", "Módulo de Postgrado", "Módulo de Postgrado");
+        $modules[] = Module::createModule("MODULE_GRADO_CIENTIFICO", "Módulo de Grado Científico", "Doctorados y formación doctoral");
         /***********************************DRI*************************************/
         $modules[] = Module::createModule("MODULE_CONVENIO", "Módulo de Convenio", "Módulo de Convenio");
         $modules[] = Module::createModule("MODULE_TRAMITE", "Módulo de Misiones", "Módulo de Misiones");
@@ -214,7 +215,6 @@ class InstallConfig
         //Postgrado
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_HOME_POSTG", "Portada de Posgrado", "Portada de Posgrado");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_SOLPROGRAM", "Gestionar solicitudes de programas", "Gestionar solicitudes de programas");
-        $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_GRADO_CIENTIFICO", "Gestionar grados científicos", "Gestionar grados científicos");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_FORMACION_ACADEMICA", "Gestionar formación académica de posgrado", "Gestionar formación académica de posgrado");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_COPEP", "Gestionar copep", "Gestionar copep");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_COMISION", "Gestionar comision", "Gestionar comision");
@@ -224,10 +224,18 @@ class InstallConfig
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_ROLESPOS ", "Gestionar roles", "Gestionar roles");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_TIP_SOLICITUD_POST ", "Gestionar tipos de solicitudes", "Gestionar tipos de solicitudes");
         $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_REPORTE_FORMACION_ACADEMICA", "Reporte de Formación académica de posgrado", "Reporte de Formación académica de posgrado");
-        $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_REPORTE_GRADO_CIENTIFICO", "Reporte de Grados científicos ", "Reporte de Grados científicos ");
-        $functionalities[] = Functionality::createFunctionality("MODULE_POSTG", "ROLE_GEST_FORMACION_DOCTORES ", "Gestionar IAFD (Formación de Doctores) ", "Gestionar IAFD (Formación de Doctores) ");
 
         return $functionalities;
+    }
+
+    public static function defineFunctionalitiesForGradoCientifico(): array
+    {
+        return [
+            Functionality::createFunctionality("MODULE_GRADO_CIENTIFICO", "ROLE_HOME_GRADO_CIENTIFICO", "Portada de Grado Científico", "Acceso al módulo de Grado Científico"),
+            Functionality::createFunctionality("MODULE_GRADO_CIENTIFICO", "ROLE_GEST_GRADO_CIENTIFICO", "Gestionar programas doctorales", "Solicitudes y programas de doctorado"),
+            Functionality::createFunctionality("MODULE_GRADO_CIENTIFICO", "ROLE_GEST_FORMACION_DOCTORES", "Gestionar instituciones autorizadas", "Instituciones autorizadas para la formación doctoral"),
+            Functionality::createFunctionality("MODULE_GRADO_CIENTIFICO", "ROLE_GEST_REPORTE_GRADO_CIENTIFICO", "Reportes de grado científico", "Reportes de doctorados"),
+        ];
     }
 
     /**
@@ -529,7 +537,6 @@ class InstallConfig
 //            ->addFunctionality("ROLE_PORTADA_ADMIN")
             ->addFunctionality("ROLE_HOME_POSTG")
             ->addFunctionality("ROLE_GEST_SOLPROGRAM")
-            ->addFunctionality("ROLE_GEST_GRADO_CIENTIFICO")
             ->addFunctionality("ROLE_GEST_FORMACION_ACADEMICA")
             ->addFunctionality("ROLE_GEST_COPEP")
             ->addFunctionality("ROLE_GEST_COMISION")
@@ -537,9 +544,13 @@ class InstallConfig
             ->addFunctionality("ROLE_GEST_RAMCIENC")
             ->addFunctionality("ROLE_GEST_CENTRO_AUTORIZADO")
             ->addFunctionality("ROLE_GEST_ROLESPOS")
-            ->addFunctionality("ROLE_GEST_REPORTE_FORMACION_ACADEMICA")
-            ->addFunctionality("ROLE_GEST_REPORTE_GRADO_CIENTIFICO")
-            ->addFunctionality("ROLE_GEST_FORMACION_DOCTORES");
+            ->addFunctionality("ROLE_GEST_REPORTE_FORMACION_ACADEMICA");
+
+        $roles[] = Role::createRole('ROL_GRADO_CIENTIFICO', "Administrador de Grado Científico", "Rol con permiso para gestionar doctorados y formación doctoral")
+            ->addFunctionality("ROLE_HOME_GRADO_CIENTIFICO")
+            ->addFunctionality("ROLE_GEST_GRADO_CIENTIFICO")
+            ->addFunctionality("ROLE_GEST_FORMACION_DOCTORES")
+            ->addFunctionality("ROLE_GEST_REPORTE_GRADO_CIENTIFICO");
 
 
         $roles[] = Role::createRole('ROL_CONVENIO', "Administrador de Convenio", "Rol con permiso a la gestion de Convenio")

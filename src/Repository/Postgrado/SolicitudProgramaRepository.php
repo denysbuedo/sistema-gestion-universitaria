@@ -50,18 +50,20 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
         }
     }
 
-    public function getSolicitudes()
+    public function getSolicitudes(?bool $gradoCientifico = null)
     {
         $qb = $this->createQueryBuilder('qb')
             ->innerJoin('qb.estadoPrograma', 'ep')
             ->where("ep.id NOT IN(:valuesItems)")->setParameter('valuesItems', array_values([7]))
             ->orderBy('qb.id', \SortDirection::Descending);
 
+        $this->applyAcademicDomain($qb, 'qb', $gradoCientifico);
+
         $resul = $qb->getQuery()->getResult();
         return $resul;
     }
 
-    public function getSolicitudesSinVotacion()
+    public function getSolicitudesSinVotacion(?bool $gradoCientifico = null)
     {
         // DQL para la subconsulta
         $subQueryDQL = 'SELECT solicitudPrograma.id 
@@ -75,6 +77,8 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->setParameter('excludedIds', [7])
             ->andWhere($qb->expr()->notIn('solicitud.id', "($subQueryDQL)")) // Uso de la subconsulta DQL
             ->orderBy('solicitud.id', \SortDirection::Descending);
+
+        $this->applyAcademicDomain($qb, 'solicitud', $gradoCientifico);
 
         return $qb->getQuery()->getResult();
     }
@@ -106,68 +110,69 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
         return $resul;
     }
 
-    public function countByEstado(array $estadoIds): int
+    public function countByEstado(array $estadoIds, ?bool $gradoCientifico = null): int
     {
-        return (int) $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('COUNT(sp.id)')
             ->innerJoin('sp.estadoPrograma', 'ep')
             ->where('ep.id IN(:estadoIds)')
-            ->setParameter('estadoIds', $estadoIds)
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->setParameter('estadoIds', $estadoIds);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getProgramasPorTipoPrograma(): array
+    public function getProgramasPorTipoPrograma(?bool $gradoCientifico = null): array
     {
-        $result = $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('tp.nombre AS name, COUNT(sp.id) AS y')
             ->innerJoin('sp.tipoPrograma', 'tp')
             ->innerJoin('sp.estadoPrograma', 'ep')
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('tp.id, tp.nombre')
-            ->orderBy('y', \SortDirection::Descending)
-            ->getQuery()
-            ->getResult();
+            ->orderBy('y', \SortDirection::Descending);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico, 'tp');
+        $result = $qb->getQuery()->getResult();
 
         return array_map(function ($r) { return ['name' => $r['name'], 'y' => (int)$r['y']]; }, $result);
     }
 
-    public function getProgramasPorRamaCiencia(): array
+    public function getProgramasPorRamaCiencia(?bool $gradoCientifico = null): array
     {
-        $result = $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('rc.nombre AS name, COUNT(sp.id) AS y')
             ->innerJoin('sp.ramaCiencia', 'rc')
             ->innerJoin('sp.estadoPrograma', 'ep')
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('rc.id, rc.nombre')
-            ->orderBy('y', \SortDirection::Descending)
-            ->getQuery()
-            ->getResult();
+            ->orderBy('y', \SortDirection::Descending);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico);
+        $result = $qb->getQuery()->getResult();
 
         return array_map(function ($r) { return ['name' => $r['name'], 'y' => (int)$r['y']]; }, $result);
     }
 
-    public function getProgramasPorModalidad(): array
+    public function getProgramasPorModalidad(?bool $gradoCientifico = null): array
     {
-        $result = $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('mp.nombre AS name, COUNT(sp.id) AS y')
             ->innerJoin('sp.modalidadPrograma', 'mp')
             ->innerJoin('sp.estadoPrograma', 'ep')
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('mp.id, mp.nombre')
-            ->orderBy('y', \SortDirection::Descending)
-            ->getQuery()
-            ->getResult();
+            ->orderBy('y', \SortDirection::Descending);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico);
+        $result = $qb->getQuery()->getResult();
 
         return array_map(function ($r) { return ['name' => $r['name'], 'y' => (int)$r['y']]; }, $result);
     }
 
-    public function getProgramasPorUniversidad(): array
+    public function getProgramasPorUniversidad(?bool $gradoCientifico = null): array
     {
-        $result = $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('u.nombre AS name, COUNT(sp.id) AS y')
             ->innerJoin('sp.universidad', 'u')
             ->innerJoin('sp.estadoPrograma', 'ep')
@@ -175,26 +180,45 @@ class SolicitudProgramaRepository extends ServiceEntityRepository
             ->setParameter('excludedIds', [7])
             ->groupBy('u.id, u.nombre')
             ->orderBy('y', \SortDirection::Descending)
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults(10);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico);
+        $result = $qb->getQuery()->getResult();
 
         return array_map(function ($r) { return ['name' => $r['name'], 'y' => (int)$r['y']]; }, $result);
     }
 
-    public function getProgramasPorCategoriaAcreditacion(): array
+    public function getProgramasPorCategoriaAcreditacion(?bool $gradoCientifico = null): array
     {
-        $result = $this->createQueryBuilder('sp')
+        $qb = $this->createQueryBuilder('sp')
             ->select('ca.nombre AS name, COUNT(sp.id) AS y')
             ->innerJoin('sp.categoriaAcreditacion', 'ca')
             ->innerJoin('sp.estadoPrograma', 'ep')
             ->where('ep.id NOT IN(:excludedIds)')
             ->setParameter('excludedIds', [7])
             ->groupBy('ca.id, ca.nombre')
-            ->orderBy('y', \SortDirection::Descending)
-            ->getQuery()
-            ->getResult();
+            ->orderBy('y', \SortDirection::Descending);
+        $this->applyAcademicDomain($qb, 'sp', $gradoCientifico);
+        $result = $qb->getQuery()->getResult();
 
         return array_map(function ($r) { return ['name' => $r['name'], 'y' => (int)$r['y']]; }, $result);
+    }
+
+    /**
+     * Separa el dominio académico sin duplicar tablas: Doctorado pertenece a
+     * Grado Científico; el resto de la formación académica pertenece a Posgrado.
+     */
+    private function applyAcademicDomain($qb, string $rootAlias, ?bool $gradoCientifico, ?string $typeAlias = null): void
+    {
+        if ($gradoCientifico === null) {
+            return;
+        }
+
+        $typeAlias ??= 'academicDomainType';
+        if ($typeAlias === 'academicDomainType') {
+            $qb->innerJoin($rootAlias . '.tipoPrograma', $typeAlias);
+        }
+        $condition = 'LOWER(' . $typeAlias . '.nombre) LIKE :academicDomainDoctorate';
+        $qb->andWhere($gradoCientifico ? $condition : 'NOT (' . $condition . ')')
+            ->setParameter('academicDomainDoctorate', '%doctor%');
     }
 }

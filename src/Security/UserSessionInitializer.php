@@ -77,6 +77,7 @@ final class UserSessionInitializer
             'ROL_RRHH' => 'Administrador de Recursos Humanos',
             'ROL_PREGRADO' => 'Administrador de Pregrado',
             'ROL_POSGRADO' => 'Administrador de Posgrado',
+            'ROL_GRADO_CIENTIFICO' => 'Administrador de Grado Científico',
             'ROL_STRUCT' => 'Administrador de Organización Institucional',
             'ROL_PERSON' => 'Administrador de Personal',
             'ROL_EVALUACION' => 'Administrador de Evaluación',

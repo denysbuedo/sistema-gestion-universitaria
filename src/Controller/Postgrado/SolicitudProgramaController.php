@@ -59,7 +59,7 @@ class SolicitudProgramaController extends AbstractController
     #[Route('/', name: 'app_solicitud_programa_index', methods: ['GET'])]
     public function index(SolicitudProgramaRepository $solicitudProgramaRepository, PersonaRepository $personaRepository, MiembrosCopepRepository $miembrosCopepRepository)
     {
-        $registros = $solicitudProgramaRepository->getSolicitudes();
+        $registros = $solicitudProgramaRepository->getSolicitudes(false);
         $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles());
         if (!$isAdmin) {
             $personaAutenticada = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
@@ -67,12 +67,13 @@ class SolicitudProgramaController extends AbstractController
             //si es miembro de la copep activa
             if (!empty($miembroCopep)) {
                 //listar todas las solicitudes donde no ha votado
-                $registros = $solicitudProgramaRepository->getSolicitudesSinVotacion();
+                $registros = $solicitudProgramaRepository->getSolicitudesSinVotacion(false);
 //                pr(count($registros));
             }
         }
         return $this->render('modules/postgrado/solicitud_programa/index.html.twig', [
             'registros' => $registros,
+            'academic_domain' => 'postgrado',
         ]);
     }
 
@@ -86,9 +87,11 @@ class SolicitudProgramaController extends AbstractController
     #[Route('/registrar', name: 'app_solicitud_programa_registrar', methods: ['GET', 'POST'])]
     public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, UploadedDocumentStorage $storage)
     {
+        $academicDomain = $request->query->get('ambito') === 'grado_cientifico' ? 'grado_cientifico' : 'postgrado';
+        $indexRoute = $academicDomain === 'grado_cientifico' ? 'app_grado_cientifico_solicitud_index' : 'app_solicitud_programa_index';
         try {
             $solicitudPrograma = new SolicitudPrograma();
-            $form = $this->createForm(SolicitudProgramaType::class, $solicitudPrograma, ['action' => 'registrar']);
+            $form = $this->createForm(SolicitudProgramaType::class, $solicitudPrograma, ['action' => 'registrar', 'academic_domain' => $academicDomain]);
             $form->handleRequest($request);
             $post = $request->request->all();
 
@@ -113,7 +116,7 @@ class SolicitudProgramaController extends AbstractController
 
                     } else {
                         $this->addFlash('error', 'El campo Instituciones que intervienen es obligatorio.');
-                        return $this->redirectToRoute('app_solicitud_programa_registrar', [], Response::HTTP_SEE_OTHER);
+                        return $this->redirectToRoute('app_solicitud_programa_registrar', $academicDomain === 'grado_cientifico' ? ['ambito' => 'grado_cientifico'] : [], Response::HTTP_SEE_OTHER);
                     }
                 } else if ($this->getParameter('id_tipo_solicitud_propio') == $post['solicitud_programa']['tipoSolicitud']) {//tipo propio
                     if ($this->getParameter('id_tipo_solicitud_clasificacion_exitente') == $post['solicitud_programa']['tipoSolicitudClasificacion']) {//clasificacion es existente
@@ -161,7 +164,7 @@ class SolicitudProgramaController extends AbstractController
                 $traceService->registrar($this->getParameter('accion_registrar'), $this->getParameter('objeto_solicitud_programa'), null, DoctrineHelper::toArray($solicitudPrograma));
 
                 $this->addFlash('success', 'El elemento ha sido creado satisfactoriamente.');
-                return $this->redirectToRoute('app_solicitud_programa_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute($indexRoute, [], Response::HTTP_SEE_OTHER);
             }
 
             return $this->render('modules/postgrado/solicitud_programa/new.html.twig', [
@@ -170,10 +173,11 @@ class SolicitudProgramaController extends AbstractController
                 'id_tipo_solicitud_propio' => $this->getParameter('id_tipo_solicitud_propio'),
                 'id_tipo_solicitud_clasificacion_nuevo' => $this->getParameter('id_tipo_solicitud_clasificacion_nuevo'),
                 'id_tipo_solicitud_clasificacion_exitente' => $this->getParameter('id_tipo_solicitud_clasificacion_exitente'),
+                'academic_domain' => $academicDomain,
             ]);
         } catch (\Exception $exception) {
             $this->addFlash('error', $exception->getMessage());
-            return $this->redirectToRoute('app_solicitud_programa_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute($indexRoute, [], Response::HTTP_SEE_OTHER);
         }
     }
 
