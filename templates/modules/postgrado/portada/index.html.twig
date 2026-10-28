@@ -13,37 +13,29 @@
         /* ── Stat cards ──────────────────────────────────── */
         .stat-card {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 6px;
             padding: 18px 20px;
             border: 1px solid #e8ecf1;
             display: flex; align-items: center; gap: 14px;
             height: 100%;
-            transition: box-shadow .2s ease, border-color .2s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0,0,0,.09);
-            border-color: transparent;
         }
         .stat-card { position: relative; }
         .stat-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 3px;
-            background: var(--sc, #7c3aed);
-            border-radius: 14px 14px 0 0;
+            background: var(--sc, #1769aa);
+            border-radius: 6px 6px 0 0;
         }
         .stat-icon {
-            width: 46px; height: 46px; border-radius: 12px;
+            width: 46px; height: 46px; border-radius: 6px;
             display: flex; align-items: center; justify-content: center;
             font-size: 19px; flex-shrink: 0;
         }
-        .si-total      { background: #ede9fe; color: #7c3aed; }
-        .si-aprobados  { background: #d1fae5; color: #059669; }
-        .si-proceso    { background: #dbeafe; color: #2563eb; }
-        .si-rechazados { background: #fee2e2; color: #dc2626; }
-        .si-desactivados{ background: #fef3c7; color: #d97706; }
-        .si-extintos   { background: #f3f4f6; color: #6b7280; }
+        .si-total, .si-aprobados, .si-proceso,
+        .si-rechazados, .si-desactivados, .si-extintos {
+            background: #edf3f7; color: #1769aa;
+        }
 
         .stat-body { flex: 1; min-width: 0; }
         .stat-label {
@@ -52,13 +44,13 @@
         }
         .stat-value {
             font-size: 30px; font-weight: 800;
-            color: #1e1b4b; line-height: 1;
+            color: #1a2e44; line-height: 1;
         }
 
         /* ── Chart cards ─────────────────────────────────── */
         .cc {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 6px;
             border: 1px solid #e8ecf1;
             overflow: hidden;
             margin-bottom: 24px;
@@ -72,7 +64,7 @@
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
         }
         .cc-title {
-            font-size: 14px; font-weight: 600; color: #1e1b4b; margin: 0;
+            font-size: 14px; font-weight: 600; color: #1a2e44; margin: 0;
         }
         .cc-body { padding: 16px; }
 
@@ -86,7 +78,7 @@
         .dist-row:last-child { border-bottom: none; }
         .dist-label { font-size: 13px; color: #374151; font-weight: 500; flex: 1; min-width: 0; padding-right: 8px; }
         .dist-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .dist-count { font-size: 13px; font-weight: 700; color: #1e1b4b; min-width: 28px; text-align: right; }
+        .dist-count { font-size: 13px; font-weight: 700; color: #1a2e44; min-width: 28px; text-align: right; }
         .dist-bar { width: 72px; height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
         .dist-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
 
@@ -102,7 +94,7 @@
 {% block body %}
 <div class="content-header">
     <div class="container-fluid">
-        <h4 style="color:#1a2e44;font-weight:700;margin:0">Programas de Posgrado</h4>
+        <h4 style="color:#1a2e44;font-weight:700;margin:0"><i class="fas fa-user-graduate" style="color:#1769aa;margin-right:9px"></i>Programas de Posgrado</h4>
         <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Visión general de los programas académicos de posgrado</p>
     </div>
 </div>
@@ -114,7 +106,7 @@
         {# ── Fila 1 de stat cards ────────────────────────── #}
         <div class="row" style="margin-bottom: 16px;">
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#7c3aed">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-total"><i class="fas fa-layer-group"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">Total programas</div>
@@ -123,7 +115,7 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#059669">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-aprobados"><i class="fas fa-check-circle"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">Aprobados</div>
@@ -132,7 +124,7 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#2563eb">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-proceso"><i class="fas fa-spinner"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">En proceso</div>
@@ -145,7 +137,7 @@
         {# ── Fila 2 de stat cards ────────────────────────── #}
         <div class="row" style="margin-bottom: 28px;">
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#dc2626">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-rechazados"><i class="fas fa-times-circle"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">Rechazados</div>
@@ -154,7 +146,7 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#d97706">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-desactivados"><i class="fas fa-pause-circle"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">Desactivados</div>
@@ -163,7 +155,7 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#6b7280">
+                <div class="stat-card" style="--sc:#1769aa">
                     <div class="stat-icon si-extintos"><i class="fas fa-archive"></i></div>
                     <div class="stat-body">
                         <div class="stat-label">Extintos</div>
