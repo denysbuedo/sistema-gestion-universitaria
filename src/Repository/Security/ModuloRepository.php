@@ -34,9 +34,9 @@ class ModuloRepository extends ServiceEntityRepository
 
     public function edit(Modulo $entity, bool $flush = true): Modulo
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;

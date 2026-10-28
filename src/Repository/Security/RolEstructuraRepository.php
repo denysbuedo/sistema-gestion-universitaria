@@ -32,9 +32,9 @@ class RolEstructuraRepository extends ServiceEntityRepository
 
     public function edit(RolEstructura $entity, bool $flush = true): RolEstructura
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;

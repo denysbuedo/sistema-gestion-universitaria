@@ -34,9 +34,9 @@ class RolRepository extends ServiceEntityRepository
 
     public function edit(Rol $entity, bool $flush = true): Rol
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;

@@ -34,9 +34,9 @@ class FuncionalidadRepository extends ServiceEntityRepository
 
     public function edit(Funcionalidad $entity, bool $flush = true): Funcionalidad
     {
-        $this->_em->persist($entity);
+        $this->getEntityManager()->persist($entity);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
 
         return $entity;
