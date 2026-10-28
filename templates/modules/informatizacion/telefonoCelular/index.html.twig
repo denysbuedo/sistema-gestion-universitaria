@@ -4,22 +4,24 @@
 {% block body %}
 {% include 'pages/_luxury_list_styles.html.twig' %}
 {% include 'pages/modalDetail.html.twig' %}
-{% set instituciones=[] %}{% set marcas=[] %}{% set modelos=[] %}{% set sistemas=[] %}
+{% set instituciones=[] %}
 {% for item in registros %}
-    {% set institucion=item.estructura.nombre|default('Sin institución') %}{% set marca=item.marca.nombre|default('Sin marca') %}{% set modelo=item.modelo.nombre|default('Sin modelo') %}{% set sistema=item.sistemaOperativo.nombre|default('Sin sistema operativo') %}
-    {% if institucion not in instituciones %}{% set instituciones=instituciones|merge([institucion]) %}{% endif %}{% if marca not in marcas %}{% set marcas=marcas|merge([marca]) %}{% endif %}{% if modelo not in modelos %}{% set modelos=modelos|merge([modelo]) %}{% endif %}{% if sistema not in sistemas %}{% set sistemas=sistemas|merge([sistema]) %}{% endif %}
+    {% set institucion=item.estructura.nombre|default('Sin institución') %}
+    {% if institucion not in instituciones %}{% set instituciones=instituciones|merge([institucion]) %}{% endif %}
 {% endfor %}
+<style>.td-list-filters{display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;margin:0 0 16px;padding:12px 14px;border:1px solid #dce4ea;border-radius:4px;background:#f8fafb}.td-list-filter{width:min(100%,270px)}.td-list-filter label{display:block;margin:0 0 5px;color:#526675;font-size:12px;font-weight:500}.td-list-filter select{width:100%;height:38px;border:1px solid #cbd6de;border-radius:4px;background:#fff;color:#263746;font-size:13px;box-shadow:none}.card-luxury>.card-header>.ml-auto{gap:10px!important}@media(max-width:575.98px){.td-list-filters{display:block}.td-list-filter{width:100%;margin-bottom:10px}}</style>
 
 <div class="card card-luxury">
     <div class="card-header d-flex align-items-center">
         <div><h3 class="card-title m-0"><i class="fas fa-mobile-alt label-icon"></i>Teléfonos celulares</h3><small class="text-muted">{{ alcance }} · {{ registros|length }} equipo{{ registros|length == 1 ? '' : 's' }}</small></div>
-        <div class="ml-auto"><a class="btn-lux-sm btn-lux-primary" href="{{ path('app_telefono_celular_registrar') }}"><i class="fa fa-plus"></i> Nuevo teléfono</a></div>
+        <div class="ml-auto d-flex align-items-center" style="gap:10px"><a class="btn-lux-sm btn-lux-primary" href="{{ path('app_telefono_celular_registrar') }}"><i class="fa fa-plus"></i> Nuevo teléfono</a></div>
     </div>
-    <div class="card-body px-4"><div class="table-responsive">
+    <div class="card-body px-4">
+        {% if es_admin_informatizacion %}<div class="td-list-filters"><div class="td-list-filter"><label for="telefono-universidad">Universidad</label><select id="telefono-universidad" class="no-select2"><option value="">Todas las universidades</option>{% for v in instituciones|sort %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div></div>{% endif %}
+        <div class="table-responsive">
         <table class="table config-table table-bordered table-striped dataTable">
             <thead>
             <tr><th>No.</th>{% if es_admin_informatizacion %}<th>Universidad</th>{% endif %}<th>Marca</th><th>Modelo</th><th>Sistema operativo</th><th>Responsable actual</th><th class="text-center">Opciones</th></tr>
-            <tr><th></th>{% if es_admin_informatizacion %}<th><select class="responsive-input no-select2"><option value="">Todas las universidades</option>{% for v in instituciones|sort %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></th>{% endif %}<th><select class="responsive-input no-select2"><option value="">Todas las marcas</option>{% for v in marcas|sort %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></th><th><select class="responsive-input no-select2"><option value="">Todos los modelos</option>{% for v in modelos|sort %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></th><th><select class="responsive-input no-select2"><option value="">Todos los sistemas</option>{% for v in sistemas|sort %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></th><th></th><th></th></tr>
             </thead>
             <tbody>{% for item in registros %}<tr>
                 <td>{{ loop.index }}</td>{% if es_admin_informatizacion %}<td>{{ item.estructura.nombre|default('Sin institución') }}</td>{% endif %}<td>{{ item.marca.nombre|default('—') }}</td><td>{{ item.modelo.nombre|default('—') }}</td><td>{{ item.sistemaOperativo.nombre|default('—') }}</td><td>{{ item.responsable|default('Sin asignar') }}</td>
@@ -31,4 +33,4 @@
     </div></div>
 </div>
 {% endblock %}
-{% block javascripts %}{{ parent() }}{% include 'pages/_luxury_list_dropdown_js.html.twig' %}{% endblock %}
+{% block javascripts %}{{ parent() }}{% include 'pages/_luxury_list_dropdown_js.html.twig' %}<script>$(function(){var $filter=$('#telefono-universidad');if(!$filter.length)return;var table=$('.dataTable').DataTable();$filter.on('change',function(){var value=$.fn.dataTable.util.escapeRegex(this.value);table.column(1).search(value?'^'+value+'$':'',true,false).draw()})});</script>{% endblock %}
