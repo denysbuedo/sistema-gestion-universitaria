@@ -24,6 +24,10 @@
     .btn-action-danger { background:#ef4444; }
     .btn-action-danger:hover { background:#dc2626; transform:translateY(-1px); }
     .responsive-input { width:100%; font-size:0.78rem; padding:3px 6px; border:1px solid #e2e8f0; border-radius:4px; }
+    .pg-request-filters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 18px; padding:15px 16px; background:#f8fafb; border:1px solid #dce4ea; border-radius:6px; }
+    .pg-request-filters label { display:block; margin:0 0 5px; color:#526675; font-size:12px; font-weight:600; }
+    .pg-request-filters select { width:100%; height:38px; padding:6px 32px 6px 10px; color:#263d4d; background:#fff; border:1px solid #cbd6de; border-radius:4px; }
+    @media(max-width:767px){ .pg-request-filters { grid-template-columns:1fr; } }
 </style>
 
 {% include 'pages/modalDetail.html.twig' %}
@@ -41,6 +45,11 @@
         </div>
     </div>
     <div class="card-body px-4">
+        <div class="pg-request-filters td-list-filters" aria-label="Filtros de solicitudes">
+            <div><label for="pg-filter-type">Tipo de programa</label><select id="pg-filter-type" class="no-select2 pg-exact-filter" data-column="2"><option value="">Todos los tipos</option></select></div>
+            <div><label for="pg-filter-institution">Institución solicitante</label><select id="pg-filter-institution" class="no-select2 pg-exact-filter" data-column="4"><option value="">Todas las instituciones</option></select></div>
+            <div><label for="pg-filter-status">Estado</label><select id="pg-filter-status" class="no-select2 pg-exact-filter" data-column="6"><option value="">Todos los estados</option></select></div>
+        </div>
         <table class="table config-table table-bordered table-striped dataTable">
             <thead>
             <tr>
@@ -52,16 +61,6 @@
                 <th>Coordinador</th>
                 <th>Estado</th>
                 <th class="text-center">Opciones</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th><input type="text" placeholder="Filtrar por Nombre" class="responsive-input" /></th>
-                <th><input type="text" placeholder="Filtrar por Tipo" class="responsive-input"/></th>
-                <th><input type="text" placeholder="Filtrar por Rama" class="responsive-input" /></th>
-                <th><input type="text" placeholder="Filtrar por Institución" class="responsive-input" /></th>
-                <th><input type="text" placeholder="Filtrar por Coordinador" class="responsive-input" /></th>
-                <th><input type="text" placeholder="Filtrar por Estado" class="responsive-input" /></th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -155,6 +154,24 @@
     {{ parent() }}
     <script>
         $(document).ready(function () {
+            var $requestTable = $('.config-table').first();
+            $('.pg-exact-filter').each(function () {
+                var select = this;
+                var column = parseInt(select.dataset.column, 10);
+                var values = [];
+                $requestTable.find('tbody tr').each(function () {
+                    var value = $.trim($(this).children('td').eq(column).text()).replace(/\s+/g, ' ');
+                    if (value && values.indexOf(value) === -1) values.push(value);
+                });
+                values.sort(function (a, b) { return a.localeCompare(b, 'es'); });
+                values.forEach(function (value) { $('<option></option>').val(value).text(value).appendTo(select); });
+            });
+            $('.pg-exact-filter').on('change', function () {
+                if (!$.fn.dataTable.isDataTable($requestTable[0])) return;
+                var value = $.fn.dataTable.util.escapeRegex(this.value);
+                $requestTable.DataTable().column(parseInt(this.dataset.column, 10)).search(value ? '^' + value + '$' : '', true, false).draw();
+            });
+
             $(document).on('show.bs.dropdown', 'table .dropdown', function () {
                 var $btn  = $(this).find('button[data-toggle="dropdown"]');
                 var $menu = $(this).find('.dropdown-menu');

@@ -95,7 +95,7 @@ class SolicitudProgramaController extends AbstractController
             $form->handleRequest($request);
             $post = $request->request->all();
 
-            if ($form->isSubmitted()) {
+            if ($form->isSubmitted() && $form->isValid()) {
                 if ($this->getParameter('id_tipo_solicitud_red') == $post['solicitud_programa']['tipoSolicitud']) {//tipo red
                     if (isset($post['solicitud_programa']['universidadesRed']) && count($post['solicitud_programa']['universidadesRed']) > 0) {
                         foreach ($post['solicitud_programa']['universidadesRed'] as $value) {
@@ -120,7 +120,12 @@ class SolicitudProgramaController extends AbstractController
                     }
                 } else if ($this->getParameter('id_tipo_solicitud_propio') == $post['solicitud_programa']['tipoSolicitud']) {//tipo propio
                     if ($this->getParameter('id_tipo_solicitud_clasificacion_exitente') == $post['solicitud_programa']['tipoSolicitudClasificacion']) {//clasificacion es existente
-                        $existente = $solicitudProgramaRepository->find($post['solicitud_programa']['nombreExistente']);
+                        $programaExistenteId = $post['solicitud_programa']['nombreExistente'] ?? null;
+                        $existente = $programaExistenteId ? $solicitudProgramaRepository->find($programaExistenteId) : null;
+                        if (!$existente) {
+                            $this->addFlash('error', 'Debe seleccionar el programa existente que origina la solicitud.');
+                            return $this->redirectToRoute('app_solicitud_programa_registrar', $academicDomain === 'grado_cientifico' ? ['ambito' => 'grado_cientifico'] : [], Response::HTTP_SEE_OTHER);
+                        }
                         $solicitudPrograma->setTipoPrograma($existente->getTipoPrograma());
                         $solicitudPrograma->setRamaCiencia($existente->getRamaCiencia());
                         $solicitudPrograma->setOriginalDe($existente->getOriginalDe());
@@ -175,7 +180,7 @@ class SolicitudProgramaController extends AbstractController
                 'id_tipo_solicitud_clasificacion_exitente' => $this->getParameter('id_tipo_solicitud_clasificacion_exitente'),
                 'academic_domain' => $academicDomain,
             ]);
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->addFlash('error', $exception->getMessage());
             return $this->redirectToRoute($indexRoute, [], Response::HTTP_SEE_OTHER);
         }
@@ -203,7 +208,7 @@ class SolicitudProgramaController extends AbstractController
                 $presencialidadesArray[] = $v->getPresencialidadPrograma()->getId();
             }
 
-            if ($form->isSubmitted()) {
+            if ($form->isSubmitted() && $form->isValid()) {
                 $institucionIntervienen = $solicitudProgramaInstitucionRepository->findBy(['solicitudPrograma' => $solicitudPrograma->getId()]);
                 if (is_array($institucionIntervienen)) {
                     foreach ($institucionIntervienen as $value) {
@@ -280,7 +285,7 @@ class SolicitudProgramaController extends AbstractController
                 'id_tipo_solicitud_clasificacion_nuevo' => $this->getParameter('id_tipo_solicitud_clasificacion_nuevo'),
                 'id_tipo_solicitud_clasificacion_exitente' => $this->getParameter('id_tipo_solicitud_clasificacion_exitente')
             ]);
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->addFlash('error', $exception->getMessage());
             return $this->redirectToRoute('app_solicitud_programa_index', ['id' => $solicitudPrograma->getId()], Response::HTTP_SEE_OTHER);
         }
