@@ -83,12 +83,16 @@ class PersonaRepository extends ServiceEntityRepository
         return $resul;
     }
 
-    public function getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdPersons)
+    public function getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdPersons, ?int $entidadId = null)
     {
         $qb = $this->createQueryBuilder('qb');
         if (count($arrayIdPersons) > 0) {
             $qb->andWhere('qb.id NOT IN (:string)');
             $qb->setParameter('string', $arrayIdPersons, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+        if ($entidadId !== null) {
+            $qb->andWhere('IDENTITY(qb.entidad) = :entidadId')
+                ->setParameter('entidadId', $entidadId);
         }
 //        $subQuery = $this->getEntityManager()->getRepository('App\Entity\Postgrado\MiembrosCopep')->createQueryBuilder('subQb')
 //            ->select('p.id')

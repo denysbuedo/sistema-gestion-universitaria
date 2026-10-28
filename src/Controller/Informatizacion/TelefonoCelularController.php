@@ -16,6 +16,7 @@ use App\Repository\Postgrado\MiembrosComisionRepository;
 use App\Repository\Postgrado\RolComisionRepository;
 use App\Repository\Pregrado\ComisionNacionalRepository;
 use App\Repository\Pregrado\MiembrosComisionNacionalRepository;
+use App\Services\Informatizacion\InformatizacionScope;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,9 +35,10 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_telefono_celular_index', methods: ['GET'])]
-    public function index(TelefonoCelularRepository $telefonoCelularRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
+    public function index(TelefonoCelularRepository $telefonoCelularRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository, InformatizacionScope $scope)
     {
-        $registros = $telefonoCelularRepository->findBy([], ['id' => 'desc']);
+        $institution = $scope->institution($this->getUser());
+        $registros = $telefonoCelularRepository->findBy($scope->criteria($this->getUser()), ['id' => 'desc']);
         $response = [];
         if (is_array($registros)) {
             foreach ($registros as $value) {
@@ -53,6 +55,8 @@ class TelefonoCelularController extends AbstractController
 
         return $this->render('modules/informatizacion/telefonoCelular/index.html.twig', [
             'registros' => $response,
+            'alcance' => $institution?->getNombre() ?? 'Todas las universidades',
+            'es_admin_informatizacion' => $institution === null,
         ]);
     }
 
@@ -62,11 +66,15 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_telefono_celular_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository)
+    public function registrar(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository, InformatizacionScope $scope)
     {
 //        try {
             $entidad = new TelefonoCelular();
-            $form = $this->createForm(TelefonoCelularType::class, $entidad, ['action' => 'registrar']);
+            $institution = $scope->institution($this->getUser());
+            if ($institution !== null) {
+                $entidad->setEstructura($institution);
+            }
+            $form = $this->createForm(TelefonoCelularType::class, $entidad, ['action' => 'registrar', 'institution_id' => $institution?->getId()]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
 //                $personaAutenticada = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
@@ -93,16 +101,16 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_telefono_celular_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, PersonaRepository $personaRepository, TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository)
+    public function modificar(Request $request, PersonaRepository $personaRepository, TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $telefonoCelular);
         try {
-            $form = $this->createForm(TelefonoCelularType::class, $telefonoCelular, ['action' => 'modificar']);
+            $institution = $scope->institution($this->getUser());
+            $form = $this->createForm(TelefonoCelularType::class, $telefonoCelular, ['action' => 'modificar', 'institution_id' => $institution?->getId()]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
 //                if (!method_exists($telefonoCelular->getEstructura(), 'getId')) {
-                $personaAutenticada = $personaRepository->findOneBy(['usuario' => $this->getUser()->getId()]);
-                $telefonoCelular->setEstructura($personaAutenticada->getEstructura());
 //                }
                 $telefonoCelularRepository->edit($telefonoCelular);
                 $this->addFlash('success', 'El elemento ha sido actualizado satisfactoriamente.');
@@ -125,8 +133,9 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/detail', name: 'app_telefono_celular_detail', methods: ['GET', 'POST'])]
-    public function detail(TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
+    public function detail(TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $telefonoCelular);
         $asignadas = [];
         $temp = $telefonoCelularResponsableRepository->findBy(['telefonoCelular' => $telefonoCelular->getId()], ['id' => 'desc']);
         foreach ($temp as $value) {
@@ -145,8 +154,9 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_telefono_celular_eliminar', methods: ['GET'])]
-    public function eliminar(TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository)
+    public function eliminar(TelefonoCelular $telefonoCelular, TelefonoCelularRepository $telefonoCelularRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $telefonoCelular);
         try {
             if ($telefonoCelularRepository->find($telefonoCelular) instanceof TelefonoCelular) {
                 $telefonoCelularRepository->remove($telefonoCelular, true);
@@ -167,8 +177,9 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/responsable', name: 'app_telefono_celular_responsable', methods: ['GET', 'POST'])]
-    public function responsable(Request $request, TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResopnsableRepository, PersonaRepository $personaRepository)
+    public function responsable(Request $request, TelefonoCelular $telefonoCelular, TelefonoCelularResponsableRepository $telefonoCelularResopnsableRepository, PersonaRepository $personaRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $telefonoCelular);
         try {
             $arrayIdAsignados = [];
             $asignadas = [];
@@ -178,7 +189,8 @@ class TelefonoCelularController extends AbstractController
                 $asignadas[] = $value->getResponsable();
             }
             $request->getSession()->set('idTelefonoCelular', $telefonoCelular->getId());
-            $personas = $personaRepository->getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdAsignados);
+            $institution = $scope->institution($this->getUser());
+            $personas = $personaRepository->getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdAsignados, $institution?->getId());
             return $this->render('modules/informatizacion/telefonoCelular/responsable.html.twig', [
                 'telefonoCelular' => $telefonoCelular,
                 'personas' => $personas,
@@ -198,15 +210,25 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/asociar_responsable', name: 'app_telefono_celular_asociar_responsable', methods: ['GET', 'POST'])]
-    public function asociarResponsable(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository, EntityManagerInterface $em)
+    public function asociarResponsable(Request $request, PersonaRepository $personaRepository, TelefonoCelularRepository $telefonoCelularRepository, EntityManagerInterface $em, InformatizacionScope $scope)
     {
+        $telefono = $telefonoCelularRepository->find($request->getSession()->get('idTelefonoCelular'));
+        if (!$telefono instanceof TelefonoCelular) {
+            throw $this->createNotFoundException();
+        }
+        $scope->assertCanManage($this->getUser(), $telefono);
         try {
             $arrayIds = $request->request->get('arrayId');
             if (is_array($arrayIds)) {
                 foreach ($arrayIds as $value) {
+                    $person = $personaRepository->find($value['id_persona']);
+                    if (!$person instanceof Persona) {
+                        throw $this->createNotFoundException();
+                    }
+                    $scope->assertCanAssignPerson($this->getUser(), $person);
                     $responsable = new TelefonoCelularResponsable();
-                    $responsable->setResponsable($personaRepository->find($value['id_persona']));
-                    $responsable->setTelefonoCelular($telefonoCelularRepository->find($request->getSession()->get('idTelefonoCelular')));
+                    $responsable->setResponsable($person);
+                    $responsable->setTelefonoCelular($telefono);
                     $em->persist($responsable);
                 }
                 $em->flush();
@@ -225,10 +247,15 @@ class TelefonoCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar_responsable', name: 'app_telefono_celular_eliminar_responsable', methods: ['GET'])]
-    public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository)
+    public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, TelefonoCelularResponsableRepository $telefonoCelularResponsableRepository, TelefonoCelularRepository $telefonoCelularRepository, InformatizacionScope $scope)
     {
+        $telefonoCelular = $request->getSession()->get('idTelefonoCelular');
+        $telefono = $telefonoCelularRepository->find($telefonoCelular);
+        if (!$telefono instanceof TelefonoCelular) {
+            throw $this->createNotFoundException();
+        }
+        $scope->assertCanManage($this->getUser(), $telefono);
         try {
-            $telefonoCelular = $request->getSession()->get('idTelefonoCelular');
             if ($personaRepository->find($persona->getId()) instanceof Persona) {
                 $miembro = $telefonoCelularResponsableRepository->findOneBy(['responsable' => $persona->getId(), 'telefonoCelular' => $telefonoCelular]);
                 $telefonoCelularResponsableRepository->remove($miembro, true);

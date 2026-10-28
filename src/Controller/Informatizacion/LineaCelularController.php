@@ -15,6 +15,7 @@ use App\Repository\Informatizacion\LineaCelularRecargasRepository;
 use App\Repository\Informatizacion\LineaCelularRepository;
 use App\Repository\Informatizacion\LineaCelularResponsableRepository;
 use App\Repository\Personal\PersonaRepository;
+use App\Services\Informatizacion\InformatizacionScope;
 use App\Repository\Postgrado\MiembrosComisionRepository;
 use App\Repository\Postgrado\RolComisionRepository;
 use App\Repository\Pregrado\ComisionNacionalRepository;
@@ -37,10 +38,13 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_linea_celular_index', methods: ['GET'])]
-    public function index(LineaCelularRepository $LineaCelularRepository)
+    public function index(LineaCelularRepository $LineaCelularRepository, InformatizacionScope $scope)
     {
+        $institution = $scope->institution($this->getUser());
         return $this->render('modules/informatizacion/lineaCelular/index.html.twig', [
-            'registros' => $LineaCelularRepository->findBy([], ['id' => 'desc']),
+            'registros' => $LineaCelularRepository->findBy($scope->criteria($this->getUser()), ['id' => 'desc']),
+            'alcance' => $institution?->getNombre() ?? 'Todas las universidades',
+            'es_admin_informatizacion' => $institution === null,
         ]);
     }
 
@@ -50,11 +54,15 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_linea_celular_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository)
+    public function registrar(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, InformatizacionScope $scope)
     {
         try {
             $entidad = new LineaCelular();
-            $form = $this->createForm(LineaCelularType::class, $entidad, ['action' => 'registrar']);
+            $institution = $scope->institution($this->getUser());
+            if ($institution !== null) {
+                $entidad->setEstructura($institution);
+            }
+            $form = $this->createForm(LineaCelularType::class, $entidad, ['action' => 'registrar', 'institution_id' => $institution?->getId()]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $lineaCelularRepository->add($entidad, true);
@@ -79,10 +87,12 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_linea_celular_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, PersonaRepository $personaRepository, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository)
+    public function modificar(Request $request, PersonaRepository $personaRepository, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $lineaCelular);
         try {
-            $form = $this->createForm(LineaCelularType::class, $lineaCelular, ['action' => 'modificar']);
+            $institution = $scope->institution($this->getUser());
+            $form = $this->createForm(LineaCelularType::class, $lineaCelular, ['action' => 'modificar', 'institution_id' => $institution?->getId()]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -107,8 +117,9 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/detail', name: 'app_linea_celular_detail', methods: ['GET', 'POST'])]
-    public function detail(LineaCelular $lineaCelular, LineaCelularRecargasRepository $lineaCelularRecargasRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository)
+    public function detail(LineaCelular $lineaCelular, LineaCelularRecargasRepository $lineaCelularRecargasRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $lineaCelular);
         $asignadas = [];
         $temp = $lineaCelularResponsableRepository->findBy(['lineaCelular' => $lineaCelular->getId()], ['id' => 'desc']);
         foreach ($temp as $value) {
@@ -129,8 +140,9 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_linea_celular_eliminar', methods: ['GET'])]
-    public function eliminar(LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository)
+    public function eliminar(LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $lineaCelular);
         try {
             if ($lineaCelularRepository->find($lineaCelular) instanceof LineaCelular) {
                 $lineaCelularRepository->remove($lineaCelular, true);
@@ -152,8 +164,9 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/recargar', name: 'app_linea_celular_recargar', methods: ['GET', 'POST'])]
-    public function recargar(Request $request, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository)
+    public function recargar(Request $request, LineaCelular $lineaCelular, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $lineaCelular);
         try {
             $recarga = new LineaCelularRecargas();
             $form = $this->createForm(LineaCelularRecargarType::class, $recarga, ['action' => 'modificar']);
@@ -196,8 +209,9 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/responsable', name: 'app_linea_celular_responsable', methods: ['GET', 'POST'])]
-    public function responsable(Request $request, LineaCelular $lineaCelular, LineaCelularResponsableRepository $lineaCelularResopnsableRepository, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository)
+    public function responsable(Request $request, LineaCelular $lineaCelular, LineaCelularResponsableRepository $lineaCelularResopnsableRepository, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, LineaCelularRecargasRepository $lineaCelularRecargasRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $lineaCelular);
         try {
             $arrayIdAsignados = [];
             $asignadas = [];
@@ -207,7 +221,8 @@ class LineaCelularController extends AbstractController
                 $asignadas[] = $value->getResponsable();
             }
             $request->getSession()->set('idLineaCelular', $lineaCelular->getId());
-            $personas = $personaRepository->getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdAsignados);
+            $institution = $scope->institution($this->getUser());
+            $personas = $personaRepository->getPersonasNoAsignadasDadoArrayIdPersonas($arrayIdAsignados, $institution?->getId());
             return $this->render('modules/informatizacion/lineaCelular/responsable.html.twig', [
                 'lineaCelular' => $lineaCelular,
                 'personas' => $personas,
@@ -227,15 +242,25 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/asociar_responsable', name: 'app_linea_celular_asociar_responsable', methods: ['GET', 'POST'])]
-    public function asociarResponsable(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, EntityManagerInterface $em)
+    public function asociarResponsable(Request $request, PersonaRepository $personaRepository, LineaCelularRepository $lineaCelularRepository, EntityManagerInterface $em, InformatizacionScope $scope)
     {
+        $linea = $lineaCelularRepository->find($request->getSession()->get('idLineaCelular'));
+        if (!$linea instanceof LineaCelular) {
+            throw $this->createNotFoundException();
+        }
+        $scope->assertCanManage($this->getUser(), $linea);
         try {
             $arrayIds = $request->request->get('arrayId');
             if (is_array($arrayIds)) {
                 foreach ($arrayIds as $value) {
+                    $person = $personaRepository->find($value['id_persona']);
+                    if (!$person instanceof Persona) {
+                        throw $this->createNotFoundException();
+                    }
+                    $scope->assertCanAssignPerson($this->getUser(), $person);
                     $responsable = new LineaCelularResponsable();
-                    $responsable->setResponsable($personaRepository->find($value['id_persona']));
-                    $responsable->setLineaCelular($lineaCelularRepository->find($request->getSession()->get('idLineaCelular')));
+                    $responsable->setResponsable($person);
+                    $responsable->setLineaCelular($linea);
                     $em->persist($responsable);
                 }
                 $em->flush();
@@ -254,10 +279,15 @@ class LineaCelularController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar_responsable', name: 'app_linea_celular_eliminar_responsable', methods: ['GET'])]
-    public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository)
+    public function eliminarResponsable(Request $request, Persona $persona, PersonaRepository $personaRepository, LineaCelularResponsableRepository $lineaCelularResponsableRepository, LineaCelularRepository $lineaCelularRepository, InformatizacionScope $scope)
     {
+        $lineaCelular = $request->getSession()->get('idLineaCelular');
+        $linea = $lineaCelularRepository->find($lineaCelular);
+        if (!$linea instanceof LineaCelular) {
+            throw $this->createNotFoundException();
+        }
+        $scope->assertCanManage($this->getUser(), $linea);
         try {
-            $lineaCelular = $request->getSession()->get('idLineaCelular');
             if ($personaRepository->find($persona->getId()) instanceof Persona) {
                 $miembro = $lineaCelularResponsableRepository->findOneBy(['responsable' => $persona->getId(), 'lineaCelular' => $lineaCelular]);
                 $lineaCelularResponsableRepository->remove($miembro, true);

@@ -43,13 +43,16 @@ class LineaCelularType extends AbstractType
                 'class' => Estructura::class,
                 'label' => 'Institución',
                 'choice_label' => 'nombre',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('e')
-                        ->where('e.esEntidad = true')
-                        ->orderBy('e.nombre', 'ASC');
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('e')->where('e.esEntidad = true');
+                    if ($options['institution_id'] !== null) {
+                        $qb->andWhere('e.id = :institution')->setParameter('institution', $options['institution_id']);
+                    }
+                    return $qb->orderBy('e.nombre', 'ASC');
                 },
                 'placeholder' => 'Seleccione',
-                'empty_data' => null
+                'empty_data' => null,
+                'disabled' => $options['institution_id'] !== null,
             ]);
 
     }
@@ -58,6 +61,8 @@ class LineaCelularType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => LineaCelular::class,
+            'institution_id' => null,
         ]);
+        $resolver->setAllowedTypes('institution_id', ['null', 'int']);
     }
 }
