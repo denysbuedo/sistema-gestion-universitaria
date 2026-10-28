@@ -26,6 +26,8 @@ La API respondió `202 accepted_by_relay` en la prueba controlada. SGU no debe r
 
 El envío permanecerá deshabilitado (`INTEROP_NOTIFICATIONS_ENABLED=0`) hasta que la VM de SGU tenga conectividad HTTPS operativa con el endpoint de token y la API.
 
+Cuando está habilitado, cada notificación interna persistida por SGU genera un único correo al email del usuario destinatario. El correo se intenta después de confirmar la escritura en la base de datos. Un fallo del servicio externo no revierte la operación funcional y no genera reintentos automáticos.
+
 ## Diagnóstico de autenticación
 
 ```bash

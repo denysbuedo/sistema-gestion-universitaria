@@ -21,6 +21,11 @@ final class InteroperabilityNotificationClient
     ) {
     }
 
+    public function isEnabled(): bool
+    {
+        return $this->interopNotificationsEnabled;
+    }
+
     /** @return array{client_id:string,audience:string,role:string,expires_in:int} */
     public function checkAuthentication(): array
     {

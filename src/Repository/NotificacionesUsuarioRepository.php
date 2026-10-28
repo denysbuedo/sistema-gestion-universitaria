@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\NotificacionesUsuario;
+use App\Integration\Notifications\InteroperabilityNotificationClient;
+use App\Integration\Notifications\NotificationIntegrationException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 
 /**
  * @extends ServiceEntityRepository<NotificacionesUsuario>
@@ -16,7 +19,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NotificacionesUsuarioRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly InteroperabilityNotificationClient $notificationClient,
+        private readonly LoggerInterface $logger,
+    )
     {
         parent::__construct($registry, NotificacionesUsuario::class);
     }
@@ -27,6 +34,37 @@ class NotificacionesUsuarioRepository extends ServiceEntityRepository
 
         if ($flush) {
             $this->getEntityManager()->flush();
+            $this->sendExternalEmail($entity);
+        }
+    }
+
+    private function sendExternalEmail(NotificacionesUsuario $notification): void
+    {
+        if (!$this->notificationClient->isEnabled()) {
+            return;
+        }
+        $recipient = trim((string) $notification->getUsuarioRecive()?->getEmail());
+        if ($recipient === '') {
+            $this->logger->warning('No se envió la notificación interoperable porque el destinatario no tiene correo.', [
+                'notification_id' => $notification->getId(),
+            ]);
+
+            return;
+        }
+
+        try {
+            $this->notificationClient->sendEmail(
+                $recipient,
+                'Notificación del Sistema de Gestión Universitaria',
+                trim((string) $notification->getTexto()),
+            );
+        } catch (NotificationIntegrationException $exception) {
+            // La notificación interna ya fue persistida. No se revierte la operación
+            // ni se reintenta automáticamente para evitar correos duplicados.
+            $this->logger->error('No se pudo entregar una notificación mediante Interoperabilidad.', [
+                'notification_id' => $notification->getId(),
+                'reason' => $exception->getMessage(),
+            ]);
         }
     }
 
