@@ -570,7 +570,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endblock %}
 
 </head>
-<body class="hold-transition layout-fixed layout-navbar-fixed{% if app.request.pathinfo|split('/')[1] == 'pregrado' %}{% if app.request.get('_route') == 'app_pregrado_portada' %} pregrado-portada{% else %} module-pregrado pregrado-workspace{% endif %}{% endif %}">
+<body class="hold-transition layout-fixed layout-navbar-fixed{% if app.request.pathinfo|split('/')[1] == 'pregrado' %}{% if app.request.get('_route') == 'app_pregrado_portada' %} pregrado-portada{% else %} module-pregrado pregrado-workspace{% endif %}{% endif %}{% if app.request.pathinfo|split('/')[1] == 'informatizacion' %} module-transformacion-digital pregrado-workspace{% endif %}">
 <div class="wrapper">
 
     <!-- Navbar -->
@@ -634,7 +634,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 {% if hasRoles('ROLE_HOME_INFORMATIZACION') %}
                     <li class=" d-none d-sm-inline-block">
                         <a href="{{ path('app_informatizacion_portada') }}"
-                           class="nav-link {% if app.request.pathinfo|split('/')[1] == 'informatizacion' %} active {% endif %}">Informatización</a>
+                           class="nav-link {% if app.request.pathinfo|split('/')[1] == 'informatizacion' %} active {% endif %}">Transformación Digital</a>
                     </li>
                 {% endif %}
 

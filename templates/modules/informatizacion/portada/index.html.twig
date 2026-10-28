@@ -1,6 +1,6 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Portada Informatización{% endblock %}
+{% block title %}Transformación Digital{% endblock %}
 
 {% block stylesheets %}
     <style>
@@ -13,25 +13,24 @@
         /* ── Stat cards ──────────────────────────────────── */
         .stat-card {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 4px;
             padding: 18px 20px;
             border: 1px solid #e8ecf1;
             display: flex; align-items: center; gap: 14px;
             height: 100%;
-            transition: box-shadow .2s ease, border-color .2s ease;
+            transition: border-color .2s ease, background-color .2s ease;
         }
         .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0,0,0,.09);
-            border-color: transparent;
+            background: #f8fafb;
+            border-color: #cbd6de;
         }
         .stat-card { position: relative; }
         .stat-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 3px;
-            background: var(--sc, #0891b2);
-            border-radius: 14px 14px 0 0;
+            background: #1769aa;
+            border-radius: 4px 4px 0 0;
         }
         .stat-icon {
             width: 46px; height: 46px; border-radius: 12px;
@@ -57,7 +56,7 @@
 
         /* ── Chart cards ─────────────────────────────────── */
         .cc {
-            background: #fff; border-radius: 14px;
+            background: #fff; border-radius: 4px;
             border: 1px solid #e8ecf1;
             overflow: hidden; margin-bottom: 24px;
         }
@@ -102,8 +101,8 @@
 {% block body %}
 <div class="content-header">
     <div class="container-fluid">
-        <h4 style="color:#1a2e44;font-weight:700;margin:0">Informatización</h4>
-        <p style="color:#94a3b8;font-size:13px;margin:4px 0 0">Infraestructura tecnológica y sistemas de información</p>
+        <h4 style="color:#1a2e44;font-weight:600;margin:0">Transformación Digital</h4>
+        <p style="color:#64748b;font-size:13px;margin:4px 0 0">Servicios digitales, sistemas de información, conectividad e infraestructura tecnológica</p>
     </div>
 </div>
 
