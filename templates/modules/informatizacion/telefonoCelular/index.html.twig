@@ -33,4 +33,4 @@
     </div></div>
 </div>
 {% endblock %}
-{% block javascripts %}{{ parent() }}{% include 'pages/_luxury_list_dropdown_js.html.twig' %}<script>$(function(){var $filter=$('#telefono-universidad');if(!$filter.length)return;var table=$('.dataTable').DataTable();$filter.on('change',function(){var value=$.fn.dataTable.util.escapeRegex(this.value);table.column(1).search(value?'^'+value+'$':'',true,false).draw()})});</script>{% endblock %}
+{% block javascripts %}{{ parent() }}{% include 'pages/_luxury_list_dropdown_js.html.twig' %}<script>$(function(){$('#telefono-universidad').on('change',function(){if(!$.fn.dataTable.isDataTable('.dataTable'))return;var table=$('.dataTable').DataTable(),value=$.fn.dataTable.util.escapeRegex(this.value);table.column(1).search(value?'^'+value+'$':'',true,false).draw()})});</script>{% endblock %}
