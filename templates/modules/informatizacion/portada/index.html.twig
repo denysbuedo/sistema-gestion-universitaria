@@ -3,455 +3,63 @@
 {% block title %}Transformación Digital{% endblock %}
 
 {% block stylesheets %}
-    <style>
-        /* ── Layout ────────────────────────────────────── */
-        .inf-wrap { padding: 0 0 32px 0; }
-
-        /* ── Header (legacy — hidden) ─────────────────────────────────────── */
-        .inf-header { display: none; }
-
-        /* ── Stat cards ──────────────────────────────────── */
-        .stat-card {
-            background: #fff;
-            border-radius: 4px;
-            padding: 18px 20px;
-            border: 1px solid #e8ecf1;
-            display: flex; align-items: center; gap: 14px;
-            height: 100%;
-            transition: border-color .2s ease, background-color .2s ease;
-        }
-        .stat-card:hover {
-            background: #f8fafb;
-            border-color: #cbd6de;
-        }
-        .stat-card { position: relative; }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: #1769aa;
-            border-radius: 4px 4px 0 0;
-        }
-        .stat-icon {
-            width: 46px; height: 46px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 19px; flex-shrink: 0;
-        }
-        .si-sistemas  { background: #cffafe; color: #0891b2; }
-        .si-servicios { background: #ede9fe; color: #7c3aed; }
-        .si-lineas    { background: #dbeafe; color: #2563eb; }
-        .si-telefonos { background: #d1fae5; color: #059669; }
-        .si-nauta     { background: #fef3c7; color: #d97706; }
-        .si-centros   { background: #fee2e2; color: #dc2626; }
-
-        .stat-body { flex: 1; min-width: 0; }
-        .stat-label {
-            font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: .6px; color: #9ca3af; margin-bottom: 4px;
-        }
-        .stat-value {
-            font-size: 30px; font-weight: 800;
-            color: #0c1a2e; line-height: 1;
-        }
-
-        /* ── Chart cards ─────────────────────────────────── */
-        .cc {
-            background: #fff; border-radius: 4px;
-            border: 1px solid #e8ecf1;
-            overflow: hidden; margin-bottom: 24px;
-        }
-        .cc-head {
-            padding: 14px 20px;
-            border-bottom: 1px solid #f3f4f6;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .cc-head-left { display: flex; align-items: center; gap: 10px; }
-        .cc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .cc-title { font-size: 14px; font-weight: 600; color: #0c1a2e; margin: 0; }
-        .cc-badge {
-            font-size: 11px; font-weight: 700;
-            background: #f0fafa; color: #0891b2;
-            border: 1px solid #a5f3fc;
-            border-radius: 20px; padding: 2px 10px;
-        }
-        .cc-body { padding: 16px; }
-
-        /* ── Distribution rows ───────────────────────────── */
-        .dist-row {
-            display: flex; align-items: center;
-            justify-content: space-between;
-            padding: 9px 0; border-bottom: 1px solid #f3f4f6;
-        }
-        .dist-row:last-child { border-bottom: none; }
-        .dist-label { font-size: 13px; color: #374151; font-weight: 500; flex: 1; min-width: 0; padding-right: 8px; }
-        .dist-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .dist-count { font-size: 13px; font-weight: 700; color: #0c1a2e; min-width: 28px; text-align: right; }
-        .dist-bar { width: 72px; height: 5px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
-        .dist-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
-
-        /* ── Section label ───────────────────────────────── */
-        .section-label {
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: .8px; color: #9ca3af;
-            margin: 8px 0 16px 2px;
-        }
-    </style>
+<style>
+.td-dashboard{padding-bottom:28px;color:#263746}.td-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}.td-eyebrow{margin:0 0 5px;color:#1769aa;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}.td-title{margin:0;color:#102f4f;font-size:25px;font-weight:600;letter-spacing:-.02em}.td-lead{max-width:760px;margin:6px 0 0;color:#647582;font-size:13px;line-height:1.5}.td-scope{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:7px 10px;border:1px solid #ccd8e0;border-radius:4px;background:#fff;color:#526675;font-size:12px}.td-scope i{color:#1769aa}
+.td-kpis{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-bottom:22px}.td-kpi{position:relative;min-width:0;min-height:100px;padding:17px 15px 14px;overflow:hidden;border:1px solid #d7e0e6;border-radius:4px;background:#fff}.td-kpi:before{position:absolute;inset:0 auto 0 0;width:3px;background:#1769aa;content:''}.td-kpi__icon{display:grid;width:30px;height:30px;place-items:center;border-radius:4px;background:#edf4f8;color:#1769aa;font-size:13px}.td-kpi__value{margin-top:9px;color:#102f4f;font-size:27px;font-weight:650;line-height:1}.td-kpi__label{margin-top:6px;overflow:hidden;color:#647582;font-size:11px;line-height:1.25;text-overflow:ellipsis}
+.td-section{margin:0 0 10px;color:#526675;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}.td-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;margin-bottom:20px}.td-span-4{grid-column:span 4}.td-span-5{grid-column:span 5}.td-span-6{grid-column:span 6}.td-span-7{grid-column:span 7}.td-panel{min-width:0;overflow:hidden;border:1px solid #d7e0e6;border-radius:4px;background:#fff}.td-panel__head{min-height:55px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e1e7ec}.td-panel__title{margin:0;color:#263746;font-size:14px;font-weight:550}.td-panel__meta{flex:0 0 auto;color:#71818d;font-size:11px}.td-panel__body{padding:12px 14px 10px}.td-chart{height:245px}.td-chart--short{height:215px}.td-empty{min-height:200px;display:grid;place-items:center;color:#8796a1;font-size:12px;text-align:center}
+.td-list{margin-top:2px}.td-list__row{min-height:34px;padding:7px 2px;display:flex;align-items:center;gap:9px;border-top:1px solid #edf1f4}.td-list__name{min-width:0;flex:1;overflow:hidden;color:#526675;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.td-list__bar{width:58px;height:4px;overflow:hidden;border-radius:2px;background:#e7edf1}.td-list__fill{display:block;height:100%;background:#4b83ad}.td-list__value{width:28px;color:#263746;font-size:12px;font-weight:600;text-align:right}
+@media(max-width:1199.98px){.td-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.td-span-4,.td-span-5,.td-span-7{grid-column:span 6}}@media(max-width:767.98px){.td-header{align-items:flex-start;flex-direction:column}.td-title{font-size:22px}.td-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.td-span-4,.td-span-5,.td-span-6,.td-span-7{grid-column:1/-1}.td-chart{height:225px}}@media(max-width:420px){.td-kpis{grid-template-columns:1fr}}
+</style>
 {% endblock %}
 
 {% block body %}
-<div class="content-header">
-    <div class="container-fluid">
-        <h4 style="color:#1a2e44;font-weight:600;margin:0">Transformación Digital</h4>
-        <p style="color:#64748b;font-size:13px;margin:4px 0 0">Servicios digitales, sistemas de información, conectividad e infraestructura tecnológica</p>
+<section class="content"><div class="container-fluid td-dashboard">
+    <header class="td-header"><div><p class="td-eyebrow">Gestión institucional</p><h1 class="td-title">Transformación Digital</h1><p class="td-lead">Panorama de los sistemas, servicios digitales, conectividad e infraestructura tecnológica registrados en SGU.</p></div><span class="td-scope"><i class="fas fa-building"></i> Información institucional</span></header>
+
+    <div class="td-kpis" aria-label="Indicadores principales">
+        {% set indicadores=[
+            {icon:'laptop-code',value:total_sistemas,label:'Sistemas informáticos'},
+            {icon:'server',value:total_servicios,label:'Trámites y servicios'},
+            {icon:'network-wired',value:total_enlaces,label:'Enlaces de conectividad'},
+            {icon:'database',value:total_centros,label:'Centros de datos virtuales'},
+            {icon:'sim-card',value:total_lineas,label:'Líneas celulares'},
+            {icon:'mobile-alt',value:total_telefonos,label:'Teléfonos celulares'},
+            {icon:'wifi',value:total_nauta,label:'Servicios Nauta Hogar'}
+        ] %}
+        {% for i in indicadores %}<article class="td-kpi"><span class="td-kpi__icon"><i class="fas fa-{{ i.icon }}"></i></span><div class="td-kpi__value">{{ i.value|number_format(0,',','.') }}</div><div class="td-kpi__label">{{ i.label }}</div></article>{% endfor %}
     </div>
-</div>
 
-<section class="content">
-    <div class="container-fluid inf-wrap">
-        <div class="inf-header"></div>
-
-        {# ── Fila 1 de KPI cards ─────────────────────────── #}
-        <div class="row" style="margin-bottom: 16px;">
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#0891b2">
-                    <div class="stat-icon si-sistemas"><i class="fas fa-laptop-code"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Sistemas Informáticos</div>
-                        <div class="stat-value">{{ total_sistemas }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#7c3aed">
-                    <div class="stat-icon si-servicios"><i class="fas fa-server"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Servicios</div>
-                        <div class="stat-value">{{ total_servicios }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#2563eb">
-                    <div class="stat-icon si-lineas"><i class="fas fa-sim-card"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Líneas Celulares</div>
-                        <div class="stat-value">{{ total_lineas }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {# ── Fila 2 de KPI cards ─────────────────────────── #}
-        <div class="row" style="margin-bottom: 28px;">
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#059669">
-                    <div class="stat-icon si-telefonos"><i class="fas fa-mobile-alt"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Teléfonos Celulares</div>
-                        <div class="stat-value">{{ total_telefonos }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#d97706">
-                    <div class="stat-icon si-nauta"><i class="fas fa-wifi"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Nauta Hogar</div>
-                        <div class="stat-value">{{ total_nauta }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4" style="margin-bottom: 16px;">
-                <div class="stat-card" style="--sc:#dc2626">
-                    <div class="stat-icon si-centros"><i class="fas fa-database"></i></div>
-                    <div class="stat-body">
-                        <div class="stat-label">Centros de Datos Virtuales</div>
-                        <div class="stat-value">{{ total_centros }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {# ── Sección: Sistemas e Infraestructura ──────────── #}
-        <div class="section-label">Sistemas e Infraestructura</div>
-        <div class="row">
-
-            {# Sistemas por Tipo — donut + lista #}
-            <div class="col-12 col-md-5">
-                <div class="cc">
-                    <div class="cc-head">
-                        <div class="cc-head-left">
-                            <div class="cc-dot" style="background:#0891b2;"></div>
-                            <h6 class="cc-title">Sistemas por tipo</h6>
-                        </div>
-                        <span class="cc-badge">{{ total_sistemas }} total</span>
-                    </div>
-                    <div class="cc-body">
-                        <div id="chart_tipo_sistema" style="height: 210px;"></div>
-                        <div style="margin-top: 6px;">
-                            {% for tipo in por_tipo_sistema %}
-                                {% set pct = total_sistemas > 0 ? ((tipo.y / total_sistemas) * 100)|round : 0 %}
-                                <div class="dist-row">
-                                    <span class="dist-label">{{ tipo.name }}</span>
-                                    <div class="dist-right">
-                                        <span class="dist-count">{{ tipo.y }}</span>
-                                        <div class="dist-bar">
-                                            <div class="dist-fill" style="width: {{ pct }}%; background: #0891b2;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding:12px 0;">Sin datos disponibles</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {# Servicios por Público Objetivo — barras horizontales #}
-            <div class="col-12 col-md-7">
-                <div class="cc">
-                    <div class="cc-head">
-                        <div class="cc-head-left">
-                            <div class="cc-dot" style="background:#7c3aed;"></div>
-                            <h6 class="cc-title">Servicios por público objetivo</h6>
-                        </div>
-                        <span class="cc-badge" style="background:#f5f3ff; color:#7c3aed; border-color:#ddd6fe;">{{ total_servicios }} total</span>
-                    </div>
-                    <div class="cc-body">
-                        <div id="chart_publico_objetivo" style="height: 300px;"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        {# ── Sección: Telefonía Móvil ─────────────────────── #}
-        <div class="section-label">Telefonía Móvil</div>
-        <div class="row">
-
-            {# Teléfonos por Marca — barras #}
-            <div class="col-12 col-md-6">
-                <div class="cc">
-                    <div class="cc-head">
-                        <div class="cc-head-left">
-                            <div class="cc-dot" style="background:#059669;"></div>
-                            <h6 class="cc-title">Teléfonos por marca</h6>
-                        </div>
-                        <span class="cc-badge" style="background:#ecfdf5; color:#059669; border-color:#6ee7b7;">{{ total_telefonos }} total</span>
-                    </div>
-                    <div class="cc-body">
-                        <div id="chart_marca" style="height: 280px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            {# Teléfonos por S.O. — donut + lista #}
-            <div class="col-12 col-md-6">
-                <div class="cc">
-                    <div class="cc-head">
-                        <div class="cc-head-left">
-                            <div class="cc-dot" style="background:#d97706;"></div>
-                            <h6 class="cc-title">Teléfonos por sistema operativo</h6>
-                        </div>
-                    </div>
-                    <div class="cc-body">
-                        <div id="chart_so_telefono" style="height: 200px;"></div>
-                        <div style="margin-top: 6px;">
-                            {% set so_colors = ['#d97706','#0891b2','#7c3aed','#059669','#dc2626','#2563eb'] %}
-                            {% for so in por_so_telefono %}
-                                {% set pct = total_telefonos > 0 ? ((so.y / total_telefonos) * 100)|round : 0 %}
-                                <div class="dist-row">
-                                    <span class="dist-label">{{ so.name }}</span>
-                                    <div class="dist-right">
-                                        <span class="dist-count">{{ so.y }}</span>
-                                        <div class="dist-bar">
-                                            <div class="dist-fill" style="width: {{ pct }}%; background: {{ so_colors[loop.index0 % 6] }};"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <p style="color:#9ca3af; font-size:13px; text-align:center; padding:12px 0;">Sin datos disponibles</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        {# ── Sección: Conectividad ────────────────────────── #}
-        <div class="section-label">Conectividad</div>
-        <div class="row">
-            <div class="col-12">
-                <div class="cc">
-                    <div class="cc-head">
-                        <div class="cc-head-left">
-                            <div class="cc-dot" style="background:#6b7280;"></div>
-                            <h6 class="cc-title">Enlaces por tipo de conectividad</h6>
-                        </div>
-                        <span class="cc-badge" style="background:#f9fafb; color:#6b7280; border-color:#e5e7eb;">{{ total_enlaces }} total</span>
-                    </div>
-                    <div class="cc-body">
-                        <div id="chart_tipo_enlace" style="height: 270px;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <h2 class="td-section">Sistemas y servicios digitales</h2>
+    <div class="td-grid">
+        <article class="td-panel td-span-4"><header class="td-panel__head"><h3 class="td-panel__title">Sistemas por tipo</h3><span class="td-panel__meta">{{ total_sistemas }} registrados</span></header><div class="td-panel__body">
+            {% if por_tipo_sistema is not empty %}<div id="chart_tipo_sistema" class="td-chart td-chart--short"></div>{% else %}<div class="td-empty">No hay sistemas registrados.</div>{% endif %}
+            <div class="td-list">{% for tipo in por_tipo_sistema %}{% set pct=total_sistemas>0?((tipo.y/total_sistemas)*100)|round:0 %}<div class="td-list__row"><span class="td-list__name" title="{{ tipo.name }}">{{ tipo.name }}</span><span class="td-list__bar"><span class="td-list__fill" style="width:{{ pct }}%"></span></span><span class="td-list__value">{{ tipo.y }}</span></div>{% endfor %}</div>
+        </div></article>
+        <article class="td-panel td-span-4"><header class="td-panel__head"><h3 class="td-panel__title">Visibilidad de los sistemas</h3><span class="td-panel__meta">Alcance de acceso</span></header><div class="td-panel__body">{% if por_visibilidad_json!='[]' %}<div id="chart_visibilidad" class="td-chart"></div>{% else %}<div class="td-empty">No hay información de visibilidad.</div>{% endif %}</div></article>
+        <article class="td-panel td-span-4"><header class="td-panel__head"><h3 class="td-panel__title">Servicios por público objetivo</h3><span class="td-panel__meta">{{ total_servicios }} registrados</span></header><div class="td-panel__body">{% if por_publico_json!='[]' %}<div id="chart_publico_objetivo" class="td-chart"></div>{% else %}<div class="td-empty">No hay servicios registrados.</div>{% endif %}</div></article>
     </div>
-</section>
+
+    <h2 class="td-section">Infraestructura y conectividad</h2>
+    <div class="td-grid">
+        <article class="td-panel td-span-7"><header class="td-panel__head"><h3 class="td-panel__title">Enlaces por alcance de conectividad</h3><span class="td-panel__meta">{{ total_enlaces }} enlaces</span></header><div class="td-panel__body">{% if por_tipo_enlace_json!='[]' %}<div id="chart_tipo_enlace" class="td-chart"></div>{% else %}<div class="td-empty">No hay enlaces registrados.</div>{% endif %}</div></article>
+        <article class="td-panel td-span-5"><header class="td-panel__head"><h3 class="td-panel__title">Infraestructura alojada</h3><span class="td-panel__meta">Resumen</span></header><div class="td-panel__body"><div class="td-list"><div class="td-list__row"><span class="td-list__name">Centros de datos virtuales</span><span class="td-list__value">{{ total_centros }}</span></div><div class="td-list__row"><span class="td-list__name">Enlaces de conectividad</span><span class="td-list__value">{{ total_enlaces }}</span></div><div class="td-list__row"><span class="td-list__name">Servicios Nauta Hogar</span><span class="td-list__value">{{ total_nauta }}</span></div></div><div style="height:164px;display:grid;place-items:center;color:#1769aa;font-size:54px;opacity:.16"><i class="fas fa-network-wired"></i></div></div></article>
+    </div>
+
+    <h2 class="td-section">Telefonía móvil</h2>
+    <div class="td-grid">
+        <article class="td-panel td-span-6"><header class="td-panel__head"><h3 class="td-panel__title">Teléfonos por marca</h3><span class="td-panel__meta">{{ total_telefonos }} equipos</span></header><div class="td-panel__body">{% if por_marca_json!='[]' %}<div id="chart_marca" class="td-chart"></div>{% else %}<div class="td-empty">No hay teléfonos registrados.</div>{% endif %}</div></article>
+        <article class="td-panel td-span-6"><header class="td-panel__head"><h3 class="td-panel__title">Teléfonos por sistema operativo</h3><span class="td-panel__meta">Distribución</span></header><div class="td-panel__body">{% if por_so_telefono is not empty %}<div id="chart_so_telefono" class="td-chart"></div>{% else %}<div class="td-empty">No hay sistemas operativos registrados.</div>{% endif %}</div></article>
+    </div>
+</div></section>
 {% endblock %}
 
 {% block javascripts %}
 <script>
-$(document).ready(function () {
-
-    var COLORS = ['#0891b2','#7c3aed','#059669','#d97706','#dc2626','#2563eb','#be185d','#6b7280'];
-
-    var baseTooltip = {
-        backgroundColor: '#0c1a2e',
-        style: { color: '#fff', fontSize: '12px' },
-        borderRadius: 8,
-        shadow: false
-    };
-    var baseAxis = {
-        lineWidth: 0, tickWidth: 0,
-        gridLineColor: '#f3f4f6',
-        labels: { style: { color: '#6b7280', fontSize: '12px' } }
-    };
-
-    /* ── 1. Sistemas por Tipo — donut ── */
-    var tipoData = JSON.parse('{{ por_tipo_sistema_json | raw }}');
-    if (tipoData.length > 0) {
-        Highcharts.chart('chart_tipo_sistema', {
-            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
-            title: { text: '' },
-            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> sistemas ({point.percentage:.1f}%)' }),
-            plotOptions: {
-                pie: {
-                    innerSize: '58%',
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    colors: COLORS,
-                    dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b>',
-                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
-                        distance: 8
-                    },
-                    showInLegend: false
-                }
-            },
-            series: [{ name: 'Sistemas', data: tipoData }],
-            credits: { enabled: false }
-        });
-    }
-
-    /* ── 2. Servicios por Público Objetivo — barras ── */
-    var pubData = JSON.parse('{{ por_publico_json | raw }}');
-    if (pubData.length > 0) {
-        Highcharts.chart('chart_publico_objetivo', {
-            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
-            title: { text: '' },
-            xAxis: $.extend({}, baseAxis, { type: 'category' }),
-            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
-            legend: { enabled: false },
-            plotOptions: {
-                bar: {
-                    borderRadius: 5, borderWidth: 0,
-                    color: '#7c3aed',
-                    dataLabels: {
-                        enabled: true, format: '{point.y:.0f}',
-                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '11px' }
-                    }
-                }
-            },
-            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> servicios' }),
-            series: [{ name: 'Servicios', data: pubData }],
-            credits: { enabled: false }
-        });
-    }
-
-    /* ── 3. Teléfonos por Marca — barras ── */
-    var marcaData = JSON.parse('{{ por_marca_json | raw }}');
-    if (marcaData.length > 0) {
-        Highcharts.chart('chart_marca', {
-            chart: { type: 'bar', spacing: [8, 16, 8, 8], animation: { duration: 600 } },
-            title: { text: '' },
-            xAxis: $.extend({}, baseAxis, { type: 'category' }),
-            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
-            legend: { enabled: false },
-            plotOptions: {
-                bar: {
-                    borderRadius: 5, borderWidth: 0,
-                    colorByPoint: true,
-                    colors: COLORS,
-                    dataLabels: {
-                        enabled: true, format: '{point.y:.0f}',
-                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '11px' }
-                    }
-                }
-            },
-            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> teléfonos' }),
-            series: [{ name: 'Marca', data: marcaData }],
-            credits: { enabled: false }
-        });
-    }
-
-    /* ── 4. Teléfonos por S.O. — donut ── */
-    var soData = JSON.parse('{{ por_so_telefono_json | raw }}');
-    if (soData.length > 0) {
-        Highcharts.chart('chart_so_telefono', {
-            chart: { type: 'pie', spacing: [0, 0, 0, 0], animation: { duration: 600 } },
-            title: { text: '' },
-            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y}</b> teléfonos ({point.percentage:.1f}%)' }),
-            plotOptions: {
-                pie: {
-                    innerSize: '55%',
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    colors: ['#d97706','#0891b2','#7c3aed','#059669','#dc2626','#2563eb'],
-                    dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b>',
-                        style: { fontWeight: '500', color: '#374151', fontSize: '11px' },
-                        distance: 8
-                    },
-                    showInLegend: false
-                }
-            },
-            series: [{ name: 'S.O.', data: soData }],
-            credits: { enabled: false }
-        });
-    }
-
-    /* ── 5. Enlaces por Tipo de Conectividad — columnas ── */
-    var enlaceData = JSON.parse('{{ por_tipo_enlace_json | raw }}');
-    if (enlaceData.length > 0) {
-        Highcharts.chart('chart_tipo_enlace', {
-            chart: { type: 'column', spacing: [12, 16, 12, 16], animation: { duration: 600 } },
-            title: { text: '' },
-            xAxis: $.extend({}, baseAxis, { type: 'category' }),
-            yAxis: $.extend({}, baseAxis, { title: { text: '' }, allowDecimals: false }),
-            legend: { enabled: false },
-            plotOptions: {
-                column: {
-                    borderRadius: 6, borderWidth: 0,
-                    colorByPoint: true,
-                    colors: COLORS,
-                    dataLabels: {
-                        enabled: true, format: '{point.y:.0f}',
-                        style: { fontWeight: '700', color: '#0c1a2e', fontSize: '12px' }
-                    }
-                }
-            },
-            tooltip: $.extend({}, baseTooltip, { pointFormat: '<b>{point.y:.0f}</b> enlaces' }),
-            series: [{ name: 'Tipo', data: enlaceData }],
-            credits: { enabled: false }
-        });
-    }
-
+document.addEventListener('DOMContentLoaded',function(){
+const palette=['#1769aa','#4b83ad','#769bb7','#9fb5c5','#607482','#b7c4cd'],tooltip={backgroundColor:'#102f4f',borderWidth:0,borderRadius:4,shadow:false,style:{color:'#fff',fontSize:'12px'}},axis={lineWidth:0,tickWidth:0,gridLineColor:'#e8edf1',labels:{style:{color:'#657785',fontSize:'11px'}}},common={title:{text:null},credits:{enabled:false},accessibility:{enabled:false}},parse=v=>JSON.parse(v||'[]');
+function pie(id,data,name){if(!document.getElementById(id)||!data.length)return;Highcharts.chart(id,Object.assign({},common,{chart:{type:'pie',spacing:[4,4,4,4]},tooltip:Object.assign({},tooltip,{pointFormat:'<b>{point.y}</b> ({point.percentage:.1f}%)'}),plotOptions:{pie:{innerSize:'58%',borderWidth:2,borderColor:'#fff',colors:palette,dataLabels:{enabled:true,format:'{point.name}: <b>{point.y}</b>',distance:8,style:{fontWeight:'400',color:'#526675',fontSize:'10px',textOutline:'none'}}}},series:[{name:name,data:data}]}))}
+function bars(id,data,name){if(!document.getElementById(id)||!data.length)return;Highcharts.chart(id,Object.assign({},common,{chart:{type:'bar',spacing:[6,10,6,6]},tooltip:Object.assign({},tooltip,{pointFormat:'<b>{point.y}</b>'}),legend:{enabled:false},xAxis:Object.assign({},axis,{type:'category',gridLineWidth:0}),yAxis:Object.assign({},axis,{title:{text:null},allowDecimals:false,min:0}),plotOptions:{bar:{borderWidth:0,borderRadius:2,color:'#4b83ad',maxPointWidth:22,dataLabels:{enabled:true,format:'{point.y}',style:{fontWeight:'600',color:'#263746',fontSize:'11px',textOutline:'none'}}}},series:[{name:name,data:data}]}))}
+pie('chart_tipo_sistema',parse('{{ por_tipo_sistema_json|e('js') }}'),'Sistemas');pie('chart_visibilidad',parse('{{ por_visibilidad_json|e('js') }}'),'Sistemas');bars('chart_publico_objetivo',parse('{{ por_publico_json|e('js') }}'),'Servicios');bars('chart_tipo_enlace',parse('{{ por_tipo_enlace_json|e('js') }}'),'Enlaces');bars('chart_marca',parse('{{ por_marca_json|e('js') }}'),'Teléfonos');pie('chart_so_telefono',parse('{{ por_so_telefono_json|e('js') }}'),'Teléfonos');
 });
 </script>
 {% endblock %}
