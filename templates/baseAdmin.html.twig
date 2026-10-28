@@ -553,6 +553,49 @@ scratch. This page gets rid of all links and provides the needed markup only.
         body.pregrado-workspace .dropdown-item i.text-success { color: #496b86 !important; }
         body.pregrado-workspace .modal-content { border: 1px solid #dce4ea; border-radius: 4px; box-shadow: none; }
 
+        /* Normalización transversal del módulo Transformación Digital. */
+        body.module-transformacion-digital .card,
+        body.module-transformacion-digital .info-box,
+        body.module-transformacion-digital .modal-content,
+        body.module-transformacion-digital .dropdown-menu { box-shadow: none !important; }
+        body.module-transformacion-digital .card-header > .row {
+            width: 100%; margin: 0 !important; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        body.module-transformacion-digital .td-legacy-title { min-width: 0; }
+        body.module-transformacion-digital .td-header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+        body.module-transformacion-digital .td-header-actions .btn { margin: 0 !important; }
+        body.module-transformacion-digital .td-back-link { display: inline-flex; align-items: center; gap: 6px; }
+        body.module-transformacion-digital .card-footer { border-top: 1px solid #dce4ea; background: #f8fafb; }
+        body.module-transformacion-digital .card-footer .btn-danger,
+        body.module-transformacion-digital .card-footer .btn-cancel {
+            border: 1px solid #b8c5cf !important; background: #fff !important; color: #425563 !important;
+        }
+        body.module-transformacion-digital table td.text-center > .btn,
+        body.module-transformacion-digital table td.text-center > a.btn {
+            width: 34px !important; min-width: 34px !important; height: 34px !important; padding: 6px !important;
+            border-radius: 4px !important; box-shadow: none !important;
+        }
+        body.module-transformacion-digital .modalDetailBody > .row { margin: 0; border-bottom: 1px solid #e7ecef; }
+        body.module-transformacion-digital .modalDetailBody > .row:last-child { border-bottom: 0; }
+        body.module-transformacion-digital .modalDetailBody > .row > [class*="col-"] { padding: 10px 12px; }
+        body.module-transformacion-digital .modalDetailBody h5 { margin: 0 !important; color: #344856; font-size: 13px; font-weight: 400; line-height: 1.45; }
+        body.module-transformacion-digital .modalDetailBody h5 b { color: #526675; font-weight: 600; }
+        body.module-transformacion-digital .input-group-text { border-color: #cbd6de; border-radius: 4px 0 0 4px; background: #edf2f5; color: #526675; }
+        body.module-transformacion-digital textarea.form-control { min-height: 96px; resize: vertical; }
+        body.module-transformacion-digital .table-custom-header th { background: #edf2f5 !important; color: #425563 !important; }
+        body.module-transformacion-digital .card-body .row[style*="margin-left: 89%"] {
+            width: 100% !important; margin: 0 0 14px !important; padding: 0 !important; justify-content: flex-end;
+        }
+        body.module-transformacion-digital .card-body .row[style*="margin-left: 89%"] > [class*="col-"] {
+            width: auto; max-width: none; flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+        }
+        body.module-transformacion-digital .card-body .row[style*="margin-left: 89%"] label { margin: 0; }
+
+        @media (max-width: 767px) {
+            body.module-transformacion-digital .card-header > .row { align-items: flex-start; flex-direction: column; }
+            body.module-transformacion-digital .td-header-actions { width: 100%; margin-left: 0; flex-wrap: wrap; }
+        }
+
         @media (max-width: 767px) {
             body.pregrado-workspace .content > .container-fluid { padding: 12px; }
             body.pregrado-workspace .card-header { align-items: flex-start !important; gap: 12px; }
@@ -1126,6 +1169,42 @@ scratch. This page gets rid of all links and provides the needed markup only.
     $(window).on('resize.sguTableActions', closeOpenTableActionMenus);
 
     $(document).ready(function () {
+        // Adapta las cabeceras heredadas del módulo al mismo patrón visual sin
+        // duplicar plantillas ni alterar sus reglas funcionales.
+        if ($('body').hasClass('module-transformacion-digital')) {
+            $('.card-header > .row').each(function () {
+                var $row = $(this);
+                var $header = $row.closest('.card-header');
+                var $title = $row.find('.card-title').first();
+                if (!$title.length) return;
+
+                var $actions = $('<div class="td-header-actions ml-auto"></div>');
+                var $newAction = $row.find('a[title="Adicionar"]').first();
+                if ($newAction.length) {
+                    $newAction.removeClass('btn btn-primary mr-2').addClass('btn-lux-sm btn-lux-primary');
+                    if (!$.trim($newAction.clone().children().remove().end().text())) {
+                        $newAction.append(document.createTextNode(' Nuevo'));
+                    }
+                    $actions.append($newAction);
+                }
+                $row.children('a, button').not($newAction).each(function () {
+                    $actions.append($(this).detach());
+                });
+
+                var path = window.location.pathname.replace(/\/$/, '');
+                var backPath = null;
+                if (/\/registrar$/.test(path)) backPath = path.replace(/\/registrar$/, '/');
+                if (/\/\d+\/modificar$/.test(path)) backPath = path.replace(/\/\d+\/modificar$/, '/');
+                if (backPath && !$actions.find('.fa-arrow-left').length) {
+                    $actions.prepend('<a class="btn btn-secondary td-back-link" href="' + backPath + '"><i class="fas fa-arrow-left"></i> Regresar</a>');
+                }
+
+                var $titleWrap = $('<div class="td-legacy-title"></div>').append($title);
+                $header.empty().append($titleWrap);
+                if ($actions.children().length) $header.append($actions);
+            });
+        }
+
         $('.content-wrapper,.main-sidebar').on('click', function () {
             if ($('.control-sidebar').css('display') == 'block') {
                 $('.sid').click();
