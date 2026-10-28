@@ -1,87 +1,17 @@
 {% extends 'baseAdmin.html.twig' %}
-
-{% block title %}Nauta hogar{% endblock %}
-
+{% block title %}Servicios Nauta Hogar{% endblock %}
 {% block body %}
-
-    {% include 'pages/modalDetail.html.twig' %}
-
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <div class="row" style="display: flex; justify-content: space-between; align-items: center">
-
-                <h3 class="card-title text-bold text-gray">Listado de nauta hogar</h3>
-                <a title="Adicionar" class="btn btn-primary mr-2" href="{{ path('app_nauta_hogar_registrar') }}"><i
-                            class="fa fa-plus"></i>
-                </a>
-
-            </div>
-        </div>
-
-        <div class="card-body">
-            <table class="table table-bordered table-striped dataTable">
-                <thead class="table-custom-header">
-                <tr>
-                    <th>No.</th>
-                    <th>Institución</th>
-
-                    <th>Responsable</th>
-                    <th>Número de teléfono</th>
-                    <th>Servicio contratado</th>
-                    <th>Precio</th>
-                    <th>Dirección de instalación del servicio</th>
-                    <th class="text-center">Opciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for item in registros %}
-                    <tr>
-                        <td width="1%">{{ loop.index }}</td>
-                        <td>({{ item.estructura.estructura.siglas | default('') }}
-                            ) {{ item.estructura.nombre | default('') }}</td>
-                        <td>{{ item.responsable.primerNombre ~ ' ' ~ item.responsable.segundoNombre ~' '~ item.responsable.primerApellido ~ ' ' ~ item.responsable.segundoApellido }}</td>
-                        <td>{{ item.numeroTelefono | default('') }}</td>
-                        <td>{{ item.servicioContratado.nombre | default('') }}</td>
-                        <td>{{ item.precio | default('') }}</td>
-                        <td>{{ item.direccionInstalacion | default('') }}</td>
-
-                        <td width="10%" class="text-center">
-                            {#                            <button title="Detalles" class="btn btn-outline-primary modalDetailAction" #}
-                            {#                                    data-url="{{ path('app_nauta_hogar_detail', {'id' : item.id}) }}" #}
-                            {#                                    data-title="Detalles de nauta hogar"> #}
-                            {#                                <i class="fa fa-eye "></i> #}
-                            {#                            </button> #}
-
-                            <a title="Modificar" href="{{ path('app_nauta_hogar_modificar', {'id': item.id}) }}"
-                               style="min-width: auto; width: auto; padding: 2px 6px;"
-                               class="btn btn-outline-primary"><i
-                                        class="fa fa-edit"></i>
-                            </a>
-
-                            <button title="Eliminar" class="btn btn-outline-danger elementRemove"
-                                    style="min-width: auto; width: auto; padding: 2px 6px;"
-                                    data-url="{{ path('app_nauta_hogar_eliminar', {'id': item.id}) }}">
-                                <i class="fa fa-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-                {% endfor %}
-                </tbody>
-
-            </table>
-        </div>
-        <!-- /.card-body -->
-    </div>
-
-
-
+{% include 'pages/_luxury_list_styles.html.twig' %}{% include 'pages/modalDetail.html.twig' %}
+{% set instituciones=[] %}{% for item in registros %}{% set nombre=item.estructura.nombre|default('Sin institución') %}{% if nombre not in instituciones %}{% set instituciones=instituciones|merge([nombre]) %}{% endif %}{% endfor %}
+<style>.nh-filters{margin:0 0 16px;padding:12px 14px;border:1px solid #dce4ea;border-radius:4px;background:#f8fafb}.nh-filter{width:min(100%,380px)}.nh-filter label{display:block;margin:0 0 5px;color:#526675;font-size:12px;font-weight:500}.nh-filter select{width:100%;height:38px;border:1px solid #cbd6de;border-radius:4px;background:#fff;color:#263746;font-size:13px;box-shadow:none}.card-luxury>.card-header>.ml-auto{gap:10px!important}</style>
+<div class="card card-luxury">
+ <div class="card-header d-flex align-items-center"><div><h3 class="card-title m-0"><i class="fas fa-wifi label-icon"></i>Servicios Nauta Hogar</h3><small class="text-muted">{{ alcance }} · {{ registros|length }} servicio{{ registros|length==1?'':'s' }}</small></div><div class="ml-auto d-flex align-items-center" style="gap:10px"><a class="btn-lux-sm btn-lux-primary" href="{{ path('app_nauta_hogar_registrar') }}"><i class="fa fa-plus"></i> Nuevo servicio</a></div></div>
+ <div class="card-body px-4">
+  {% if es_admin_informatizacion %}<div class="nh-filters"><div class="nh-filter"><label for="nauta-universidad">Universidad</label><select id="nauta-universidad" class="no-select2"><option value="">Todas las universidades</option>{% for nombre in instituciones|sort %}<option value="{{ nombre }}">{{ nombre }}</option>{% endfor %}</select></div></div>{% endif %}
+  <div class="table-responsive"><table class="table config-table table-bordered table-striped dataTable"><thead><tr><th>No.</th>{% if es_admin_informatizacion %}<th>Universidad</th>{% endif %}<th>Responsable</th><th>Número telefónico</th><th>Servicio contratado</th><th>Precio</th><th>Dirección de instalación</th><th class="text-center">Opciones</th></tr></thead><tbody>
+  {% for item in registros %}<tr><td>{{ loop.index }}</td>{% if es_admin_informatizacion %}<td>{{ item.estructura.nombre|default('Sin institución') }}</td>{% endif %}<td>{{ [item.responsable.primerNombre|default(''),item.responsable.segundoNombre|default(''),item.responsable.primerApellido|default(''),item.responsable.segundoApellido|default('')]|filter(v=>v)|join(' ') }}</td><td>{{ item.numeroTelefono|default('—') }}</td><td>{{ item.servicioContratado.nombre|default('—') }}</td><td>{{ item.precio|default('—') }}</td><td>{{ item.direccionInstalacion|default('—') }}</td><td><div class="dropdown d-flex justify-content-center"><button class="btn btn-sm btn-light p-0 d-flex align-items-center justify-content-center actions-dropdown-btn" type="button" data-toggle="dropdown" aria-label="Ver opciones">&#8942;</button><div class="dropdown-menu dropdown-menu-right actions-dropdown-menu"><button class="dropdown-item modalDetailAction" data-url="{{ path('app_nauta_hogar_detail',{id:item.id}) }}" data-title="Detalles del servicio Nauta Hogar"><i class="fa fa-eye fa-fw mr-2 text-primary"></i>Ver detalles</button><a class="dropdown-item" href="{{ path('app_nauta_hogar_modificar',{id:item.id}) }}"><i class="fa fa-edit fa-fw mr-2"></i>Modificar</a><div class="dropdown-divider"></div><button class="dropdown-item elementRemove text-danger" data-url="{{ path('app_nauta_hogar_eliminar',{id:item.id}) }}"><i class="fa fa-trash fa-fw mr-2"></i>Eliminar</button></div></div></td></tr>{% else %}<tr><td colspan="{{ es_admin_informatizacion?8:7 }}" class="text-center text-muted py-4">No hay servicios Nauta Hogar registrados para este alcance.</td></tr>{% endfor %}
+  </tbody></table></div>
+ </div>
+</div>
 {% endblock %}
-
-{% block javascripts %}
-    <script>
-
-
-    </script>
-{% endblock %}
+{% block javascripts %}{{ parent() }}{% include 'pages/_luxury_list_dropdown_js.html.twig' %}<script>$(function(){$('#nauta-universidad').on('change',function(){if(!$.fn.dataTable.isDataTable('.dataTable'))return;var table=$('.dataTable').DataTable(),value=$.fn.dataTable.util.escapeRegex(this.value);table.column(1).search(value?'^'+value+'$':'',true,false).draw()})});</script>{% endblock %}

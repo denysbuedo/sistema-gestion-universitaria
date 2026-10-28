@@ -1,77 +1,9 @@
 {% extends 'baseAdmin.html.twig' %}
-
-{% block title %}Modificar nauta hogar{% endblock %}
-
+{% block title %}Modificar servicio Nauta Hogar{% endblock %}
 {% block body %}
-
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <div class="row" style="display: flex; justify-content: space-between; align-items: center">
-
-                <h3 class="card-title text-bold text-gray">Modificar nauta hogar</h3>
-
-            </div>
-        </div>
-        {{ include('modules/personal/persona/partial.html.twig', { 'persona': persona }) }}
-        <!-- /.card-header -->
-        {{ form_start(form) }}
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
-                    {{ form_label(form.estructura) }}
-                    {{ form_widget(form.estructura) }}
-                    {{ form_errors(form.estructura) }}
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
-                    {{ form_label(form.numeroTelefono) }}
-                    {{ form_widget(form.numeroTelefono) }}
-                    {{ form_errors(form.numeroTelefono) }}
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
-                    {{ form_label(form.servicioContratado) }}
-                    {{ form_widget(form.servicioContratado) }}
-                    {{ form_errors(form.servicioContratado) }}
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 form-group">
-                    {{ form_label(form.precio) }}
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa fa-dollar-sign"></i></span>
-                        </div>
-                        {{ form_widget(form.precio) }}
-                        {{ form_errors(form.precio) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 form-group">
-                    {{ form_label(form.direccionInstalacion) }}
-                    {{ form_widget(form.direccionInstalacion) }}
-                    {{ form_errors(form.direccionInstalacion) }}
-                </div>
-            </div>
-        </div>
-        <div class="card-footer" style="display: flex; justify-content: flex-end; align-items: center;">
-            <a class="btn btn-danger mr-2 btn-cancel" data-url="{{ path('app_nauta_hogar_index') }}"
-               data-title=""
-               data-content="¿Está seguro que desea realizar la acción?" type="button">Cancelar</a>
-            <button class="btn btn-primary">Aceptar</button>
-        </div>
-        {{ form_end(form) }}
-    </div>
-{% endblock %}
-{% block javascripts %}
-    <script>
-        $('#nauta_hogar_servicioContratado').on("keypress", function (event) {
-            // Solo permitir números y comas
-            var regex = /^[0-9,]+$/;
-            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-
-            if (!regex.test(key)) {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-    </script>
+{% include 'pages/_luxury_form_styles.html.twig' %}
+<div class="card card-luxury">
+ <div class="card-header d-flex align-items-center"><div><h3 class="card-title m-0"><i class="fas fa-wifi label-icon"></i>Modificar servicio Nauta Hogar</h3><small class="text-muted">{{ [persona.primerNombre,persona.segundoNombre,persona.primerApellido,persona.segundoApellido]|filter(v=>v)|join(' ') }} · {{ persona.entidad.nombre|default('Sin universidad') }}</small></div><div class="ml-auto"><a class="btn btn-secondary" href="{{ path('app_nauta_hogar_index') }}"><i class="fas fa-arrow-left mr-1"></i> Regresar al listado</a></div></div>
+ {{ form_start(form) }}<div class="card-body"><div class="row"><div class="col-md-6 form-group">{{ form_row(form.estructura) }}</div><div class="col-md-6 form-group">{{ form_row(form.numeroTelefono) }}</div><div class="col-md-6 form-group">{{ form_row(form.servicioContratado) }}</div><div class="col-md-6 form-group">{{ form_label(form.precio) }}<div class="input-group"><div class="input-group-prepend"><span class="input-group-text">$</span></div>{{ form_widget(form.precio) }}</div>{{ form_errors(form.precio) }}</div><div class="col-12 form-group">{{ form_row(form.direccionInstalacion) }}</div></div></div><div class="card-footer d-flex justify-content-end" style="gap:8px"><a class="btn btn-secondary" href="{{ path('app_nauta_hogar_index') }}">Cancelar</a><button class="btn btn-primary"><i class="fas fa-save mr-1"></i> Guardar cambios</button></div>{{ form_end(form) }}
+</div>
 {% endblock %}

@@ -1,18 +1,8 @@
-<div class="row">
-    <div class="col-6">
-        <h5 class="mb-0"><b>Nombre:</b> {{ item.nombre }}</h5>
-    </div>
-    <div class="col-6">
-        {% if '1' == item.activo %}
-            <h5 class="mb-0"><b>Estado:</b> Habilitado</h5>
-        {% else %}
-            <h5 class="mb-0"><b>Estado:</b> Deshabilitado</h5>
-        {% endif %}
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <h5 class="mb-0"><b>Descripción:</b> {{ item.descripcion }}</h5>
-    </div>
-</div>
-
+<dl class="row mb-0">
+ <dt class="col-sm-4 text-muted">Universidad</dt><dd class="col-sm-8">{{ item.estructura.nombre|default('—') }}</dd>
+ <dt class="col-sm-4 text-muted">Responsable</dt><dd class="col-sm-8">{{ [item.responsable.primerNombre|default(''),item.responsable.segundoNombre|default(''),item.responsable.primerApellido|default(''),item.responsable.segundoApellido|default('')]|filter(v=>v)|join(' ')|default('—') }}</dd>
+ <dt class="col-sm-4 text-muted">Número telefónico</dt><dd class="col-sm-8">{{ item.numeroTelefono|default('—') }}</dd>
+ <dt class="col-sm-4 text-muted">Servicio contratado</dt><dd class="col-sm-8">{{ item.servicioContratado.nombre|default('—') }}</dd>
+ <dt class="col-sm-4 text-muted">Precio</dt><dd class="col-sm-8">{{ item.precio|default('—') }}</dd>
+ <dt class="col-sm-4 text-muted">Dirección de instalación</dt><dd class="col-sm-8">{{ item.direccionInstalacion|default('—') }}</dd>
+</dl>

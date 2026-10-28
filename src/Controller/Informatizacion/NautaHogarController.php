@@ -8,6 +8,7 @@ use App\Entity\Personal\Persona;
 use App\Form\Informatizacion\NautaHogarType;
 use App\Repository\Informatizacion\NautaHogarRepository;
 use App\Repository\Personal\PersonaRepository;
+use App\Services\Informatizacion\InformatizacionScope;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,11 +25,13 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/', name: 'app_nauta_hogar_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, NautaHogarRepository $nautaHogarRepository)
+    public function index(Request $request, NautaHogarRepository $nautaHogarRepository, InformatizacionScope $scope)
     {
+        $institution = $scope->institution($this->getUser());
         return $this->render('modules/informatizacion/nautaHogar/index.html.twig', [
-            'registros' => $nautaHogarRepository->findBy([], ['id' => 'desc'])
-
+            'registros' => $nautaHogarRepository->findBy($scope->criteria($this->getUser()), ['id' => 'desc']),
+            'alcance' => $institution?->getNombre() ?? 'Todas las universidades',
+            'es_admin_informatizacion' => $institution === null,
         ]);
     }
 
@@ -38,14 +41,19 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_nauta_hogar_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, PersonaRepository $personaRepository)
+    public function registrar(Request $request, PersonaRepository $personaRepository, InformatizacionScope $scope)
     {
         try {
             $allPost = $request->request->all();
             $registros = [];
 
             if (isset($allPost['busqueda']) && !empty($allPost['busqueda'])) {
-                $registros = $personaRepository->findBy(['carnetIdentidad' => $allPost['busqueda']]);
+                $criteria = ['carnetIdentidad' => trim($allPost['busqueda'])];
+                $institution = $scope->institution($this->getUser());
+                if ($institution !== null) {
+                    $criteria['entidad'] = $institution;
+                }
+                $registros = $personaRepository->findBy($criteria);
             }
             return $this->render('modules/informatizacion/nautaHogar/new.html.twig', [
                 'registros' => $registros,
@@ -63,11 +71,17 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/registrar-v2', name: 'app_nauta_hogar_registrar_v2', methods: ['GET', 'POST'])]
-    public function registrarV2(Request $request, PersonaRepository $personaRepository, Persona $persona, NautaHogarRepository $nautaHogarRepository)
+    public function registrarV2(Request $request, PersonaRepository $personaRepository, Persona $persona, NautaHogarRepository $nautaHogarRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanAssignPerson($this->getUser(), $persona);
         try {
             $entidad = new NautaHogar();
-            $form = $this->createForm(NautaHogarType::class, $entidad, ['action' => 'registrar']);
+            $institution = $persona->getEntidad();
+            if (!$institution) {
+                throw $this->createAccessDeniedException('La persona seleccionada no está asociada a una universidad.');
+            }
+            $entidad->setEstructura($institution);
+            $form = $this->createForm(NautaHogarType::class, $entidad, ['action' => 'registrar', 'institution_id' => $institution->getId()]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $entidad->setResponsable($persona);
@@ -94,10 +108,11 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/modificar', name: 'app_nauta_hogar_modificar', methods: ['GET', 'POST'])]
-    public function modificar(Request $request, PersonaRepository $personaRepository, NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository)
+    public function modificar(Request $request, PersonaRepository $personaRepository, NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $nautaHogar);
         try {
-            $form = $this->createForm(NautaHogarType::class, $nautaHogar, ['action' => 'modificar']);
+            $form = $this->createForm(NautaHogarType::class, $nautaHogar, ['action' => 'modificar', 'institution_id' => $nautaHogar->getEstructura()?->getId()]);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 $nautaHogarRepository->edit($nautaHogar);
@@ -122,8 +137,9 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/detail', name: 'app_nauta_hogar_detail', methods: ['GET', 'POST'])]
-    public function detail(NautaHogar $nautaHogar)
+    public function detail(NautaHogar $nautaHogar, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $nautaHogar);
         return $this->render('modules/informatizacion/nautaHogar/detail.html.twig', [
             'item' => $nautaHogar,
         ]);
@@ -135,8 +151,9 @@ class NautaHogarController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/eliminar', name: 'app_nauta_hogar_eliminar', methods: ['GET'])]
-    public function eliminar(NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository)
+    public function eliminar(NautaHogar $nautaHogar, NautaHogarRepository $nautaHogarRepository, InformatizacionScope $scope)
     {
+        $scope->assertCanManage($this->getUser(), $nautaHogar);
         try {
             if ($nautaHogarRepository->find($nautaHogar) instanceof NautaHogar) {
                 $nautaHogarRepository->remove($nautaHogar, true);
