@@ -72,7 +72,10 @@ final class InteroperabilityNotificationClientTest extends TestCase
         self::assertSame('accepted_by_relay', $result['status']);
         self::assertCount(2, $requests);
         self::assertSame('POST', $requests[1]['method']);
-        self::assertSame(['recipient' => 'dinfo@mes.gob.cu', 'subject' => 'Prueba', 'text_body' => 'Contenido'], $requests[1]['options']['json']);
+        self::assertSame(
+            ['recipient' => 'dinfo@mes.gob.cu', 'subject' => 'Prueba', 'text_body' => 'Contenido'],
+            json_decode((string) $requests[1]['options']['body'], true, 512, JSON_THROW_ON_ERROR),
+        );
     }
 
     /** @param array<string,mixed> $claims */
