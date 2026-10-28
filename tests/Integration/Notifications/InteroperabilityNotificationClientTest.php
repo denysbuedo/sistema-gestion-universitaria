@@ -53,6 +53,28 @@ final class InteroperabilityNotificationClientTest extends TestCase
         $client->send(['message' => 'test']);
     }
 
+    public function testSendsExpectedEmailContractOnce(): void
+    {
+        $token = $this->token(['aud' => 'mes-api', 'realm_access' => ['roles' => ['notification-sender']]]);
+        $requests = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$requests, $token): MockResponse {
+            $requests[] = compact('method', 'url', 'options');
+            if (str_ends_with($url, '/token')) {
+                return new MockResponse(json_encode(['access_token' => $token, 'expires_in' => 300], JSON_THROW_ON_ERROR), ['http_code' => 200]);
+            }
+
+            return new MockResponse('{"status":"accepted_by_relay"}', ['http_code' => 202]);
+        });
+        $client = new InteroperabilityNotificationClient($httpClient, true, 'https://identidad.example/token', 'sgu', 'secret', 'https://api.example/notifications/email', 'mes-api', 'notification-sender');
+
+        $result = $client->sendEmail('dinfo@mes.gob.cu', 'Prueba', 'Contenido');
+
+        self::assertSame('accepted_by_relay', $result['status']);
+        self::assertCount(2, $requests);
+        self::assertSame('POST', $requests[1]['method']);
+        self::assertSame(['recipient' => 'dinfo@mes.gob.cu', 'subject' => 'Prueba', 'text_body' => 'Contenido'], $requests[1]['options']['json']);
+    }
+
     /** @param array<string,mixed> $claims */
     private function token(array $claims): string
     {

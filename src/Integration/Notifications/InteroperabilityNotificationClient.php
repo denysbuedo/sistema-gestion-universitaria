@@ -72,6 +72,26 @@ final class InteroperabilityNotificationClient
         }
     }
 
+    /** @return array<string,mixed> */
+    public function sendEmail(string $recipient, string $subject, string $textBody): array
+    {
+        $recipient = trim($recipient);
+        $subject = trim($subject);
+        $textBody = trim($textBody);
+        if ($recipient === '' || filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+            throw new NotificationIntegrationException('El destinatario de la notificación no es válido.');
+        }
+        if ($subject === '' || $textBody === '') {
+            throw new NotificationIntegrationException('El asunto y el contenido de la notificación son obligatorios.');
+        }
+
+        return $this->send([
+            'recipient' => $recipient,
+            'subject' => $subject,
+            'text_body' => $textBody,
+        ]);
+    }
+
     private function getAccessToken(): string
     {
         if ($this->accessToken === null || time() >= $this->accessTokenExpiresAt - 30) {

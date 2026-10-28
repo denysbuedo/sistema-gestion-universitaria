@@ -6,13 +6,25 @@ SGU utiliza OAuth 2.0 Client Credentials para autenticarse como cliente confiden
 
 La configuración se inyecta mediante variables de entorno. El secreto del cliente no debe almacenarse en Git, archivos `.env` del proyecto ni registros de aplicación.
 
-El envío permanecerá deshabilitado (`INTEROP_NOTIFICATIONS_ENABLED=0`) hasta que Interoperabilidad entregue:
+Endpoint de envío:
 
-- URL exacta del endpoint de notificaciones;
-- contrato JSON y campos obligatorios;
-- reglas de identificación de destinatarios;
-- semántica de idempotencia;
-- códigos de respuesta y política de reintentos.
+```text
+POST https://api.reduniv.edu.cu/api/v1/notifications/email
+```
+
+Contrato JSON confirmado:
+
+```json
+{
+  "recipient": "persona@dominio.cu",
+  "subject": "Asunto",
+  "text_body": "Contenido en texto plano"
+}
+```
+
+La API respondió `202 accepted_by_relay` en la prueba controlada. SGU no debe reintentar automáticamente ante timeout, HTTP 500 o HTTP 502 porque la entrega pudo ser aceptada antes de perderse la respuesta.
+
+El envío permanecerá deshabilitado (`INTEROP_NOTIFICATIONS_ENABLED=0`) hasta que la VM de SGU tenga conectividad HTTPS operativa con el endpoint de token y la API.
 
 ## Diagnóstico de autenticación
 
@@ -28,3 +40,4 @@ El comando solicita un token, valida la audiencia y el rol requeridos y solo inf
 - No se registran secretos, tokens ni respuestas completas de autenticación.
 - El cliente rechaza tokens que no contengan la audiencia y el rol configurados.
 - Los errores expuestos están sanitizados y no contienen credenciales.
+- El cliente HTTP realiza un único intento por llamada; no existe política automática de reintentos.
