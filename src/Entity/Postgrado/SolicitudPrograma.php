@@ -99,6 +99,40 @@ class SolicitudPrograma extends BaseEntity
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $cantidadCreditos = 0;
 
+    #[ORM\Column(type: 'string', length: 40, options: ['default' => 'LEGADO'])]
+    private string $naturalezaSolicitud = 'LEGADO';
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $justificacionSolicitud = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $organismoDemandante = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?self $programaReferencia = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $porcentajeModificacion = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $cambiaDenominacion = false;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $cambiaObjetivos = false;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $numeroResolucionMinisterial = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $fechaResolucionMinisterial = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $fechaPresentacion = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $fechaDecision = null;
+
 
     public function getFechaProximaAcreditacion()
     {
@@ -475,6 +509,29 @@ class SolicitudPrograma extends BaseEntity
     {
         $this->fechaAprobacion = $fechaAprobacion;
     }
+
+    public function getNaturalezaSolicitud(): string { return $this->naturalezaSolicitud; }
+    public function setNaturalezaSolicitud(string $value): self { $this->naturalezaSolicitud = $value; return $this; }
+    public function getJustificacionSolicitud(): ?string { return $this->justificacionSolicitud; }
+    public function setJustificacionSolicitud(?string $value): self { $this->justificacionSolicitud = $value; return $this; }
+    public function getOrganismoDemandante(): ?string { return $this->organismoDemandante; }
+    public function setOrganismoDemandante(?string $value): self { $this->organismoDemandante = $value; return $this; }
+    public function getProgramaReferencia(): ?self { return $this->programaReferencia; }
+    public function setProgramaReferencia(?self $value): self { $this->programaReferencia = $value; return $this; }
+    public function getPorcentajeModificacion(): ?int { return $this->porcentajeModificacion; }
+    public function setPorcentajeModificacion(?int $value): self { $this->porcentajeModificacion = $value; return $this; }
+    public function isCambiaDenominacion(): bool { return $this->cambiaDenominacion; }
+    public function setCambiaDenominacion(bool $value): self { $this->cambiaDenominacion = $value; return $this; }
+    public function isCambiaObjetivos(): bool { return $this->cambiaObjetivos; }
+    public function setCambiaObjetivos(bool $value): self { $this->cambiaObjetivos = $value; return $this; }
+    public function getNumeroResolucionMinisterial(): ?string { return $this->numeroResolucionMinisterial; }
+    public function setNumeroResolucionMinisterial(?string $value): self { $this->numeroResolucionMinisterial = $value; return $this; }
+    public function getFechaResolucionMinisterial(): ?\DateTimeInterface { return $this->fechaResolucionMinisterial; }
+    public function setFechaResolucionMinisterial(?\DateTimeInterface $value): self { $this->fechaResolucionMinisterial = $value; return $this; }
+    public function getFechaPresentacion(): ?\DateTimeInterface { return $this->fechaPresentacion; }
+    public function setFechaPresentacion(?\DateTimeInterface $value): self { $this->fechaPresentacion = $value; return $this; }
+    public function getFechaDecision(): ?\DateTimeInterface { return $this->fechaDecision; }
+    public function setFechaDecision(?\DateTimeInterface $value): self { $this->fechaDecision = $value; return $this; }
 
 
 }

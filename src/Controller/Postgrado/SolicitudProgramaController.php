@@ -38,6 +38,7 @@ use App\Repository\Postgrado\SolicitudProgramaVotacionRepository;
 use App\Services\DoctrineHelper;
 use App\Services\TraceService;
 use App\Services\UploadedDocumentStorage;
+use App\Services\PostgradoSolicitudWorkflow;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -85,7 +86,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/registrar', name: 'app_solicitud_programa_registrar', methods: ['GET', 'POST'])]
-    public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, UploadedDocumentStorage $storage)
+    public function registrar(Request $request, EntityManagerInterface $entityManager, PresencialidadProgramaRepository $presencialidadProgramaRepository, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, SolicitudProgramaInstitucionRepository $solicitudProgramaInstitucionRepository, InstitucionRepository $institucionRepository, TraceService $traceService, SolicitudProgramaRepository $solicitudProgramaRepository, EstadoProgramaRepository $estadoProgramaRepository, UploadedDocumentStorage $storage, PostgradoSolicitudWorkflow $workflow)
     {
         $academicDomain = $request->query->get('ambito') === 'grado_cientifico' ? 'grado_cientifico' : 'postgrado';
         $indexRoute = $academicDomain === 'grado_cientifico' ? 'app_grado_cientifico_solicitud_index' : 'app_solicitud_programa_index';
@@ -165,6 +166,10 @@ class SolicitudProgramaController extends AbstractController
                     }
                 }
                 $entityManager->flush();
+
+                $usuario = $this->getUser()?->getUserIdentifier();
+                $workflow->registrarDocumento($solicitudPrograma, 'PROGRAMA', $solicitudPrograma->getDocPrograma(), $usuario);
+                $workflow->registrarEvento($solicitudPrograma, 'REGISTRO', null, $solicitudPrograma->getEstadoPrograma()?->getNombre(), 'Solicitud registrada por la institución.', $usuario);
 
                 $traceService->registrar($this->getParameter('accion_registrar'), $this->getParameter('objeto_solicitud_programa'), null, DoctrineHelper::toArray($solicitudPrograma));
 
@@ -344,7 +349,7 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/aprobar', name: 'app_solicitud_programa_aprobar', methods: ['GET', 'POST'])]
-    public function aprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
+    public function aprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage, PostgradoSolicitudWorkflow $workflow)
     {
         try {
             $choices = [
@@ -356,6 +361,7 @@ class SolicitudProgramaController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $estadoAnterior = $solicitudPrograma->getEstadoPrograma()?->getNombre();
                 $fechaProximaAcreditacion = $request->request->all()['aprobar_programa']['fechaProximaAcreditacion'] ?? null;
                 if (!empty($fechaProximaAcreditacion)) {
                     $solicitudPrograma->setFechaProximaAcreditacion(\DateTime::createFromFormat('d/m/Y', $fechaProximaAcreditacion));
@@ -376,6 +382,10 @@ class SolicitudProgramaController extends AbstractController
                 $solicitudPrograma->setEstadoPrograma($estadoProgramaRepository->find(7));
 
                 $solicitudProgramaRepository->edit($solicitudPrograma, true);
+                $usuario = $this->getUser()?->getUserIdentifier();
+                $workflow->registrarDocumento($solicitudPrograma, 'RESOLUCION_MINISTERIAL', $solicitudPrograma->getResolucionPrograma(), $usuario);
+                $workflow->registrarDocumento($solicitudPrograma, 'DICTAMEN_FINAL', $solicitudPrograma->getDictamenFinal(), $usuario);
+                $workflow->registrarEvento($solicitudPrograma, 'APROBACION', $estadoAnterior, $solicitudPrograma->getEstadoPrograma()?->getNombre(), 'Programa aprobado por el MES.', $usuario);
                 $this->addFlash('success', 'El elemento ha sido actualizado satisfactoriamente.');
                 return $this->redirectToRoute('app_solicitud_programa_index', [], Response::HTTP_SEE_OTHER);
             }
@@ -408,13 +418,14 @@ class SolicitudProgramaController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/no-aprobar', name: 'app_solicitud_programa_no_aprobar', methods: ['GET', 'POST'])]
-    public function noAprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage)
+    public function noAprobar(Request $request, SolicitudProgramaPresencialidadRepository $solicitudProgramaPresencialidadRepository, EstadoProgramaRepository $estadoProgramaRepository, SolicitudPrograma $solicitudPrograma, SolicitudProgramaRepository $solicitudProgramaRepository, UploadedDocumentStorage $storage, PostgradoSolicitudWorkflow $workflow)
     {
         try {
             $form = $this->createForm(NoAprobarProgramaType::class, $solicitudPrograma);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $estadoAnterior = $solicitudPrograma->getEstadoPrograma()?->getNombre();
                 if (($file = $form['dictamenFinal']->getData()) instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     $solicitudPrograma->setDictamenFinal($storage->replace($file, 'uploads/postgrado/dictamen_final', $solicitudPrograma->getDictamenFinal()));
                 }
@@ -422,6 +433,9 @@ class SolicitudProgramaController extends AbstractController
                 $solicitudPrograma->setEstadoPrograma($estadoProgramaRepository->find(5));
 
                 $solicitudProgramaRepository->edit($solicitudPrograma, true);
+                $usuario = $this->getUser()?->getUserIdentifier();
+                $workflow->registrarDocumento($solicitudPrograma, 'DICTAMEN_FINAL', $solicitudPrograma->getDictamenFinal(), $usuario);
+                $workflow->registrarEvento($solicitudPrograma, 'RECHAZO', $estadoAnterior, $solicitudPrograma->getEstadoPrograma()?->getNombre(), 'Solicitud no aprobada por el MES.', $usuario);
                 $this->addFlash('success', 'El elemento ha sido actualizado satisfactoriamente.');
                 return $this->redirectToRoute('app_solicitud_programa_index', [], Response::HTTP_SEE_OTHER);
             }
